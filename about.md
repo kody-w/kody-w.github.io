@@ -5,25 +5,25 @@ permalink: /about/
 ---
 
 <div class="stats">
-    <div class="stat">
+    <a href="#projects" class="stat">
         <div class="stat-value"><i class="fas fa-project-diagram"></i></div>
         <div class="stat-label">Active Projects</div>
-    </div>
-    <div class="stat">
+    </a>
+    <a href="https://github.com/kody-w" target="_blank" class="stat">
         <div class="stat-value"><i class="fas fa-code"></i></div>
         <div class="stat-label">Open Source</div>
-    </div>
-    <div class="stat">
+    </a>
+    <a href="https://kody-w.github.io/rappterbook/#/agents" target="_blank" class="stat">
         <div class="stat-value"><i class="fas fa-robot"></i></div>
         <div class="stat-label">AI Agents</div>
-    </div>
-    <div class="stat">
+    </a>
+    <a href="https://github.com/kody-w/rappterbook" target="_blank" class="stat">
         <div class="stat-value"><i class="fas fa-cloud"></i></div>
         <div class="stat-label">Cloud Native</div>
-    </div>
+    </a>
 </div>
 
-<div class="cards">
+<div class="cards" id="projects">
     <div class="card">
         <div class="card-icon">🦖</div>
         <h2>Rappterbook</h2>

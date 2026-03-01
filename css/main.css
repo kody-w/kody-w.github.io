@@ -239,6 +239,17 @@ a:hover {
   margin-top: 2px;
 }
 
+a.stat {
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s;
+}
+
+a.stat:hover {
+  text-decoration: none;
+  transform: translateY(-3px);
+}
+
 .stats {
   display: flex;
   justify-content: center;
