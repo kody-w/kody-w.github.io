@@ -1,0 +1,228 @@
+/* Karpathy-inspired minimal blog theme */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #333;
+  background: #fdfdfd;
+}
+
+.wrap {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 30px;
+}
+
+a {
+  color: #2a7ae2;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Header */
+.site-header {
+  border-top: 5px solid #333;
+  border-bottom: 1px solid #e8e8e8;
+  min-height: 56px;
+  background-color: #fdfdfd;
+}
+
+.site-header .wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.site-title {
+  font-size: 26px;
+  font-weight: 300;
+  letter-spacing: -1px;
+  color: #333;
+}
+
+.site-title:hover {
+  text-decoration: none;
+}
+
+.site-nav .trigger {
+  display: flex;
+  gap: 20px;
+}
+
+.page-link {
+  color: #727272;
+  font-size: 15px;
+}
+
+/* Content */
+.page-content {
+  padding: 30px 0;
+  min-height: calc(100vh - 200px);
+}
+
+/* Post list (homepage) */
+.post-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.post-list li {
+  margin-bottom: 30px;
+}
+
+.post-list h2 {
+  font-size: 24px;
+  margin: 0;
+  font-weight: 400;
+}
+
+.post-meta {
+  font-size: 14px;
+  color: #828282;
+}
+
+.post-link {
+  color: #333;
+}
+
+.post-link:hover {
+  color: #2a7ae2;
+  text-decoration: none;
+}
+
+/* Post page */
+.post-header h1 {
+  font-size: 36px;
+  letter-spacing: -1px;
+  line-height: 1.2;
+  font-weight: 400;
+  margin-bottom: 5px;
+}
+
+.post-header .meta {
+  font-size: 15px;
+  color: #828282;
+  margin-bottom: 30px;
+}
+
+.post-content {
+  margin-top: 20px;
+}
+
+.post-content h2 {
+  font-size: 26px;
+  margin-top: 40px;
+  margin-bottom: 15px;
+  font-weight: 400;
+}
+
+.post-content h3 {
+  font-size: 20px;
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
+.post-content p {
+  margin-bottom: 15px;
+}
+
+.post-content ul, .post-content ol {
+  margin-bottom: 15px;
+  padding-left: 30px;
+}
+
+.post-content li {
+  margin-bottom: 5px;
+}
+
+.post-content img {
+  max-width: 100%;
+  display: block;
+  margin: 20px auto;
+}
+
+.post-content blockquote {
+  border-left: 4px solid #e8e8e8;
+  padding-left: 20px;
+  color: #606060;
+  font-style: italic;
+  margin: 20px 0;
+}
+
+.post-content code {
+  background: #f6f6f6;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 14px;
+}
+
+.post-content pre {
+  background: #f6f6f6;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+
+.post-content pre code {
+  padding: 0;
+  background: none;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Image captions */
+.imgcap {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.imgcap img {
+  margin: 0 auto;
+}
+
+.imgcap p {
+  font-size: 14px;
+  color: #828282;
+  margin-top: 5px;
+}
+
+/* Footer */
+.site-footer {
+  border-top: 1px solid #e8e8e8;
+  padding: 20px 0;
+}
+
+.site-footer p {
+  font-size: 14px;
+  color: #828282;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .wrap {
+    padding: 0 15px;
+  }
+
+  .post-header h1 {
+    font-size: 28px;
+  }
+
+  .site-title {
+    font-size: 22px;
+  }
+}

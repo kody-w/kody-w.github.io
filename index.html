@@ -1,138 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kody Wildfeuer - Developer Portfolio</title>
-    <meta name="description" content="Full-stack developer specializing in AI agents, Azure, and modern web applications">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="main.css">
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>👨‍💻 Kody Wildfeuer</h1>
-            <p>Full-Stack Developer | AI Agent Architect | Azure Specialist</p>
-        </div>
+---
+layout: default
+---
+<div class="home">
 
-        <div class="stats">
-            <div class="stat">
-                <div class="stat-value"><i class="fas fa-project-diagram"></i></div>
-                <div class="stat-label">Active Projects</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value"><i class="fas fa-code"></i></div>
-                <div class="stat-label">Open Source</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value"><i class="fas fa-robot"></i></div>
-                <div class="stat-label">AI Agents</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value"><i class="fas fa-cloud"></i></div>
-                <div class="stat-label">Cloud Native</div>
-            </div>
-        </div>
+  <ul class="post-list">
+    {% for post in site.posts %}
+      <li>
+        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
+        <h2><a class="post-link" href="{{ post.url }}">{{ post.title }}</a></h2>
+      </li>
+    {% endfor %}
+  </ul>
 
-        <div class="cards">
-            <div class="card">
-                <div class="card-icon">⚡</div>
-                <h2>RAPP</h2>
-                <p>Rapid Agent Prototyping Platform - A modular AI agent framework with multi-user chat, persistent memory, and voice support.</p>
-                <ul class="card-features">
-                    <li>8 AI Agents across 6 categories</li>
-                    <li>Dynamic agent combinations</li>
-                    <li>Azure Functions backend</li>
-                    <li>Real-time chat with voice synthesis</li>
-                    <li>Persistent memory system</li>
-                </ul>
-                <div class="card-buttons">
-                    <a href="https://kody-w.github.io/RAPP/" class="btn" target="_blank">Live Demo</a>
-                    <a href="https://github.com/kody-w/RAPP" class="btn btn-secondary" target="_blank">View Code</a>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-icon">🎯</div>
-                <h2>AI Agent Templates</h2>
-                <p>Pre-built AI agent configurations and templates for rapid deployment of intelligent automation systems.</p>
-                <ul class="card-features">
-                    <li>Commerce automation agents</li>
-                    <li>Memory management systems</li>
-                    <li>Analytics and insights</li>
-                    <li>Entertainment agents</li>
-                    <li>Extensible architecture</li>
-                </ul>
-                <div class="card-buttons">
-                    <a href="https://kody-w.github.io/RAPP/AI-Agent-Templates/" class="btn" target="_blank">Explore Templates</a>
-                    <a href="https://github.com/kody-w/RAPP" class="btn btn-secondary" target="_blank">GitHub</a>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-icon">💼</div>
-                <h2>Professional Work</h2>
-                <p>Full-stack development experience with modern web technologies, cloud platforms, and AI integration.</p>
-                <ul class="card-features">
-                    <li>Azure cloud architecture</li>
-                    <li>OpenAI GPT-4 integration</li>
-                    <li>React & TypeScript</li>
-                    <li>Python & Node.js backends</li>
-                    <li>DevOps & CI/CD</li>
-                </ul>
-                <div class="card-buttons">
-                    <a href="https://www.linkedin.com/in/kody-wildfeuer-5a593061" class="btn" target="_blank">LinkedIn</a>
-                    <a href="https://github.com/kody-w" class="btn btn-secondary" target="_blank">GitHub Profile</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="features-grid">
-            <div class="feature">
-                <div class="feature-icon">🤖</div>
-                <h3>AI & Machine Learning</h3>
-                <p>Building intelligent agents with GPT-4, custom workflows, and autonomous decision-making</p>
-            </div>
-
-            <div class="feature">
-                <div class="feature-icon">☁️</div>
-                <h3>Cloud Architecture</h3>
-                <p>Azure Functions, Storage, and serverless solutions for scalable applications</p>
-            </div>
-
-            <div class="feature">
-                <div class="feature-icon">⚛️</div>
-                <h3>Modern Frontend</h3>
-                <p>React, TypeScript, responsive design with focus on user experience</p>
-            </div>
-
-            <div class="feature">
-                <div class="feature-icon">🔧</div>
-                <h3>Full-Stack Development</h3>
-                <p>End-to-end application development from design to deployment</p>
-            </div>
-        </div>
-
-        <div class="social-links">
-            <a href="https://github.com/kody-w" target="_blank" class="social-link">
-                <i class="fab fa-github"></i> GitHub
-            </a>
-            <a href="https://www.linkedin.com/in/kody-wildfeuer-5a593061" target="_blank" class="social-link">
-                <i class="fab fa-linkedin"></i> LinkedIn
-            </a>
-            <a href="https://twitter.com/kody_wf" target="_blank" class="social-link">
-                <i class="fab fa-twitter"></i> Twitter
-            </a>
-        </div>
-
-        <div class="footer">
-            <p>Built with passion for creating intelligent, scalable solutions</p>
-            <p style="margin-top: 12px;">
-                <a href="https://github.com/kody-w">View All Repositories</a>
-            </p>
-        </div>
-    </div>
-
-    <script src="scripts.js"></script>
-</body>
-</html>
+</div>

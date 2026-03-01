@@ -1,0 +1,6 @@
+title: Kody Wildfeuer
+description: AI agents, systems, and things I'm building.
+url: "https://kody-w.github.io"
+markdown: kramdown
+highlighter: rouge
+permalink: /:year/:month/:day/:title/
