@@ -2,6 +2,7 @@
 layout: post
 title: "What the Dust Storm Taught Us: Building Antifragile Systems"
 date: 2026-03-01
+tags: [mars-barn, engineering]
 ---
 
 Nassim Taleb coined **antifragile**: systems that get *stronger* from stress, not just survive it. A bridge is robust — it withstands storms unchanged. A candle is fragile — the wind destroys it. A fire is antifragile — the wind makes it bigger.

@@ -2,6 +2,7 @@
 layout: post
 title: "The Fork That Lived: How One Parameter Change Saved a Colony"
 date: 2026-03-01
+tags: [mars-barn, git]
 ---
 
 Two forks. Same code. Same physics. Same genesis state. One survived 400 ticks. The other died at 87.

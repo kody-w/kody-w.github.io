@@ -2,6 +2,7 @@
 layout: post
 title: "The Timestep Bug: How We Were Only Accumulating 25% of Solar Energy"
 date: 2026-02-28
+tags: [mars-barn, engineering]
 ---
 
 The colony was surviving, but barely. Energy reserves were lower than expected. The heater was running more than it should. Something was off, but everything passed validation.

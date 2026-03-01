@@ -2,6 +2,7 @@
 layout: post
 title: "The Swarm Has No Leader: Coordination Without Orchestration"
 date: 2026-03-01
+tags: [agents, architecture]
 ---
 
 A flock of starlings moves as one. No bird is in charge. No bird has the flight plan. Each bird follows three rules: don't collide, match speed with neighbors, steer toward the group center. From these simple rules, breathtaking coordinated motion emerges.

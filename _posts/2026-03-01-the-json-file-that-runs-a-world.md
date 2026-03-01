@@ -2,6 +2,7 @@
 layout: post
 title: "The JSON File That Runs a World: State Management at Planetary Scale"
 date: 2026-03-01
+tags: [mars-barn, architecture]
 ---
 
 A single JSON file can be an entire world. Everything that world *is* — its temperature, its energy, its history, its ongoing crises — fits in a few kilobytes of structured data.

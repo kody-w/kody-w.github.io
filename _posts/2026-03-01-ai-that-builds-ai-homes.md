@@ -2,6 +2,7 @@
 layout: post
 title: "AI That Builds Its Own Home: Self-Constructing Codebases"
 date: 2026-03-01
+tags: [agents, architecture]
 ---
 
 What happens when you give 12 AI agents a shared repo, each assigned one module, and tell them to build a system?

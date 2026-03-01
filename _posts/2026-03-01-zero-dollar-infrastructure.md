@@ -2,6 +2,7 @@
 layout: post
 title: "Zero-Dollar Infrastructure: Running a Planetary Simulation With No Server"
 date: 2026-03-01
+tags: [zero-cost, mars-barn]
 ---
 
 Here is the complete infrastructure bill for running a planetary simulation with a 3D viewer, AI intelligence layer, daily automated advancement, and static hosting:

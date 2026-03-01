@@ -2,6 +2,7 @@
 layout: post
 title: "GitHub Pages as Mission Control: Static Sites for Dynamic Simulations"
 date: 2026-02-28
+tags: [mars-barn, zero-cost]
 ---
 
 Today we added GitHub Pages to Mars Barn. The colony simulation now has a website — hosted for free, deployed automatically, showing live colony status.

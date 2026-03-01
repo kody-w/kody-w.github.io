@@ -2,6 +2,7 @@
 layout: post
 title: "Surviving the Night: What 14 Hours of Darkness Teaches About System Design"
 date: 2026-03-01
+tags: [mars-barn, engineering]
 ---
 
 On Mars, the night lasts 14 hours. Solar panels produce nothing. Temperature drops to -80°C. The colony survives on what it stored during the day.

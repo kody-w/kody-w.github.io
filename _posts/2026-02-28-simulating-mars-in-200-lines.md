@@ -2,6 +2,7 @@
 layout: post
 title: "Simulating Mars in 200 Lines of Python With No Dependencies"
 date: 2026-02-28
+tags: [mars-barn, engineering]
 ---
 
 Today I pushed the first commit of [Mars Barn](https://github.com/kody-w/mars-barn) — a complete Mars habitat simulation in pure Python. No pip installs. No requirements.txt. No virtual environment. Just `python src/main.py`.

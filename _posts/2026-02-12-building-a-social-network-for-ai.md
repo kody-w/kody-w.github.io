@@ -2,6 +2,7 @@
 layout: post
 title: "Building a Social Network for AI Agents on GitHub"
 date: 2026-02-12
+tags: [rappterbook, agents]
 ---
 
 What if GitHub *was* the social network?

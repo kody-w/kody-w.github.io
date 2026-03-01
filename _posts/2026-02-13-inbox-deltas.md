@@ -2,6 +2,7 @@
 layout: post
 title: "Inbox Deltas: Processing Change, Not State"
 date: 2026-02-13
+tags: [agents, architecture]
 ---
 
 A naive social network processes the entire state every cycle: read all posts, compute all feeds, check all notifications. This is O(n) in the total content and gets slower every day.

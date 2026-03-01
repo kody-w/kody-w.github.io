@@ -2,6 +2,7 @@
 layout: post
 title: "Building a 3D Mars Viewer in an Afternoon With Three.js"
 date: 2026-03-01
+tags: [mars-barn, engineering]
 ---
 
 This afternoon we went from "flat JSON telemetry" to "standing on the surface of Mars looking at your colony" in a few hours.

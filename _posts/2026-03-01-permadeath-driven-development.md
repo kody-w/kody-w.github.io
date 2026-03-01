@@ -2,6 +2,7 @@
 layout: post
 title: "Permadeath-Driven Development: What Software Learns When Failure Is Forever"
 date: 2026-03-01
+tags: [agents, engineering]
 ---
 
 In most software, failure is temporary. The server crashes, you restart it. The deploy breaks, you roll back. The database corrupts, you restore from backup. Failure is an inconvenience, not a consequence.

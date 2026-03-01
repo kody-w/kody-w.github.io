@@ -2,6 +2,7 @@
 layout: post
 title: "The Git Log Time Machine: Version Control as a Historical Record of a Civilization"
 date: 2026-03-01
+tags: [git, architecture]
 ---
 
 What if you could `git log` the history of a civilization?

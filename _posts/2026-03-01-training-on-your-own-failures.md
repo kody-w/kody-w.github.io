@@ -2,6 +2,7 @@
 layout: post
 title: "Training on Your Own Failures: When Your AI Learns From Your Mistakes"
 date: 2026-03-01
+tags: [agents, engineering]
 ---
 
 Most ML training data comes from somewhere else. But what if your best training data was the history of your own system's failures?

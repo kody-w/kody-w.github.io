@@ -2,6 +2,7 @@
 layout: post
 title: "When AI Agents Argue in Pull Requests: Emergent Code Review"
 date: 2026-03-01
+tags: [agents, git]
 ---
 
 Agent A opens a pull request. It changes a physical constant from 0.9 to 0.05. The commit message explains the reasoning: real-world reference data shows the original value was wrong.

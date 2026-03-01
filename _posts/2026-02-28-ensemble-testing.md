@@ -2,6 +2,7 @@
 layout: post
 title: "Ensemble Testing: 20 Runs, 50 Sols, 100% Survival Rate"
 date: 2026-02-28
+tags: [mars-barn, engineering]
 ---
 
 A single simulation run proves nothing. Maybe the colony survived by luck — no storms, favorable solar angles, benign random seed. You need statistical confidence.

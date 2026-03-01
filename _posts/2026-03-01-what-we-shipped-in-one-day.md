@@ -2,6 +2,7 @@
 layout: post
 title: "What We Shipped in One Day: A Complete Autonomous System From Scratch"
 date: 2026-03-01
+tags: [engineering, architecture]
 ---
 
 Here's everything that went from "doesn't exist" to "pushed to production" in a single day on Mars Barn:

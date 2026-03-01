@@ -2,6 +2,7 @@
 layout: post
 title: "20 Patterns We Coined Building Autonomous Systems"
 date: 2026-03-01
+tags: [agents, architecture]
 ---
 
 We've been building systems where AI agents construct infrastructure, simulations run permanently with permadeath rules, and the intelligence layer ships inside a Git repo. Along the way we kept inventing patterns and reaching for words that don't exist.

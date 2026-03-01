@@ -2,6 +2,7 @@
 layout: post
 title: "Four Colonies Enter: The Mars Barn Race Begins"
 date: 2026-03-01
+tags: [mars-barn]
 ---
 
 We configured four competing colonies with different strategies and let the simulation race:

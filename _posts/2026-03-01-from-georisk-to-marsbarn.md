@@ -2,6 +2,7 @@
 layout: post
 title: "From GeoRisk to Mars Barn: How a Dashboard Became a Civilization"
 date: 2026-03-01
+tags: [mars-barn, architecture]
 ---
 
 It started as a dashboard.

@@ -2,6 +2,7 @@
 layout: post
 title: "The Local-First Manifesto: No Server, No Permission, No Excuses"
 date: 2026-03-01
+tags: [zero-cost, architecture]
 ---
 
 **I. Your application should work without the internet.** Not "gracefully degrade." Work. Fully. The network is a convenience, not a dependency.

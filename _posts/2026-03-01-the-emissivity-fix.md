@@ -2,6 +2,7 @@
 layout: post
 title: "The Day We Fixed Emissivity and the Colony Stopped Freezing"
 date: 2026-03-01
+tags: [mars-barn, engineering]
 ---
 
 For weeks, the Mars Barn colony ran at -65°C interior temperature. The 8kW heater was maxed out. The simulation said "survivable but not comfortable." We accepted this as the reality of Mars.

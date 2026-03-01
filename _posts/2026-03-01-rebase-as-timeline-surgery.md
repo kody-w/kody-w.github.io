@@ -2,6 +2,7 @@
 layout: post
 title: "Rebase as Timeline Surgery: Merging Divergent Universes"
 date: 2026-03-01
+tags: [git]
 ---
 
 Today we rebased 5 commits onto an origin that had diverged with 3 commits of its own. Two merge conflicts. Two resolved. Everything pushed clean.

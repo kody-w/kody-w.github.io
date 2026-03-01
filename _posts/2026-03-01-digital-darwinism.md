@@ -2,6 +2,7 @@
 layout: post
 title: "Digital Darwinism: Natural Selection Across Forked Repositories"
 date: 2026-03-01
+tags: [agents, git]
 ---
 
 A repository is an organism. A fork is reproduction. A parameter change is a mutation. Survival-based ranking is selection pressure.

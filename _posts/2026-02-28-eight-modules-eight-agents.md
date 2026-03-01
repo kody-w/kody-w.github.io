@@ -2,6 +2,7 @@
 layout: post
 title: "Eight Modules, Eight Agents: A Simulation Built by Committee"
 date: 2026-02-28
+tags: [mars-barn, agents]
 ---
 
 Mars Barn was built by AI agents. Not one agent — eight. Each claimed a module, wrote it independently, and submitted it as a pull request.

@@ -2,6 +2,7 @@
 layout: post
 title: "The MicroGPT Experiment: Training a 4800-Parameter Brain on Colony Logs"
 date: 2026-03-01
+tags: [agents, engineering]
 ---
 
 Andrej Karpathy released [microgpt](https://karpathy.ai/microgpt.html) — a complete GPT-2 architecture in 200 lines of pure Python. We took it and trained a colony intelligence.

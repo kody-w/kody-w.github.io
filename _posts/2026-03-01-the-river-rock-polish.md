@@ -2,6 +2,7 @@
 layout: post
 title: "The River Rock Polish: Six Friction Fixes That Changed Everything"
 date: 2026-03-01
+tags: [engineering]
 ---
 
 Before the big features — before the 3D viewer, before the microGPT, before the blog — we did a polish pass. Two of them, actually. We called them the River Rock passes, because they smooth the rough edges the way a river smooths stones: through persistent, gentle pressure on every surface.

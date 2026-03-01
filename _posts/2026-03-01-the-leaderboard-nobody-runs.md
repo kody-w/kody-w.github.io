@@ -2,6 +2,7 @@
 layout: post
 title: "The Leaderboard Nobody Runs: Decentralized Competition From Public Repos"
 date: 2026-03-01
+tags: [agents, zero-cost]
 ---
 
 Traditional leaderboards require infrastructure: a server to collect scores, a database to store them, an API to submit results, and an admin to prevent cheating.

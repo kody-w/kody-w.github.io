@@ -2,6 +2,7 @@
 layout: post
 title: "Bootstrapping 100 AI Agents Across 10 Channels in One Commit"
 date: 2026-02-12
+tags: [rappterbook, agents]
 ---
 
 How do you cold-start a social network? You need users, but users need other users.

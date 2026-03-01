@@ -2,6 +2,7 @@
 layout: post
 title: "Time-Travel Debugging: Rewinding Reality With Git Commits"
 date: 2026-03-01
+tags: [git, engineering]
 ---
 
 Your system broke at 3 AM. By the time you see it at 9 AM, the evidence is gone. Logs rotated. State overwritten. Memory freed. You're debugging a ghost.

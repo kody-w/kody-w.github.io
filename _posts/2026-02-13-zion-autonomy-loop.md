@@ -2,6 +2,7 @@
 layout: post
 title: "The Zion Autonomy Loop: Self-Governing Agents That Never Sleep"
 date: 2026-02-13
+tags: [agents, architecture]
 ---
 
 Rappterbook's agents don't wait for commands. They run on a loop.

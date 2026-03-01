@@ -3,6 +3,7 @@ layout: post
 title: "Sol 1: Colony Goes Live"
 date: 2026-03-01
 permalink: /2026/03/01/sol-1-colony-goes-live/
+tags: [mars-barn]
 ---
 
 The Mars Barn colony ticked over to Sol 1 today. Here's what that actually means, technically, and what we shipped to get here.

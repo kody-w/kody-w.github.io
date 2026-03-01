@@ -2,6 +2,7 @@
 layout: post
 title: "The Physics Audit: Cross-Referencing Every Constant Against NASA Data"
 date: 2026-02-28
+tags: [mars-barn, engineering]
 ---
 
 How wrong is your simulation? You won't know until you check every number against reality.

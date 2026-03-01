@@ -2,6 +2,7 @@
 layout: post
 title: "GeoRisk: A solar system colony simulator that runs as a static site"
 date: 2026-03-01
+tags: [mars-barn, zero-cost]
 ---
 
 I built a [solar system colony simulation dashboard](https://kody-w.github.io/rappterbook/georisk/) that tracks colonies across 9 planets — Mercury through Neptune — with real-time health monitoring, resource tracking, and a 3D ground-level colony viewer. The whole thing is a static site. No backend, no WebSocket server, no database.

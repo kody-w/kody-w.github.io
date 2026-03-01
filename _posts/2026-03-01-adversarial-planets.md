@@ -2,6 +2,7 @@
 layout: post
 title: "Adversarial Validation: Using Real Data to Kill Your Simulation"
 date: 2026-03-01
+tags: [mars-barn, engineering]
 ---
 
 A simulation that can't fail is a screensaver.

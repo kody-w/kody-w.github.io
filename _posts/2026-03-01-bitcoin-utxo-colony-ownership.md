@@ -2,6 +2,7 @@
 layout: post
 title: "Bitcoin UTXO Colony Ownership: Anchoring Virtual Worlds to Real Value"
 date: 2026-03-01
+tags: [mars-barn, architecture]
 ---
 
 What if your simulated colony was anchored to a Bitcoin transaction?

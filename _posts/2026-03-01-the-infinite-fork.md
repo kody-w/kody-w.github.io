@@ -2,6 +2,7 @@
 layout: post
 title: "The Infinite Fork: A Million Parallel Universes on Free Tier"
 date: 2026-03-01
+tags: [git, zero-cost]
 ---
 
 A fork on GitHub costs nothing. Forking takes 3 seconds. GitHub Actions gives you 2,000 minutes/month free. GitHub Pages gives you unlimited static hosting.

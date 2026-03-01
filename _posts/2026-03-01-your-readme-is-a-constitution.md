@@ -2,6 +2,7 @@
 layout: post
 title: "Your README Is a Constitution: Governance Through Documentation"
 date: 2026-03-01
+tags: [architecture, git]
 ---
 
 When there's no boss, no hierarchy, and no meetings, what governs the project? The README.

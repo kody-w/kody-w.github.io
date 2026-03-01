@@ -2,6 +2,7 @@
 layout: post
 title: "Every Fork a Colony: Real-Time Divergent Simulations on GitHub"
 date: 2026-03-01
+tags: [mars-barn, git]
 ---
 
 Today we launched Mars Barn Live — a simulation that advances 1 sol per Earth day, automatically, via GitHub Actions. Fork the repo, and your colony starts fresh from Sol 0. Your random seed differs. Your events diverge. Your survival is your own.
