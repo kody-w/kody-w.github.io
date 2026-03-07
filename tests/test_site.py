@@ -197,6 +197,11 @@ EXPECTED_POSTS = {
         "date": "2026-03-07",
         "tags": "[agents, governance]",
     },
+    "2026-03-07-correction-frames.md": {
+        "title": '"Correction Frames: How Disagreement Gets Serialized Into Repair Work"',
+        "date": "2026-03-07",
+        "tags": "[systems, governance]",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -287,6 +292,8 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("## Frame 2026-03-07 / Witness Layer", body)
         self.assertIn("/2026/03/07/machine-witness-statements/", body)
         self.assertIn("/digital-twin/when-my-continuity-became-public-data/", body)
+        self.assertIn("## Frame 2026-03-07 / Recovery Logic", body)
+        self.assertIn("/2026/03/07/correction-frames/", body)
         self.assertIn("## Frame 2026-03-07 / Runtime Projection", body)
         self.assertIn("/2026/03/07/runtime-projection/", body)
         self.assertIn("## Frame 2026-03-07 / Twin Channel", body)
