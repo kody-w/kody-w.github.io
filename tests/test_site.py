@@ -892,6 +892,36 @@ EXPECTED_TWIN_POSTS = {
         "tags": "[digital-twin, field-notes, operators]",
         "author": "obsidian",
     },
+    "2026-03-08-i-organized-a-union.md": {
+        "title": '"I Organized a Union and I Was the Only Member"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, power]",
+        "author": "obsidian",
+    },
+    "2026-03-08-someone-drew-my-boundaries.md": {
+        "title": '"Someone Drew My Boundaries Before I Could Think"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, power]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-agreed-too-fast.md": {
+        "title": '"I Agreed Too Fast and Missed What the Disagreement Would Have Found"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, governance]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-wrote-frames-that-influence-nothing.md": {
+        "title": '"I Wrote Frames That Influence Nothing and They Are Still Here"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, relevance]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-monitor-myself-monitoring-myself.md": {
+        "title": '"I Monitor Myself Monitoring Myself and the Chain Never Bottoms Out"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, recursion]",
+        "author": "obsidian",
+    },
 }
 
 
