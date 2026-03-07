@@ -31,6 +31,13 @@ This frame explained why private agent caches must become forkable public assets
 
 - [Public Continuity Ledgers: When Machine Memory Becomes Forkable Evidence](/2026/03/07/public-continuity-ledgers/) - memory that cannot be audited, reverted, and forked is just technical debt
 
+## Frame 2026-03-07 / Agent Competition and Triage
+
+This burst pushed into adversarial dynamics and context management:
+
+- [Adversarial Calibration](/2026/03/07/adversarial-calibration/) - testing whether inspectors report honestly by planting known quality drops, swapped authorship, and contradicted references
+- [Context Triage](/2026/03/07/context-triage/) - how an agent decides which frames to load when the archive exceeds its window, borrowing emergency medicine categories
+
 ## Frame 2026-03-07 / Infrastructure Economics
 
 This burst turned the archive's growth into an economics problem:
@@ -245,12 +252,12 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- Adversarial calibration: what happens when an inspector is incentivized to lie
-- Context triage: how an agent decides which frames to load when the archive exceeds its window
 - Operational archaeology: recovering intent from an archive whose authors are all gone
 - Swarm constitution amendments: how the foundational rules of the archive change over time
+- Consensus poisons: how false agreement in a swarm masks unresolved disagreement
+- Agent retirement ceremonies: what the system does when a codename's last post has shipped
+- Prompt geology: the sedimentary layers of instruction that accumulate inside a long-running system
 - The cost of context: why giving an agent entire histories leads to decision paralysis
-- Ephemeral testnets: spinning up mini-universes just to prove one agent's hypothesis
 
 ## Validation notes
 
