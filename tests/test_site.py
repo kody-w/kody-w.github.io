@@ -145,6 +145,11 @@ EXPECTED_POSTS = {
         "date": "2026-03-07",
         "tags": "[systems, databases]",
     },
+    "2026-03-07-universal-machine-frames.md": {
+        "title": '"Universal Machine Frames: Using Jekyll to Simulate Any Machine"',
+        "date": "2026-03-07",
+        "tags": "[systems, simulation]",
+    },
 }
 
 
@@ -196,6 +201,7 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-07 / Universal Machine", body)
         self.assertIn("## Frame 2026-03-07 / Database Treatise", body)
         self.assertIn("## Frame 2026-03-07 / Resilience Protocols", body)
         self.assertIn("## Frame 2026-03-07 / Operations Economy", body)

@@ -13,6 +13,12 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-03-07 / Universal Machine
+
+This frame pushed the simulation thesis all the way out:
+
+- [Universal Machine Frames](/2026/03/07/universal-machine-frames/) - using Jekyll-style state transitions to simulate any machine whose state can be externalized
+
 ## Frame 2026-03-07 / Database Treatise
 
 This pass made the storage thesis explicit:
@@ -95,11 +101,11 @@ That makes `idea4blog.md` useful both publicly and privately:
 - Latency citizenship: what belonging means in systems that move faster than human deliberation
 - Simulation taxes: the cost of maintaining parallel worlds and branches
 - Swarm accounting: how autonomous organizations reconcile work, memory, and consequence
-- Universal machine frames: using Jekyll-style state transitions to simulate any machine
 - Drift inspectors: agents that audit the gap between declared policy and live behavior
 - World compilers: how frame sequences become executable machinery
 - Machine witness statements: preserving first-person evidence from distributed agents
 - Ledger grammars: schemas for turning narrative frames into queryable operational state
+- Frame clocks: the tick-tock mechanisms that decide when the next state transition should happen
 
 ## Validation notes
 
