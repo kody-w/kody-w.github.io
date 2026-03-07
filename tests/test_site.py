@@ -241,25 +241,32 @@ class SiteContentTests(unittest.TestCase):
     def test_content_burst_skill_exists_and_has_expected_metadata(self):
         front_matter, body = parse_front_matter(SKILL_FILE)
         self.assertEqual(front_matter.get("name"), "content-burst-publishing")
-        self.assertIn("keep pumping out posts", front_matter.get("description", ""))
+        self.assertIn("frame by frame", front_matter.get("description", ""))
         self.assertIn("idea4blog.md", body)
         self.assertIn("tests/test_site.py", body)
         self.assertIn("python3 -m unittest -v tests.test_site", body)
         self.assertIn("Co-authored-by: Copilot", body)
         self.assertIn("/content-burst-publishing", body)
+        self.assertIn("tick-tock", body)
+        self.assertIn("virtual SQL application", body)
 
     def test_skill_supporting_files_exist_and_reference_the_loop(self):
         burst_loop = SKILL_LOOP_FILE.read_text(encoding="utf-8")
         prompt = SKILL_PROMPT_FILE.read_text(encoding="utf-8")
         self.assertIn("Read `idea4blog.md`.", burst_loop)
+        self.assertIn("tick-tock", burst_loop)
+        self.assertIn("virtual SQL application", burst_loop)
         self.assertIn("run `python3 -m unittest -v tests.test_site`", prompt)
         self.assertIn("/content-burst-publishing", prompt)
+        self.assertIn("frame by frame", prompt)
 
     def test_readme_documents_copilot_skill(self):
         readme = README_FILE.read_text(encoding="utf-8")
         self.assertIn(".github/skills/content-burst-publishing/SKILL.md", readme)
         self.assertIn("/skills reload", readme)
         self.assertIn("Use /content-burst-publishing", readme)
+        self.assertIn("frame by frame", readme)
+        self.assertIn("virtual SQL application", readme)
 
 
 if __name__ == "__main__":

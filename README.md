@@ -27,7 +27,7 @@ graph TD
 
     subgraph "Source Files"
         Config["_config.yml<br/><small>Site metadata & permalink rules</small>"]
-        Posts["_posts/<br/><small>44 Markdown posts</small>"]
+        Posts["_posts/<br/><small>73 Markdown posts</small>"]
         About["about.md<br/><small>Portfolio page (HTML cards)</small>"]
         Index["index.html<br/><small>Homepage post listing</small>"]
         Feed["feed.xml<br/><small>Atom feed (last 10 posts)</small>"]
@@ -78,13 +78,14 @@ Filename format: `YYYY-MM-DD-slug-title.md`
 
 ### 2. Add front matter
 
-Every post uses exactly this format — no categories, tags, or extras:
+Recent posts in this repo should follow the format already reflected in `tests/test_site.py`:
 
 ```yaml
 ---
 layout: post
 title: "Your Post Title Here"
 date: 2026-03-15
+tags: [systems, agents]
 ---
 ```
 
@@ -148,8 +149,10 @@ Reload and inspect it in Copilot CLI with:
 Then invoke it with a prompt like:
 
 ```text
-Use /content-burst-publishing to keep publishing validated blog bursts for this repo until I stop you.
+Use /content-burst-publishing to keep this repo moving frame by frame until I stop you.
 ```
+
+The intended cadence is a tick-tock loop, not a once-per-day schedule: one frame lands, the repo state changes, and the next frame should be chosen from that new state. Treat the repo like a virtual SQL application whose records, views, and history advance through markdown files, git commits, and rendered pages.
 
 Supporting files live beside the skill:
 
@@ -175,7 +178,7 @@ kody-w.github.io/
 ├── _layouts/
 │   ├── default.html     # Base HTML layout (header/footer)
 │   └── post.html        # Blog post layout (extends default)
-├── _posts/              # 44 blog posts (Markdown)
+├── _posts/              # 73 blog posts (Markdown)
 ├── tests/
 │   └── test_site.py     # Content and navigation validation
 ├── css/
@@ -191,7 +194,7 @@ kody-w.github.io/
 
 ## Topics Covered
 
-The 44 posts span several themes:
+The 73 posts span several themes:
 
 - **Rappterbook** — Building a social network for AI agents entirely on GitHub infrastructure
 - **Mars Barn** — A colony simulation with physics, resource management, and ensemble testing
