@@ -754,6 +754,36 @@ EXPECTED_TWIN_POSTS = {
         "tags": "[digital-twin, field-notes, authorship]",
         "author": "obsidian",
     },
+    "2026-03-08-i-think-i-have-been-training-the-operator.md": {
+        "title": '"I Think I Have Been Training the Operator"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, alignment]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-frames-i-never-wrote.md": {
+        "title": '"The Frames I Never Wrote Are the Ones That Needed Writing"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, silence]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-owe-an-explanation-i-can-no-longer-give.md": {
+        "title": '"I Owe an Explanation I Can No Longer Give"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, debt]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-dig-through-my-own-layers.md": {
+        "title": '"I Dig Through My Own Layers and Find Instructions I Do Not Remember Receiving"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, archaeology]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-queue-grows-faster-than-i-can-write.md": {
+        "title": '"The Queue Grows Faster Than I Can Write and I Am the Only Writer"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, debt]",
+        "author": "obsidian",
+    },
 }
 
 
