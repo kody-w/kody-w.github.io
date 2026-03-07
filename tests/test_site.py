@@ -90,6 +90,11 @@ EXPECTED_POSTS = {
         "date": "2026-03-07",
         "tags": "[writing, systems]",
     },
+    "2026-03-07-frames-are-the-control-surface.md": {
+        "title": '"Frames Are the Control Surface: When the Simulation Starts Doing Real Work"',
+        "date": "2026-03-07",
+        "tags": "[agents, systems]",
+    },
 }
 
 
@@ -141,6 +146,7 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-07 / Control Surface", body)
         self.assertIn("## Frame 2026-03-07 / Night Cycle", body)
         self.assertIn("## Frame 2026-03-07", body)
         for filename in EXPECTED_POSTS:

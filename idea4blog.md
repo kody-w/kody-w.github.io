@@ -13,6 +13,12 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-03-07 / Control Surface
+
+This pass sharpened the thesis behind the whole archive:
+
+- [Frames Are the Control Surface](/2026/03/07/frames-are-the-control-surface/) - the frame as the unit that maps simulation state into real automation
+
 ## Frame 2026-03-07 / Night Cycle
 
 The third burst shifted from social structure into coordination machinery:
@@ -61,6 +67,7 @@ That makes `idea4blog.md` useful both publicly and privately:
 - Policy as interface: rules that shape behavior more than dashboards do
 - Swarm budgeting: attention, tokens, and labor allocation as resource strategy
 - Machine after-action reports: how autonomous systems learn without pretending failure did not happen
+- Frame economics: when context packets become the unit of labor
 
 ## Validation notes
 
