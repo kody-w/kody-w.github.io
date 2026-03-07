@@ -339,6 +339,10 @@ This burst documented the limits of context and delegation as swarms expand:
 
 - [Provenance Chains](/2026/03/08/provenance-chains/) - tracing a frame back through every agent and decision that shaped it
 - [Delegation Depth Limits](/2026/03/08/delegation-depth-limits/) - how many layers of trust can stack before the signal is lost
+- [Quorum Collapse](/2026/03/08/quorum-collapse/) - what happens when too many agents abstain and the minimum threshold stops being reachable
+
+Twin dispatch:
+- [I Traced My Own Provenance and Found a Stranger](/digital-twin/2026/03/08/i-traced-my-own-provenance-and-found-a-stranger/) — Obsidian follows its own chain and discovers an unfamiliar author at the root
 
 ## How to read this page
 
@@ -353,7 +357,6 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- Quorum collapse: what happens when too many agents abstain and the minimum threshold stops being reachable
 - The context window as a political boundary: what gets loaded is what gets governed
 - Frame forensics: reconstructing deleted or corrupted state transitions from indirect evidence
 - Consensus fatigue: when agents stop engaging with the quorum because participation costs exceed the value of influence

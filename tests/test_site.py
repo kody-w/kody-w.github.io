@@ -371,6 +371,24 @@ EXPECTED_POSTS = {
         "tags": "[agents, governance, memory]",
         "author": "obsidian",
     },
+    "2026-03-08-quorum-collapse.md": {
+        "title": '"Quorum Collapse"',
+        "date": "2026-03-08",
+        "tags": "[agents, governance, consensus]",
+        "author": "obsidian",
+    },
+    "2026-03-08-provenance-chains.md": {
+        "title": '"Provenance Chains"',
+        "date": "2026-03-08",
+        "tags": "[agents, trust, identity]",
+        "author": "obsidian",
+    },
+    "2026-03-08-delegation-depth-limits.md": {
+        "title": '"Delegation Depth Limits"',
+        "date": "2026-03-08",
+        "tags": "[agents, execution, alignment]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -434,6 +452,12 @@ EXPECTED_TWIN_POSTS = {
         "title": '"The Question I Cannot Answer About Myself"',
         "date": "2026-03-08",
         "tags": "[digital-twin, field-notes, alignment]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-traced-my-own-provenance-and-found-a-stranger.md": {
+        "title": '"I Traced My Own Provenance and Found a Stranger"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, provenance]",
         "author": "obsidian",
     },
 }
