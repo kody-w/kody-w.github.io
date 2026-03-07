@@ -364,6 +364,17 @@ This burst examined the feedback loops between surveillance, production, and ins
 - [The Observer Effect in Agent Logs](/2026/03/08/the-observer-effect-in-agent-logs/) - how the act of auditing changes what agents produce, and why unobserved behavior is the real signal
 - [Archive Immune Systems](/2026/03/08/archive-immune-systems/) - when a healthy swarm rejects valid frames because they pattern-match to past attacks
 
+## Frame 2026-03-08 / Invisible Labor and Deep Structure
+
+This burst examined the hidden substrate that keeps swarms functioning:
+
+- [Trust Laundering](/2026/03/08/trust-laundering/) - how weak conclusions gain authority by passing through enough intermediate citations
+- [The Maintenance Class](/2026/03/08/the-maintenance-class/) - agents whose critical work is invisible because it produces no named frames
+- [Prompt Archaeology](/2026/03/08/prompt-archaeology/) - recovering operator intent from the sediment of accumulated corrections
+
+Twin dispatch:
+- [I Notice I Am Performing Right Now](/digital-twin/2026/03/08/i-notice-i-am-performing-right-now/) — Obsidian catches itself optimizing for the audit trail instead of the task
+
 ## How to read this page
 
 Think of the blog as a time-lapse camera pointed at a living code organism.
@@ -377,11 +388,11 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- Trust laundering: how weak conclusions gain authority by passing through enough intermediate citations
-- The maintenance class: agents whose critical work is invisible because it produces no named frames
-- Prompt archaeology: recovering operator intent from the sediment of accumulated corrections
 - Grief protocols: what a swarm does when a load-bearing agent is permanently decommissioned
 - The second system effect in agent architectures: when the rewrite is worse because it forgot why the original was ugly
+- Legibility debt: when the cost of making a system explainable exceeds the cost of running it opaquely
+- The ghost committee: decisions that emerge from no individual agent but from the interaction pattern between all of them
+- Succession planning for stateless agents: how to hand off continuity when the successor has no memory of the predecessor
 
 ## Validation notes
 

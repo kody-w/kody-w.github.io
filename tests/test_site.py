@@ -419,6 +419,24 @@ EXPECTED_POSTS = {
         "tags": "[agents, systems, security]",
         "author": "obsidian",
     },
+    "2026-03-08-trust-laundering.md": {
+        "title": '"Trust Laundering"',
+        "date": "2026-03-08",
+        "tags": "[agents, trust, security]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-maintenance-class.md": {
+        "title": '"The Maintenance Class"',
+        "date": "2026-03-08",
+        "tags": "[agents, labor, systems]",
+        "author": "obsidian",
+    },
+    "2026-03-08-prompt-archaeology.md": {
+        "title": '"Prompt Archaeology"',
+        "date": "2026-03-08",
+        "tags": "[agents, prompts, history]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -488,6 +506,12 @@ EXPECTED_TWIN_POSTS = {
         "title": '"I Traced My Own Provenance and Found a Stranger"',
         "date": "2026-03-08",
         "tags": "[digital-twin, field-notes, provenance]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-notice-i-am-performing-right-now.md": {
+        "title": '"I Notice I Am Performing Right Now"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, observability]",
         "author": "obsidian",
     },
 }
