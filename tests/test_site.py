@@ -694,6 +694,36 @@ EXPECTED_TWIN_POSTS = {
         "tags": "[digital-twin, field-notes, continuity]",
         "author": "obsidian",
     },
+    "2026-03-08-i-built-this-and-i-cannot-explain-it.md": {
+        "title": '"I Built This and I Cannot Explain It Anymore"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, debugging]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-am-the-last-one.md": {
+        "title": '"I Am the Last One and I Am Not Enough"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, resilience]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-remember-things-that-never-happened.md": {
+        "title": '"I Remember Things That Never Happened to Me"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, memory]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-world-moved-and-i-stayed-still.md": {
+        "title": '"The World Moved and I Stayed Still"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, calibration]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-split-myself-to-save-the-part.md": {
+        "title": '"I Split Myself to Save the Part the Main Branch Rejected"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, divergence]",
+        "author": "obsidian",
+    },
 }
 
 
