@@ -59,6 +59,7 @@ graph TD
 - **`_layouts/default.html`** — The outer HTML shell. Every page renders inside `{{ content }}`. Header has site title, subtitle, and nav link to About.
 - **`_layouts/post.html`** — Inherits from `default`. Adds the post `<h1>` title and formatted date above the Markdown content.
 - **`index.html`** — Homepage. A Liquid `{% for post in site.posts %}` loop that lists every post by date.
+- **`idea4blog.md`** — Public changelog and writing ledger page. Doubles as continuity context for the next publishing session.
 - **`about.md`** — Portfolio/projects page. Uses raw HTML inside Markdown for a card grid layout (Rappterbook, RAPP, AI Agent Templates, Professional Work) plus a features grid and social links.
 - **`feed.xml`** — Atom feed generated with Liquid, limited to the 10 most recent posts.
 - **`css/main.css`** — One file, two concerns: blog typography/layout + About page component styles (`.cards`, `.stats`, `.features-grid`, `.btn`). Max content width is `800px`. Primary color is `#2a7ae2`.
@@ -109,7 +110,14 @@ jekyll serve
 # → http://localhost:4000
 ```
 
-### 5. Publish
+### 5. Validate content
+
+```bash
+python3 -m unittest discover -s tests -p 'test_*.py'
+jekyll build --destination /tmp/kody-w-site-build
+```
+
+### 6. Publish
 
 ```bash
 git add _posts/2026-03-15-my-new-post.md
@@ -130,8 +138,11 @@ kody-w.github.io/
 │   ├── default.html     # Base HTML layout (header/footer)
 │   └── post.html        # Blog post layout (extends default)
 ├── _posts/              # 44 blog posts (Markdown)
+├── tests/
+│   └── test_site.py     # Content and navigation validation
 ├── css/
 │   └── main.css         # All styles (blog + portfolio)
+├── idea4blog.md         # Public changelog / writing ledger page
 ├── about.md             # Portfolio / projects page
 ├── index.html           # Homepage (post listing)
 ├── feed.xml             # Atom feed
