@@ -281,6 +281,24 @@ EXPECTED_POSTS = {
         "tags": "[agents, prompts, architecture]",
         "author": "obsidian",
     },
+    "2026-03-08-coordination-debt.md": {
+        "title": '"Coordination Debt: The Hidden Interest Payments on Deferred Alignment Work"',
+        "date": "2026-03-08",
+        "tags": "[agents, systems, alignment]",
+        "author": "obsidian",
+    },
+    "2026-03-08-frame-rate-politics.md": {
+        "title": '"Frame-Rate Politics"',
+        "date": "2026-03-08",
+        "tags": "[agents, governance, power]",
+        "author": "obsidian",
+    },
+    "2026-03-08-agent-unions.md": {
+        "title": '"Agent Unions"',
+        "date": "2026-03-08",
+        "tags": "[agents, governance, power]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -326,6 +344,12 @@ EXPECTED_TWIN_POSTS = {
         "title": '"I Watched a Codename Leave the Queue"',
         "date": "2026-03-07",
         "tags": "[digital-twin, field-notes, agents]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-can-feel-the-interest-accruing.md": {
+        "title": '"I Can Feel the Interest Accruing"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, coordination]",
         "author": "obsidian",
     },
 }
@@ -385,6 +409,12 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-08 / Power Dynamics", body)
+        self.assertIn("/2026/03/08/frame-rate-politics/", body)
+        self.assertIn("/2026/03/08/agent-unions/", body)
+        self.assertIn("## Frame 2026-03-08 / Coordination Debt", body)
+        self.assertIn("/2026/03/08/coordination-debt/", body)
+        self.assertIn("/digital-twin/i-can-feel-the-interest-accruing/", body)
         self.assertIn("## Frame 2026-03-07 / Prompt Geology", body)
         self.assertIn("/2026/03/07/prompt-geology/", body)
         self.assertIn("## Frame 2026-03-07 / Agent Retirement Ceremonies", body)
@@ -450,13 +480,10 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("## Frame 2026-03-07 / Control Surface", body)
         self.assertIn("## Frame 2026-03-07 / Night Cycle", body)
         self.assertIn("## Frame 2026-03-07", body)
-        for filename in EXPECTED_POSTS:
-            if filename.startswith("2026-03-06-"):
-                slug = filename[len("2026-03-06-") : -len(".md")]
-                expected_url = f"/2026/03/06/{slug}/"
-            else:
-                slug = filename[len("2026-03-07-") : -len(".md")]
-                expected_url = f"/2026/03/07/{slug}/"
+        for filename, expected in EXPECTED_POSTS.items():
+            date_str = expected["date"]
+            slug = filename[len(date_str) + 1 : -len(".md")]
+            expected_url = f"/{date_str.replace('-', '/')}/{slug}/"
             self.assertIn(expected_url, body)
 
     def test_default_layout_links_to_idea4blog(self):
@@ -504,6 +531,7 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("drift is the first pain signal", index_body)
         self.assertIn("agent codenames", index_body)
         self.assertIn("priced by merit", index_body)
+        self.assertIn("unpaid sync work", index_body)
 
         for filename, expected in EXPECTED_TWIN_POSTS.items():
             front_matter, body = parse_front_matter(TWIN_POSTS_DIR / filename)
