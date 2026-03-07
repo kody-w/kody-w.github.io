@@ -852,9 +852,16 @@ a.stat:hover {
 
 .d365-controls {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: 12px;
   margin-bottom: 14px;
+}
+
+.d365-control-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .d365-button {
@@ -867,13 +874,56 @@ a.stat:hover {
   font-size: 14px;
 }
 
+.d365-button-primary {
+  background: #2a7ae2;
+  border-color: #2a7ae2;
+  color: #fff;
+}
+
 .d365-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 .d365-range {
-  flex: 1;
+  width: 100%;
+}
+
+.d365-runtime-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.d365-runtime-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #d8deea;
+  background: #f5f8fc;
+  color: #4f5b6a;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.d365-runtime-pill.is-running {
+  background: #ecf8ef;
+  border-color: #b5dcbf;
+  color: #1f6b32;
+}
+
+.d365-runtime-pill.is-paused {
+  background: #f6f0ff;
+  border-color: #ddd1ff;
+  color: #5d46b8;
+}
+
+.d365-clock-detail {
+  font-size: 13px;
+  color: #6a7280;
 }
 
 .d365-meta {
@@ -951,33 +1001,38 @@ a.stat:hover {
 }
 
 .d365-transition-list,
-.d365-automation-list {
+.d365-automation-list,
+.d365-lineage-list {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
 .d365-transition-list li,
-.d365-automation-list li {
+.d365-automation-list li,
+.d365-lineage-list li {
   padding: 14px 0;
   border-bottom: 1px solid #eef1f6;
 }
 
 .d365-transition-list li:last-child,
-.d365-automation-list li:last-child {
+.d365-automation-list li:last-child,
+.d365-lineage-list li:last-child {
   border-bottom: 0;
   padding-bottom: 0;
 }
 
 .d365-transition-list strong,
-.d365-automation-list strong {
+.d365-automation-list strong,
+.d365-lineage-list strong {
   display: block;
   margin-bottom: 4px;
 }
 
 .d365-transition-list span,
 .d365-automation-list span,
-.d365-automation-list em {
+.d365-automation-list em,
+.d365-lineage-list span {
   display: block;
   font-size: 13px;
   color: #6a7280;
@@ -985,9 +1040,49 @@ a.stat:hover {
 }
 
 .d365-transition-list p,
-.d365-automation-list p {
+.d365-automation-list p,
+.d365-lineage-list p {
   margin: 6px 0 0;
   color: #555;
+}
+
+.d365-lineage-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.d365-lineage-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #d8deea;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: #f5f8fc;
+  color: #556171;
+}
+
+.d365-lineage-chip.is-embedded {
+  background: #eef5ff;
+  border-color: #d7e5ff;
+  color: #2a7ae2;
+}
+
+.d365-lineage-chip.is-reference {
+  background: #f6f0ff;
+  border-color: #ddd1ff;
+  color: #6b5bd2;
+}
+
+.d365-lineage-chip.is-derived {
+  background: #ecf8ef;
+  border-color: #b5dcbf;
+  color: #1f6b32;
 }
 
 .d365-table-wrap {
@@ -1034,7 +1129,8 @@ a.stat:hover {
 [data-theme="dark"] .d365-summary,
 [data-theme="dark"] .d365-note,
 [data-theme="dark"] .d365-transition-list p,
-[data-theme="dark"] .d365-automation-list p {
+[data-theme="dark"] .d365-automation-list p,
+[data-theme="dark"] .d365-lineage-list p {
   color: var(--text-secondary);
 }
 
@@ -1042,6 +1138,7 @@ a.stat:hover {
 [data-theme="dark"] .d365-transition-list span,
 [data-theme="dark"] .d365-automation-list span,
 [data-theme="dark"] .d365-automation-list em,
+[data-theme="dark"] .d365-lineage-list span,
 [data-theme="dark"] .d365-empty,
 [data-theme="dark"] .d365-table th {
   color: var(--text-secondary);
@@ -1051,6 +1148,58 @@ a.stat:hover {
   background: var(--bg-secondary);
   border-color: var(--border);
   color: var(--text);
+}
+
+[data-theme="dark"] .d365-button-primary {
+  background: #2a7ae2;
+  border-color: #2a7ae2;
+  color: #fff;
+}
+
+[data-theme="dark"] .d365-runtime-pill {
+  background: var(--bg-secondary);
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .d365-runtime-pill.is-running {
+  background: rgba(42, 122, 226, 0.16);
+  border-color: rgba(42, 122, 226, 0.34);
+  color: #a9ccff;
+}
+
+[data-theme="dark"] .d365-runtime-pill.is-paused {
+  background: rgba(123, 93, 255, 0.16);
+  border-color: rgba(123, 93, 255, 0.34);
+  color: #c7b8ff;
+}
+
+[data-theme="dark"] .d365-lineage-chip {
+  background: var(--bg-secondary);
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .d365-lineage-chip.is-embedded {
+  background: rgba(42, 122, 226, 0.16);
+  border-color: rgba(42, 122, 226, 0.34);
+  color: #a9ccff;
+}
+
+[data-theme="dark"] .d365-lineage-chip.is-reference {
+  background: rgba(123, 93, 255, 0.16);
+  border-color: rgba(123, 93, 255, 0.34);
+  color: #c7b8ff;
+}
+
+[data-theme="dark"] .d365-lineage-chip.is-derived {
+  background: rgba(74, 183, 115, 0.16);
+  border-color: rgba(74, 183, 115, 0.34);
+  color: #9dd8ae;
+}
+
+[data-theme="dark"] .d365-clock-detail {
+  color: var(--text-secondary);
 }
 
 [data-theme="dark"] .d365-state-item {
@@ -1067,13 +1216,15 @@ a.stat:hover {
 
 [data-theme="dark"] .d365-transition-list li,
 [data-theme="dark"] .d365-automation-list li,
+[data-theme="dark"] .d365-lineage-list li,
 [data-theme="dark"] .d365-table th,
 [data-theme="dark"] .d365-table td {
   border-bottom-color: var(--border);
 }
 
 @media (max-width: 700px) {
-  .d365-controls {
+  .d365-control-cluster,
+  .d365-runtime-row {
     flex-direction: column;
     align-items: stretch;
   }

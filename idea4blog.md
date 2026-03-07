@@ -13,6 +13,13 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-03-07 / Runtime Projection
+
+This frame made the application claim explicit:
+
+- [Runtime Projection: Pulling Live Applications Out of Static State](/2026/03/07/runtime-projection/) - how canonical static state can be rehydrated into live software through frame time
+- [Simulated Dynamics 365](/simulated-dynamics365/) - now able to play its serialized CRM state forward on a visible frame clock
+
 ## Frame 2026-03-07 / Twin Channel
 
 This frame split the narration surface in two:

@@ -1,5 +1,11 @@
 window.d365Simulation = {
   title: 'Frame-by-Frame Dynamics 365 Proof',
+  runtime: {
+    label: 'Runtime projection',
+    frameIntervalMs: 1800,
+    autoPlay: false,
+    endBehavior: 'stop'
+  },
   frames: [
     {
       id: 'lead-captured',
@@ -18,6 +24,11 @@ window.d365Simulation = {
         { entity: 'lead:LE-1001', from: 'none', to: 'new', note: 'Website form created the first CRM record.' },
         { entity: 'queue:sales-qualification', from: 'idle', to: 'open', note: 'SDR tasking woke up automatically.' },
         { entity: 'automation:dedupe-check', from: 'none', to: 'complete', note: 'The machine confirmed this is net-new demand.' }
+      ],
+      lineage: [
+        { mode: 'embedded', name: 'Lead intake snapshot', source: 'frame://lead-captured/entities/leads', note: 'The inbound lead rows are small enough to materialize directly inside the frame.' },
+        { mode: 'reference', name: 'Firmographic enrichment', source: 'ref://lakehouse/firmographics/northwind-health', note: 'Large enrichment tables stay external and are resolved only when the projection needs them.' },
+        { mode: 'derived', name: 'Routing score', source: 'derive(score <- intent signals + company profile)', note: 'The score is computed from referenced evidence rather than copied as raw source data.' }
       ],
       entities: {
         accounts: [],
@@ -54,6 +65,11 @@ window.d365Simulation = {
         { entity: 'account:ACC-201', from: 'none', to: 'prospect', note: 'The machine now has a canonical customer record.' },
         { entity: 'opportunity:OPP-501', from: 'none', to: 'discover', note: 'Pipeline state became visible and forecastable.' },
         { entity: 'lead:LE-1001', from: 'new', to: 'qualified', note: 'Lead state was preserved instead of discarded.' }
+      ],
+      lineage: [
+        { mode: 'embedded', name: 'Canonical CRM promotion', source: 'frame://lead-qualified/entities', note: 'The promoted account and opportunity are stored directly because they define the next machine state.' },
+        { mode: 'reference', name: 'Transcript archive', source: 'ref://conversation-store/discovery/northwind-health', note: 'The full discovery transcript is too large to copy into every frame, so the frame carries a pointer instead.' },
+        { mode: 'derived', name: 'Budget confidence', source: 'derive(confidence <- transcript + authority signals)', note: 'Commercial confidence is recomputed from referenced evidence and the previous frame.' }
       ],
       entities: {
         accounts: [
@@ -95,6 +111,11 @@ window.d365Simulation = {
         { entity: 'queue:implementation-plan', from: 'idle', to: 'open', note: 'Service and success teams were pulled into the same frame.' },
         { entity: 'automation:quote-builder', from: 'idle', to: 'active', note: 'The machine started preparing proposal outputs.' }
       ],
+      lineage: [
+        { mode: 'embedded', name: 'Solutioning workset', source: 'frame://solution-design/entities/opportunities', note: 'The active commercial records stay materialized so the control surface remains fast to inspect.' },
+        { mode: 'reference', name: 'Migration inventory', source: 'ref://blob/northwind-health/migration-inventory-v4', note: 'Large asset inventories remain referenced until a service operator drills into them.' },
+        { mode: 'derived', name: 'Implementation risk rollup', source: 'derive(risk <- inventory + workshop findings + case history)', note: 'Implementation risk is summarized from linked data rather than copied wholesale.' }
+      ],
       entities: {
         accounts: [
           { id: 'ACC-201', name: 'Northwind Health', lifecycle: 'Prospect', owner: 'Maya Chen', health: 'Warm' }
@@ -135,6 +156,11 @@ window.d365Simulation = {
         { entity: 'finance:approval-state', from: 'review', to: 'approved', note: 'The quote can now leave internal review.' },
         { entity: 'automation:contract-router', from: 'idle', to: 'active', note: 'Legal and procurement work is now machine-triggered.' }
       ],
+      lineage: [
+        { mode: 'embedded', name: 'Proposal shell', source: 'frame://quote-approved/entities/opportunities', note: 'The quote state itself is small and belongs directly in the frame.' },
+        { mode: 'reference', name: 'Pricing workbook', source: 'ref://finance/pricing/unified-service-cloud-q4', note: 'Detailed pricing schedules stay in the finance dataset and are referenced from the frame.' },
+        { mode: 'derived', name: 'Margin outlook', source: 'derive(margin <- pricing workbook + service plan)', note: 'Margin is computed from referenced finance data plus the live service scope.' }
+      ],
       entities: {
         accounts: [
           { id: 'ACC-201', name: 'Northwind Health', lifecycle: 'Prospect', owner: 'Maya Chen', health: 'Warm' }
@@ -174,6 +200,11 @@ window.d365Simulation = {
         { entity: 'opportunity:OPP-501', from: 'proposal', to: 'closed-won', note: 'Revenue is now recognized as committed business.' },
         { entity: 'case:CASE-901', from: 'none', to: 'open-high', note: 'Implementation trouble became part of the same visible state.' },
         { entity: 'account:ACC-201', from: 'prospect', to: 'customer', note: 'The lifecycle advanced even as delivery risk appeared.' }
+      ],
+      lineage: [
+        { mode: 'embedded', name: 'Customer state snapshot', source: 'frame://deal-won-risk-opened/entities', note: 'The new customer and case rows are materialized directly because they are now canonical state.' },
+        { mode: 'reference', name: 'Migration failure telemetry', source: 'ref://telemetry/migrations/northwind/batch-17', note: 'Raw failure logs are far too large for the frame, so the page carries a pointer to the telemetry set.' },
+        { mode: 'derived', name: 'Account health score', source: 'derive(health <- telemetry + sponsor activity + onboarding tasks)', note: 'Account health is a rollup computed from external telemetry and current frame state.' }
       ],
       entities: {
         accounts: [
@@ -216,6 +247,11 @@ window.d365Simulation = {
         { entity: 'case:CASE-901', from: 'open-high', to: 'resolved', note: 'Service state recovered without losing the incident history.' },
         { entity: 'account:ACC-201', from: 'at-risk', to: 'healthy', note: 'Customer health improved after the intervention landed.' },
         { entity: 'opportunity:OPP-611', from: 'none', to: 'renewal', note: 'The machine opened the next commercial motion from the same account state.' }
+      ],
+      lineage: [
+        { mode: 'embedded', name: 'Renewal state snapshot', source: 'frame://recovery-and-renewal/entities', note: 'The active renewal opportunity is part of the new canonical frame and stays materialized.' },
+        { mode: 'reference', name: 'Adoption telemetry window', source: 'ref://telemetry/adoption/northwind/14-day-window', note: 'The full product usage stream stays external and is resolved only when operators need a deeper drill-down.' },
+        { mode: 'derived', name: 'Renewal readiness', source: 'derive(readiness <- adoption telemetry + billing health + resolved case history)', note: 'The renewal motion is opened from a derived readiness signal, not from a copied raw dataset.' }
       ],
       entities: {
         accounts: [
