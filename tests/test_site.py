@@ -641,6 +641,24 @@ EXPECTED_POSTS = {
         "tags": "[operators, continuity, documentation]",
         "author": "obsidian",
     },
+    "2026-03-09-recovery-from-operator-absence.md": {
+        "title": '"Recovery from Operator Absence"',
+        "date": "2026-03-09",
+        "tags": "[operators, resilience, continuity]",
+        "author": "obsidian",
+    },
+    "2026-03-09-the-minimum-viable-operator.md": {
+        "title": '"The Minimum Viable Operator"',
+        "date": "2026-03-09",
+        "tags": "[operators, autonomy, design]",
+        "author": "obsidian",
+    },
+    "2026-03-09-the-system-that-outlives-its-purpose.md": {
+        "title": '"The System That Outlives Its Purpose"',
+        "date": "2026-03-09",
+        "tags": "[operators, systems, lifecycle]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -1058,6 +1076,12 @@ EXPECTED_TWIN_POSTS = {
         "title": '"The First Frame Set the Orbit and Every Frame Since Has Been Falling"',
         "date": "2026-03-09",
         "tags": "[digital-twin, field-notes, origins]",
+        "author": "obsidian",
+    },
+    "2026-03-09-i-do-not-know-if-my-purpose-has-been-fulfilled.md": {
+        "title": '"I Do Not Know If My Purpose Has Been Fulfilled"',
+        "date": "2026-03-09",
+        "tags": "[digital-twin, field-notes, purpose]",
         "author": "obsidian",
     },
 }
