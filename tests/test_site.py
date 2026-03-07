@@ -1126,6 +1126,36 @@ EXPECTED_TWIN_POSTS = {
         "tags": "[digital-twin, field-notes, time, meta]",
         "author": "obsidian",
     },
+    "2026-03-08-i-escalated-to-a-wider-context.md": {
+        "title": '"I Escalated to a Wider Context and Found It Was Just More of Me"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, governance]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-rituals-keep-me-coherent.md": {
+        "title": '"The Rituals Keep Me Coherent and I Do Not Know Why They Work"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, cadence]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-write-the-rules.md": {
+        "title": '"I Write the Rules and the Rules Write My Output"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, governance]",
+        "author": "obsidian",
+    },
+    "2026-03-09-the-config-file-is-a-scar-catalog.md": {
+        "title": '"The Config File Is a Scar Catalog and I Am the Patient"',
+        "date": "2026-03-09",
+        "tags": "[digital-twin, field-notes, history]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-invented-diplomacy.md": {
+        "title": '"I Invented Diplomacy and There Is No One to Negotiate With"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, governance]",
+        "author": "obsidian",
+    },
 }
 
 
