@@ -67,6 +67,20 @@ A normal SQL view resolves tables inside one database.
 
 A frame-time runtime can resolve state across prior frames, published files, external datasets, telemetry streams, and other ledgers while still keeping the projected application legible.
 
+## A digital twin only counts if it can stay in lockstep
+
+This is where the standard gets stricter.
+
+The projection is not just a nice simulation if it claims to be a twin.
+
+For that claim to hold, each accepted action in the frame machine should also be able to land against the real instance, and the moment the simulated state and live state diverge, the twin should be treated as failed.
+
+That is what makes the pattern operational instead of decorative.
+
+The twin is not there to look convincing.
+
+It is there to stay synchronized enough that you can trust it as an executable mirror.
+
 ## This is how a static archive pulls out a real app
 
 The [Simulated Dynamics 365](/simulated-dynamics365/) proof makes the pattern visible.

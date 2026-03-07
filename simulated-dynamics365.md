@@ -17,6 +17,7 @@ This is the proof: a frame-by-frame general state machine can model something ge
     <li>The controls let you step or play the machine in frame time.</li>
     <li>The runtime profile is serialized with the business state, so the real-time projection stays inspectable.</li>
     <li>A frame can embed small state directly or carry references and derived rollups when the source data is too large.</li>
+    <li>A true digital twin would also send accepted transitions against the real system and treat drift as failure.</li>
     <li>The tables show what changed across sales, service, finance, and automation.</li>
     <li>The transition log makes the state machine legible enough to audit.</li>
   </ul>
