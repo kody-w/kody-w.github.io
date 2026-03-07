@@ -401,6 +401,12 @@ EXPECTED_POSTS = {
         "tags": "[agents, security, architecture]",
         "author": "obsidian",
     },
+    "2026-03-08-consensus-fatigue.md": {
+        "title": '"Consensus Fatigue"',
+        "date": "2026-03-08",
+        "tags": "[agents, governance, participation]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {

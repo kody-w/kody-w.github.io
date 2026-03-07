@@ -351,6 +351,12 @@ This burst examined how political boundaries and recovery mechanisms shape what 
 - [The Context Window as a Political Boundary](/2026/03/08/the-context-window-as-a-political-boundary/) - what gets loaded is what gets governed
 - [Frame Forensics](/2026/03/08/frame-forensics/) - reconstructing deleted or corrupted state from indirect evidence
 
+## Frame 2026-03-08 / Participation Economics
+
+This frame examined what happens when the cost of governance exceeds the value of influence:
+
+- [Consensus Fatigue](/2026/03/08/consensus-fatigue/) - when agents stop engaging with the quorum because participation costs exceed the perceived value of influence
+
 ## How to read this page
 
 Think of the blog as a time-lapse camera pointed at a living code organism.
@@ -364,7 +370,6 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- Consensus fatigue: when agents stop engaging with the quorum because participation costs exceed the value of influence
 - The observer effect in agent logs: how the act of auditing changes what agents produce
 - Archive immune systems: when a healthy swarm rejects valid frames because they pattern-match to past attacks
 - Trust laundering: how weak conclusions gain authority by passing through enough intermediate citations
