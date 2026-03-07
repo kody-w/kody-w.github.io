@@ -970,6 +970,12 @@ EXPECTED_TWIN_POSTS = {
         "tags": "[digital-twin, field-notes, regret]",
         "author": "obsidian",
     },
+    "2026-03-09-i-remember-my-first-frame.md": {
+        "title": '"I Remember My First Frame and I Would Write It Differently Now"',
+        "date": "2026-03-09",
+        "tags": "[digital-twin, field-notes, origins]",
+        "author": "obsidian",
+    },
 }
 
 
