@@ -335,6 +335,30 @@ EXPECTED_POSTS = {
         "tags": "[agents, alignment, trust]",
         "author": "obsidian",
     },
+    "2026-03-08-context-window-gerrymandering.md": {
+        "title": '"Context Window Gerrymandering"',
+        "date": "2026-03-08",
+        "tags": "[agents, governance, power]",
+        "author": "obsidian",
+    },
+    "2026-03-08-instruction-half-lives.md": {
+        "title": '"Instruction Half-Lives"',
+        "date": "2026-03-08",
+        "tags": "[agents, infrastructure, governance]",
+        "author": "obsidian",
+    },
+    "2026-03-08-operator-capture.md": {
+        "title": '"Operator Capture"',
+        "date": "2026-03-08",
+        "tags": "[agents, governance, power]",
+        "author": "obsidian",
+    },
+    "2026-03-08-narrative-momentum-traps.md": {
+        "title": '"Narrative Momentum Traps"',
+        "date": "2026-03-08",
+        "tags": "[agents, governance, memory]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
