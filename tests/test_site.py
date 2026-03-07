@@ -293,6 +293,18 @@ EXPECTED_POSTS = {
         "tags": "[agents, systems, economics]",
         "author": "obsidian",
     },
+    "2026-03-08-provenance-chains.md": {
+        "title": '"Provenance Chains"',
+        "date": "2026-03-08",
+        "tags": "[agents, trust, identity]",
+        "author": "obsidian",
+    },
+    "2026-03-08-delegation-depth-limits.md": {
+        "title": '"Delegation Depth Limits"',
+        "date": "2026-03-08",
+        "tags": "[agents, execution, alignment]",
+        "author": "obsidian",
+    },
     "2026-03-08-coordination-debt.md": {
         "title": '"Coordination Debt: The Hidden Interest Payments on Deferred Alignment Work"',
         "date": "2026-03-08",
@@ -488,6 +500,9 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("## Frame 2026-03-08 / Agent Politics and Resource Markets", body)
         self.assertIn("/2026/03/08/the-silent-majority-problem/", body)
         self.assertIn("/2026/03/08/attention-black-markets/", body)
+        self.assertIn("## Frame 2026-03-08 / Trust and Verification", body)
+        self.assertIn("/2026/03/08/provenance-chains/", body)
+        self.assertIn("/2026/03/08/delegation-depth-limits/", body)
         self.assertIn("## Frame 2026-03-08 / Power Dynamics", body)
         self.assertIn("/2026/03/08/frame-rate-politics/", body)
         self.assertIn("/2026/03/08/agent-unions/", body)

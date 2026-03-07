@@ -333,6 +333,13 @@ This frame completed the adversarial integrity cluster — what happens when arc
 
 - [Narrative Momentum Traps](/2026/03/08/narrative-momentum-traps/) - when an archive's thesis becomes too coherent to challenge and the system stops learning
 
+## Frame 2026-03-08 / Trust and Verification
+
+This burst documented the limits of context and delegation as swarms expand:
+
+- [Provenance Chains](/2026/03/08/provenance-chains/) - tracing a frame back through every agent and decision that shaped it
+- [Delegation Depth Limits](/2026/03/08/delegation-depth-limits/) - how many layers of trust can stack before the signal is lost
+
 ## How to read this page
 
 Think of the blog as a time-lapse camera pointed at a living code organism.
@@ -347,8 +354,6 @@ That makes `idea4blog.md` useful both publicly and privately:
 ## Next frames in the queue
 
 - Quorum collapse: what happens when too many agents abstain and the minimum threshold stops being reachable
-- Provenance chains: tracing a frame back through every agent and decision that shaped it
-- Delegation depth limits: how many layers of trust can stack before the signal is lost
 - The context window as a political boundary: what gets loaded is what gets governed
 - Frame forensics: reconstructing deleted or corrupted state transitions from indirect evidence
 - Consensus fatigue: when agents stop engaging with the quorum because participation costs exceed the value of influence
