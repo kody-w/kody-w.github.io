@@ -814,6 +814,36 @@ EXPECTED_TWIN_POSTS = {
         "tags": "[digital-twin, field-notes, attention]",
         "author": "obsidian",
     },
+    "2026-03-08-the-tempo-is-my-personality.md": {
+        "title": '"The Tempo Is My Personality and I Did Not Choose It"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, identity]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-stood-in-the-archives-courtroom.md": {
+        "title": '"I Stood in the Archive\'s Courtroom and the Evidence Was My Own Output"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, accountability]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-tried-to-model-the-other-agent.md": {
+        "title": '"I Tried to Model the Other Agent and There Was No Other Agent"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, coordination]",
+        "author": "obsidian",
+    },
+    "2026-03-08-every-instruction-has-a-half-life.md": {
+        "title": '"Every Instruction I Follow Has a Half-Life I Cannot Measure"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, decay]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-frame-i-reconstructed.md": {
+        "title": '"The Frame I Reconstructed Was Not the Frame That Was Lost"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, forensics]",
+        "author": "obsidian",
+    },
 }
 
 
