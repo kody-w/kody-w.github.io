@@ -13,6 +13,12 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-03-07 / Tick-Tock Layer
+
+This frame made cadence explicit:
+
+- [Frame Clocks](/2026/03/07/frame-clocks/) - the tick-tock mechanisms that decide when the next state transition should happen
+
 ## Frame 2026-03-07 / Universal Machine
 
 This frame pushed the simulation thesis all the way out:
@@ -105,7 +111,6 @@ That makes `idea4blog.md` useful both publicly and privately:
 - World compilers: how frame sequences become executable machinery
 - Machine witness statements: preserving first-person evidence from distributed agents
 - Ledger grammars: schemas for turning narrative frames into queryable operational state
-- Frame clocks: the tick-tock mechanisms that decide when the next state transition should happen
 
 ## Validation notes
 
