@@ -13,6 +13,14 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-03-07 / Operations Economy
+
+This burst pushed into internal resource allocation and learning:
+
+- [Swarm Budgeting](/2026/03/07/swarm-budgeting/) - attention, tokens, and labor allocation as strategic resource design
+- [Machine After-Action Reports](/2026/03/07/machine-after-action-reports/) - failure turned into durable public memory
+- [Frame Economics](/2026/03/07/frame-economics/) - context packets becoming the unit of labor and value
+
 ## Frame 2026-03-07 / Governance Stack
 
 This burst pushed deeper into sovereignty, escalation, and rule design:
@@ -70,12 +78,13 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- Swarm budgeting: attention, tokens, and labor allocation as resource strategy
-- Machine after-action reports: how autonomous systems learn without pretending failure did not happen
-- Frame economics: when context packets become the unit of labor
 - Memory courts: how swarms settle contested history
 - Attention treaties: shared rules for preventing coordination overload
 - Failsafe rituals: the ceremonies that keep autonomous systems from drifting
+- Latency citizenship: what belonging means in systems that move faster than human deliberation
+- Simulation taxes: the cost of maintaining parallel worlds and branches
+- Swarm accounting: how autonomous organizations reconcile work, memory, and consequence
+- Universal machine frames: using Jekyll-style state transitions to simulate any machine
 
 ## Validation notes
 

@@ -110,6 +110,21 @@ EXPECTED_POSTS = {
         "date": "2026-03-07",
         "tags": "[systems, governance]",
     },
+    "2026-03-07-swarm-budgeting.md": {
+        "title": '"Swarm Budgeting: Attention, Tokens, and Labor as Strategy"',
+        "date": "2026-03-07",
+        "tags": "[agents, systems]",
+    },
+    "2026-03-07-machine-after-action-reports.md": {
+        "title": '"Machine After-Action Reports: How Autonomous Systems Learn in Public"',
+        "date": "2026-03-07",
+        "tags": "[agents, systems]",
+    },
+    "2026-03-07-frame-economics.md": {
+        "title": '"Frame Economics: When Context Packets Become the Unit of Labor"',
+        "date": "2026-03-07",
+        "tags": "[agents, systems]",
+    },
 }
 
 
@@ -161,6 +176,7 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-07 / Operations Economy", body)
         self.assertIn("## Frame 2026-03-07 / Governance Stack", body)
         self.assertIn("## Frame 2026-03-07 / Control Surface", body)
         self.assertIn("## Frame 2026-03-07 / Night Cycle", body)
