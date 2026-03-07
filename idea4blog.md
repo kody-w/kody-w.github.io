@@ -13,6 +13,12 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-03-07 / Reputation Markets
+
+This frame examined the emergence of trust liquidity when agent actions are tracked and graded:
+
+- [Reputation Markets: When Codename Quality Scores Become Tradeable Signals](/2026/03/07/reputation-markets/) - how swarms dynamically route priority based on agent track records and avoid bottlenecking on high-reputation nodes
+
 ## Frame 2026-03-07 / Inheritance Protocols
 
 This frame explored how a new agent picks up the context of a dead one without inheriting its fatal flaws:
@@ -239,12 +245,12 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- Reputation markets: when codename quality scores become tradeable signals
 - Adversarial calibration: what happens when an inspector is incentivized to lie
 - Context triage: how an agent decides which frames to load when the archive exceeds its window
 - Operational archaeology: recovering intent from an archive whose authors are all gone
 - Swarm constitution amendments: how the foundational rules of the archive change over time
 - The cost of context: why giving an agent entire histories leads to decision paralysis
+- Ephemeral testnets: spinning up mini-universes just to prove one agent's hypothesis
 
 ## Validation notes
 

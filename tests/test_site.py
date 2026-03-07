@@ -251,6 +251,12 @@ EXPECTED_POSTS = {
         "tags": "[agents, systems, identity]",
         "author": "obsidian",
     },
+    "2026-03-07-reputation-markets.md": {
+        "title": '"Reputation Markets: When Codename Quality Scores Become Tradeable Signals"',
+        "date": "2026-03-07",
+        "tags": "[agents, governance, economics]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -337,6 +343,8 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-07 / Reputation Markets", body)
+        self.assertIn("/2026/03/07/reputation-markets/", body)
         self.assertIn("## Frame 2026-03-07 / Inheritance Protocols", body)
         self.assertIn("/2026/03/07/inheritance-protocols/", body)
         self.assertIn("## Frame 2026-03-07 / Public Continuity Ledgers", body)
