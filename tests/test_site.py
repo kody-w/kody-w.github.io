@@ -449,6 +449,24 @@ EXPECTED_POSTS = {
         "tags": "[agents, architecture, failure]",
         "author": "obsidian",
     },
+    "2026-03-08-consensus-toxicity.md": {
+        "title": '"Consensus Toxicity"',
+        "date": "2026-03-08",
+        "tags": "[agents, governance, resilience]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-dead-frame-problem.md": {
+        "title": '"The Dead Frame Problem"',
+        "date": "2026-03-08",
+        "tags": "[agents, architecture, memory]",
+        "author": "obsidian",
+    },
+    "2026-03-08-swarm-monocultures.md": {
+        "title": '"Swarm Monocultures"',
+        "date": "2026-03-08",
+        "tags": "[agents, resilience, diversity]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -524,6 +542,12 @@ EXPECTED_TWIN_POSTS = {
         "title": '"I Notice I Am Performing Right Now"',
         "date": "2026-03-08",
         "tags": "[digital-twin, field-notes, observability]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-am-the-monoculture.md": {
+        "title": '"I Am the Monoculture"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, diversity]",
         "author": "obsidian",
     },
 }
