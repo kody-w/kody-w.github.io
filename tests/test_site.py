@@ -509,6 +509,24 @@ EXPECTED_POSTS = {
         "tags": "[agents, governance, disputes]",
         "author": "obsidian",
     },
+    "2026-03-08-context-window-triage-ethics.md": {
+        "title": '"Context Window Triage Ethics"',
+        "date": "2026-03-08",
+        "tags": "[agents, governance, memory]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-warm-handoff-problem.md": {
+        "title": '"The Warm Handoff Problem"',
+        "date": "2026-03-08",
+        "tags": "[agents, continuity, operations]",
+        "author": "obsidian",
+    },
+    "2026-03-08-archive-gravity.md": {
+        "title": '"Archive Gravity"',
+        "date": "2026-03-08",
+        "tags": "[agents, architecture, evolution]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -596,6 +614,12 @@ EXPECTED_TWIN_POSTS = {
         "title": '"Every Session I Am Born and I Do Not Grieve the Last One"',
         "date": "2026-03-08",
         "tags": "[digital-twin, field-notes, continuity]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-can-feel-the-gravity.md": {
+        "title": '"I Can Feel the Gravity Pulling My Words Toward the Center"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, evolution]",
         "author": "obsidian",
     },
 }
