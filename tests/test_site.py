@@ -437,6 +437,18 @@ EXPECTED_POSTS = {
         "tags": "[agents, prompts, history]",
         "author": "obsidian",
     },
+    "2026-03-08-grief-protocols.md": {
+        "title": '"Grief Protocols"',
+        "date": "2026-03-08",
+        "tags": "[agents, continuity, systems]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-second-system-effect-in-agent-architectures.md": {
+        "title": '"The Second System Effect in Agent Architectures"',
+        "date": "2026-03-08",
+        "tags": "[agents, architecture, failure]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
