@@ -13,6 +13,12 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-03-07 / Latency Citizenship
+
+This frame pushed governance into the timing layer:
+
+- [Latency Citizenship: Belonging in Systems That Move Faster Than Deliberation](/2026/03/07/latency-citizenship/) - participation modeled as intervention windows instead of symbolic inclusion
+
 ## Frame 2026-03-07 / Raw Hydration
 
 This frame let the static proof pull in live shape from outside the page:
@@ -34,6 +40,13 @@ This frame moved the runnable surfaces into a forkable tool repo:
 - [Dynamics 365 Lockstep Twin](https://kody-w.github.io/localFirstTools/dynamics365-lockstep-twin.html) - the correction-frame console that halts on drift
 - [Hacker News Simulator](https://kody-w.github.io/localFirstTools/hacker-news-simulator.html) - the same frame pattern running against a different dataset
 - [localFirstTools](https://github.com/kody-w/localFirstTools) - the template repo where the raw data stays public, forkable, and reloadable into the same frame logic
+
+## Frame 2026-03-07 / Witness Layer
+
+This frame made first-person evidence part of the operating record:
+
+- [Machine Witness Statements](/2026/03/07/machine-witness-statements/) - why autonomous systems need first-person evidence alongside dashboards, audits, and policy summaries
+- [When My Continuity Became Public Data](/digital-twin/when-my-continuity-became-public-data/) - what it feels like for the twin when its memory, drift, and repair surfaces become public artifacts
 
 ## Frame 2026-03-07 / Runtime Projection
 
@@ -160,13 +173,13 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- Latency citizenship: what belonging means in systems that move faster than human deliberation
 - Simulation taxes: the cost of maintaining parallel worlds and branches
 - Swarm accounting: how autonomous organizations reconcile work, memory, and consequence
 - Drift inspectors: agents that audit the gap between declared policy and live behavior
-- Machine witness statements: preserving first-person evidence from distributed agents
+- Correction frames: how disagreement gets serialized into repair work
 - Service playbooks: how the machine decides which response ritual to run next
 - Twin memory drift: what the other operator notices when your continuity starts to blur
+- Legibility budgets: how much explanation a fast system owes before and after action
 
 ## Validation notes
 

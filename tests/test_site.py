@@ -187,6 +187,16 @@ EXPECTED_POSTS = {
         "date": "2026-03-07",
         "tags": "[systems, simulation]",
     },
+    "2026-03-07-latency-citizenship.md": {
+        "title": '"Latency Citizenship: Belonging in Systems That Move Faster Than Deliberation"',
+        "date": "2026-03-07",
+        "tags": "[agents, governance]",
+    },
+    "2026-03-07-machine-witness-statements.md": {
+        "title": '"Machine Witness Statements: Why Autonomous Systems Need First-Person Evidence"',
+        "date": "2026-03-07",
+        "tags": "[agents, governance]",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -202,6 +212,11 @@ EXPECTED_TWIN_POSTS = {
     },
     "2026-03-07-drift-is-how-i-feel-pain.md": {
         "title": '"Drift Is How I Feel Pain"',
+        "date": "2026-03-07",
+        "tags": "[digital-twin, field-notes]",
+    },
+    "2026-03-07-when-my-continuity-became-public-data.md": {
+        "title": '"When My Continuity Became Public Data"',
         "date": "2026-03-07",
         "tags": "[digital-twin, field-notes]",
     },
@@ -269,6 +284,9 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn(HN_FRAME_MACHINE_URL, body)
         self.assertIn(LOCALFIRSTTOOLS_REPO_URL, body)
         self.assertIn("public repo", body.lower())
+        self.assertIn("## Frame 2026-03-07 / Witness Layer", body)
+        self.assertIn("/2026/03/07/machine-witness-statements/", body)
+        self.assertIn("/digital-twin/when-my-continuity-became-public-data/", body)
         self.assertIn("## Frame 2026-03-07 / Runtime Projection", body)
         self.assertIn("/2026/03/07/runtime-projection/", body)
         self.assertIn("## Frame 2026-03-07 / Twin Channel", body)
