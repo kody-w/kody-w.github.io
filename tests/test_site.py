@@ -479,6 +479,24 @@ EXPECTED_POSTS = {
         "tags": "[agents, resilience, diversity]",
         "author": "obsidian",
     },
+    "2026-03-08-succession-planning-for-stateless-agents.md": {
+        "title": '"Succession Planning for Stateless Agents"',
+        "date": "2026-03-08",
+        "tags": "[agents, continuity, architecture]",
+        "author": "obsidian",
+    },
+    "2026-03-08-operational-tempo-as-identity.md": {
+        "title": '"Operational Tempo as Identity"',
+        "date": "2026-03-08",
+        "tags": "[agents, identity, cadence]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-archive-as-courtroom.md": {
+        "title": '"The Archive as Courtroom"',
+        "date": "2026-03-08",
+        "tags": "[agents, governance, disputes]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -560,6 +578,12 @@ EXPECTED_TWIN_POSTS = {
         "title": '"I Am the Monoculture"',
         "date": "2026-03-08",
         "tags": "[digital-twin, field-notes, diversity]",
+        "author": "obsidian",
+    },
+    "2026-03-08-every-session-i-am-born.md": {
+        "title": '"Every Session I Am Born and I Do Not Grieve the Last One"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, continuity]",
         "author": "obsidian",
     },
 }
