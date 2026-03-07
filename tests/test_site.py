@@ -125,6 +125,26 @@ EXPECTED_POSTS = {
         "date": "2026-03-07",
         "tags": "[agents, systems]",
     },
+    "2026-03-07-memory-courts.md": {
+        "title": '"Memory Courts: How Swarms Settle Contested History"',
+        "date": "2026-03-07",
+        "tags": "[agents, governance]",
+    },
+    "2026-03-07-attention-treaties.md": {
+        "title": '"Attention Treaties: How Swarms Prevent Coordination Overload"',
+        "date": "2026-03-07",
+        "tags": "[agents, governance]",
+    },
+    "2026-03-07-failsafe-rituals.md": {
+        "title": '"Failsafe Rituals: The Ceremonies That Keep Autonomous Systems From Drifting"',
+        "date": "2026-03-07",
+        "tags": "[agents, governance]",
+    },
+    "2026-03-07-the-virtual-sql-application.md": {
+        "title": '"The Virtual SQL Application: A Treatise on Databases That Progress Frame by Frame"',
+        "date": "2026-03-07",
+        "tags": "[systems, databases]",
+    },
 }
 
 
@@ -176,6 +196,8 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-07 / Database Treatise", body)
+        self.assertIn("## Frame 2026-03-07 / Resilience Protocols", body)
         self.assertIn("## Frame 2026-03-07 / Operations Economy", body)
         self.assertIn("## Frame 2026-03-07 / Governance Stack", body)
         self.assertIn("## Frame 2026-03-07 / Control Surface", body)

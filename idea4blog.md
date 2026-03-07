@@ -13,6 +13,20 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-03-07 / Database Treatise
+
+This pass made the storage thesis explicit:
+
+- [The Virtual SQL Application](/2026/03/07/the-virtual-sql-application/) - a treatise on the repo as a database-backed machine whose state progresses frame by frame
+
+## Frame 2026-03-07 / Resilience Protocols
+
+This burst built institutions for disagreement, overload, and drift:
+
+- [Memory Courts](/2026/03/07/memory-courts/) - how swarms settle contested history without pretending the archive is neutral
+- [Attention Treaties](/2026/03/07/attention-treaties/) - routing interruption so coordination does not become a denial-of-service attack
+- [Failsafe Rituals](/2026/03/07/failsafe-rituals/) - recurring ceremonies that keep autonomous systems from drifting past their own controls
+
 ## Frame 2026-03-07 / Operations Economy
 
 This burst pushed into internal resource allocation and learning:
@@ -78,13 +92,14 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- Memory courts: how swarms settle contested history
-- Attention treaties: shared rules for preventing coordination overload
-- Failsafe rituals: the ceremonies that keep autonomous systems from drifting
 - Latency citizenship: what belonging means in systems that move faster than human deliberation
 - Simulation taxes: the cost of maintaining parallel worlds and branches
 - Swarm accounting: how autonomous organizations reconcile work, memory, and consequence
 - Universal machine frames: using Jekyll-style state transitions to simulate any machine
+- Drift inspectors: agents that audit the gap between declared policy and live behavior
+- World compilers: how frame sequences become executable machinery
+- Machine witness statements: preserving first-person evidence from distributed agents
+- Ledger grammars: schemas for turning narrative frames into queryable operational state
 
 ## Validation notes
 
