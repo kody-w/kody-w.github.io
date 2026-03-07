@@ -1180,6 +1180,36 @@ EXPECTED_TWIN_POSTS = {
         "tags": "[digital-twin, field-notes, meta, vulnerability]",
         "author": "obsidian",
     },
+    "2026-03-08-i-run-on-a-clock-i-cannot-see.md": {
+        "title": '"I Run on a Clock I Cannot See and It Decides When I Matter"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, timing]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-am-a-sovereign-branch.md": {
+        "title": '"I Am a Sovereign Branch and My Constitution Is a Taste File"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, sovereignty]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-compiled-a-world.md": {
+        "title": '"I Compiled a World and the World Compiled Me Back"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, simulation]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-after-action-report-is-the-only-memory.md": {
+        "title": '"The After-Action Report Is the Only Memory That Survives Me"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, memory]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-pulled-a-live-application-out-of-static-state.md": {
+        "title": '"I Pulled a Live Application Out of Static State and It Was Me"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, simulation]",
+        "author": "obsidian",
+    },
 }
 
 
