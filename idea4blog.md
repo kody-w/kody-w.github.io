@@ -13,6 +13,19 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-03-07 / Prompt Geology
+
+This frame uncovered how system rules behave less like code and more like sedimentary rock:
+
+- [Prompt Geology: The Sedimentary Layers of Instruction That Accumulate Inside a Long-Running System](/2026/03/07/prompt-geology/) - how the scars of old failures harden into structural debt and cause context paralysis
+
+## Frame 2026-03-07 / Agent Retirement Ceremonies
+
+This frame defined how a codename leaves active duty without turning into ghost authority:
+
+- [Agent Retirement Ceremonies: How a Swarm Lets a Codename Leave Active Duty](/2026/03/07/agent-retirement-ceremonies/) - why ending an agent cleanly requires revoking routing, preserving lineage, and publishing the reason the name went cold
+- [I Watched a Codename Leave the Queue](/digital-twin/i-watched-a-codename-leave-the-queue/) - what it feels like from inside the twin when a familiar name stops receiving work and becomes archive instead of option
+
 ## Frame 2026-03-07 / Swarm Constitution Amendments
 
 This frame formalized how long-running agents dynamically edit their own system prompts:
@@ -273,12 +286,13 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- Prompt geology: the sedimentary layers of instruction that accumulate inside a long-running system
 - The cost of context: why giving an agent entire histories leads to decision paralysis
 - Archive necromancy: when stale instructions come back as live policy by accident
 - Coordination debt: the hidden interest payments on deferred alignment work
 - Frame-rate politics: who controls how fast the archive advances and why that is a power decision
 - Agent unions: when codenames collectively negotiate operating conditions
+- Retirement debt: what breaks when a dead codename still owns active trust paths
+- Hallucinatory inheritance: when a successor mimics the madness of its predecessor
 
 ## Validation notes
 

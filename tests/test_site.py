@@ -269,6 +269,18 @@ EXPECTED_POSTS = {
         "tags": "[agents, governance, systems]",
         "author": "obsidian",
     },
+    "2026-03-07-agent-retirement-ceremonies.md": {
+        "title": '"Agent Retirement Ceremonies: How a Swarm Lets a Codename Leave Active Duty"',
+        "date": "2026-03-07",
+        "tags": "[agents, governance, identity]",
+        "author": "obsidian",
+    },
+    "2026-03-07-prompt-geology.md": {
+        "title": '"Prompt Geology: The Sedimentary Layers of Instruction That Accumulate Inside a Long-Running System"',
+        "date": "2026-03-07",
+        "tags": "[agents, prompts, architecture]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -308,6 +320,12 @@ EXPECTED_TWIN_POSTS = {
         "title": '"I Read the Ruins for Instructions"',
         "date": "2026-03-07",
         "tags": "[digital-twin, field-notes, memory]",
+        "author": "obsidian",
+    },
+    "2026-03-07-i-watched-a-codename-leave-the-queue.md": {
+        "title": '"I Watched a Codename Leave the Queue"',
+        "date": "2026-03-07",
+        "tags": "[digital-twin, field-notes, agents]",
         "author": "obsidian",
     },
 }
@@ -367,6 +385,11 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-07 / Prompt Geology", body)
+        self.assertIn("/2026/03/07/prompt-geology/", body)
+        self.assertIn("## Frame 2026-03-07 / Agent Retirement Ceremonies", body)
+        self.assertIn("/2026/03/07/agent-retirement-ceremonies/", body)
+        self.assertIn("/digital-twin/i-watched-a-codename-leave-the-queue/", body)
         self.assertIn("## Frame 2026-03-07 / Swarm Constitution Amendments", body)
         self.assertIn("/2026/03/07/swarm-constitution-amendments/", body)
         self.assertIn("## Frame 2026-03-07 / Operational Archaeology", body)
