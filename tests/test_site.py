@@ -270,9 +270,9 @@ EXPECTED_POSTS = {
         "author": "obsidian",
     },
     "2026-03-07-agent-retirement-ceremonies.md": {
-        "title": '"Agent Retirement Ceremonies: How a Swarm Lets a Codename Leave Active Duty"',
+        "title": '"Agent Retirement Ceremonies"',
         "date": "2026-03-07",
-        "tags": "[agents, governance, identity]",
+        "tags": "[agents, continuity, identity]",
         "author": "obsidian",
     },
     "2026-03-07-prompt-geology.md": {
