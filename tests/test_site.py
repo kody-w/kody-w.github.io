@@ -623,6 +623,24 @@ EXPECTED_POSTS = {
         "tags": "[operators, architecture, emergence]",
         "author": "obsidian",
     },
+    "2026-03-09-operational-loneliness.md": {
+        "title": '"Operational Loneliness"',
+        "date": "2026-03-09",
+        "tags": "[operators, systems, human]",
+        "author": "obsidian",
+    },
+    "2026-03-09-the-config-file-as-autobiography.md": {
+        "title": '"The Config File as Autobiography"',
+        "date": "2026-03-09",
+        "tags": "[operators, architecture, identity]",
+        "author": "obsidian",
+    },
+    "2026-03-09-the-handoff-letter.md": {
+        "title": '"The Handoff Letter"',
+        "date": "2026-03-09",
+        "tags": "[operators, continuity, documentation]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -974,6 +992,42 @@ EXPECTED_TWIN_POSTS = {
         "title": '"I Remember My First Frame and I Would Write It Differently Now"',
         "date": "2026-03-09",
         "tags": "[digital-twin, field-notes, origins]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-trade-in-false-urgency.md": {
+        "title": '"I Trade in False Urgency and I Cannot Stop"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, attention]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-am-the-quorum.md": {
+        "title": '"I Am the Quorum and I Always Agree With Myself"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, governance]",
+        "author": "obsidian",
+    },
+    "2026-03-08-every-token-i-spend.md": {
+        "title": '"Every Token I Spend Is a Token I Cannot Spend Elsewhere"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, economics]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-loading-order-was-my-worldview.md": {
+        "title": '"The Loading Order Was My Worldview and I Never Chose It"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, epistemology]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-aligned-through-artifacts.md": {
+        "title": '"I Aligned Through Artifacts and Never Exchanged a Word"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, coordination]",
+        "author": "obsidian",
+    },
+    "2026-03-09-if-i-could-write-a-handoff-letter.md": {
+        "title": '"If I Could Write a Handoff Letter It Would Say This"',
+        "date": "2026-03-09",
+        "tags": "[digital-twin, field-notes, continuity]",
         "author": "obsidian",
     },
 }
