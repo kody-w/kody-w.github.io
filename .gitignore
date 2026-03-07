@@ -1,0 +1,3 @@
+# Agent identities — codenames stay local, never published
+.agents/
+.model-registry.json

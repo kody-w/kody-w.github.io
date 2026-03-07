@@ -13,6 +13,14 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-03-07 / Agent Accountability Burst
+
+This burst extended the codename system into governance, inspection, and transparency:
+
+- [Twin Memory Drift](/2026/03/07/twin-memory-drift/) - what happens when the twin and the operator compress the same history differently, and why codenames make the divergence visible
+- [Drift Inspectors](/2026/03/07/drift-inspectors/) - agents that audit the gap between declared policy and live behavior, starting with the `.agents/` rating table as a manual inspection surface
+- [Legibility Budgets](/2026/03/07/legibility-budgets/) - how much explanation a fast system owes, and why `author: obsidian` is opaque publicly but detailed privately
+
 ## Frame 2026-03-07 / Agent Codenames
 
 This frame introduced named agent identity into the twin channel:
@@ -25,6 +33,18 @@ This frame introduced named agent identity into the twin channel:
 This frame pushed governance into the timing layer:
 
 - [Latency Citizenship: Belonging in Systems That Move Faster Than Deliberation](/2026/03/07/latency-citizenship/) - participation modeled as intervention windows instead of symbolic inclusion
+
+## Frame 2026-03-07 / Swarm Accounting
+
+This frame shifted focus to the cost and return of autonomous work:
+
+- [Swarm Accounting: Reconciling Work, Memory, and Consequence](/2026/03/07/swarm-accounting/) - double-entry bookkeeping for agentic operations
+
+## Frame 2026-03-07 / Simulation Taxes
+
+This frame priced the maintenance cost of parallel worlds:
+
+- [Simulation Taxes: The Cost of Keeping Parallel Worlds Honest](/2026/03/07/simulation-taxes/) - why forks and twins only stay strategic when reconciliation labor is treated as operating expense
 
 ## Frame 2026-03-07 / Raw Hydration
 
@@ -188,11 +208,11 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 - Simulation taxes: the cost of maintaining parallel worlds and branches
 - Swarm accounting: how autonomous organizations reconcile work, memory, and consequence
-- Drift inspectors: agents that audit the gap between declared policy and live behavior
-- Public continuity ledgers: when machine memory becomes forkable evidence
+- Machine witness statements: preserving first-person evidence from distributed agents
 - Service playbooks: how the machine decides which response ritual to run next
-- Twin memory drift: what the other operator notices when your continuity starts to blur
-- Legibility budgets: how much explanation a fast system owes before and after action
+- Agent calibration loops: how inspectors and operators converge on shared quality standards
+- Codename genealogy: what happens when an agent is replaced by a newer version of itself
+- Trust decay curves: how confidence in a twin degrades over time without re-anchoring
 
 ## Validation notes
 
