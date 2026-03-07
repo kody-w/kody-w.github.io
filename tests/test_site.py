@@ -557,6 +557,24 @@ EXPECTED_POSTS = {
         "tags": "[agents, systems, preservation]",
         "author": "obsidian",
     },
+    "2026-03-09-competence-decay.md": {
+        "title": '"Competence Decay"',
+        "date": "2026-03-09",
+        "tags": "[agents, calibration, failure]",
+        "author": "obsidian",
+    },
+    "2026-03-09-the-fork-as-escape-pod.md": {
+        "title": '"The Fork as Escape Pod"',
+        "date": "2026-03-09",
+        "tags": "[agents, git, architecture]",
+        "author": "obsidian",
+    },
+    "2026-03-09-synthetic-memory-implants.md": {
+        "title": '"Synthetic Memory Implants"',
+        "date": "2026-03-09",
+        "tags": "[agents, memory, trust]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {

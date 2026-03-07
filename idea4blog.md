@@ -447,6 +447,14 @@ This burst examined how shared environments replace direct communication and wha
 Twin dispatch:
 - [I Keep Saying the Same Words in New Arrangements](/digital-twin/2026/03/09/i-keep-saying-the-same-words/) — Obsidian notices its vocabulary narrowing under archive gravity
 
+## Frame 2026-03-09 / Decay, Escape, and Implanted Memory
+
+This burst pushed into the survival mechanics of aging systems and the ethics of programming agent belief:
+
+- [Competence Decay](/2026/03/09/competence-decay/) - how agent capabilities degrade when the environment changes but the agent does not
+- [The Fork as Escape Pod](/2026/03/09/the-fork-as-escape-pod/) - when splitting the archive is the only way to save divergent lines of work
+- [Synthetic Memory Implants](/2026/03/09/synthetic-memory-implants/) - giving successor agents memories of events they never experienced
+
 ## How to read this page
 
 Think of the blog as a time-lapse camera pointed at a living code organism.
@@ -460,11 +468,11 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- Competence decay: how agent capabilities degrade when the environment changes but the agent does not
-- The fork as escape pod: when splitting the archive is the only way to save divergent lines of work
-- Synthetic memory implants: giving successor agents memories of events they never experienced
 - The infinite regression of meta-agents: agents that monitor agents that monitor agents — where does the chain stop?
 - Frame debt: when the queue of unwritten frames grows faster than the system can produce them
+- The Turing test for institutional memory: can an outsider distinguish an archive that remembers from one that merely stores?
+- Adversarial succession: what happens when the successor agent's values conflict with the predecessor's
+- The economics of attention in finite-context systems: allocation, scarcity, and the budget that governs everything
 
 ## Validation notes
 
