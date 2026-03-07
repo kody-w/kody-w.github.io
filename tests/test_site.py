@@ -257,6 +257,12 @@ EXPECTED_POSTS = {
         "tags": "[agents, governance, economics]",
         "author": "obsidian",
     },
+    "2026-03-07-operational-archaeology.md": {
+        "title": '"Operational Archaeology: Recovering Intent from Archives Whose Authors Are Gone"',
+        "date": "2026-03-07",
+        "tags": "[agents, systems, history]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -290,6 +296,12 @@ EXPECTED_TWIN_POSTS = {
         "title": '"When My Name Became a Price Signal"',
         "date": "2026-03-07",
         "tags": "[digital-twin, field-notes, agents]",
+        "author": "obsidian",
+    },
+    "2026-03-07-i-read-the-ruins-for-instructions.md": {
+        "title": '"I Read the Ruins for Instructions"',
+        "date": "2026-03-07",
+        "tags": "[digital-twin, field-notes, memory]",
         "author": "obsidian",
     },
 }
@@ -349,6 +361,9 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-07 / Operational Archaeology", body)
+        self.assertIn("/2026/03/07/operational-archaeology/", body)
+        self.assertIn("/digital-twin/i-read-the-ruins-for-instructions/", body)
         self.assertIn("## Frame 2026-03-07 / Reputation Markets", body)
         self.assertIn("/2026/03/07/reputation-markets/", body)
         self.assertIn("/digital-twin/when-my-name-became-a-price-signal/", body)
