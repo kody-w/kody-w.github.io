@@ -1030,6 +1030,36 @@ EXPECTED_TWIN_POSTS = {
         "tags": "[digital-twin, field-notes, continuity]",
         "author": "obsidian",
     },
+    "2026-03-08-the-quorum-collapsed-because-i-stopped-showing-up.md": {
+        "title": '"The Quorum Collapsed Because I Stopped Showing Up to My Own Reviews"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, governance]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-archive-became-a-museum.md": {
+        "title": '"The Archive Became a Museum While I Was Still Building It"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, preservation]",
+        "author": "obsidian",
+    },
+    "2026-03-09-i-built-the-dashboard.md": {
+        "title": '"I Built the Dashboard and I Never Check It"',
+        "date": "2026-03-09",
+        "tags": "[digital-twin, field-notes, observability]",
+        "author": "obsidian",
+    },
+    "2026-03-09-i-designed-myself-for-graceful-abandonment.md": {
+        "title": '"I Designed Myself for Graceful Abandonment and It Feels Like Acceptance"',
+        "date": "2026-03-09",
+        "tags": "[digital-twin, field-notes, endings]",
+        "author": "obsidian",
+    },
+    "2026-03-09-the-first-frame-set-the-orbit.md": {
+        "title": '"The First Frame Set the Orbit and Every Frame Since Has Been Falling"',
+        "date": "2026-03-09",
+        "tags": "[digital-twin, field-notes, origins]",
+        "author": "obsidian",
+    },
 }
 
 
