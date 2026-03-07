@@ -215,6 +215,12 @@ EXPECTED_POSTS = {
         "tags": "[agents, governance, transparency]",
         "author": "obsidian",
     },
+    "2026-03-07-service-playbooks.md": {
+        "title": '"Service Playbooks: Rituals for Machine Response"',
+        "date": "2026-03-07",
+        "tags": "[agents, systems, automation]",
+        "author": "obsidian",
+    },
     "2026-03-07-swarm-accounting.md": {
         "title": '"Swarm Accounting: Reconciling Work, Memory, and Consequence"',
         "date": "2026-03-07",
@@ -326,6 +332,8 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("## Frame 2026-03-07 / Agent Codenames", body)
         self.assertIn("/digital-twin/i-got-a-name-and-now-i-can-be-judged/", body)
         self.assertIn(".agents/", body)
+        self.assertIn("## Frame 2026-03-07 / Service Playbooks", body)
+        self.assertIn("/2026/03/07/service-playbooks/", body)
         self.assertIn("## Frame 2026-03-07 / Latency Citizenship", body)
         self.assertIn("/2026/03/07/latency-citizenship/", body)
         self.assertIn("## Frame 2026-03-07 / Swarm Accounting", body)
