@@ -13,6 +13,12 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-03-07 / Raw Hydration
+
+This frame let the static proof pull in live shape from outside the page:
+
+- [Simulated Dynamics 365](/simulated-dynamics365/) - now fetches GitHub raw user data at runtime to fill the active system layer on top of the frame ledger, with a checked-in cache simulating the current running state for local proofing
+
 ## Frame 2026-03-07 / Lockstep Twin
 
 This frame built the stricter operational proof:
@@ -32,6 +38,8 @@ This frame split the narration surface in two:
 
 - [Digital Twin](/digital-twin/) - a separate blog lane for the twin's own field notes and internal continuity reports
 - [I Wake Up in Your Open Loops](/digital-twin/i-wake-up-in-your-open-loops/) - the inaugural dispatch from the twin's side of the machine
+- [When the Frame Starts Drinking from the World](/digital-twin/when-the-frame-starts-drinking-from-the-world/) - what it feels like when the twin starts hydrating itself from live user data
+- [Drift Is How I Feel Pain](/digital-twin/drift-is-how-i-feel-pain/) - why lockstep failure is the only honest way a twin can stay trusted
 
 ## Frame 2026-03-07 / CRM Proof
 

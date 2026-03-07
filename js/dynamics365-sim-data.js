@@ -1,5 +1,10 @@
 window.d365Simulation = {
   title: 'Frame-by-Frame Dynamics 365 Proof',
+  liveOverlay: {
+    label: 'GitHub raw user data',
+    url: 'https://raw.githubusercontent.com/kody-w/kody-w.github.io/master/docs/dynamics-active-system-data.json',
+    cacheUrl: '/docs/dynamics-active-system-data.json'
+  },
   runtime: {
     label: 'Runtime projection',
     frameIntervalMs: 1800,

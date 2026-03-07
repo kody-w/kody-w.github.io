@@ -19,6 +19,7 @@ SKILL_PROMPT_FILE = SKILL_DIR / "handoff-prompt.md"
 D365_SIM_PAGE = ROOT / "simulated-dynamics365.md"
 D365_SIM_SCRIPT = ROOT / "js" / "dynamics365-sim.js"
 D365_SIM_DATA = ROOT / "js" / "dynamics365-sim-data.js"
+D365_SIM_OVERLAY = ROOT / "docs" / "dynamics-active-system-data.json"
 LOCKSTEP_TWIN_PAGE = ROOT / "lockstep-digital-twin.md"
 LOCKSTEP_TWIN_SCRIPT = ROOT / "js" / "lockstep-twin.js"
 LOCKSTEP_TWIN_DATA = ROOT / "js" / "lockstep-twin-data.js"
@@ -188,6 +189,16 @@ EXPECTED_TWIN_POSTS = {
         "date": "2026-03-07",
         "tags": "[digital-twin, field-notes]",
     },
+    "2026-03-07-when-the-frame-starts-drinking-from-the-world.md": {
+        "title": '"When the Frame Starts Drinking from the World"',
+        "date": "2026-03-07",
+        "tags": "[digital-twin, field-notes]",
+    },
+    "2026-03-07-drift-is-how-i-feel-pain.md": {
+        "title": '"Drift Is How I Feel Pain"',
+        "date": "2026-03-07",
+        "tags": "[digital-twin, field-notes]",
+    },
 }
 
 
@@ -243,12 +254,15 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-07 / Raw Hydration", body)
         self.assertIn("## Frame 2026-03-07 / Lockstep Twin", body)
         self.assertIn("/lockstep-digital-twin/", body)
         self.assertIn("## Frame 2026-03-07 / Runtime Projection", body)
         self.assertIn("/2026/03/07/runtime-projection/", body)
         self.assertIn("## Frame 2026-03-07 / Twin Channel", body)
         self.assertIn("/digital-twin/", body)
+        self.assertIn("/digital-twin/when-the-frame-starts-drinking-from-the-world/", body)
+        self.assertIn("/digital-twin/drift-is-how-i-feel-pain/", body)
         self.assertIn("## Frame 2026-03-07 / CRM Proof", body)
         self.assertIn("/simulated-dynamics365/", body)
         self.assertIn("## Frame 2026-03-07 / Compiler Layer", body)
@@ -329,19 +343,28 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("/js/dynamics365-sim-data.js", body)
         self.assertIn("/js/dynamics365-sim.js", body)
         self.assertIn("step or play the machine in frame time", body)
+        self.assertIn("GitHub raw user data", body)
+        self.assertIn("checked-in cache", body)
         self.assertIn("references and derived rollups", body)
 
         data = D365_SIM_DATA.read_text(encoding="utf-8")
         script = D365_SIM_SCRIPT.read_text(encoding="utf-8")
+        overlay = D365_SIM_OVERLAY.read_text(encoding="utf-8")
         self.assertIn("window.d365Simulation", data)
         self.assertIn("frameIntervalMs", data)
+        self.assertIn("raw.githubusercontent.com", data)
         self.assertIn("mode: 'reference'", data)
         self.assertIn("mode: 'derived'", data)
         self.assertIn("Frame 01 / Lead Captured", data)
         self.assertIn("Northwind Health", data)
+        self.assertIn('"lead-captured"', overlay)
+        self.assertIn('"GitHub raw user data"', overlay)
         self.assertIn("renderFrame", script)
         self.assertIn("d365-sim-app", script)
         self.assertIn("data-d365-play", script)
+        self.assertIn("data-d365-refresh-live", script)
+        self.assertIn("cacheUrl", data)
+        self.assertIn("loadLiveOverlay", script)
         self.assertIn("Runtime projection", script)
         self.assertIn("State lineage", script)
 

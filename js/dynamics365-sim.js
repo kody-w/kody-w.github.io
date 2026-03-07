@@ -2,6 +2,7 @@
 (function () {
   var root = document.getElementById('d365-sim-app');
   var simulation = window.d365Simulation;
+  var liveOverlay = simulation && simulation.liveOverlay ? simulation.liveOverlay : null;
   var runtime = simulation && simulation.runtime ? simulation.runtime : {};
 
   if (!root || !simulation || !simulation.frames || simulation.frames.length === 0) {
@@ -14,6 +15,12 @@
   var runtimeLabel = runtime.label || 'Runtime projection';
   var frameIntervalMs = Math.max(500, Number(runtime.frameIntervalMs || runtime.intervalMs || 1800));
   var endBehavior = runtime.endBehavior === 'loop' ? 'loop' : 'stop';
+  var liveOverlayState = {
+    status: liveOverlay ? 'idle' : 'disabled',
+    data: null,
+    error: '',
+    sourceLabel: ''
+  };
 
   function formatCurrency(value) {
     return '$' + Number(value || 0).toLocaleString('en-US');
@@ -30,6 +37,15 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
+  }
+
+  function renderKeyValueCards(items) {
+    return items.map(function (item) {
+      return '<div class="d365-state-item">' +
+        '<span class="d365-state-label">' + escapeHtml(item.label) + '</span>' +
+        '<strong class="d365-state-value">' + escapeHtml(item.value) + '</strong>' +
+      '</div>';
+    }).join('');
   }
 
   function openPipeline(frame) {
@@ -86,12 +102,12 @@
   }
 
   function renderMachineStates(machine) {
-    return Object.keys(machine).map(function (key) {
-      return '<div class="d365-state-item">' +
-        '<span class="d365-state-label">' + escapeHtml(key) + '</span>' +
-        '<strong class="d365-state-value">' + escapeHtml(machine[key]) + '</strong>' +
-      '</div>';
-    }).join('');
+    return renderKeyValueCards(Object.keys(machine).map(function (key) {
+      return {
+        label: key,
+        value: machine[key]
+      };
+    }));
   }
 
   function renderTransitions(transitions) {
@@ -146,6 +162,129 @@
         '<p>' + escapeHtml(item.note) + '</p>' +
       '</li>';
     }).join('') + '</ul>';
+  }
+
+  function overlayFrame(frame) {
+    if (!liveOverlayState.data || !liveOverlayState.data.frames) {
+      return null;
+    }
+
+    return liveOverlayState.data.frames[frame.id] || null;
+  }
+
+  function activeSystemItems(frame) {
+    var items = [
+      { label: 'Frame source', value: 'Serialized frame ledger' },
+      { label: 'Sales state', value: frame.machine.sales },
+      { label: 'Service state', value: frame.machine.service },
+      { label: 'Automation', value: frame.machine.automation }
+    ];
+    var overlayData = overlayFrame(frame);
+
+    if (overlayData && overlayData.activeSystemData) {
+      items = items.concat(overlayData.activeSystemData);
+    }
+
+    return items;
+  }
+
+  function renderOverlayStatus(frame) {
+    var overlayData = overlayFrame(frame);
+
+    if (!liveOverlay) {
+      return '<p class="d365-active-note">No GitHub raw overlay is configured for this proof.</p>';
+    }
+
+    if (liveOverlayState.status === 'loading') {
+      return '<p class="d365-active-note">Hydrating active system data from GitHub raw user data.</p>';
+    }
+
+    if (liveOverlayState.status === 'error') {
+      return '<p class="d365-active-note is-error">GitHub raw hydration failed: ' + escapeHtml(liveOverlayState.error) + '</p>';
+    }
+
+    if (liveOverlayState.status === 'ready' && !overlayData) {
+      return '<p class="d365-active-note">Overlay is synced from ' + escapeHtml(liveOverlayState.sourceLabel) + ', but this frame has no extra active-system fields cached yet.</p>';
+    }
+
+    if (liveOverlayState.status === 'ready') {
+      return '<p class="d365-active-note">Active system data synced from ' + escapeHtml(liveOverlayState.sourceLabel) + ' / ' + escapeHtml(liveOverlayState.data.lastUpdated || 'unknown timestamp') + '.</p>';
+    }
+
+    return '<p class="d365-active-note">The checked-in cache simulates the current running state when external fetches are unavailable.</p>';
+  }
+
+  function renderActiveSystemData(frame) {
+    return '<div class="d365-state-grid">' + renderKeyValueCards(activeSystemItems(frame)) + '</div>' + renderOverlayStatus(frame);
+  }
+
+  function overlaySources() {
+    var sources = [];
+
+    if (liveOverlay && liveOverlay.url) {
+      sources.push({
+        url: liveOverlay.url,
+        label: liveOverlay.label || 'GitHub raw user data'
+      });
+    }
+
+    if (liveOverlay && liveOverlay.cacheUrl) {
+      sources.push({
+        url: liveOverlay.cacheUrl,
+        label: 'checked-in cache'
+      });
+    }
+
+    return sources;
+  }
+
+  function loadOverlaySource(sources, index) {
+    if (index >= sources.length) {
+      liveOverlayState.status = 'error';
+      liveOverlayState.error = 'No overlay sources responded.';
+      renderFrame(currentIndex);
+      return;
+    }
+
+    window.fetch(sources[index].url, { cache: 'no-store' })
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error('HTTP ' + response.status);
+        }
+
+        return response.json();
+      })
+      .then(function (data) {
+        liveOverlayState.status = 'ready';
+        liveOverlayState.data = data;
+        liveOverlayState.error = '';
+        liveOverlayState.sourceLabel = sources[index].label;
+        renderFrame(currentIndex);
+      })
+      .catch(function (error) {
+        liveOverlayState.error = error && error.message ? error.message : 'Unknown fetch failure';
+        loadOverlaySource(sources, index + 1);
+      });
+  }
+
+  function loadLiveOverlay() {
+    var sources = overlaySources();
+
+    if (!liveOverlay || sources.length === 0) {
+      return;
+    }
+
+    if (!window.fetch) {
+      liveOverlayState.status = 'error';
+      liveOverlayState.error = 'Fetch is unavailable in this browser.';
+      renderFrame(currentIndex);
+      return;
+    }
+
+    liveOverlayState.status = 'loading';
+    liveOverlayState.error = '';
+    renderFrame(currentIndex);
+    loadOverlaySource(sources, 0);
   }
 
   function clearPlaybackTimer() {
@@ -217,6 +356,9 @@
     var progress = index + 1;
     var runtimeStatusClass = isPlaying ? 'is-running' : 'is-paused';
     var runtimeStatusLabel = isPlaying ? 'Running' : 'Paused';
+    var refreshControl = liveOverlay
+      ? '<button class="d365-button" data-d365-refresh-live ' + (liveOverlayState.status === 'loading' ? 'disabled' : '') + '>' + (liveOverlayState.status === 'loading' ? 'Loading GitHub raw data...' : 'Refresh GitHub raw data') + '</button>'
+      : '';
 
     root.innerHTML = '' +
       '<div class="d365-shell">' +
@@ -232,6 +374,7 @@
             '<div class="d365-control-cluster">' +
               '<button class="d365-button" data-d365-prev ' + (index === 0 ? 'disabled' : '') + '>Previous frame</button>' +
               '<button class="d365-button d365-button-primary" data-d365-play aria-pressed="' + (isPlaying ? 'true' : 'false') + '">' + (isPlaying ? 'Pause frame time' : 'Play in frame time') + '</button>' +
+              refreshControl +
               '<button class="d365-button" data-d365-next ' + (index === simulation.frames.length - 1 ? 'disabled' : '') + '>Next frame</button>' +
             '</div>' +
             '<input class="d365-range" type="range" min="0" max="' + (simulation.frames.length - 1) + '" value="' + index + '" data-d365-range>' +
@@ -257,13 +400,21 @@
             '<div class="d365-state-grid">' + renderMachineStates(frame.machine) + '</div>' +
           '</section>' +
           '<section class="d365-panel">' +
+            '<h3>Active system data</h3>' +
+            renderActiveSystemData(frame) +
+          '</section>' +
+          '<section class="d365-panel">' +
             '<h3>State lineage</h3>' +
             renderLineage(frame.lineage) +
           '</section>' +
+        '</div>' +
+
+        '<div class="d365-grid">' +
           '<section class="d365-panel">' +
             '<h3>State transition log</h3>' +
             '<ul class="d365-transition-list">' + renderTransitions(frame.transitions) + '</ul>' +
           '</section>' +
+          '<section class="d365-panel"><h3>Automations</h3>' + renderAutomations(frame.automations) + '</section>' +
         '</div>' +
 
         '<div class="d365-grid">' +
@@ -307,7 +458,6 @@
             { key: 'title', label: 'Task' },
             { key: 'status', label: 'Status' }
           ]) +
-          '<section class="d365-panel"><h3>Automations</h3>' + renderAutomations(frame.automations) + '</section>' +
         '</div>' +
       '</div>';
 
@@ -317,6 +467,7 @@
   function bindControls() {
     var prev = root.querySelector('[data-d365-prev]');
     var play = root.querySelector('[data-d365-play]');
+    var refresh = root.querySelector('[data-d365-refresh-live]');
     var next = root.querySelector('[data-d365-next]');
     var range = root.querySelector('[data-d365-range]');
 
@@ -337,6 +488,12 @@
       });
     }
 
+    if (refresh) {
+      refresh.addEventListener('click', function () {
+        loadLiveOverlay();
+      });
+    }
+
     if (next) {
       next.addEventListener('click', function () {
         manualNavigate(currentIndex + 1);
@@ -351,6 +508,7 @@
   }
 
   renderFrame(currentIndex);
+  loadLiveOverlay();
 
   if (runtime.autoPlay) {
     startPlayback();

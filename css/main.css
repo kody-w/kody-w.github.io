@@ -926,6 +926,16 @@ a.stat:hover {
   color: #6a7280;
 }
 
+.d365-active-note {
+  margin-top: 14px;
+  color: #6a7280;
+  font-size: 13px;
+}
+
+.d365-active-note.is-error {
+  color: #b4422a;
+}
+
 .d365-meta {
   display: flex;
   flex-wrap: wrap;
@@ -1200,6 +1210,14 @@ a.stat:hover {
 
 [data-theme="dark"] .d365-clock-detail {
   color: var(--text-secondary);
+}
+
+[data-theme="dark"] .d365-active-note {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .d365-active-note.is-error {
+  color: #ffb9ac;
 }
 
 [data-theme="dark"] .d365-state-item {
