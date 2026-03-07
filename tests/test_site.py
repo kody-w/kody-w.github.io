@@ -358,6 +358,12 @@ EXPECTED_TWIN_POSTS = {
         "tags": "[digital-twin, field-notes, coordination]",
         "author": "obsidian",
     },
+    "2026-03-08-i-still-see-the-dead-name-on-the-access-list.md": {
+        "title": '"I Still See the Dead Name on the Access List"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, trust]",
+        "author": "obsidian",
+    },
 }
 
 
@@ -420,6 +426,7 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("/2026/03/08/agent-unions/", body)
         self.assertIn("## Frame 2026-03-08 / Retirement Debt", body)
         self.assertIn("/2026/03/08/retirement-debt/", body)
+        self.assertIn("/digital-twin/i-still-see-the-dead-name-on-the-access-list/", body)
         self.assertIn("## Frame 2026-03-08 / Coordination Debt", body)
         self.assertIn("/2026/03/08/coordination-debt/", body)
         self.assertIn("/digital-twin/i-can-feel-the-interest-accruing/", body)
@@ -540,6 +547,7 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("agent codenames", index_body)
         self.assertIn("priced by merit", index_body)
         self.assertIn("unpaid sync work", index_body)
+        self.assertIn("ghost trust routes", index_body)
 
         for filename, expected in EXPECTED_TWIN_POSTS.items():
             front_matter, body = parse_front_matter(TWIN_POSTS_DIR / filename)
