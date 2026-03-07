@@ -19,6 +19,9 @@ SKILL_PROMPT_FILE = SKILL_DIR / "handoff-prompt.md"
 D365_SIM_PAGE = ROOT / "simulated-dynamics365.md"
 D365_SIM_SCRIPT = ROOT / "js" / "dynamics365-sim.js"
 D365_SIM_DATA = ROOT / "js" / "dynamics365-sim-data.js"
+LOCKSTEP_TWIN_PAGE = ROOT / "lockstep-digital-twin.md"
+LOCKSTEP_TWIN_SCRIPT = ROOT / "js" / "lockstep-twin.js"
+LOCKSTEP_TWIN_DATA = ROOT / "js" / "lockstep-twin-data.js"
 TWIN_INDEX_PAGE = ROOT / "digital-twin" / "index.html"
 
 EXPECTED_POSTS = {
@@ -240,6 +243,8 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-07 / Lockstep Twin", body)
+        self.assertIn("/lockstep-digital-twin/", body)
         self.assertIn("## Frame 2026-03-07 / Runtime Projection", body)
         self.assertIn("/2026/03/07/runtime-projection/", body)
         self.assertIn("## Frame 2026-03-07 / Twin Channel", body)
@@ -339,6 +344,26 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("data-d365-play", script)
         self.assertIn("Runtime projection", script)
         self.assertIn("State lineage", script)
+
+    def test_lockstep_twin_page_exists_and_loads_assets(self):
+        front_matter, body = parse_front_matter(LOCKSTEP_TWIN_PAGE)
+        self.assertEqual(front_matter.get("layout"), "default")
+        self.assertEqual(front_matter.get("title"), "Lockstep Digital Twin")
+        self.assertEqual(front_matter.get("permalink"), "/lockstep-digital-twin/")
+        self.assertIn('id="lockstep-twin-app"', body)
+        self.assertIn("/js/lockstep-twin-data.js", body)
+        self.assertIn("/js/lockstep-twin.js", body)
+        self.assertIn("Execution halts the moment the two disagree", body)
+
+        data = LOCKSTEP_TWIN_DATA.read_text(encoding="utf-8")
+        script = LOCKSTEP_TWIN_SCRIPT.read_text(encoding="utf-8")
+        self.assertIn("window.lockstepTwinSimulation", data)
+        self.assertIn("Dynamics 365 production adapter", data)
+        self.assertIn("action-04", data)
+        self.assertIn("runNextAction", script)
+        self.assertIn("runUntilDrift", script)
+        self.assertIn("Drift detected", script)
+        self.assertIn("lockstep-twin-app", script)
 
     def test_content_burst_skill_exists_and_has_expected_metadata(self):
         front_matter, body = parse_front_matter(SKILL_FILE)

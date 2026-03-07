@@ -13,6 +13,12 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-03-07 / Lockstep Twin
+
+This frame built the stricter operational proof:
+
+- [Lockstep Digital Twin](/lockstep-digital-twin/) - a public console that runs each action against a twin projection and a live adapter, then halts on drift
+
 ## Frame 2026-03-07 / Runtime Projection
 
 This frame made the application claim explicit:

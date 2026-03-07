@@ -1240,6 +1240,448 @@ a.stat:hover {
 }
 
 /* ========================================
+   Lockstep digital twin proof
+   ======================================== */
+
+.lockstep-proof-intro {
+  margin: 24px 0 32px;
+}
+
+.lockstep-proof-callout {
+  padding: 16px 18px;
+  background: #fff6eb;
+  border: 1px solid #f0d7b0;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.lockstep-proof-points {
+  padding-left: 22px;
+}
+
+.lockstep-twin-app {
+  margin-top: 24px;
+}
+
+.lockstep-shell {
+  display: grid;
+  gap: 22px;
+}
+
+.lockstep-hero,
+.lockstep-panel,
+.lockstep-stat {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+}
+
+.lockstep-hero {
+  padding: 24px;
+}
+
+.lockstep-kicker {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #c96b00;
+  margin-bottom: 10px;
+}
+
+.lockstep-hero h2 {
+  font-size: 30px;
+  line-height: 1.2;
+  margin-bottom: 10px;
+  font-weight: 400;
+}
+
+.lockstep-summary {
+  color: #555;
+}
+
+.lockstep-banner {
+  margin: 18px 0 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.lockstep-banner.is-ready {
+  background: #f5f8fc;
+  border: 1px solid #d8deea;
+  color: #4f5b6a;
+}
+
+.lockstep-banner.is-healthy,
+.lockstep-banner.is-running {
+  background: #ecf8ef;
+  border: 1px solid #b5dcbf;
+  color: #1f6b32;
+}
+
+.lockstep-banner.is-complete {
+  background: #eef5ff;
+  border: 1px solid #d7e5ff;
+  color: #2a7ae2;
+}
+
+.lockstep-banner.is-drift {
+  background: #fff2f0;
+  border: 1px solid #f3c4bc;
+  color: #b4422a;
+}
+
+.lockstep-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.lockstep-button {
+  border: 1px solid #d8deea;
+  border-radius: 999px;
+  background: #fff;
+  color: #333;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.lockstep-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.lockstep-button-primary {
+  background: #c96b00;
+  border-color: #c96b00;
+  color: #fff;
+}
+
+.lockstep-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  font-size: 14px;
+  color: #666;
+}
+
+.lockstep-stats {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.lockstep-stat {
+  padding: 18px;
+}
+
+.lockstep-stat span {
+  display: block;
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 6px;
+}
+
+.lockstep-stat strong {
+  font-size: 24px;
+  color: #c96b00;
+  font-weight: 500;
+}
+
+.lockstep-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.lockstep-panel {
+  padding: 20px;
+}
+
+.lockstep-panel h3 {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 14px;
+}
+
+.lockstep-rule-list,
+.lockstep-queue,
+.lockstep-input-list,
+.lockstep-diff-list {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.lockstep-rule-list li,
+.lockstep-diff-list li {
+  margin-bottom: 10px;
+}
+
+.lockstep-request {
+  display: grid;
+  gap: 10px;
+}
+
+.lockstep-request span,
+.lockstep-queue-item span,
+.lockstep-input-list span,
+.lockstep-diff-list span {
+  display: block;
+  color: #6a7280;
+  font-size: 13px;
+}
+
+.lockstep-request strong {
+  display: block;
+  margin-top: 2px;
+}
+
+.lockstep-request p,
+.lockstep-queue-item p,
+.lockstep-input-list p {
+  margin: 0;
+  color: #555;
+}
+
+.lockstep-queue,
+.lockstep-input-list {
+  list-style: none;
+  padding: 0;
+}
+
+.lockstep-queue-item,
+.lockstep-input-list li {
+  padding: 14px 0;
+  border-bottom: 1px solid #eef1f6;
+}
+
+.lockstep-queue-item:last-child,
+.lockstep-input-list li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.lockstep-queue-head,
+.lockstep-input-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.lockstep-chip,
+.lockstep-input-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #d8deea;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: #f5f8fc;
+  color: #556171;
+}
+
+.lockstep-chip.is-applied {
+  background: #eef5ff;
+  border-color: #d7e5ff;
+  color: #2a7ae2;
+}
+
+.lockstep-chip.is-next {
+  background: #fff6eb;
+  border-color: #f0d7b0;
+  color: #c96b00;
+}
+
+.lockstep-chip.is-blocked {
+  background: #f5f8fc;
+  border-color: #d8deea;
+  color: #7b8494;
+}
+
+.lockstep-chip.is-drift {
+  background: #fff2f0;
+  border-color: #f3c4bc;
+  color: #b4422a;
+}
+
+.lockstep-input-chip.is-embedded {
+  background: #eef5ff;
+  border-color: #d7e5ff;
+  color: #2a7ae2;
+}
+
+.lockstep-input-chip.is-reference {
+  background: #f6f0ff;
+  border-color: #ddd1ff;
+  color: #6b5bd2;
+}
+
+.lockstep-input-chip.is-derived {
+  background: #ecf8ef;
+  border-color: #b5dcbf;
+  color: #1f6b32;
+}
+
+.lockstep-table-wrap {
+  overflow-x: auto;
+}
+
+.lockstep-state-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 440px;
+}
+
+.lockstep-state-table th,
+.lockstep-state-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid #eef1f6;
+  font-size: 14px;
+  vertical-align: top;
+}
+
+.lockstep-state-table th {
+  color: #6a7280;
+  font-weight: 500;
+}
+
+.lockstep-state-row.is-different td {
+  background: #fff9f7;
+}
+
+.lockstep-empty {
+  color: #7b8494;
+}
+
+[data-theme="dark"] .lockstep-proof-callout {
+  background: var(--bg-secondary);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .lockstep-hero,
+[data-theme="dark"] .lockstep-panel,
+[data-theme="dark"] .lockstep-stat {
+  background: var(--card-bg);
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+[data-theme="dark"] .lockstep-summary,
+[data-theme="dark"] .lockstep-request p,
+[data-theme="dark"] .lockstep-queue-item p,
+[data-theme="dark"] .lockstep-input-list p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .lockstep-meta,
+[data-theme="dark"] .lockstep-request span,
+[data-theme="dark"] .lockstep-queue-item span,
+[data-theme="dark"] .lockstep-input-list span,
+[data-theme="dark"] .lockstep-diff-list span,
+[data-theme="dark"] .lockstep-empty,
+[data-theme="dark"] .lockstep-state-table th {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .lockstep-button {
+  background: var(--bg-secondary);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+[data-theme="dark"] .lockstep-button-primary {
+  background: #c96b00;
+  border-color: #c96b00;
+  color: #fff;
+}
+
+[data-theme="dark"] .lockstep-banner.is-ready,
+[data-theme="dark"] .lockstep-chip,
+[data-theme="dark"] .lockstep-input-chip {
+  background: var(--bg-secondary);
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .lockstep-banner.is-healthy,
+[data-theme="dark"] .lockstep-banner.is-running,
+[data-theme="dark"] .lockstep-input-chip.is-derived {
+  background: rgba(74, 183, 115, 0.16);
+  border-color: rgba(74, 183, 115, 0.34);
+  color: #9dd8ae;
+}
+
+[data-theme="dark"] .lockstep-banner.is-complete,
+[data-theme="dark"] .lockstep-chip.is-applied,
+[data-theme="dark"] .lockstep-input-chip.is-embedded {
+  background: rgba(42, 122, 226, 0.16);
+  border-color: rgba(42, 122, 226, 0.34);
+  color: #a9ccff;
+}
+
+[data-theme="dark"] .lockstep-banner.is-drift,
+[data-theme="dark"] .lockstep-chip.is-drift {
+  background: rgba(210, 95, 73, 0.18);
+  border-color: rgba(210, 95, 73, 0.34);
+  color: #ffb9ac;
+}
+
+[data-theme="dark"] .lockstep-chip.is-next {
+  background: rgba(201, 107, 0, 0.18);
+  border-color: rgba(201, 107, 0, 0.34);
+  color: #ffd1a1;
+}
+
+[data-theme="dark"] .lockstep-input-chip.is-reference {
+  background: rgba(123, 93, 255, 0.16);
+  border-color: rgba(123, 93, 255, 0.34);
+  color: #c7b8ff;
+}
+
+[data-theme="dark"] .lockstep-state-row.is-different td {
+  background: rgba(210, 95, 73, 0.08);
+}
+
+[data-theme="dark"] .lockstep-stat strong,
+[data-theme="dark"] .lockstep-panel h3,
+[data-theme="dark"] .lockstep-hero h2,
+[data-theme="dark"] .lockstep-request strong,
+[data-theme="dark"] .lockstep-state-table td {
+  color: var(--text);
+}
+
+[data-theme="dark"] .lockstep-queue-item,
+[data-theme="dark"] .lockstep-input-list li,
+[data-theme="dark"] .lockstep-state-table th,
+[data-theme="dark"] .lockstep-state-table td {
+  border-bottom-color: var(--border);
+}
+
+@media (max-width: 700px) {
+  .lockstep-controls,
+  .lockstep-meta,
+  .lockstep-queue-head,
+  .lockstep-input-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .lockstep-hero h2 {
+    font-size: 26px;
+  }
+}
+
+/* ========================================
    Digital twin blog
    ======================================== */
 
