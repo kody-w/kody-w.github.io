@@ -160,6 +160,11 @@ EXPECTED_POSTS = {
         "date": "2026-03-07",
         "tags": "[systems, databases]",
     },
+    "2026-03-07-world-compilers.md": {
+        "title": '"World Compilers: When Frame Sequences Become Executable Machinery"',
+        "date": "2026-03-07",
+        "tags": "[systems, simulation]",
+    },
 }
 
 
@@ -211,6 +216,7 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-07 / Compiler Layer", body)
         self.assertIn("## Frame 2026-03-07 / Schema Layer", body)
         self.assertIn("## Frame 2026-03-07 / Tick-Tock Layer", body)
         self.assertIn("## Frame 2026-03-07 / Universal Machine", body)

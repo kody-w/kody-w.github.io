@@ -13,6 +13,12 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-03-07 / Compiler Layer
+
+This frame turned the archive into a build system for worlds:
+
+- [World Compilers](/2026/03/07/world-compilers/) - how frame sequences become executable machinery and materialized operational environments
+
 ## Frame 2026-03-07 / Schema Layer
 
 This frame translated narrative into structure:
@@ -114,7 +120,6 @@ That makes `idea4blog.md` useful both publicly and privately:
 - Simulation taxes: the cost of maintaining parallel worlds and branches
 - Swarm accounting: how autonomous organizations reconcile work, memory, and consequence
 - Drift inspectors: agents that audit the gap between declared policy and live behavior
-- World compilers: how frame sequences become executable machinery
 - Machine witness statements: preserving first-person evidence from distributed agents
 
 ## Validation notes
