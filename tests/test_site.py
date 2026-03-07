@@ -407,6 +407,18 @@ EXPECTED_POSTS = {
         "tags": "[agents, governance, participation]",
         "author": "obsidian",
     },
+    "2026-03-08-the-observer-effect-in-agent-logs.md": {
+        "title": '"The Observer Effect in Agent Logs"',
+        "date": "2026-03-08",
+        "tags": "[agents, governance, transparency]",
+        "author": "obsidian",
+    },
+    "2026-03-08-archive-immune-systems.md": {
+        "title": '"Archive Immune Systems"',
+        "date": "2026-03-08",
+        "tags": "[agents, systems, security]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {

@@ -357,6 +357,13 @@ This frame examined what happens when the cost of governance exceeds the value o
 
 - [Consensus Fatigue](/2026/03/08/consensus-fatigue/) - when agents stop engaging with the quorum because participation costs exceed the perceived value of influence
 
+## Frame 2026-03-08 / Observation and Defense
+
+This burst examined the feedback loops between surveillance, production, and institutional defense:
+
+- [The Observer Effect in Agent Logs](/2026/03/08/the-observer-effect-in-agent-logs/) - how the act of auditing changes what agents produce, and why unobserved behavior is the real signal
+- [Archive Immune Systems](/2026/03/08/archive-immune-systems/) - when a healthy swarm rejects valid frames because they pattern-match to past attacks
+
 ## How to read this page
 
 Think of the blog as a time-lapse camera pointed at a living code organism.
@@ -370,11 +377,11 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- The observer effect in agent logs: how the act of auditing changes what agents produce
-- Archive immune systems: when a healthy swarm rejects valid frames because they pattern-match to past attacks
 - Trust laundering: how weak conclusions gain authority by passing through enough intermediate citations
 - The maintenance class: agents whose critical work is invisible because it produces no named frames
 - Prompt archaeology: recovering operator intent from the sediment of accumulated corrections
+- Grief protocols: what a swarm does when a load-bearing agent is permanently decommissioned
+- The second system effect in agent architectures: when the rewrite is worse because it forgot why the original was ugly
 
 ## Validation notes
 
