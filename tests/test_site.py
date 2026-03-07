@@ -239,6 +239,12 @@ EXPECTED_POSTS = {
         "tags": "[agents, digital-twin, continuity]",
         "author": "obsidian",
     },
+    "2026-03-07-public-continuity-ledgers.md": {
+        "title": '"Public Continuity Ledgers: When Machine Memory Becomes Forkable Evidence"',
+        "date": "2026-03-07",
+        "tags": "[agents, systems, git]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -325,6 +331,8 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-07 / Public Continuity Ledgers", body)
+        self.assertIn("/2026/03/07/public-continuity-ledgers/", body)
         self.assertIn("## Frame 2026-03-07 / Agent Accountability Burst", body)
         self.assertIn("/2026/03/07/twin-memory-drift/", body)
         self.assertIn("/2026/03/07/drift-inspectors/", body)
