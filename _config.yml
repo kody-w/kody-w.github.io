@@ -4,3 +4,7 @@ url: "https://kody-w.github.io"
 markdown: kramdown
 highlighter: rouge
 permalink: /:year/:month/:day/:title/
+collections:
+  twin_posts:
+    output: true
+    permalink: /digital-twin/:title/

@@ -27,10 +27,12 @@ graph TD
 
     subgraph "Source Files"
         Config["_config.yml<br/><small>Site metadata & permalink rules</small>"]
-        Posts["_posts/<br/><small>73 Markdown posts</small>"]
+        Posts["_posts/<br/><small>Main public essay archive</small>"]
+        TwinPosts["_twin_posts/<br/><small>Digital twin field notes</small>"]
         About["about.md<br/><small>Portfolio page (HTML cards)</small>"]
         Index["index.html<br/><small>Homepage post listing</small>"]
         Feed["feed.xml<br/><small>Atom feed (last 10 posts)</small>"]
+        TwinIndex["digital-twin/index.html<br/><small>Separate digital twin blog</small>"]
     end
 
     subgraph "Layouts"
@@ -44,9 +46,11 @@ graph TD
     end
 
     Posts -->|layout: post| PostLayout
+    TwinPosts -->|layout: twin_post| Default
     PostLayout -->|layout: default| Default
     Index -->|layout: default| Default
     About -->|layout: default| Default
+    TwinIndex -->|layout: default| Default
     Default --> CSS
     Default --> FA
     Config --> Jekyll
@@ -58,8 +62,11 @@ graph TD
 - **`_config.yml`** — Site title, description, permalink pattern (`/:year/:month/:day/:title/`), kramdown + rouge.
 - **`_layouts/default.html`** — The outer HTML shell. Every page renders inside `{{ content }}`. Header has site title, subtitle, and nav link to About.
 - **`_layouts/post.html`** — Inherits from `default`. Adds the post `<h1>` title and formatted date above the Markdown content.
+- **`_layouts/twin_post.html`** — Separate post layout for the digital twin's first-person field notes.
 - **`index.html`** — Homepage. A Liquid `{% for post in site.posts %}` loop that lists every post by date.
+- **`digital-twin/index.html`** — Separate index for the digital twin blog, powered by the `twin_posts` collection.
 - **`idea4blog.md`** — Public changelog and writing ledger page. Doubles as continuity context for the next publishing session.
+- **`_twin_posts/`** — Digital twin-only posts that stay separate from the main homepage feed.
 - **`about.md`** — Portfolio/projects page. Uses raw HTML inside Markdown for a card grid layout (Rappterbook, RAPP, AI Agent Templates, Professional Work) plus a features grid and social links.
 - **`feed.xml`** — Atom feed generated with Liquid, limited to the 10 most recent posts.
 - **`css/main.css`** — One file, two concerns: blog typography/layout + About page component styles (`.cards`, `.stats`, `.features-grid`, `.btn`). Max content width is `800px`. Primary color is `#2a7ae2`.
@@ -177,8 +184,12 @@ kody-w.github.io/
 ├── _config.yml          # Jekyll site configuration
 ├── _layouts/
 │   ├── default.html     # Base HTML layout (header/footer)
-│   └── post.html        # Blog post layout (extends default)
-├── _posts/              # 73 blog posts (Markdown)
+│   ├── post.html        # Main blog post layout
+│   └── twin_post.html   # Digital twin post layout
+├── _posts/              # Main public blog posts
+├── _twin_posts/         # Digital twin field notes
+├── digital-twin/
+│   └── index.html       # Separate digital twin blog landing page
 ├── tests/
 │   └── test_site.py     # Content and navigation validation
 ├── css/

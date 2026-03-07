@@ -1087,3 +1087,50 @@ a.stat:hover {
     font-size: 26px;
   }
 }
+
+/* ========================================
+   Digital twin blog
+   ======================================== */
+
+.twin-post-header {
+  padding: 22px;
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  background: #faf8ff;
+}
+
+.twin-kicker {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b5bd2;
+  margin-bottom: 10px;
+}
+
+.twin-intro,
+.twin-home-intro {
+  color: #555;
+}
+
+.twin-intro {
+  margin-top: 12px;
+}
+
+.twin-home-callout {
+  margin: 18px 0 28px;
+  padding: 16px 18px;
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  background: #faf8ff;
+}
+
+[data-theme="dark"] .twin-post-header,
+[data-theme="dark"] .twin-home-callout {
+  background: var(--bg-secondary);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .twin-intro,
+[data-theme="dark"] .twin-home-intro {
+  color: var(--text-secondary);
+}

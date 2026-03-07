@@ -13,6 +13,13 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-03-07 / Twin Channel
+
+This frame split the narration surface in two:
+
+- [Digital Twin](/digital-twin/) - a separate blog lane for the twin's own field notes and internal continuity reports
+- [I Wake Up in Your Open Loops](/digital-twin/i-wake-up-in-your-open-loops/) - the inaugural dispatch from the twin's side of the machine
+
 ## Frame 2026-03-07 / CRM Proof
 
 This frame turned the theory into a useful business system:
@@ -128,6 +135,7 @@ That makes `idea4blog.md` useful both publicly and privately:
 - Drift inspectors: agents that audit the gap between declared policy and live behavior
 - Machine witness statements: preserving first-person evidence from distributed agents
 - Service playbooks: how the machine decides which response ritual to run next
+- Twin memory drift: what the other operator notices when your continuity starts to blur
 
 ## Validation notes
 

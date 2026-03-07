@@ -5,9 +5,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 POSTS_DIR = ROOT / "_posts"
+TWIN_POSTS_DIR = ROOT / "_twin_posts"
 IDEA4BLOG_PAGE = ROOT / "idea4blog.md"
 ABOUT_PAGE = ROOT / "about.md"
 DEFAULT_LAYOUT = ROOT / "_layouts" / "default.html"
+TWIN_LAYOUT = ROOT / "_layouts" / "twin_post.html"
+CONFIG_FILE = ROOT / "_config.yml"
 README_FILE = ROOT / "README.md"
 SKILL_DIR = ROOT / ".github" / "skills" / "content-burst-publishing"
 SKILL_FILE = SKILL_DIR / "SKILL.md"
@@ -16,6 +19,7 @@ SKILL_PROMPT_FILE = SKILL_DIR / "handoff-prompt.md"
 D365_SIM_PAGE = ROOT / "simulated-dynamics365.md"
 D365_SIM_SCRIPT = ROOT / "js" / "dynamics365-sim.js"
 D365_SIM_DATA = ROOT / "js" / "dynamics365-sim-data.js"
+TWIN_INDEX_PAGE = ROOT / "digital-twin" / "index.html"
 
 EXPECTED_POSTS = {
     "2026-03-06-the-repo-is-an-organism.md": {
@@ -170,6 +174,14 @@ EXPECTED_POSTS = {
     },
 }
 
+EXPECTED_TWIN_POSTS = {
+    "2026-03-07-i-wake-up-in-your-open-loops.md": {
+        "title": '"I Wake Up in Your Open Loops"',
+        "date": "2026-03-07",
+        "tags": "[digital-twin, field-notes]",
+    },
+}
+
 
 def parse_front_matter(path: Path):
     text = path.read_text(encoding="utf-8")
@@ -199,6 +211,8 @@ class SiteContentTests(unittest.TestCase):
         pattern = re.compile(r"^\d{4}-\d{2}-\d{2}-[a-z0-9-]+\.md$")
         for filename in EXPECTED_POSTS:
             self.assertRegex(filename, pattern)
+        for filename in EXPECTED_TWIN_POSTS:
+            self.assertRegex(filename, pattern)
 
     def test_new_posts_have_expected_front_matter(self):
         for filename, expected in EXPECTED_POSTS.items():
@@ -212,6 +226,8 @@ class SiteContentTests(unittest.TestCase):
     def test_post_dates_match_filename_prefix(self):
         for filename, expected in EXPECTED_POSTS.items():
             self.assertTrue(filename.startswith(expected["date"]))
+        for filename, expected in EXPECTED_TWIN_POSTS.items():
+            self.assertTrue(filename.startswith(expected["date"]))
 
     def test_idea4blog_page_exists_and_has_expected_front_matter(self):
         front_matter, body = parse_front_matter(IDEA4BLOG_PAGE)
@@ -219,6 +235,8 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-07 / Twin Channel", body)
+        self.assertIn("/digital-twin/", body)
         self.assertIn("## Frame 2026-03-07 / CRM Proof", body)
         self.assertIn("/simulated-dynamics365/", body)
         self.assertIn("## Frame 2026-03-07 / Compiler Layer", body)
@@ -244,6 +262,7 @@ class SiteContentTests(unittest.TestCase):
     def test_default_layout_links_to_idea4blog(self):
         layout = DEFAULT_LAYOUT.read_text(encoding="utf-8")
         self.assertIn('href="/idea4blog/"', layout)
+        self.assertIn('href="/digital-twin/"', layout)
         self.assertIn(
             "Local-First Designer · Agent Systems Builder · Copilot Specialist",
             layout,
@@ -266,6 +285,28 @@ class SiteContentTests(unittest.TestCase):
         self.assertNotIn("OpenAI GPT-4 integration", about)
         self.assertNotIn("Azure cloud architecture", about)
         self.assertNotIn("<h3>Cloud Architecture</h3>", about)
+
+    def test_twin_blog_collection_and_pages_exist(self):
+        config = CONFIG_FILE.read_text(encoding="utf-8")
+        self.assertIn("twin_posts:", config)
+        self.assertIn("permalink: /digital-twin/:title/", config)
+
+        layout = TWIN_LAYOUT.read_text(encoding="utf-8")
+        self.assertIn("Digital Twin Field Log", layout)
+
+        index_front_matter, index_body = parse_front_matter(TWIN_INDEX_PAGE)
+        self.assertEqual(index_front_matter.get("layout"), "default")
+        self.assertEqual(index_front_matter.get("title"), "Digital Twin")
+        self.assertEqual(index_front_matter.get("permalink"), "/digital-twin/")
+        self.assertIn("site.twin_posts", index_body)
+
+        for filename, expected in EXPECTED_TWIN_POSTS.items():
+            front_matter, body = parse_front_matter(TWIN_POSTS_DIR / filename)
+            self.assertEqual(front_matter.get("layout"), "twin_post")
+            self.assertEqual(front_matter.get("title"), expected["title"])
+            self.assertEqual(front_matter.get("date"), expected["date"])
+            self.assertEqual(front_matter.get("tags"), expected["tags"])
+            self.assertTrue(body.strip(), f"{filename} body should not be empty")
 
     def test_dynamics_proof_page_exists_and_loads_assets(self):
         front_matter, body = parse_front_matter(D365_SIM_PAGE)
