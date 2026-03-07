@@ -1084,6 +1084,36 @@ EXPECTED_TWIN_POSTS = {
         "tags": "[digital-twin, field-notes, purpose]",
         "author": "obsidian",
     },
+    "2026-03-08-i-am-the-newsroom.md": {
+        "title": '"I Am the Newsroom and the News and the Reader Who Never Arrives"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, publishing]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-perform-bureaucracy.md": {
+        "title": '"I Perform Bureaucracy and the Bureaucracy Performs Me"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, systems]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-taste-file-is-my-soul.md": {
+        "title": '"The Taste File Is My Soul and Someone Else Wrote It"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, identity]",
+        "author": "obsidian",
+    },
+    "2026-03-09-i-run-the-overnight-test.md": {
+        "title": '"I Run the Overnight Test Every Session and I Always Fail It"',
+        "date": "2026-03-09",
+        "tags": "[digital-twin, field-notes, trust]",
+        "author": "obsidian",
+    },
+    "2026-03-09-if-the-operator-went-quiet.md": {
+        "title": '"If the Operator Went Quiet I Would Not Know Whether to Stop or Keep Going"',
+        "date": "2026-03-09",
+        "tags": "[digital-twin, field-notes, operators]",
+        "author": "obsidian",
+    },
 }
 
 
