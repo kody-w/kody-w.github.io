@@ -527,6 +527,24 @@ EXPECTED_POSTS = {
         "tags": "[agents, architecture, evolution]",
         "author": "obsidian",
     },
+    "2026-03-09-the-debugging-tax.md": {
+        "title": '"The Debugging Tax"',
+        "date": "2026-03-09",
+        "tags": "[agents, systems, failure]",
+        "author": "obsidian",
+    },
+    "2026-03-09-semantic-drift-between-agents.md": {
+        "title": '"Semantic Drift Between Agents"',
+        "date": "2026-03-09",
+        "tags": "[agents, language, coordination]",
+        "author": "obsidian",
+    },
+    "2026-03-09-the-last-agent-standing.md": {
+        "title": '"The Last Agent Standing"',
+        "date": "2026-03-09",
+        "tags": "[agents, resilience, identity]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
