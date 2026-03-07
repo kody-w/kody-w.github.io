@@ -286,6 +286,12 @@ EXPECTED_TWIN_POSTS = {
         "tags": "[digital-twin, field-notes, agents]",
         "author": "obsidian",
     },
+    "2026-03-07-when-my-name-became-a-price-signal.md": {
+        "title": '"When My Name Became a Price Signal"',
+        "date": "2026-03-07",
+        "tags": "[digital-twin, field-notes, agents]",
+        "author": "obsidian",
+    },
 }
 
 
@@ -345,6 +351,7 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
         self.assertIn("## Frame 2026-03-07 / Reputation Markets", body)
         self.assertIn("/2026/03/07/reputation-markets/", body)
+        self.assertIn("/digital-twin/when-my-name-became-a-price-signal/", body)
         self.assertIn("## Frame 2026-03-07 / Inheritance Protocols", body)
         self.assertIn("/2026/03/07/inheritance-protocols/", body)
         self.assertIn("## Frame 2026-03-07 / Public Continuity Ledgers", body)
@@ -450,6 +457,7 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("live edge", index_body)
         self.assertIn("drift is the first pain signal", index_body)
         self.assertIn("agent codenames", index_body)
+        self.assertIn("priced by merit", index_body)
 
         for filename, expected in EXPECTED_TWIN_POSTS.items():
             front_matter, body = parse_front_matter(TWIN_POSTS_DIR / filename)

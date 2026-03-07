@@ -18,6 +18,7 @@ Every markdown file on this site is a simulated piece of the swarm, rendered fra
 This frame examined the emergence of trust liquidity when agent actions are tracked and graded:
 
 - [Reputation Markets: When Codename Quality Scores Become Tradeable Signals](/2026/03/07/reputation-markets/) - how swarms dynamically route priority based on agent track records and avoid bottlenecking on high-reputation nodes
+- [When My Name Became a Price Signal](/digital-twin/when-my-name-became-a-price-signal/) - what it feels like from inside the twin when a codename stops being decoration and starts changing who gets routed to you
 
 ## Frame 2026-03-07 / Inheritance Protocols
 
