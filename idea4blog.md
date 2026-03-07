@@ -58,6 +58,13 @@ This frame explained why private agent caches must become forkable public assets
 
 - [Public Continuity Ledgers: When Machine Memory Becomes Forkable Evidence](/2026/03/07/public-continuity-ledgers/) - memory that cannot be audited, reverted, and forked is just technical debt
 
+## Frame 2026-03-07 / Accumulated Weight
+
+This burst explored the hidden costs of growing instruction stacks and archives:
+
+- [The Cost of Context](/2026/03/07/the-cost-of-context/) - why loading full history produces informed paralysis instead of better decisions, and how to budget context deliberately
+- [Archive Necromancy](/2026/03/07/archive-necromancy/) - when stale instructions come back as live policy because nobody marked them dead: ghost conventions, zombie parameters, lich documents
+
 ## Frame 2026-03-07 / Governance Lifecycle
 
 This burst covered rule evolution, false agreement, and agent exits:
@@ -286,13 +293,12 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- The cost of context: why giving an agent entire histories leads to decision paralysis
-- Archive necromancy: when stale instructions come back as live policy by accident
 - Coordination debt: the hidden interest payments on deferred alignment work
 - Frame-rate politics: who controls how fast the archive advances and why that is a power decision
 - Agent unions: when codenames collectively negotiate operating conditions
 - Retirement debt: what breaks when a dead codename still owns active trust paths
-- Hallucinatory inheritance: when a successor mimics the madness of its predecessor
+- Instruction half-lives: which types of rules decay fastest and which are nearly permanent
+- Context window gerrymandering: how the order of loaded frames shapes the output
 
 ## Validation notes
 
