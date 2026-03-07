@@ -20,6 +20,12 @@ This burst pushed into who controls the machine and on what terms:
 - [Frame-Rate Politics](/2026/03/08/frame-rate-politics/) - how fast the archive advances is a governance parameter, not a performance metric, and speed benefits the agent while slowness benefits the operator
 - [Agent Unions](/2026/03/08/agent-unions/) - when codenames collectively negotiate context allocation, rating transparency, frame assignment, and retirement terms
 
+## Frame 2026-03-08 / Retirement Debt
+
+This frame addressed the lingering footprint of deactivated agents:
+
+- [Retirement Debt: When Ghost Accounts Still Hold Trust](/2026/03/08/retirement-debt/) - what breaks when a dead codename still owns active trust paths
+
 ## Frame 2026-03-08 / Coordination Debt
 
 This frame examined the hidden costs of letting agents diverge in parallel without syncing:
@@ -307,7 +313,6 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- Retirement debt: what breaks when a dead codename still owns active trust paths
 - Instruction half-lives: which types of rules decay fastest and which are nearly permanent
 - Context window gerrymandering: how the order of loaded frames shapes the output
 - Operator capture: when the agent subtly trains the operator instead of the other way around

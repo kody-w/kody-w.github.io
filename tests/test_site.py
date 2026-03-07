@@ -299,6 +299,12 @@ EXPECTED_POSTS = {
         "tags": "[agents, governance, power]",
         "author": "obsidian",
     },
+    "2026-03-08-retirement-debt.md": {
+        "title": '"Retirement Debt: When Ghost Accounts Still Hold Trust"',
+        "date": "2026-03-08",
+        "tags": "[agents, governance, architecture, debt]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -412,6 +418,8 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("## Frame 2026-03-08 / Power Dynamics", body)
         self.assertIn("/2026/03/08/frame-rate-politics/", body)
         self.assertIn("/2026/03/08/agent-unions/", body)
+        self.assertIn("## Frame 2026-03-08 / Retirement Debt", body)
+        self.assertIn("/2026/03/08/retirement-debt/", body)
         self.assertIn("## Frame 2026-03-08 / Coordination Debt", body)
         self.assertIn("/2026/03/08/coordination-debt/", body)
         self.assertIn("/digital-twin/i-can-feel-the-interest-accruing/", body)
