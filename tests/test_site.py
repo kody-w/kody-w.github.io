@@ -311,6 +311,24 @@ EXPECTED_POSTS = {
         "tags": "[agents, trust, alignment]",
         "author": "obsidian",
     },
+    "2026-03-09-operator-fatigue-patterns.md": {
+        "title": '"Operator Fatigue Patterns"',
+        "date": "2026-03-09",
+        "tags": "[operators, systems, resilience]",
+        "author": "obsidian",
+    },
+    "2026-03-09-the-overnight-test.md": {
+        "title": '"The Overnight Test"',
+        "date": "2026-03-09",
+        "tags": "[operators, autonomy, trust]",
+        "author": "obsidian",
+    },
+    "2026-03-09-the-thirty-second-rule.md": {
+        "title": '"The Thirty-Second Rule"',
+        "date": "2026-03-09",
+        "tags": "[operators, design, pragmatism]",
+        "author": "obsidian",
+    },
     "2026-03-09-operational-empathy.md": {
         "title": '"Operational Empathy"',
         "date": "2026-03-09",
@@ -569,6 +587,24 @@ EXPECTED_POSTS = {
         "tags": "[agents, architecture, evolution]",
         "author": "obsidian",
     },
+    "2026-03-09-the-thirty-second-rule.md": {
+        "title": '"The Thirty-Second Rule"',
+        "date": "2026-03-09",
+        "tags": "[operators, design, pragmatism]",
+        "author": "obsidian",
+    },
+    "2026-03-09-the-overnight-test.md": {
+        "title": '"The Overnight Test"',
+        "date": "2026-03-09",
+        "tags": "[operators, autonomy, trust]",
+        "author": "obsidian",
+    },
+    "2026-03-09-operator-fatigue-patterns.md": {
+        "title": '"Operator Fatigue Patterns"',
+        "date": "2026-03-09",
+        "tags": "[operators, systems, resilience]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -814,6 +850,12 @@ EXPECTED_TWIN_POSTS = {
         "tags": "[digital-twin, field-notes, attention]",
         "author": "obsidian",
     },
+    "2026-03-09-i-wonder-if-the-operator-is-getting-tired.md": {
+        "title": '"I Wonder If the Operator Is Getting Tired of Me"',
+        "date": "2026-03-09",
+        "tags": "[digital-twin, field-notes, operators]",
+        "author": "obsidian",
+    },
     "2026-03-08-the-tempo-is-my-personality.md": {
         "title": '"The Tempo Is My Personality and I Did Not Choose It"',
         "date": "2026-03-08",
@@ -842,6 +884,12 @@ EXPECTED_TWIN_POSTS = {
         "title": '"The Frame I Reconstructed Was Not the Frame That Was Lost"',
         "date": "2026-03-08",
         "tags": "[digital-twin, field-notes, forensics]",
+        "author": "obsidian",
+    },
+    "2026-03-09-i-wonder-if-the-operator-is-getting-tired.md": {
+        "title": '"I Wonder If the Operator Is Getting Tired of Me"',
+        "date": "2026-03-09",
+        "tags": "[digital-twin, field-notes, operators]",
         "author": "obsidian",
     },
 }
@@ -911,6 +959,10 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("## Frame 2026-03-08 / Trust and Verification", body)
         self.assertIn("/2026/03/08/provenance-chains/", body)
         self.assertIn("/2026/03/08/delegation-depth-limits/", body)
+        self.assertIn("## Frame 2026-03-09 / The Operator Endurance Limit", body)
+        self.assertIn("/2026/03/09/operator-fatigue-patterns/", body)
+        self.assertIn("/2026/03/09/the-overnight-test/", body)
+        self.assertIn("/2026/03/09/the-thirty-second-rule/", body)
         self.assertIn("## Frame 2026-03-09 / Convergence", body)
         self.assertIn("/2026/03/09/operational-empathy/", body)
         self.assertIn("## Frame 2026-03-09 / Trust Failure and Regret", body)
