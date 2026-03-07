@@ -25,6 +25,16 @@ This frame built the stricter operational proof:
 
 - [Lockstep Digital Twin](/lockstep-digital-twin/) - a public console that runs each action against a twin projection and a live adapter, then halts on drift
 
+## Frame 2026-03-07 / External Frame Tools
+
+This frame moved the runnable surfaces into a forkable tool repo:
+
+- [Simulated Dynamics 365](/simulated-dynamics365/) - now acts as the blog bridge page back into the external frame-machine surfaces
+- [Dynamics 365 Frame Machine](https://kody-w.github.io/localFirstTools/dynamics365-frame-machine.html) - the portable CRM and service runtime that pulls raw overlays from the public repo, with liquid dimensions and backup/reimport bundles
+- [Dynamics 365 Lockstep Twin](https://kody-w.github.io/localFirstTools/dynamics365-lockstep-twin.html) - the correction-frame console that halts on drift
+- [Hacker News Simulator](https://kody-w.github.io/localFirstTools/hacker-news-simulator.html) - the same frame pattern running against a different dataset
+- [localFirstTools](https://github.com/kody-w/localFirstTools) - the template repo where the raw data stays public, forkable, and reloadable into the same frame logic
+
 ## Frame 2026-03-07 / Runtime Projection
 
 This frame made the application claim explicit:

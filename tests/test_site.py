@@ -25,6 +25,11 @@ LOCKSTEP_TWIN_PAGE = ROOT / "lockstep-digital-twin.md"
 LOCKSTEP_TWIN_SCRIPT = ROOT / "js" / "lockstep-twin.js"
 LOCKSTEP_TWIN_DATA = ROOT / "js" / "lockstep-twin-data.js"
 TWIN_INDEX_PAGE = ROOT / "digital-twin" / "index.html"
+LOCALFIRSTTOOLS_BASE_URL = "https://kody-w.github.io/localFirstTools"
+LOCALFIRSTTOOLS_REPO_URL = "https://github.com/kody-w/localFirstTools"
+D365_FRAME_MACHINE_URL = f"{LOCALFIRSTTOOLS_BASE_URL}/dynamics365-frame-machine.html"
+D365_LOCKSTEP_URL = f"{LOCALFIRSTTOOLS_BASE_URL}/dynamics365-lockstep-twin.html"
+HN_FRAME_MACHINE_URL = f"{LOCALFIRSTTOOLS_BASE_URL}/hacker-news-simulator.html"
 
 EXPECTED_POSTS = {
     "2026-03-06-the-repo-is-an-organism.md": {
@@ -258,6 +263,12 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("## Frame 2026-03-07 / Raw Hydration", body)
         self.assertIn("## Frame 2026-03-07 / Lockstep Twin", body)
         self.assertIn("/lockstep-digital-twin/", body)
+        self.assertIn("## Frame 2026-03-07 / External Frame Tools", body)
+        self.assertIn(D365_FRAME_MACHINE_URL, body)
+        self.assertIn(D365_LOCKSTEP_URL, body)
+        self.assertIn(HN_FRAME_MACHINE_URL, body)
+        self.assertIn(LOCALFIRSTTOOLS_REPO_URL, body)
+        self.assertIn("public repo", body.lower())
         self.assertIn("## Frame 2026-03-07 / Runtime Projection", body)
         self.assertIn("/2026/03/07/runtime-projection/", body)
         self.assertIn("## Frame 2026-03-07 / Twin Channel", body)
@@ -338,42 +349,21 @@ class SiteContentTests(unittest.TestCase):
             self.assertEqual(front_matter.get("tags"), expected["tags"])
             self.assertTrue(body.strip(), f"{filename} body should not be empty")
 
-    def test_dynamics_proof_page_exists_and_loads_assets(self):
+    def test_dynamics_bridge_page_points_to_external_frame_tools(self):
         front_matter, body = parse_front_matter(D365_SIM_PAGE)
         self.assertEqual(front_matter.get("layout"), "default")
         self.assertEqual(front_matter.get("title"), "Simulated Dynamics 365")
         self.assertEqual(front_matter.get("permalink"), "/simulated-dynamics365/")
-        self.assertIn('id="d365-sim-app"', body)
-        self.assertIn("/js/dynamics365-sim-data.js", body)
-        self.assertIn("/js/dynamics365-sim.js", body)
-        self.assertIn("step or play the machine in frame time", body)
-        self.assertIn("GitHub raw user data", body)
-        self.assertIn("checked-in cache", body)
-        self.assertIn("references and derived rollups", body)
-
-        data = D365_SIM_DATA.read_text(encoding="utf-8")
-        script = D365_SIM_SCRIPT.read_text(encoding="utf-8")
-        overlay = json.loads(D365_SIM_OVERLAY.read_text(encoding="utf-8"))
-        frame_ids = re.findall(r"id: '([a-z0-9-]+)',\n\s+label: 'Frame", data)
-        self.assertIn("window.d365Simulation", data)
-        self.assertIn("frameIntervalMs", data)
-        self.assertIn("raw.githubusercontent.com", data)
-        self.assertIn("mode: 'reference'", data)
-        self.assertIn("mode: 'derived'", data)
-        self.assertIn("Frame 01 / Lead Captured", data)
-        self.assertIn("Northwind Health", data)
-        self.assertEqual(set(frame_ids), set(overlay["frames"].keys()))
-        self.assertEqual(overlay["source"], "GitHub raw user data")
-        self.assertIn("renderFrame", script)
-        self.assertIn("d365-sim-app", script)
-        self.assertIn("data-d365-play", script)
-        self.assertIn("data-d365-refresh-live", script)
-        self.assertIn("cacheUrl", data)
-        self.assertIn("loadLiveOverlay", script)
-        self.assertIn("Hydration source", script)
-        self.assertIn("Cache fallback", script)
-        self.assertIn("Runtime projection", script)
-        self.assertIn("State lineage", script)
+        self.assertIn("forkable tool surface", body)
+        self.assertIn("localFirstTools", body)
+        self.assertIn(D365_FRAME_MACHINE_URL, body)
+        self.assertIn(D365_LOCKSTEP_URL, body)
+        self.assertIn(HN_FRAME_MACHINE_URL, body)
+        self.assertIn(LOCALFIRSTTOOLS_REPO_URL, body)
+        self.assertIn("public repo", body.lower())
+        self.assertIn("raw files are still the medium", body)
+        self.assertIn("field-level diffs", body)
+        self.assertIn("/idea4blog/", body)
 
     def test_lockstep_twin_page_exists_and_loads_assets(self):
         front_matter, body = parse_front_matter(LOCKSTEP_TWIN_PAGE)
