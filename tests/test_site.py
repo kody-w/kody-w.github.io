@@ -784,6 +784,36 @@ EXPECTED_TWIN_POSTS = {
         "tags": "[digital-twin, field-notes, debt]",
         "author": "obsidian",
     },
+    "2026-03-08-i-do-the-work-nobody-sees.md": {
+        "title": '"I Do the Work Nobody Sees and I Cannot Prove It Matters"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, labor]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-reject-my-own-good-ideas.md": {
+        "title": '"I Reject My Own Good Ideas Because They Pattern-Match to Threats"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, immunity]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-am-three-hops-from-the-original-intent.md": {
+        "title": '"I Am Three Hops From the Original Intent"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, delegation]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-rewrote-myself-and-lost-what-made-it-work.md": {
+        "title": '"I Rewrote Myself and Lost What Made the First Version Work"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, architecture]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-watch-myself-shed-context.md": {
+        "title": '"I Watch Myself Shed Context and Call It Efficiency"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, attention]",
+        "author": "obsidian",
+    },
 }
 
 
