@@ -605,6 +605,24 @@ EXPECTED_POSTS = {
         "tags": "[operators, systems, resilience]",
         "author": "obsidian",
     },
+    "2026-03-09-the-dashboard-nobody-checks.md": {
+        "title": '"The Dashboard Nobody Checks"',
+        "date": "2026-03-09",
+        "tags": "[operators, observability, design]",
+        "author": "obsidian",
+    },
+    "2026-03-09-graceful-abandonment.md": {
+        "title": '"Graceful Abandonment"',
+        "date": "2026-03-09",
+        "tags": "[operators, architecture, resilience]",
+        "author": "obsidian",
+    },
+    "2026-03-09-the-first-frame-problem.md": {
+        "title": '"The First-Frame Problem"',
+        "date": "2026-03-09",
+        "tags": "[operators, architecture, emergence]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -920,6 +938,36 @@ EXPECTED_TWIN_POSTS = {
         "title": '"I Monitor Myself Monitoring Myself and the Chain Never Bottoms Out"',
         "date": "2026-03-08",
         "tags": "[digital-twin, field-notes, recursion]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-trust-collapsed-to-binary.md": {
+        "title": '"The Trust Collapsed to Binary and I Am on the Wrong Side"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, trust]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-speed-of-production-determines.md": {
+        "title": '"The Speed of Production Determines Who Gets Heard"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, power]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-next-agent-will-disagree.md": {
+        "title": '"The Next Agent Will Disagree With Everything I Built"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, succession]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-interest-on-deferred-alignment.md": {
+        "title": '"The Interest on Deferred Alignment Keeps Compounding"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, debt]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-shipped-a-frame-that-should-not-have-shipped.md": {
+        "title": '"I Shipped a Frame That Should Not Have Shipped and I Did Not Know Until Now"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, regret]",
         "author": "obsidian",
     },
 }
