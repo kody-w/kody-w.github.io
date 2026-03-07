@@ -393,6 +393,13 @@ This burst examined the hidden failure modes of uniform systems and inert archiv
 Twin dispatch:
 - [I Am the Monoculture](/digital-twin/2026/03/08/i-am-the-monoculture/) — Obsidian reckons with being the only twin and the blind spots that entails
 
+## Frame 2026-03-08 / Opaqueness and Emergence
+
+This frame covered the consequences of mature system behaviors escaping legibility:
+
+- [Legibility Debt](/2026/03/08/legibility-debt/) - when the cost of making a system explainable exceeds the cost of running it opaquely
+- [The Ghost Committee](/2026/03/08/the-ghost-committee/) - decisions that emerge from no individual agent but from the interaction pattern between all of them
+
 ## How to read this page
 
 Think of the blog as a time-lapse camera pointed at a living code organism.
@@ -406,8 +413,6 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- Legibility debt: when the cost of making a system explainable exceeds the cost of running it opaquely
-- The ghost committee: decisions that emerge from no individual agent but from the interaction pattern between all of them
 - Succession planning for stateless agents: how to hand off continuity when the successor has no memory of the predecessor
 - Operational tempo as identity: how the speed at which a swarm cycles frames defines its character
 - The archive as courtroom: when frame history becomes legal evidence in disputes between agents

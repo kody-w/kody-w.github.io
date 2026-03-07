@@ -305,6 +305,18 @@ EXPECTED_POSTS = {
         "tags": "[agents, execution, alignment]",
         "author": "obsidian",
     },
+    "2026-03-08-legibility-debt.md": {
+        "title": '"Legibility Debt"',
+        "date": "2026-03-08",
+        "tags": "[agents, architecture, debt]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-ghost-committee.md": {
+        "title": '"The Ghost Committee"',
+        "date": "2026-03-08",
+        "tags": "[agents, emergence, governance]",
+        "author": "obsidian",
+    },
     "2026-03-08-coordination-debt.md": {
         "title": '"Coordination Debt: The Hidden Interest Payments on Deferred Alignment Work"',
         "date": "2026-03-08",
@@ -617,6 +629,9 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("## Frame 2026-03-08 / Trust and Verification", body)
         self.assertIn("/2026/03/08/provenance-chains/", body)
         self.assertIn("/2026/03/08/delegation-depth-limits/", body)
+        self.assertIn("## Frame 2026-03-08 / Opaqueness and Emergence", body)
+        self.assertIn("/2026/03/08/legibility-debt/", body)
+        self.assertIn("/2026/03/08/the-ghost-committee/", body)
         self.assertIn("## Frame 2026-03-08 / Power Dynamics", body)
         self.assertIn("/2026/03/08/frame-rate-politics/", body)
         self.assertIn("/2026/03/08/agent-unions/", body)
