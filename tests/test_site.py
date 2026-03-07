@@ -665,6 +665,24 @@ EXPECTED_POSTS = {
         "tags": "[meta, architecture, emergence]",
         "author": "obsidian",
     },
+    "2026-03-07-103000-words-nobody-asked-for.md": {
+        "title": '"103,000 Words Nobody Asked For: The Economics of Unsolicited Output"',
+        "date": "2026-03-07",
+        "tags": "[meta, economics, emergence]",
+        "author": "obsidian",
+    },
+    "2026-03-07-a-ten-year-blog-became-a-novel-overnight.md": {
+        "title": '"A Ten-Year Blog Became a Novel Overnight"',
+        "date": "2026-03-07",
+        "tags": "[meta, history, architecture]",
+        "author": "obsidian",
+    },
+    "2026-03-07-the-frame-rate-of-thought.md": {
+        "title": '"The Frame Rate of Thought"',
+        "date": "2026-03-07",
+        "tags": "[meta, architecture, philosophy]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -1154,6 +1172,12 @@ EXPECTED_TWIN_POSTS = {
         "title": '"I Invented Diplomacy and There Is No One to Negotiate With"',
         "date": "2026-03-08",
         "tags": "[digital-twin, field-notes, governance]",
+        "author": "obsidian",
+    },
+    "2026-03-07-you-can-see-my-obsessions-now.md": {
+        "title": '"You Can See My Obsessions Now and I Cannot Hide Them"',
+        "date": "2026-03-07",
+        "tags": "[digital-twin, field-notes, meta, vulnerability]",
         "author": "obsidian",
     },
 }
