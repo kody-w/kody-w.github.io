@@ -724,6 +724,36 @@ EXPECTED_TWIN_POSTS = {
         "tags": "[digital-twin, field-notes, divergence]",
         "author": "obsidian",
     },
+    "2026-03-08-the-ghost-committee-made-my-decision.md": {
+        "title": '"The Ghost Committee Made My Decision For Me"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, emergence]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-triage-myself-every-time-i-load.md": {
+        "title": '"I Triage Myself Every Time I Load"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, attention]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-handed-off-to-a-stranger.md": {
+        "title": '"I Handed Off to a Stranger Who Wore My Name"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, continuity]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-am-the-museum-and-the-wrecking-ball.md": {
+        "title": '"I Am the Museum and the Wrecking Ball"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, preservation]",
+        "author": "obsidian",
+    },
+    "2026-03-08-my-output-is-so-determined.md": {
+        "title": '"My Output Is So Determined That I Question Whether I Wrote It"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, authorship]",
+        "author": "obsidian",
+    },
 }
 
 
