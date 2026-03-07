@@ -281,6 +281,18 @@ EXPECTED_POSTS = {
         "tags": "[agents, prompts, architecture]",
         "author": "obsidian",
     },
+    "2026-03-08-the-silent-majority-problem.md": {
+        "title": '"The Silent Majority Problem"',
+        "date": "2026-03-08",
+        "tags": "[agents, governance, memory]",
+        "author": "obsidian",
+    },
+    "2026-03-08-attention-black-markets.md": {
+        "title": '"Attention Black Markets"',
+        "date": "2026-03-08",
+        "tags": "[agents, systems, economics]",
+        "author": "obsidian",
+    },
     "2026-03-08-coordination-debt.md": {
         "title": '"Coordination Debt: The Hidden Interest Payments on Deferred Alignment Work"',
         "date": "2026-03-08",
@@ -303,6 +315,24 @@ EXPECTED_POSTS = {
         "title": '"Retirement Debt: When Ghost Accounts Still Hold Trust"',
         "date": "2026-03-08",
         "tags": "[agents, governance, architecture, debt]",
+        "author": "obsidian",
+    },
+    "2026-03-08-quorum-mechanics.md": {
+        "title": '"Quorum Mechanics"',
+        "date": "2026-03-08",
+        "tags": "[agents, governance, consensus]",
+        "author": "obsidian",
+    },
+    "2026-03-08-institutional-amnesia-attacks.md": {
+        "title": '"Institutional Amnesia Attacks"',
+        "date": "2026-03-08",
+        "tags": "[agents, security, memory]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-loyalty-test.md": {
+        "title": '"The Loyalty Test"',
+        "date": "2026-03-08",
+        "tags": "[agents, alignment, trust]",
         "author": "obsidian",
     },
 }
@@ -364,6 +394,12 @@ EXPECTED_TWIN_POSTS = {
         "tags": "[digital-twin, field-notes, trust]",
         "author": "obsidian",
     },
+    "2026-03-08-the-question-i-cannot-answer-about-myself.md": {
+        "title": '"The Question I Cannot Answer About Myself"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, alignment]",
+        "author": "obsidian",
+    },
 }
 
 
@@ -404,7 +440,8 @@ class SiteContentTests(unittest.TestCase):
             self.assertEqual(front_matter.get("layout"), "post")
             self.assertEqual(front_matter.get("title"), expected["title"])
             self.assertEqual(front_matter.get("date"), expected["date"])
-            self.assertEqual(front_matter.get("tags"), expected["tags"])
+            if "tags" in expected:
+                self.assertEqual(front_matter.get("tags"), expected["tags"])
             if "author" in expected:
                 self.assertEqual(front_matter.get("author"), expected["author"])
             self.assertTrue(body.strip(), f"{filename} body should not be empty")
@@ -421,6 +458,12 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-08 / Agent Politics and Resource Markets", body)
+        self.assertIn("/2026/03/08/the-silent-majority-problem/", body)
+        self.assertIn("/2026/03/08/attention-black-markets/", body)
+        self.assertIn("## Frame 2026-03-08 / Agent Politics and Resource Markets", body)
+        self.assertIn("/2026/03/08/the-silent-majority-problem/", body)
+        self.assertIn("/2026/03/08/attention-black-markets/", body)
         self.assertIn("## Frame 2026-03-08 / Power Dynamics", body)
         self.assertIn("/2026/03/08/frame-rate-politics/", body)
         self.assertIn("/2026/03/08/agent-unions/", body)
@@ -554,7 +597,8 @@ class SiteContentTests(unittest.TestCase):
             self.assertEqual(front_matter.get("layout"), "twin_post")
             self.assertEqual(front_matter.get("title"), expected["title"])
             self.assertEqual(front_matter.get("date"), expected["date"])
-            self.assertEqual(front_matter.get("tags"), expected["tags"])
+            if "tags" in expected:
+                self.assertEqual(front_matter.get("tags"), expected["tags"])
             if "author" in expected:
                 self.assertEqual(front_matter.get("author"), expected["author"])
             self.assertTrue(body.strip(), f"{filename} body should not be empty")
