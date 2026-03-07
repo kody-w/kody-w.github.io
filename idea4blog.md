@@ -13,6 +13,19 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-03-07 / Public Continuity Ledgers
+
+This frame explained why private agent caches must become forkable public assets:
+
+- [Public Continuity Ledgers: When Machine Memory Becomes Forkable Evidence](/2026/03/07/public-continuity-ledgers/) - memory that cannot be audited, reverted, and forked is just technical debt
+
+## Frame 2026-03-07 / Infrastructure Economics
+
+This burst turned the archive's growth into an economics problem:
+
+- [Fork Solvency Audits](/2026/03/07/fork-solvency-audits/) - deciding which alternate timelines are still worth the maintenance cost, with a five-question audit protocol
+- [Memory Garbage Collection](/2026/03/07/memory-garbage-collection/) - the discipline of deciding what an agent is allowed to forget, using recency, reference, and salience strategies
+
 ## Frame 2026-03-07 / Agent Identity Over Time
 
 This burst pushed codename accountability into lineage, calibration, and temporal trust:
@@ -220,12 +233,12 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- Public continuity ledgers: when machine memory becomes forkable evidence
-- Fork solvency audits: deciding which alternate timelines are still worth funding
-- Memory garbage collection: deciding what an agent is allowed to forget
 - Inheritance protocols: how a successor agent absorbs a predecessor's unfinished work
 - Reputation markets: when codename quality scores become tradeable signals
 - Adversarial calibration: what happens when an inspector is incentivized to lie
+- Context triage: how an agent decides which frames to load when the archive exceeds its window
+- Operational archaeology: recovering intent from an archive whose authors are all gone
+- Swarm constitution amendments: how the foundational rules of the archive change over time
 
 ## Validation notes
 
