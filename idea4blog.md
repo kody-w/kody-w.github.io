@@ -13,6 +13,12 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-03-07 / Schema Layer
+
+This frame translated narrative into structure:
+
+- [Ledger Grammars](/2026/03/07/ledger-grammars/) - the schemas that turn narrative frames into queryable operational state
+
 ## Frame 2026-03-07 / Tick-Tock Layer
 
 This frame made cadence explicit:
@@ -110,7 +116,6 @@ That makes `idea4blog.md` useful both publicly and privately:
 - Drift inspectors: agents that audit the gap between declared policy and live behavior
 - World compilers: how frame sequences become executable machinery
 - Machine witness statements: preserving first-person evidence from distributed agents
-- Ledger grammars: schemas for turning narrative frames into queryable operational state
 
 ## Validation notes
 

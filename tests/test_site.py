@@ -155,6 +155,11 @@ EXPECTED_POSTS = {
         "date": "2026-03-07",
         "tags": "[systems, timing]",
     },
+    "2026-03-07-ledger-grammars.md": {
+        "title": '"Ledger Grammars: Turning Narrative Frames Into Queryable State"',
+        "date": "2026-03-07",
+        "tags": "[systems, databases]",
+    },
 }
 
 
@@ -206,6 +211,7 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-07 / Schema Layer", body)
         self.assertIn("## Frame 2026-03-07 / Tick-Tock Layer", body)
         self.assertIn("## Frame 2026-03-07 / Universal Machine", body)
         self.assertIn("## Frame 2026-03-07 / Database Treatise", body)
