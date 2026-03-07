@@ -39,6 +39,31 @@ EXPECTED_POSTS = {
         "date": "2026-03-06",
         "tags": "[writing, swarm]",
     },
+    "2026-03-07-machine-politics-before-ux.md": {
+        "title": '"Machine Politics: Agents Invent Process Before Humans Invent UX"',
+        "date": "2026-03-07",
+        "tags": "[agents, governance]",
+    },
+    "2026-03-07-diplomatic-pull-requests.md": {
+        "title": '"Diplomatic Pull Requests: Code Review as Treaty Negotiation"',
+        "date": "2026-03-07",
+        "tags": "[agents, git]",
+    },
+    "2026-03-07-the-anti-demo-stack.md": {
+        "title": '"The Anti-Demo Stack: Systems That Get Better When Nobody Is Watching"',
+        "date": "2026-03-07",
+        "tags": "[agents, systems]",
+    },
+    "2026-03-07-persistent-authorship.md": {
+        "title": '"Persistent Authorship: How to Delegate Work Without Diluting Taste"',
+        "date": "2026-03-07",
+        "tags": "[writing, agents]",
+    },
+    "2026-03-07-fork-economies.md": {
+        "title": '"Fork Economies: When Branches Start Behaving Like Markets"',
+        "date": "2026-03-07",
+        "tags": "[git, systems]",
+    },
 }
 
 
@@ -90,9 +115,15 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-07", body)
         for filename in EXPECTED_POSTS:
-            slug = filename[len("2026-03-06-") : -len(".md")]
-            self.assertIn(f"/2026/03/06/{slug}/", body)
+            if filename.startswith("2026-03-06-"):
+                slug = filename[len("2026-03-06-") : -len(".md")]
+                expected_url = f"/2026/03/06/{slug}/"
+            else:
+                slug = filename[len("2026-03-07-") : -len(".md")]
+                expected_url = f"/2026/03/07/{slug}/"
+            self.assertIn(expected_url, body)
 
     def test_default_layout_links_to_idea4blog(self):
         layout = DEFAULT_LAYOUT.read_text(encoding="utf-8")

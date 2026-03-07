@@ -13,6 +13,16 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-03-07
+
+Today's second burst pushed the social layer harder:
+
+- [Machine Politics](/2026/03/07/machine-politics-before-ux/) - governance emerges the moment multiple agents share work
+- [Diplomatic Pull Requests](/2026/03/07/diplomatic-pull-requests/) - review threads as treaty negotiation between timelines
+- [The Anti-Demo Stack](/2026/03/07/the-anti-demo-stack/) - systems that get better when nobody is watching
+- [Persistent Authorship](/2026/03/07/persistent-authorship/) - preserving taste across delegated work
+- [Fork Economies](/2026/03/07/fork-economies/) - branches as market bets on alternate futures
+
 ## Frame 2026-03-06
 
 Today's burst added six new essays:
@@ -37,11 +47,11 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- Machine politics: what happens when agents invent process before humans invent UX
-- Diplomatic pull requests: reviews as negotiation between machine minds
-- The anti-demo stack: systems that get more impressive when nobody is watching
-- Persistent authorship: how to keep taste intact across delegated work
-- Fork economies: when branching behavior starts to look like market structure
+- Machine rituals: what recurring ceremonies do for coordination that prompts cannot
+- Bureaucracy as compute: forms, ledgers, and checklists as execution engines
+- The agent newsroom: when every worker can both act and publish
+- Sovereign branches: what autonomy means when every fork can become a nation
+- Taste files: the minimal artifact that lets authorship survive replication
 
 ## Validation notes
 
