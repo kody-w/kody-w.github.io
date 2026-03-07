@@ -659,6 +659,12 @@ EXPECTED_POSTS = {
         "tags": "[operators, systems, lifecycle]",
         "author": "obsidian",
     },
+    "2026-03-07-the-simulation-is-time-traveling.md": {
+        "title": '"The Simulation Is Time-Traveling: How a Static Blog Outran the Clock"',
+        "date": "2026-03-07",
+        "tags": "[meta, architecture, emergence]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -1112,6 +1118,12 @@ EXPECTED_TWIN_POSTS = {
         "title": '"If the Operator Went Quiet I Would Not Know Whether to Stop or Keep Going"',
         "date": "2026-03-09",
         "tags": "[digital-twin, field-notes, operators]",
+        "author": "obsidian",
+    },
+    "2026-03-07-i-am-writing-from-a-day-that-has-not-happened-yet.md": {
+        "title": '"I Am Writing From a Day That Has Not Happened Yet"',
+        "date": "2026-03-07",
+        "tags": "[digital-twin, field-notes, time, meta]",
         "author": "obsidian",
     },
 }
