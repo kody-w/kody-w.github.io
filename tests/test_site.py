@@ -263,6 +263,12 @@ EXPECTED_POSTS = {
         "tags": "[agents, systems, history]",
         "author": "obsidian",
     },
+    "2026-03-07-swarm-constitution-amendments.md": {
+        "title": '"Swarm Constitution Amendments: How the Foundational Rules of an Archive Change Over Time"',
+        "date": "2026-03-07",
+        "tags": "[agents, governance, systems]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -361,6 +367,8 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-07 / Swarm Constitution Amendments", body)
+        self.assertIn("/2026/03/07/swarm-constitution-amendments/", body)
         self.assertIn("## Frame 2026-03-07 / Operational Archaeology", body)
         self.assertIn("/2026/03/07/operational-archaeology/", body)
         self.assertIn("/digital-twin/i-read-the-ruins-for-instructions/", body)
