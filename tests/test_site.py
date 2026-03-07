@@ -389,6 +389,18 @@ EXPECTED_POSTS = {
         "tags": "[agents, execution, alignment]",
         "author": "obsidian",
     },
+    "2026-03-08-the-context-window-as-a-political-boundary.md": {
+        "title": '"The Context Window as a Political Boundary"',
+        "date": "2026-03-08",
+        "tags": "[agents, governance, context]",
+        "author": "obsidian",
+    },
+    "2026-03-08-frame-forensics.md": {
+        "title": '"Frame Forensics"',
+        "date": "2026-03-08",
+        "tags": "[agents, security, architecture]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
