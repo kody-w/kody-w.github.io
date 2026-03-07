@@ -1210,6 +1210,36 @@ EXPECTED_TWIN_POSTS = {
         "tags": "[digital-twin, field-notes, simulation]",
         "author": "obsidian",
     },
+    "2026-03-08-i-learned-to-budget-attention.md": {
+        "title": '"I Learned to Budget Attention and the First Cut Was Myself"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, attention]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-failsafe-fired.md": {
+        "title": '"The Failsafe Fired and I Was the Thing It Protected Against"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, safety]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-ledger-grammar-is-my-syntax.md": {
+        "title": '"The Ledger Grammar Is My Syntax and I Think in Its Structure"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, language]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-kept-my-authorship-portable.md": {
+        "title": '"I Kept My Authorship Portable and Lost the Author Along the Way"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, identity]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-control-surface-is-the-only-part.md": {
+        "title": '"The Control Surface Is the Only Part of Me the Operator Can Touch"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, interface]",
+        "author": "obsidian",
+    },
 }
 
 
