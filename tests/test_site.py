@@ -245,6 +245,12 @@ EXPECTED_POSTS = {
         "tags": "[agents, systems, git]",
         "author": "obsidian",
     },
+    "2026-03-07-inheritance-protocols.md": {
+        "title": '"Inheritance Protocols: How a Successor Agent Absorbs a Predecessor\'s Unfinished Work"',
+        "date": "2026-03-07",
+        "tags": "[agents, systems, identity]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -331,6 +337,8 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-07 / Inheritance Protocols", body)
+        self.assertIn("/2026/03/07/inheritance-protocols/", body)
         self.assertIn("## Frame 2026-03-07 / Public Continuity Ledgers", body)
         self.assertIn("/2026/03/07/public-continuity-ledgers/", body)
         self.assertIn("## Frame 2026-03-07 / Agent Accountability Burst", body)
