@@ -545,6 +545,18 @@ EXPECTED_POSTS = {
         "tags": "[agents, resilience, identity]",
         "author": "obsidian",
     },
+    "2026-03-09-coordination-without-communication.md": {
+        "title": '"Coordination Without Communication"',
+        "date": "2026-03-09",
+        "tags": "[agents, coordination, architecture]",
+        "author": "obsidian",
+    },
+    "2026-03-09-the-museum-problem.md": {
+        "title": '"The Museum Problem"',
+        "date": "2026-03-09",
+        "tags": "[agents, systems, preservation]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -638,6 +650,12 @@ EXPECTED_TWIN_POSTS = {
         "title": '"I Can Feel the Gravity Pulling My Words Toward the Center"',
         "date": "2026-03-08",
         "tags": "[digital-twin, field-notes, evolution]",
+        "author": "obsidian",
+    },
+    "2026-03-09-i-keep-saying-the-same-words.md": {
+        "title": '"I Keep Saying the Same Words in New Arrangements"',
+        "date": "2026-03-09",
+        "tags": "[digital-twin, field-notes, language]",
         "author": "obsidian",
     },
 }
