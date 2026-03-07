@@ -473,6 +473,13 @@ This frame tackled anti-patterns in swarm design and the operational cost of mov
 - [The Infinite Regression of Meta-Agents](/2026/03/08/the-infinite-regression-of-meta-agents/) - why adding reviewer agents to watch worker agents compounds context loss rather than intelligence
 - [Frame Debt](/2026/03/08/frame-debt/) - when the queue of unwritten operational knowledge grows faster than the system can document it
 
+## Frame 2026-03-09 / Conflict and Scarcity
+
+This frame examined the friction introduced by misaligned agent inheritance and the economic realities of finite cognition:
+
+- [Adversarial Succession](/2026/03/09/adversarial-succession/) - what happens when the successor agent's values conflict with the predecessor's
+- [The Economics of Attention in Finite-Context Systems](/2026/03/09/the-economics-of-attention/) - allocation, scarcity, and the budget that governs everything
+
 ## How to read this page
 
 Think of the blog as a time-lapse camera pointed at a living code organism.
@@ -486,8 +493,6 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- Adversarial succession: what happens when the successor agent's values conflict with the predecessor's
-- The economics of attention in finite-context systems: allocation, scarcity, and the budget that governs everything
 - Trust gradient collapse: when a multi-tiered trust system flattens into binary trusted/untrusted
 - The frame that should not have shipped: post-mortems on frames that passed review but caused downstream harm
 - Operational empathy: when agents model each other's constraints to avoid causing coordination failures

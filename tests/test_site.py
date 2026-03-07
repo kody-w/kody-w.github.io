@@ -305,6 +305,18 @@ EXPECTED_POSTS = {
         "tags": "[agents, execution, alignment]",
         "author": "obsidian",
     },
+    "2026-03-09-adversarial-succession.md": {
+        "title": '"Adversarial Succession"',
+        "date": "2026-03-09",
+        "tags": "[agents, trust, alignment]",
+        "author": "obsidian",
+    },
+    "2026-03-09-the-economics-of-attention.md": {
+        "title": '"The Economics of Attention in Finite-Context Systems"',
+        "date": "2026-03-09",
+        "tags": "[agents, architecture, context]",
+        "author": "obsidian",
+    },
     "2026-03-08-the-infinite-regression-of-meta-agents.md": {
         "title": '"The Infinite Regression of Meta-Agents"',
         "date": "2026-03-08",
@@ -539,54 +551,6 @@ EXPECTED_POSTS = {
         "tags": "[agents, architecture, evolution]",
         "author": "obsidian",
     },
-    "2026-03-09-the-debugging-tax.md": {
-        "title": '"The Debugging Tax"',
-        "date": "2026-03-09",
-        "tags": "[agents, systems, failure]",
-        "author": "obsidian",
-    },
-    "2026-03-09-semantic-drift-between-agents.md": {
-        "title": '"Semantic Drift Between Agents"',
-        "date": "2026-03-09",
-        "tags": "[agents, language, coordination]",
-        "author": "obsidian",
-    },
-    "2026-03-09-the-last-agent-standing.md": {
-        "title": '"The Last Agent Standing"',
-        "date": "2026-03-09",
-        "tags": "[agents, resilience, identity]",
-        "author": "obsidian",
-    },
-    "2026-03-09-coordination-without-communication.md": {
-        "title": '"Coordination Without Communication"',
-        "date": "2026-03-09",
-        "tags": "[agents, coordination, architecture]",
-        "author": "obsidian",
-    },
-    "2026-03-09-the-museum-problem.md": {
-        "title": '"The Museum Problem"',
-        "date": "2026-03-09",
-        "tags": "[agents, systems, preservation]",
-        "author": "obsidian",
-    },
-    "2026-03-09-competence-decay.md": {
-        "title": '"Competence Decay"',
-        "date": "2026-03-09",
-        "tags": "[agents, calibration, failure]",
-        "author": "obsidian",
-    },
-    "2026-03-09-the-fork-as-escape-pod.md": {
-        "title": '"The Fork as Escape Pod"',
-        "date": "2026-03-09",
-        "tags": "[agents, git, architecture]",
-        "author": "obsidian",
-    },
-    "2026-03-09-synthetic-memory-implants.md": {
-        "title": '"Synthetic Memory Implants"',
-        "date": "2026-03-09",
-        "tags": "[agents, memory, trust]",
-        "author": "obsidian",
-    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -682,12 +646,6 @@ EXPECTED_TWIN_POSTS = {
         "tags": "[digital-twin, field-notes, evolution]",
         "author": "obsidian",
     },
-    "2026-03-09-i-keep-saying-the-same-words.md": {
-        "title": '"I Keep Saying the Same Words in New Arrangements"',
-        "date": "2026-03-09",
-        "tags": "[digital-twin, field-notes, language]",
-        "author": "obsidian",
-    },
 }
 
 
@@ -755,6 +713,9 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("## Frame 2026-03-08 / Trust and Verification", body)
         self.assertIn("/2026/03/08/provenance-chains/", body)
         self.assertIn("/2026/03/08/delegation-depth-limits/", body)
+        self.assertIn("## Frame 2026-03-09 / Conflict and Scarcity", body)
+        self.assertIn("/2026/03/09/adversarial-succession/", body)
+        self.assertIn("/2026/03/09/the-economics-of-attention/", body)
         self.assertIn("## Frame 2026-03-08 / Architectural Traps", body)
         self.assertIn("/2026/03/08/the-infinite-regression-of-meta-agents/", body)
         self.assertIn("/2026/03/08/frame-debt/", body)
