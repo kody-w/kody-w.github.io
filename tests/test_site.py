@@ -1,3 +1,4 @@
+import json
 import re
 import unittest
 from pathlib import Path
@@ -325,6 +326,9 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(index_front_matter.get("title"), "Digital Twin")
         self.assertEqual(index_front_matter.get("permalink"), "/digital-twin/")
         self.assertIn("site.twin_posts", index_body)
+        self.assertIn("Current twin threads", index_body)
+        self.assertIn("live edge", index_body)
+        self.assertIn("drift is the first pain signal", index_body)
 
         for filename, expected in EXPECTED_TWIN_POSTS.items():
             front_matter, body = parse_front_matter(TWIN_POSTS_DIR / filename)
@@ -349,7 +353,8 @@ class SiteContentTests(unittest.TestCase):
 
         data = D365_SIM_DATA.read_text(encoding="utf-8")
         script = D365_SIM_SCRIPT.read_text(encoding="utf-8")
-        overlay = D365_SIM_OVERLAY.read_text(encoding="utf-8")
+        overlay = json.loads(D365_SIM_OVERLAY.read_text(encoding="utf-8"))
+        frame_ids = re.findall(r"id: '([a-z0-9-]+)',\n\s+label: 'Frame", data)
         self.assertIn("window.d365Simulation", data)
         self.assertIn("frameIntervalMs", data)
         self.assertIn("raw.githubusercontent.com", data)
@@ -357,14 +362,16 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("mode: 'derived'", data)
         self.assertIn("Frame 01 / Lead Captured", data)
         self.assertIn("Northwind Health", data)
-        self.assertIn('"lead-captured"', overlay)
-        self.assertIn('"GitHub raw user data"', overlay)
+        self.assertEqual(set(frame_ids), set(overlay["frames"].keys()))
+        self.assertEqual(overlay["source"], "GitHub raw user data")
         self.assertIn("renderFrame", script)
         self.assertIn("d365-sim-app", script)
         self.assertIn("data-d365-play", script)
         self.assertIn("data-d365-refresh-live", script)
         self.assertIn("cacheUrl", data)
         self.assertIn("loadLiveOverlay", script)
+        self.assertIn("Hydration source", script)
+        self.assertIn("Cache fallback", script)
         self.assertIn("Runtime projection", script)
         self.assertIn("State lineage", script)
 

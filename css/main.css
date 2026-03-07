@@ -936,6 +936,75 @@ a.stat:hover {
   color: #b4422a;
 }
 
+.d365-source-summary {
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border: 1px solid #e8edf5;
+  border-radius: 10px;
+  background: #f8fbff;
+}
+
+.d365-source-row,
+.d365-source-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+}
+
+.d365-source-row {
+  margin-bottom: 10px;
+}
+
+.d365-source-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #d8deea;
+  background: #fff;
+  color: #556171;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.d365-source-chip.is-live {
+  background: #eef5ff;
+  border-color: #d7e5ff;
+  color: #2a7ae2;
+}
+
+.d365-source-chip.is-cache {
+  background: #f6f0ff;
+  border-color: #ddd1ff;
+  color: #6b5bd2;
+}
+
+.d365-source-chip.is-loading {
+  background: #fff6eb;
+  border-color: #f0d7b0;
+  color: #c96b00;
+}
+
+.d365-source-chip.is-error {
+  background: #fff2f0;
+  border-color: #f3c4bc;
+  color: #b4422a;
+}
+
+.d365-source-chip.is-disabled,
+.d365-source-chip.is-ready {
+  background: #f5f8fc;
+  border-color: #d8deea;
+  color: #556171;
+}
+
+.d365-source-meta {
+  color: #6a7280;
+  font-size: 13px;
+}
+
 .d365-meta {
   display: flex;
   flex-wrap: wrap;
@@ -1218,6 +1287,45 @@ a.stat:hover {
 
 [data-theme="dark"] .d365-active-note.is-error {
   color: #ffb9ac;
+}
+
+[data-theme="dark"] .d365-source-summary {
+  background: var(--bg-secondary);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .d365-source-chip {
+  background: var(--bg-secondary);
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .d365-source-chip.is-live {
+  background: rgba(42, 122, 226, 0.16);
+  border-color: rgba(42, 122, 226, 0.34);
+  color: #a9ccff;
+}
+
+[data-theme="dark"] .d365-source-chip.is-cache {
+  background: rgba(123, 93, 255, 0.16);
+  border-color: rgba(123, 93, 255, 0.34);
+  color: #c7b8ff;
+}
+
+[data-theme="dark"] .d365-source-chip.is-loading {
+  background: rgba(201, 107, 0, 0.18);
+  border-color: rgba(201, 107, 0, 0.34);
+  color: #ffd1a1;
+}
+
+[data-theme="dark"] .d365-source-chip.is-error {
+  background: rgba(210, 95, 73, 0.18);
+  border-color: rgba(210, 95, 73, 0.34);
+  color: #ffb9ac;
+}
+
+[data-theme="dark"] .d365-source-meta {
+  color: var(--text-secondary);
 }
 
 [data-theme="dark"] .d365-state-item {
@@ -1733,6 +1841,29 @@ a.stat:hover {
   border: 1px solid #e8e8e8;
   border-radius: 12px;
   background: #faf8ff;
+}
+
+.twin-home-topics {
+  margin: 0 0 28px;
+  padding: 16px 18px;
+  border: 1px solid #ece6ff;
+  border-radius: 12px;
+  background: #fcfbff;
+}
+
+.twin-home-topics strong {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.twin-home-topics ul {
+  margin: 0;
+  padding-left: 22px;
+}
+
+[data-theme="dark"] .twin-home-topics {
+  background: var(--bg-secondary);
+  border-color: var(--border);
 }
 
 [data-theme="dark"] .twin-post-header,

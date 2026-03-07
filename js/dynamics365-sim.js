@@ -16,7 +16,7 @@
   var frameIntervalMs = Math.max(500, Number(runtime.frameIntervalMs || runtime.intervalMs || 1800));
   var endBehavior = runtime.endBehavior === 'loop' ? 'loop' : 'stop';
   var liveOverlayState = {
-    status: liveOverlay ? 'idle' : 'disabled',
+    status: liveOverlay ? 'loading' : 'disabled',
     data: null,
     error: '',
     sourceLabel: ''
@@ -188,6 +188,79 @@
     return items;
   }
 
+  function hydrationFieldCount(frame) {
+    var overlayData = overlayFrame(frame);
+
+    if (!overlayData || !overlayData.activeSystemData) {
+      return 0;
+    }
+
+    return overlayData.activeSystemData.length;
+  }
+
+  function overlayStatusMode(frame) {
+    if (!liveOverlay) {
+      return {
+        label: 'Disabled',
+        className: 'is-disabled',
+        detail: 'No runtime overlay configured for this proof.'
+      };
+    }
+
+    if (liveOverlayState.status === 'loading') {
+      return {
+        label: 'Hydrating',
+        className: 'is-loading',
+        detail: 'Trying GitHub raw first, then the checked-in cache.'
+      };
+    }
+
+    if (liveOverlayState.status === 'error') {
+      return {
+        label: 'Offline',
+        className: 'is-error',
+        detail: liveOverlayState.error || 'Overlay fetch failed.'
+      };
+    }
+
+    if (overlayFrame(frame) && liveOverlayState.sourceLabel === 'checked-in cache') {
+      return {
+        label: 'Cache fallback',
+        className: 'is-cache',
+        detail: 'Using the simulated running state preserved in the repo.'
+      };
+    }
+
+    if (liveOverlayState.status === 'ready') {
+      return {
+        label: 'Live raw',
+        className: 'is-live',
+        detail: 'Using GitHub raw user data as the active overlay.'
+      };
+    }
+
+    return {
+      label: 'Ready',
+      className: 'is-ready',
+      detail: 'Overlay sources are configured and waiting to hydrate.'
+    };
+  }
+
+  function renderHydrationSummary(frame) {
+    var mode = overlayStatusMode(frame);
+
+    return '<div class="d365-source-summary">' +
+      '<div class="d365-source-row">' +
+        '<span class="d365-source-chip ' + mode.className + '">' + escapeHtml(mode.label) + '</span>' +
+        '<strong>Hydration source: ' + escapeHtml(liveOverlayState.sourceLabel || liveOverlay && liveOverlay.label || 'None') + '</strong>' +
+      '</div>' +
+      '<div class="d365-source-meta">' +
+        '<span><strong>Overlay fields:</strong> ' + hydrationFieldCount(frame) + '</span>' +
+        '<span><strong>Mode:</strong> ' + escapeHtml(mode.detail) + '</span>' +
+      '</div>' +
+    '</div>';
+  }
+
   function renderOverlayStatus(frame) {
     var overlayData = overlayFrame(frame);
 
@@ -215,7 +288,9 @@
   }
 
   function renderActiveSystemData(frame) {
-    return '<div class="d365-state-grid">' + renderKeyValueCards(activeSystemItems(frame)) + '</div>' + renderOverlayStatus(frame);
+    return renderHydrationSummary(frame) +
+      '<div class="d365-state-grid">' + renderKeyValueCards(activeSystemItems(frame)) + '</div>' +
+      renderOverlayStatus(frame);
   }
 
   function overlaySources() {
