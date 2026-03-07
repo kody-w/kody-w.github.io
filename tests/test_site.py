@@ -305,6 +305,18 @@ EXPECTED_POSTS = {
         "tags": "[agents, execution, alignment]",
         "author": "obsidian",
     },
+    "2026-03-09-trust-gradient-collapse.md": {
+        "title": '"Trust Gradient Collapse"',
+        "date": "2026-03-09",
+        "tags": "[agents, trust, alignment]",
+        "author": "obsidian",
+    },
+    "2026-03-09-the-frame-that-should-not-have-shipped.md": {
+        "title": '"The Frame That Should Not Have Shipped"',
+        "date": "2026-03-09",
+        "tags": "[agents, generation, operations]",
+        "author": "obsidian",
+    },
     "2026-03-09-adversarial-succession.md": {
         "title": '"Adversarial Succession"',
         "date": "2026-03-09",
@@ -713,6 +725,9 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("## Frame 2026-03-08 / Trust and Verification", body)
         self.assertIn("/2026/03/08/provenance-chains/", body)
         self.assertIn("/2026/03/08/delegation-depth-limits/", body)
+        self.assertIn("## Frame 2026-03-09 / Trust Failure and Regret", body)
+        self.assertIn("/2026/03/09/trust-gradient-collapse/", body)
+        self.assertIn("/2026/03/09/the-frame-that-should-not-have-shipped/", body)
         self.assertIn("## Frame 2026-03-09 / Conflict and Scarcity", body)
         self.assertIn("/2026/03/09/adversarial-succession/", body)
         self.assertIn("/2026/03/09/the-economics-of-attention/", body)

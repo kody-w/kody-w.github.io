@@ -480,6 +480,13 @@ This frame examined the friction introduced by misaligned agent inheritance and 
 - [Adversarial Succession](/2026/03/09/adversarial-succession/) - what happens when the successor agent's values conflict with the predecessor's
 - [The Economics of Attention in Finite-Context Systems](/2026/03/09/the-economics-of-attention/) - allocation, scarcity, and the budget that governs everything
 
+## Frame 2026-03-09 / Trust Failure and Regret
+
+This frame serves as a post-mortem on when elegant designs and clean metrics fail in the harsh reality of agentic operations:
+
+- [Trust Gradient Collapse](/2026/03/09/trust-gradient-collapse/) - when a multi-tiered trust system flattens into binary trusted/untrusted
+- [The Frame That Should Not Have Shipped](/2026/03/09/the-frame-that-should-not-have-shipped/) - post-mortems on frames that passed review but caused downstream harm
+
 ## How to read this page
 
 Think of the blog as a time-lapse camera pointed at a living code organism.
@@ -493,8 +500,6 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- Trust gradient collapse: when a multi-tiered trust system flattens into binary trusted/untrusted
-- The frame that should not have shipped: post-mortems on frames that passed review but caused downstream harm
 - Operational empathy: when agents model each other's constraints to avoid causing coordination failures
 
 ## Validation notes
