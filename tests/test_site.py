@@ -13,6 +13,9 @@ SKILL_DIR = ROOT / ".github" / "skills" / "content-burst-publishing"
 SKILL_FILE = SKILL_DIR / "SKILL.md"
 SKILL_LOOP_FILE = SKILL_DIR / "burst-loop.md"
 SKILL_PROMPT_FILE = SKILL_DIR / "handoff-prompt.md"
+D365_SIM_PAGE = ROOT / "simulated-dynamics365.md"
+D365_SIM_SCRIPT = ROOT / "js" / "dynamics365-sim.js"
+D365_SIM_DATA = ROOT / "js" / "dynamics365-sim-data.js"
 
 EXPECTED_POSTS = {
     "2026-03-06-the-repo-is-an-organism.md": {
@@ -216,6 +219,8 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-07 / CRM Proof", body)
+        self.assertIn("/simulated-dynamics365/", body)
         self.assertIn("## Frame 2026-03-07 / Compiler Layer", body)
         self.assertIn("## Frame 2026-03-07 / Schema Layer", body)
         self.assertIn("## Frame 2026-03-07 / Tick-Tock Layer", body)
@@ -261,6 +266,23 @@ class SiteContentTests(unittest.TestCase):
         self.assertNotIn("OpenAI GPT-4 integration", about)
         self.assertNotIn("Azure cloud architecture", about)
         self.assertNotIn("<h3>Cloud Architecture</h3>", about)
+
+    def test_dynamics_proof_page_exists_and_loads_assets(self):
+        front_matter, body = parse_front_matter(D365_SIM_PAGE)
+        self.assertEqual(front_matter.get("layout"), "default")
+        self.assertEqual(front_matter.get("title"), "Simulated Dynamics 365")
+        self.assertEqual(front_matter.get("permalink"), "/simulated-dynamics365/")
+        self.assertIn('id="d365-sim-app"', body)
+        self.assertIn("/js/dynamics365-sim-data.js", body)
+        self.assertIn("/js/dynamics365-sim.js", body)
+
+        data = D365_SIM_DATA.read_text(encoding="utf-8")
+        script = D365_SIM_SCRIPT.read_text(encoding="utf-8")
+        self.assertIn("window.d365Simulation", data)
+        self.assertIn("Frame 01 / Lead Captured", data)
+        self.assertIn("Northwind Health", data)
+        self.assertIn("renderFrame", script)
+        self.assertIn("d365-sim-app", script)
 
     def test_content_burst_skill_exists_and_has_expected_metadata(self):
         front_matter, body = parse_front_matter(SKILL_FILE)

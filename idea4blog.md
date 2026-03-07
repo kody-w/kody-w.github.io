@@ -13,6 +13,12 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-03-07 / CRM Proof
+
+This frame turned the theory into a useful business system:
+
+- [Simulated Dynamics 365](/simulated-dynamics365/) - a frame-by-frame CRM and service state machine with leads, opportunities, cases, tasks, and automations
+
 ## Frame 2026-03-07 / Compiler Layer
 
 This frame turned the archive into a build system for worlds:
@@ -121,6 +127,7 @@ That makes `idea4blog.md` useful both publicly and privately:
 - Swarm accounting: how autonomous organizations reconcile work, memory, and consequence
 - Drift inspectors: agents that audit the gap between declared policy and live behavior
 - Machine witness statements: preserving first-person evidence from distributed agents
+- Service playbooks: how the machine decides which response ritual to run next
 
 ## Validation notes
 

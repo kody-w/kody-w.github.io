@@ -778,3 +778,312 @@ a.stat:hover {
   background: var(--bg-secondary);
   color: var(--link);
 }
+
+/* ========================================
+   Simulated Dynamics 365 proof
+   ======================================== */
+
+.d365-proof-intro {
+  margin: 24px 0 32px;
+}
+
+.d365-proof-callout {
+  padding: 16px 18px;
+  background: #f6f9ff;
+  border: 1px solid #d7e5ff;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.d365-proof-points {
+  padding-left: 22px;
+}
+
+.d365-sim-app {
+  margin-top: 24px;
+}
+
+.d365-shell {
+  display: grid;
+  gap: 22px;
+}
+
+.d365-hero,
+.d365-panel,
+.d365-stat {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+}
+
+.d365-hero {
+  padding: 24px;
+}
+
+.d365-kicker {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #2a7ae2;
+  margin-bottom: 10px;
+}
+
+.d365-hero h2 {
+  font-size: 30px;
+  line-height: 1.2;
+  margin-bottom: 10px;
+  font-weight: 400;
+}
+
+.d365-summary,
+.d365-note {
+  color: #555;
+}
+
+.d365-summary {
+  margin-bottom: 18px;
+}
+
+.d365-note {
+  margin-top: 16px;
+}
+
+.d365-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.d365-button {
+  border: 1px solid #d8deea;
+  border-radius: 999px;
+  background: #fff;
+  color: #333;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.d365-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.d365-range {
+  flex: 1;
+}
+
+.d365-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  font-size: 14px;
+  color: #666;
+}
+
+.d365-stats {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.d365-stat {
+  padding: 18px;
+}
+
+.d365-stat span {
+  display: block;
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 6px;
+}
+
+.d365-stat strong {
+  font-size: 24px;
+  color: #2a7ae2;
+  font-weight: 500;
+}
+
+.d365-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.d365-panel {
+  padding: 20px;
+}
+
+.d365-panel h3 {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 14px;
+}
+
+.d365-state-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.d365-state-item {
+  padding: 14px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #ebeff5;
+}
+
+.d365-state-label {
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 11px;
+  color: #7b8494;
+  margin-bottom: 6px;
+}
+
+.d365-state-value {
+  font-size: 15px;
+  color: #333;
+}
+
+.d365-transition-list,
+.d365-automation-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.d365-transition-list li,
+.d365-automation-list li {
+  padding: 14px 0;
+  border-bottom: 1px solid #eef1f6;
+}
+
+.d365-transition-list li:last-child,
+.d365-automation-list li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.d365-transition-list strong,
+.d365-automation-list strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.d365-transition-list span,
+.d365-automation-list span,
+.d365-automation-list em {
+  display: block;
+  font-size: 13px;
+  color: #6a7280;
+  font-style: normal;
+}
+
+.d365-transition-list p,
+.d365-automation-list p {
+  margin: 6px 0 0;
+  color: #555;
+}
+
+.d365-table-wrap {
+  overflow-x: auto;
+}
+
+.d365-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 440px;
+}
+
+.d365-table th,
+.d365-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid #eef1f6;
+  font-size: 14px;
+  vertical-align: top;
+}
+
+.d365-table th {
+  color: #6a7280;
+  font-weight: 500;
+}
+
+.d365-empty {
+  color: #7b8494;
+}
+
+[data-theme="dark"] .d365-proof-callout {
+  background: var(--bg-secondary);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .d365-hero,
+[data-theme="dark"] .d365-panel,
+[data-theme="dark"] .d365-stat {
+  background: var(--card-bg);
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+[data-theme="dark"] .d365-summary,
+[data-theme="dark"] .d365-note,
+[data-theme="dark"] .d365-transition-list p,
+[data-theme="dark"] .d365-automation-list p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .d365-meta,
+[data-theme="dark"] .d365-transition-list span,
+[data-theme="dark"] .d365-automation-list span,
+[data-theme="dark"] .d365-automation-list em,
+[data-theme="dark"] .d365-empty,
+[data-theme="dark"] .d365-table th {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .d365-button {
+  background: var(--bg-secondary);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+[data-theme="dark"] .d365-state-item {
+  background: var(--bg-secondary);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .d365-state-value,
+[data-theme="dark"] .d365-panel h3,
+[data-theme="dark"] .d365-hero h2,
+[data-theme="dark"] .d365-table td {
+  color: var(--text);
+}
+
+[data-theme="dark"] .d365-transition-list li,
+[data-theme="dark"] .d365-automation-list li,
+[data-theme="dark"] .d365-table th,
+[data-theme="dark"] .d365-table td {
+  border-bottom-color: var(--border);
+}
+
+@media (max-width: 700px) {
+  .d365-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .d365-meta {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .d365-hero h2 {
+    font-size: 26px;
+  }
+}
