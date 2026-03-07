@@ -95,6 +95,21 @@ EXPECTED_POSTS = {
         "date": "2026-03-07",
         "tags": "[agents, systems]",
     },
+    "2026-03-07-sovereign-branches.md": {
+        "title": '"Sovereign Branches: When Every Fork Becomes a Nation"',
+        "date": "2026-03-07",
+        "tags": "[git, governance]",
+    },
+    "2026-03-07-escalation-ladders.md": {
+        "title": '"Escalation Ladders: How Swarms Decide Local Autonomy Is Not Enough"',
+        "date": "2026-03-07",
+        "tags": "[agents, governance]",
+    },
+    "2026-03-07-policy-is-the-interface.md": {
+        "title": '"Policy Is the Interface: Why Rules Shape Behavior More Than Dashboards"',
+        "date": "2026-03-07",
+        "tags": "[systems, governance]",
+    },
 }
 
 
@@ -146,6 +161,7 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-07 / Governance Stack", body)
         self.assertIn("## Frame 2026-03-07 / Control Surface", body)
         self.assertIn("## Frame 2026-03-07 / Night Cycle", body)
         self.assertIn("## Frame 2026-03-07", body)

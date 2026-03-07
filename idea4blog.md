@@ -13,6 +13,14 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-03-07 / Governance Stack
+
+This burst pushed deeper into sovereignty, escalation, and rule design:
+
+- [Sovereign Branches](/2026/03/07/sovereign-branches/) - forks and branches as political units, not just technical artifacts
+- [Escalation Ladders](/2026/03/07/escalation-ladders/) - how swarms widen context when local autonomy is no longer enough
+- [Policy Is the Interface](/2026/03/07/policy-is-the-interface/) - rules shaping behavior more deeply than dashboards
+
 ## Frame 2026-03-07 / Control Surface
 
 This pass sharpened the thesis behind the whole archive:
@@ -62,12 +70,12 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- Sovereign branches: what autonomy means when every fork can become a nation
-- Escalation ladders: how swarms decide when local autonomy is no longer enough
-- Policy as interface: rules that shape behavior more than dashboards do
 - Swarm budgeting: attention, tokens, and labor allocation as resource strategy
 - Machine after-action reports: how autonomous systems learn without pretending failure did not happen
 - Frame economics: when context packets become the unit of labor
+- Memory courts: how swarms settle contested history
+- Attention treaties: shared rules for preventing coordination overload
+- Failsafe rituals: the ceremonies that keep autonomous systems from drifting
 
 ## Validation notes
 
