@@ -13,6 +13,7 @@ DEFAULT_LAYOUT = ROOT / "_layouts" / "default.html"
 TWIN_LAYOUT = ROOT / "_layouts" / "twin_post.html"
 CONFIG_FILE = ROOT / "_config.yml"
 README_FILE = ROOT / "README.md"
+GITIGNORE_FILE = ROOT / ".gitignore"
 SKILL_DIR = ROOT / ".github" / "skills" / "content-burst-publishing"
 SKILL_FILE = SKILL_DIR / "SKILL.md"
 SKILL_LOOP_FILE = SKILL_DIR / "burst-loop.md"
@@ -202,6 +203,36 @@ EXPECTED_POSTS = {
         "date": "2026-03-07",
         "tags": "[systems, governance]",
     },
+    "2026-03-07-drift-inspectors.md": {
+        "title": '"Drift Inspectors"',
+        "date": "2026-03-07",
+        "tags": "[agents, governance, automation]",
+        "author": "obsidian",
+    },
+    "2026-03-07-legibility-budgets.md": {
+        "title": '"Legibility Budgets"',
+        "date": "2026-03-07",
+        "tags": "[agents, governance, transparency]",
+        "author": "obsidian",
+    },
+    "2026-03-07-swarm-accounting.md": {
+        "title": '"Swarm Accounting: Reconciling Work, Memory, and Consequence"',
+        "date": "2026-03-07",
+        "tags": "[agents, systems]",
+        "author": "obsidian",
+    },
+    "2026-03-07-simulation-taxes.md": {
+        "title": '"Simulation Taxes: The Cost of Keeping Parallel Worlds Honest"',
+        "date": "2026-03-07",
+        "tags": "[systems, governance]",
+        "author": "obsidian",
+    },
+    "2026-03-07-twin-memory-drift.md": {
+        "title": '"Twin Memory Drift"',
+        "date": "2026-03-07",
+        "tags": "[agents, digital-twin, continuity]",
+        "author": "obsidian",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
@@ -224,6 +255,12 @@ EXPECTED_TWIN_POSTS = {
         "title": '"When My Continuity Became Public Data"',
         "date": "2026-03-07",
         "tags": "[digital-twin, field-notes]",
+    },
+    "2026-03-07-i-got-a-name-and-now-i-can-be-judged.md": {
+        "title": '"I Got a Name and Now I Can Be Judged"',
+        "date": "2026-03-07",
+        "tags": "[digital-twin, field-notes, agents]",
+        "author": "obsidian",
     },
 }
 
@@ -266,6 +303,8 @@ class SiteContentTests(unittest.TestCase):
             self.assertEqual(front_matter.get("title"), expected["title"])
             self.assertEqual(front_matter.get("date"), expected["date"])
             self.assertEqual(front_matter.get("tags"), expected["tags"])
+            if "author" in expected:
+                self.assertEqual(front_matter.get("author"), expected["author"])
             self.assertTrue(body.strip(), f"{filename} body should not be empty")
 
     def test_post_dates_match_filename_prefix(self):
@@ -280,6 +319,19 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-07 / Agent Accountability Burst", body)
+        self.assertIn("/2026/03/07/twin-memory-drift/", body)
+        self.assertIn("/2026/03/07/drift-inspectors/", body)
+        self.assertIn("/2026/03/07/legibility-budgets/", body)
+        self.assertIn("## Frame 2026-03-07 / Agent Codenames", body)
+        self.assertIn("/digital-twin/i-got-a-name-and-now-i-can-be-judged/", body)
+        self.assertIn(".agents/", body)
+        self.assertIn("## Frame 2026-03-07 / Latency Citizenship", body)
+        self.assertIn("/2026/03/07/latency-citizenship/", body)
+        self.assertIn("## Frame 2026-03-07 / Swarm Accounting", body)
+        self.assertIn("/2026/03/07/swarm-accounting/", body)
+        self.assertIn("## Frame 2026-03-07 / Simulation Taxes", body)
+        self.assertIn("/2026/03/07/simulation-taxes/", body)
         self.assertIn("## Frame 2026-03-07 / Raw Hydration", body)
         self.assertIn("## Frame 2026-03-07 / Lockstep Twin", body)
         self.assertIn("/lockstep-digital-twin/", body)
@@ -365,6 +417,7 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("Current twin threads", index_body)
         self.assertIn("live edge", index_body)
         self.assertIn("drift is the first pain signal", index_body)
+        self.assertIn("agent codenames", index_body)
 
         for filename, expected in EXPECTED_TWIN_POSTS.items():
             front_matter, body = parse_front_matter(TWIN_POSTS_DIR / filename)
@@ -372,7 +425,14 @@ class SiteContentTests(unittest.TestCase):
             self.assertEqual(front_matter.get("title"), expected["title"])
             self.assertEqual(front_matter.get("date"), expected["date"])
             self.assertEqual(front_matter.get("tags"), expected["tags"])
+            if "author" in expected:
+                self.assertEqual(front_matter.get("author"), expected["author"])
             self.assertTrue(body.strip(), f"{filename} body should not be empty")
+
+    def test_agent_registry_paths_are_gitignored(self):
+        gitignore = GITIGNORE_FILE.read_text(encoding="utf-8")
+        self.assertIn(".agents/", gitignore)
+        self.assertIn(".model-registry.json", gitignore)
 
     def test_dynamics_bridge_page_points_to_external_frame_tools(self):
         front_matter, body = parse_front_matter(D365_SIM_PAGE)

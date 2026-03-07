@@ -206,13 +206,12 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- Simulation taxes: the cost of maintaining parallel worlds and branches
-- Swarm accounting: how autonomous organizations reconcile work, memory, and consequence
-- Machine witness statements: preserving first-person evidence from distributed agents
 - Service playbooks: how the machine decides which response ritual to run next
 - Agent calibration loops: how inspectors and operators converge on shared quality standards
 - Codename genealogy: what happens when an agent is replaced by a newer version of itself
 - Trust decay curves: how confidence in a twin degrades over time without re-anchoring
+- Public continuity ledgers: when machine memory becomes forkable evidence
+- Fork solvency audits: deciding which alternate timelines are still worth funding
 
 ## Validation notes
 
