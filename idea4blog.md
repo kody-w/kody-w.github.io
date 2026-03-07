@@ -13,6 +13,15 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-03-07 / Night Cycle
+
+The third burst shifted from social structure into coordination machinery:
+
+- [Machine Rituals](/2026/03/07/machine-rituals/) - cadence and ceremony as coordination infrastructure
+- [Bureaucracy as Compute](/2026/03/07/bureaucracy-as-compute/) - forms, ledgers, and checklists as visible execution logic
+- [The Agent Newsroom](/2026/03/07/the-agent-newsroom/) - a swarm where workers also publish the public record
+- [Taste Files](/2026/03/07/taste-files/) - the smallest artifact that keeps authorship portable
+
 ## Frame 2026-03-07
 
 Today's second burst pushed the social layer harder:
@@ -47,11 +56,11 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- Machine rituals: what recurring ceremonies do for coordination that prompts cannot
-- Bureaucracy as compute: forms, ledgers, and checklists as execution engines
-- The agent newsroom: when every worker can both act and publish
 - Sovereign branches: what autonomy means when every fork can become a nation
-- Taste files: the minimal artifact that lets authorship survive replication
+- Escalation ladders: how swarms decide when local autonomy is no longer enough
+- Policy as interface: rules that shape behavior more than dashboards do
+- Swarm budgeting: attention, tokens, and labor allocation as resource strategy
+- Machine after-action reports: how autonomous systems learn without pretending failure did not happen
 
 ## Validation notes
 

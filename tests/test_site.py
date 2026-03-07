@@ -64,6 +64,26 @@ EXPECTED_POSTS = {
         "date": "2026-03-07",
         "tags": "[git, systems]",
     },
+    "2026-03-07-machine-rituals.md": {
+        "title": '"Machine Rituals: Why Recurring Ceremony Beats Better Prompting"',
+        "date": "2026-03-07",
+        "tags": "[agents, governance]",
+    },
+    "2026-03-07-bureaucracy-as-compute.md": {
+        "title": '"Bureaucracy as Compute: Forms, Ledgers, and Checklists That Execute Work"',
+        "date": "2026-03-07",
+        "tags": "[systems, governance]",
+    },
+    "2026-03-07-the-agent-newsroom.md": {
+        "title": '"The Agent Newsroom: When Every Worker Can Also Publish"',
+        "date": "2026-03-07",
+        "tags": "[writing, agents]",
+    },
+    "2026-03-07-taste-files.md": {
+        "title": '"Taste Files: The Smallest Artifact That Can Preserve Authorship"',
+        "date": "2026-03-07",
+        "tags": "[writing, systems]",
+    },
 }
 
 
@@ -115,6 +135,7 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Idea4Blog")
         self.assertEqual(front_matter.get("permalink"), "/idea4blog/")
         self.assertIn("Every markdown file on this site is a simulated piece of the swarm", body)
+        self.assertIn("## Frame 2026-03-07 / Night Cycle", body)
         self.assertIn("## Frame 2026-03-07", body)
         for filename in EXPECTED_POSTS:
             if filename.startswith("2026-03-06-"):
