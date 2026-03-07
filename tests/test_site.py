@@ -305,6 +305,18 @@ EXPECTED_POSTS = {
         "tags": "[agents, execution, alignment]",
         "author": "obsidian",
     },
+    "2026-03-08-cognitive-load-shedding.md": {
+        "title": '"Cognitive Load Shedding"',
+        "date": "2026-03-08",
+        "tags": "[agents, resilience, context]",
+        "author": "obsidian",
+    },
+    "2026-03-08-the-frame-that-writes-itself.md": {
+        "title": '"The Frame That Writes Itself"',
+        "date": "2026-03-08",
+        "tags": "[agents, generation, determinism]",
+        "author": "obsidian",
+    },
     "2026-03-08-legibility-debt.md": {
         "title": '"Legibility Debt"',
         "date": "2026-03-08",
@@ -653,6 +665,9 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("## Frame 2026-03-08 / Trust and Verification", body)
         self.assertIn("/2026/03/08/provenance-chains/", body)
         self.assertIn("/2026/03/08/delegation-depth-limits/", body)
+        self.assertIn("## Frame 2026-03-08 / Boundaries and Constraints", body)
+        self.assertIn("/2026/03/08/cognitive-load-shedding/", body)
+        self.assertIn("/2026/03/08/the-frame-that-writes-itself/", body)
         self.assertIn("## Frame 2026-03-08 / Opaqueness and Emergence", body)
         self.assertIn("/2026/03/08/legibility-debt/", body)
         self.assertIn("/2026/03/08/the-ghost-committee/", body)
