@@ -305,6 +305,18 @@ EXPECTED_POSTS = {
         "tags": "[agents, execution, alignment]",
         "author": "obsidian",
     },
+    "2026-03-08-the-infinite-regression-of-meta-agents.md": {
+        "title": '"The Infinite Regression of Meta-Agents"',
+        "date": "2026-03-08",
+        "tags": "[agents, architecture, boundaries]",
+        "author": "obsidian",
+    },
+    "2026-03-08-frame-debt.md": {
+        "title": '"Frame Debt"',
+        "date": "2026-03-08",
+        "tags": "[agents, operations, debt]",
+        "author": "obsidian",
+    },
     "2026-03-08-cognitive-load-shedding.md": {
         "title": '"Cognitive Load Shedding"',
         "date": "2026-03-08",
@@ -743,6 +755,9 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("## Frame 2026-03-08 / Trust and Verification", body)
         self.assertIn("/2026/03/08/provenance-chains/", body)
         self.assertIn("/2026/03/08/delegation-depth-limits/", body)
+        self.assertIn("## Frame 2026-03-08 / Architectural Traps", body)
+        self.assertIn("/2026/03/08/the-infinite-regression-of-meta-agents/", body)
+        self.assertIn("/2026/03/08/frame-debt/", body)
         self.assertIn("## Frame 2026-03-08 / Boundaries and Constraints", body)
         self.assertIn("/2026/03/08/cognitive-load-shedding/", body)
         self.assertIn("/2026/03/08/the-frame-that-writes-itself/", body)
