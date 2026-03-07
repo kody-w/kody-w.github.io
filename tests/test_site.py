@@ -151,7 +151,7 @@ class SiteContentTests(unittest.TestCase):
         layout = DEFAULT_LAYOUT.read_text(encoding="utf-8")
         self.assertIn('href="/idea4blog/"', layout)
         self.assertIn(
-            "Local-First Designer · Agent Systems Builder · GitHub-Native Architect",
+            "Local-First Designer · Agent Systems Builder · Copilot Specialist",
             layout,
         )
         self.assertNotIn(
@@ -165,8 +165,10 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("<h2>Local-First Systems</h2>", about)
         self.assertIn("Local-first product design", about)
         self.assertIn("GitHub-native workflows", about)
+        self.assertIn("Copilot-first development loops", about)
         self.assertIn("<h3>Local-First Design</h3>", about)
         self.assertIn("<h3>GitHub-Native Infrastructure</h3>", about)
+        self.assertIn("Copilot workflows", about)
         self.assertNotIn("OpenAI GPT-4 integration", about)
         self.assertNotIn("Azure cloud architecture", about)
         self.assertNotIn("<h3>Cloud Architecture</h3>", about)

@@ -78,10 +78,11 @@ permalink: /about/
     <div class="card">
         <div class="card-icon">💼</div>
         <h2>Local-First Systems</h2>
-        <p>Designing local-first products and GitHub-native systems where agents, interfaces, and public state reinforce each other.</p>
+        <p>Designing local-first products and GitHub-native systems where agents, interfaces, public state, and Copilot workflows reinforce each other.</p>
         <ul class="card-features">
             <li>Local-first product design</li>
             <li>GitHub-native workflows</li>
+            <li>Copilot-first development loops</li>
             <li>Agent orchestration</li>
             <li>React & TypeScript interfaces</li>
             <li>Python & Node.js automation</li>
@@ -112,7 +113,7 @@ permalink: /about/
     <div class="feature">
         <div class="feature-icon">🔧</div>
         <h3>Product Engineering</h3>
-        <p>Connecting interface, writing, automation, and deployment into one coherent operating system</p>
+        <p>Connecting interface, writing, automation, Copilot workflows, and deployment into one coherent operating system</p>
     </div>
 </div>
 
