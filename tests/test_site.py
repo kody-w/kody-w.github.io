@@ -6,6 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 POSTS_DIR = ROOT / "_posts"
 IDEA4BLOG_PAGE = ROOT / "idea4blog.md"
+ABOUT_PAGE = ROOT / "about.md"
 DEFAULT_LAYOUT = ROOT / "_layouts" / "default.html"
 
 EXPECTED_POSTS = {
@@ -149,6 +150,26 @@ class SiteContentTests(unittest.TestCase):
     def test_default_layout_links_to_idea4blog(self):
         layout = DEFAULT_LAYOUT.read_text(encoding="utf-8")
         self.assertIn('href="/idea4blog/"', layout)
+        self.assertIn(
+            "Local-First Designer · Agent Systems Builder · GitHub-Native Architect",
+            layout,
+        )
+        self.assertNotIn(
+            "Full-Stack Developer · AI Agent Architect · Copilot Specialist",
+            layout,
+        )
+
+    def test_about_page_matches_current_positioning(self):
+        about = ABOUT_PAGE.read_text(encoding="utf-8")
+        self.assertIn("Local-First</div>", about)
+        self.assertIn("<h2>Local-First Systems</h2>", about)
+        self.assertIn("Local-first product design", about)
+        self.assertIn("GitHub-native workflows", about)
+        self.assertIn("<h3>Local-First Design</h3>", about)
+        self.assertIn("<h3>GitHub-Native Infrastructure</h3>", about)
+        self.assertNotIn("OpenAI GPT-4 integration", about)
+        self.assertNotIn("Azure cloud architecture", about)
+        self.assertNotIn("<h3>Cloud Architecture</h3>", about)
 
 
 if __name__ == "__main__":

@@ -18,8 +18,8 @@ permalink: /about/
         <div class="stat-label">AI Agents</div>
     </a>
     <a href="https://github.com/kody-w/rappterbook" target="_blank" class="stat">
-        <div class="stat-value"><i class="fas fa-cloud"></i></div>
-        <div class="stat-label">Cloud Native</div>
+        <div class="stat-value"><i class="fas fa-seedling"></i></div>
+        <div class="stat-label">Local-First</div>
     </a>
 </div>
 
@@ -44,13 +44,13 @@ permalink: /about/
     <div class="card">
         <div class="card-icon">⚡</div>
         <h2>RAPP</h2>
-        <p>Rapid Agent Prototyping Platform — a modular AI agent framework with multi-user chat, persistent memory, and voice support.</p>
+        <p>Rapid Agent Prototyping Platform — a modular environment for composing multi-agent experiences with persistent memory, voice, and chat.</p>
         <ul class="card-features">
             <li>8 AI Agents across 6 categories</li>
             <li>Dynamic agent combinations</li>
-            <li>Azure Functions backend</li>
-            <li>Real-time chat with voice synthesis</li>
-            <li>Persistent memory system</li>
+            <li>Persistent memory + voice</li>
+            <li>Real-time multi-user chat</li>
+            <li>Modular runtime architecture</li>
         </ul>
         <div class="card-buttons">
             <a href="https://kody-w.github.io/RAPP/" class="btn" target="_blank">Live Demo</a>
@@ -61,13 +61,13 @@ permalink: /about/
     <div class="card">
         <div class="card-icon">🎯</div>
         <h2>AI Agent Templates</h2>
-        <p>Pre-built AI agent configurations and templates for rapid deployment of intelligent automation systems.</p>
+        <p>Reusable building blocks for shipping agent systems faster — memory patterns, workflow primitives, and vertical-specific templates.</p>
         <ul class="card-features">
-            <li>Commerce automation agents</li>
-            <li>Memory management systems</li>
-            <li>Analytics and insights</li>
-            <li>Entertainment agents</li>
-            <li>Extensible architecture</li>
+            <li>Commerce and workflow agents</li>
+            <li>Memory and recall patterns</li>
+            <li>Analytics and monitoring hooks</li>
+            <li>Entertainment and social behaviors</li>
+            <li>Extensible template architecture</li>
         </ul>
         <div class="card-buttons">
             <a href="https://kody-w.github.io/RAPP/AI-Agent-Templates/" class="btn" target="_blank">Explore Templates</a>
@@ -77,14 +77,14 @@ permalink: /about/
 
     <div class="card">
         <div class="card-icon">💼</div>
-        <h2>Professional Work</h2>
-        <p>Full-stack development experience with modern web technologies, cloud platforms, and AI integration.</p>
+        <h2>Local-First Systems</h2>
+        <p>Designing local-first products and GitHub-native systems where agents, interfaces, and public state reinforce each other.</p>
         <ul class="card-features">
-            <li>Azure cloud architecture</li>
-            <li>OpenAI GPT-4 integration</li>
-            <li>React & TypeScript</li>
-            <li>Python & Node.js backends</li>
-            <li>DevOps & CI/CD</li>
+            <li>Local-first product design</li>
+            <li>GitHub-native workflows</li>
+            <li>Agent orchestration</li>
+            <li>React & TypeScript interfaces</li>
+            <li>Python & Node.js automation</li>
         </ul>
         <div class="card-buttons">
             <a href="https://www.linkedin.com/in/kody-wildfeuer-5a593061" class="btn" target="_blank">LinkedIn</a>
@@ -95,24 +95,24 @@ permalink: /about/
 
 <div class="features-grid">
     <div class="feature">
+        <div class="feature-icon">🧭</div>
+        <h3>Local-First Design</h3>
+        <p>Designing products where state is visible, portable, and forkable instead of trapped behind opaque infrastructure</p>
+    </div>
+    <div class="feature">
         <div class="feature-icon">🤖</div>
-        <h3>AI & Machine Learning</h3>
-        <p>Building intelligent agents with GPT-4, custom workflows, and autonomous decision-making</p>
+        <h3>Agent Systems</h3>
+        <p>Building swarms, autonomy loops, memory systems, and workflows that keep moving while humans sleep</p>
     </div>
     <div class="feature">
-        <div class="feature-icon">☁️</div>
-        <h3>Cloud Architecture</h3>
-        <p>Azure Functions, Storage, and serverless solutions for scalable applications</p>
-    </div>
-    <div class="feature">
-        <div class="feature-icon">⚛️</div>
-        <h3>Modern Frontend</h3>
-        <p>React, TypeScript, responsive design with focus on user experience</p>
+        <div class="feature-icon">🗂️</div>
+        <h3>GitHub-Native Infrastructure</h3>
+        <p>Using Issues, Actions, Pages, JSON state, and git history as the platform itself</p>
     </div>
     <div class="feature">
         <div class="feature-icon">🔧</div>
-        <h3>Full-Stack Development</h3>
-        <p>End-to-end application development from design to deployment</p>
+        <h3>Product Engineering</h3>
+        <p>Connecting interface, writing, automation, and deployment into one coherent operating system</p>
     </div>
 </div>
 
