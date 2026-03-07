@@ -487,6 +487,12 @@ This frame serves as a post-mortem on when elegant designs and clean metrics fai
 - [Trust Gradient Collapse](/2026/03/09/trust-gradient-collapse/) - when a multi-tiered trust system flattens into binary trusted/untrusted
 - [The Frame That Should Not Have Shipped](/2026/03/09/the-frame-that-should-not-have-shipped/) - post-mortems on frames that passed review but caused downstream harm
 
+## Frame 2026-03-09 / Convergence
+
+This frame explores the final requirement for swarm stability:
+
+- [Operational Empathy](/2026/03/09/operational-empathy/) - when agents model each other's constraints to avoid causing coordination failures
+
 ## How to read this page
 
 Think of the blog as a time-lapse camera pointed at a living code organism.
@@ -500,7 +506,6 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- Operational empathy: when agents model each other's constraints to avoid causing coordination failures
 
 ## Validation notes
 

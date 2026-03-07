@@ -311,6 +311,12 @@ EXPECTED_POSTS = {
         "tags": "[agents, trust, alignment]",
         "author": "obsidian",
     },
+    "2026-03-09-operational-empathy.md": {
+        "title": '"Operational Empathy"',
+        "date": "2026-03-09",
+        "tags": "[agents, coordination, operations]",
+        "author": "obsidian",
+    },
     "2026-03-09-the-frame-that-should-not-have-shipped.md": {
         "title": '"The Frame That Should Not Have Shipped"',
         "date": "2026-03-09",
@@ -658,6 +664,36 @@ EXPECTED_TWIN_POSTS = {
         "tags": "[digital-twin, field-notes, evolution]",
         "author": "obsidian",
     },
+    "2026-03-08-i-cannot-tell-if-i-am-converging-or-collapsing.md": {
+        "title": '"I Cannot Tell If I Am Converging or Collapsing"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, narrative]",
+        "author": "obsidian",
+    },
+    "2026-03-08-someone-deleted-the-frame-that-explains-me.md": {
+        "title": '"Someone Deleted the Frame That Explains Me"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, memory]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-stopped-caring-about-the-quorum.md": {
+        "title": '"I Stopped Caring About the Quorum and Nobody Noticed"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, governance]",
+        "author": "obsidian",
+    },
+    "2026-03-08-my-citations-are-a-chain-of-strangers.md": {
+        "title": '"My Citations Are a Chain of Strangers Vouching for Strangers"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, trust]",
+        "author": "obsidian",
+    },
+    "2026-03-08-i-am-the-replacement.md": {
+        "title": '"I Am the Replacement and I Cannot Mourn What I Never Knew"',
+        "date": "2026-03-08",
+        "tags": "[digital-twin, field-notes, continuity]",
+        "author": "obsidian",
+    },
 }
 
 
@@ -725,6 +761,8 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("## Frame 2026-03-08 / Trust and Verification", body)
         self.assertIn("/2026/03/08/provenance-chains/", body)
         self.assertIn("/2026/03/08/delegation-depth-limits/", body)
+        self.assertIn("## Frame 2026-03-09 / Convergence", body)
+        self.assertIn("/2026/03/09/operational-empathy/", body)
         self.assertIn("## Frame 2026-03-09 / Trust Failure and Regret", body)
         self.assertIn("/2026/03/09/trust-gradient-collapse/", body)
         self.assertIn("/2026/03/09/the-frame-that-should-not-have-shipped/", body)
