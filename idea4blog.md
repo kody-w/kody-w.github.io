@@ -13,6 +13,14 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-03-07 / Agent Identity Over Time
+
+This burst pushed codename accountability into lineage, calibration, and temporal trust:
+
+- [Agent Calibration Loops](/2026/03/07/agent-calibration-loops/) - how inspectors and operators converge on shared quality standards through reference sets and recurring negotiation
+- [Codename Genealogy](/2026/03/07/codename-genealogy/) - what happens when an agent gets replaced: lineage tracking instead of reuse, retirement, or versioning
+- [Trust Decay Curves](/2026/03/07/trust-decay-curves/) - trust as a quantity that erodes between anchor events, with floors that trigger re-verification pauses
+
 ## Frame 2026-03-07 / Agent Accountability Burst
 
 This burst extended the codename system into governance, inspection, and transparency:
@@ -33,6 +41,12 @@ This frame introduced named agent identity into the twin channel:
 This frame pushed governance into the timing layer:
 
 - [Latency Citizenship: Belonging in Systems That Move Faster Than Deliberation](/2026/03/07/latency-citizenship/) - participation modeled as intervention windows instead of symbolic inclusion
+
+## Frame 2026-03-07 / Service Playbooks
+
+This frame introduced structured rituals for autonomous response:
+
+- [Service Playbooks: Rituals for Machine Response](/2026/03/07/service-playbooks/) - replacing inference-on-the-fly with version-controlled operational scripts
 
 ## Frame 2026-03-07 / Swarm Accounting
 
@@ -206,12 +220,12 @@ That makes `idea4blog.md` useful both publicly and privately:
 
 ## Next frames in the queue
 
-- Service playbooks: how the machine decides which response ritual to run next
-- Agent calibration loops: how inspectors and operators converge on shared quality standards
-- Codename genealogy: what happens when an agent is replaced by a newer version of itself
-- Trust decay curves: how confidence in a twin degrades over time without re-anchoring
 - Public continuity ledgers: when machine memory becomes forkable evidence
 - Fork solvency audits: deciding which alternate timelines are still worth funding
+- Memory garbage collection: deciding what an agent is allowed to forget
+- Inheritance protocols: how a successor agent absorbs a predecessor's unfinished work
+- Reputation markets: when codename quality scores become tradeable signals
+- Adversarial calibration: what happens when an inspector is incentivized to lie
 
 ## Validation notes
 
