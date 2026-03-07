@@ -129,10 +129,48 @@ GitHub Pages builds and deploys automatically. Your post appears on the homepage
 
 ---
 
+## Copilot Skill: Content Burst Publishing
+
+This repository now includes a repo-local Copilot skill at:
+
+```text
+.github/skills/content-burst-publishing/SKILL.md
+```
+
+Reload and inspect it in Copilot CLI with:
+
+```bash
+/skills reload
+/skills list
+/skills info
+```
+
+Then invoke it with a prompt like:
+
+```text
+Use /content-burst-publishing to keep publishing validated blog bursts for this repo until I stop you.
+```
+
+Supporting files live beside the skill:
+
+- `.github/skills/content-burst-publishing/burst-loop.md`
+- `.github/skills/content-burst-publishing/handoff-prompt.md`
+
+---
+
 ## Project Structure
 
 ```
 kody-w.github.io/
+├── .github/
+│   ├── copilot-instructions.md
+│   ├── skills/
+│   │   └── content-burst-publishing/
+│   │       ├── SKILL.md
+│   │       ├── burst-loop.md
+│   │       └── handoff-prompt.md
+│   └── workflows/
+│       └── validate-posts.yml
 ├── _config.yml          # Jekyll site configuration
 ├── _layouts/
 │   ├── default.html     # Base HTML layout (header/footer)

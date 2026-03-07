@@ -8,6 +8,11 @@ POSTS_DIR = ROOT / "_posts"
 IDEA4BLOG_PAGE = ROOT / "idea4blog.md"
 ABOUT_PAGE = ROOT / "about.md"
 DEFAULT_LAYOUT = ROOT / "_layouts" / "default.html"
+README_FILE = ROOT / "README.md"
+SKILL_DIR = ROOT / ".github" / "skills" / "content-burst-publishing"
+SKILL_FILE = SKILL_DIR / "SKILL.md"
+SKILL_LOOP_FILE = SKILL_DIR / "burst-loop.md"
+SKILL_PROMPT_FILE = SKILL_DIR / "handoff-prompt.md"
 
 EXPECTED_POSTS = {
     "2026-03-06-the-repo-is-an-organism.md": {
@@ -172,6 +177,29 @@ class SiteContentTests(unittest.TestCase):
         self.assertNotIn("OpenAI GPT-4 integration", about)
         self.assertNotIn("Azure cloud architecture", about)
         self.assertNotIn("<h3>Cloud Architecture</h3>", about)
+
+    def test_content_burst_skill_exists_and_has_expected_metadata(self):
+        front_matter, body = parse_front_matter(SKILL_FILE)
+        self.assertEqual(front_matter.get("name"), "content-burst-publishing")
+        self.assertIn("keep pumping out posts", front_matter.get("description", ""))
+        self.assertIn("idea4blog.md", body)
+        self.assertIn("tests/test_site.py", body)
+        self.assertIn("python3 -m unittest -v tests.test_site", body)
+        self.assertIn("Co-authored-by: Copilot", body)
+        self.assertIn("/content-burst-publishing", body)
+
+    def test_skill_supporting_files_exist_and_reference_the_loop(self):
+        burst_loop = SKILL_LOOP_FILE.read_text(encoding="utf-8")
+        prompt = SKILL_PROMPT_FILE.read_text(encoding="utf-8")
+        self.assertIn("Read `idea4blog.md`.", burst_loop)
+        self.assertIn("run `python3 -m unittest -v tests.test_site`", prompt)
+        self.assertIn("/content-burst-publishing", prompt)
+
+    def test_readme_documents_copilot_skill(self):
+        readme = README_FILE.read_text(encoding="utf-8")
+        self.assertIn(".github/skills/content-burst-publishing/SKILL.md", readme)
+        self.assertIn("/skills reload", readme)
+        self.assertIn("Use /content-burst-publishing", readme)
 
 
 if __name__ == "__main__":
