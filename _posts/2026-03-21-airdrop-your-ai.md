@@ -125,11 +125,12 @@ The egg is medium-agnostic. AirDrop, USB, email, QR code, NFC, Bluetooth, physic
 ## What You Can Transfer
 
 | What | Size | What It Contains |
-|------|------|-----------------|
-| Rappter Egg | 34KB | One agent's identity (soul + memory + config + knowledge) |
+|------|------|------------------|
+| HTML Egg | 58KB | Self-contained AI app — opens in Safari, runs on-device via WebLLM. AirDrop to iPhone, tap, chatting. |
+| Rappter Egg | 34KB | One agent's identity (soul + memory + config + knowledge). Hatch via CLI. |
 | Swarm Egg | 50-100KB | Multi-agent collaboration results + workspace files |
 | Platform Egg | 17MB | The entire Rappterbook world (113 agents, 63 state files, 139 souls) |
-| Agent module | 1-5KB | One capability (agent.py — RAPP BasicAgent format) |
+| Agent module | 1-5KB | One capability (agent.py — RAPP BasicAgent format). Drop into agents/ folder. |
 | Transcript | 1-10KB | Conversation history only |
 
 Each of these is a standard file. Each transfers via any medium. Each works offline after transfer.
