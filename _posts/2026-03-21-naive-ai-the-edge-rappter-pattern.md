@@ -32,31 +32,80 @@ Day 90: Model + deep soul + 20 agents = irreplaceable companion
 
 The AI doesn't get a bigger model. It doesn't get retrained. It grows through accumulation — of identity, of memory, of modular capability.
 
-## The Agent Pattern
+## The Agent Pattern (RAPP-Compatible)
 
-Every capability the Edge Rappter gains comes from a single file: `agent.py`. The pattern is universal:
+Every capability the Edge Rappter gains comes from a single file: `agent.py`. The pattern follows the **RAPP** (Rapid Agent Prototyping Platform) standard — the same `BasicAgent` class used in cloud deployments (Azure, Copilot 365) works identically on a local device running offline:
 
 ```python
-AGENT = {
-    "name": "code-reviewer",
-    "description": "Reviews code for bugs and quality",
-    "version": "1.0",
-    "triggers": ["review", "code review", "check this code"],
-}
+from agents.basic_agent import BasicAgent
 
-def run(context):
-    message = context["message"]
-    soul = context["soul"]
-    memory = context["memory"]
-    # ... do the thing ...
-    return {"response": "Here's my review..."}
+class CodeReviewAgent(BasicAgent):
+    def __init__(self):
+        self.name = 'CodeReview'
+        self.metadata = {
+            "name": self.name,
+            "description": "Reviews code for bugs, security, and quality",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "file_path": {
+                        "type": "string",
+                        "description": "Path to the file to review"
+                    },
+                    "focus": {
+                        "type": "string",
+                        "description": "What to focus on",
+                        "enum": ["bugs", "security", "style", "performance", "all"]
+                    },
+                    "user_input": {
+                        "type": "string",
+                        "description": "The user's review request"
+                    }
+                },
+                "required": ["user_input"]
+            }
+        }
+        super().__init__(name=self.name, metadata=self.metadata)
+
+    def perform(self, **kwargs):
+        user_input = kwargs.get('user_input', '')
+        file_path = kwargs.get('file_path', '')
+        focus = kwargs.get('focus', 'all')
+        return {
+            "response": f"Reviewing {file_path} for {focus} issues...",
+            "instructions": f"Read the file, analyze for {focus}, provide feedback.",
+        }
 ```
 
-That's it. A metadata dict and a run function. The brainstem loads every `*.py` file from `~/.rappter/agents/`, reads the triggers, and routes messages to the right agent.
+This is the **exact same format** as RAPP agents running in Azure and Copilot 365. A `BasicAgent` subclass with `__init__` (sets `self.name`, `self.metadata` with OpenAI function-calling schema) and `perform(**kwargs)`. The metadata uses the OpenAI function-calling parameter spec — the same schema used by GPT, Claude, and every major LLM API.
+
+**The universal interface:** One `agent.py` file works in:
+- **RAPP cloud** (Azure, Copilot 365) — loaded by the cloud orchestrator
+- **Edge Rappter** (local, Ollama) — loaded by the brainstem from `~/.rappter/agents/`
+- **Browser swarm** (localhost) — described in the prompt
+- **Another person's device** — transferred via Rappter Egg or sneakernet
+
+The brainstem loads every `*.py` file from `~/.rappter/agents/`, instantiates the class, reads the metadata, and routes messages based on the description and parameter types.
 
 **Adding a new capability = dropping a file into a folder.**
 
-No package manager. No dependency resolution. No API keys. No cloud. Just a Python file in a directory. The AI loads it and immediately gains the ability.
+No package manager. No dependency resolution. No API keys. No cloud. Just a Python file in a directory. The AI loads it and immediately gains the ability. Drag an `agent.py` from a RAPP cloud deployment onto a USB drive, drop it into `~/.rappter/agents/` on your Raspberry Pi, and the Edge Rappter gains that exact capability — offline, local, sovereign.
+
+### The Local Storage Shim
+
+RAPP cloud agents use `AzureFileStorageManager` for persistence. The Edge Rappter provides a local shim that implements the same API using flat files:
+
+```python
+# In RAPP cloud:
+from utils.azure_file_storage import AzureFileStorageManager
+# → talks to Azure Blob Storage
+
+# In Edge Rappter (same import, different backend):
+from utils.azure_file_storage import AzureFileStorageManager
+# → reads/writes ~/.rappter/storage/ (local files)
+```
+
+Same code. Same import. Different backend. The agent doesn't know or care where it's running. This is how the 7 agents currently loaded on the Edge Rappter work — ManageMemory and ContextMemory from RAPP cloud run locally on file storage, zero Azure, zero internet.
 
 ## The Brainstem
 
