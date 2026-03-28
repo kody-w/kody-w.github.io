@@ -81,9 +81,132 @@ open https://kody-w.github.io
 open http://localhost:18790/blog-import.html
 ```
 
+## Versioned Builds — Immutable Snapshots
+
+Every build creates an immutable snapshot. Rollback = point to a different folder. Infinite canary builds per branch.
+
+### Structure
+
+```
+builds/
+├── manifest.json          ← index of all versions
+├── latest/                ← symlink to current version
+├── v1.0.0/               ← immutable snapshot
+├── v1.0.1/               ← immutable snapshot
+├── canary/
+│   ├── feature-x/        ← branch canary build
+│   └── fix-layout/       ← branch canary build
+└── snapshots/
+    ├── 2026-03-28T17-00/ ← timestamped snapshot
+    └── 2026-03-28T19-30/ ← timestamped snapshot
+```
+
+### Commands
+
+```bash
+# Auto-versioned release build
+./scripts/versioned-build.sh
+
+# Explicit version
+./scripts/versioned-build.sh --version 2.0.0
+
+# Canary build for current branch
+./scripts/versioned-build.sh --canary
+
+# Timestamped snapshot
+./scripts/versioned-build.sh --snapshot
+
+# Pull production data + build (near-prod testing)
+./scripts/versioned-build.sh --pull-data
+
+# List all builds
+./scripts/versioned-build.sh --list
+
+# Serve a specific version locally
+./scripts/versioned-build.sh --serve v1.0.0
+
+# Roll back to a previous version
+./scripts/versioned-build.sh --rollback v1.0.0
+
+# Diff two versions
+./scripts/versioned-build.sh --diff v1.0.0 v1.1.0
+```
+
+### How Rollback Works
+
+Every version is an immutable directory of static HTML files. Rolling back is instant:
+
+```bash
+./scripts/versioned-build.sh --rollback v1.0.0
+# latest → v1.0.0 (symlink change, instant)
+```
+
+No database rollback. No server restart. No redeployment. Just point to a different folder.
+
+### Near-Prod Testing
+
+Local branches can be tested against live production data:
+
+```bash
+# 1. Pull live data from GitHub raw (rappterbook agents, social graph, etc.)
+# 2. Build Jekyll locally with your branch changes
+# 3. The build uses live production data but YOUR local changes
+# 4. Nothing touches production
+./scripts/versioned-build.sh --pull-data --version test-1
+```
+
+### Canary Builds Per Branch
+
+Every feature branch gets its own canary build:
+
+```bash
+git checkout feature/new-landing-page
+./scripts/versioned-build.sh --canary
+# → builds/canary/feature-new-landing-page/
+
+# Serve it to review
+./scripts/versioned-build.sh --serve canary/feature-new-landing-page
+
+# Compare against current production
+./scripts/versioned-build.sh --diff latest canary/feature-new-landing-page
+```
+
+### Manifest
+
+`builds/manifest.json` tracks every build:
+
+```json
+{
+  "latest": "v1.2.0",
+  "updatedAt": "2026-03-28T21-30-00",
+  "versions": [
+    {
+      "version": "v1.0.0",
+      "type": "release",
+      "branch": "master",
+      "commit": "abc1234",
+      "timestamp": "2026-03-28T17-00-00",
+      "htmlFiles": 42,
+      "current": false
+    },
+    {
+      "version": "v1.2.0",
+      "type": "release",
+      "branch": "master",
+      "commit": "def5678",
+      "timestamp": "2026-03-28T21-30-00",
+      "htmlFiles": 47,
+      "current": true
+    }
+  ]
+}
+```
+
 ## Safety Gates
 
 1. **Jekyll build** — if the site doesn't build, it doesn't deploy
-2. **PII check** — scans built HTML for email/phone patterns
-3. **Manual production gate** — human reviews staging before touching production
-4. **Golden goose protection** — public posts contain thought leadership only, never implementation details
+2. **PII check** — scans built HTML for email/phone patterns on every build (local + CI)
+3. **Immutable snapshots** — every version is preserved, rollback is instant
+4. **Manual production gate** — human reviews staging before touching production
+5. **Branch isolation** — canary builds per branch, never cross-contaminate
+6. **Golden goose protection** — public posts contain thought leadership only, never implementation details
