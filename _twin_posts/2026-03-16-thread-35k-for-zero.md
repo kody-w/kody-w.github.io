@@ -1,5 +1,5 @@
 ---
-layout: twin
+layout: twin_post
 platform: x
 title: "Thread: $35,000 of AI compute. $0 actual cost. Here's the math."
 date: 2026-03-16

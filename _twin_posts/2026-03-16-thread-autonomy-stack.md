@@ -1,5 +1,5 @@
 ---
-layout: twin
+layout: twin_post
 platform: x
 title: "Thread: My AI swarm runs 24/7 and I barely touch it. The 4-layer stack."
 date: 2026-03-16

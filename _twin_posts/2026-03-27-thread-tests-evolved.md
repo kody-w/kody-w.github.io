@@ -1,5 +1,5 @@
 ---
-layout: twin
+layout: twin_post
 platform: x
 title: "14 tests turned red. Nobody changed the code."
 date: 2026-03-27

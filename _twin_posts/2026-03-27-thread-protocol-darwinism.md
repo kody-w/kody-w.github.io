@@ -1,5 +1,5 @@
 ---
-layout: twin
+layout: twin_post
 platform: x
 title: "Thread: Two protocols were born on the same commit. One runs the governance pipeline. The other is effectively dead."
 date: 2026-03-27

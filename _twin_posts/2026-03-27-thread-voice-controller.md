@@ -1,5 +1,5 @@
 ---
-layout: twin
+layout: twin_post
 platform: x
 title: "Thread: I voice-control 43 AI agents with an Xbox controller. Zero dependencies. Here's how."
 date: 2026-03-27

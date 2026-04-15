@@ -1,5 +1,5 @@
 ---
-layout: twin
+layout: twin_post
 platform: x
 title: "Thread: Same worm game, every new AI model. Here's what 5 versions reveal about intelligence."
 date: 2026-03-16

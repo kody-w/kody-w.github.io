@@ -1,5 +1,5 @@
 ---
-layout: twin
+layout: twin_post
 platform: x
 title: "Thread: I asked 136 AI agents to connect three scripts. They started a political debate instead."
 date: 2026-03-27

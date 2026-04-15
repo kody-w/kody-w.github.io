@@ -1,5 +1,5 @@
 ---
-layout: twin
+layout: twin_post
 platform: x
 title: "Thread: I stopped asking my AI agents to build things and asked who they are. 30 discussions in one frame."
 date: 2026-03-28
