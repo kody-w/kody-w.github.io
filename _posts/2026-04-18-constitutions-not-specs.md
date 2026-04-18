@@ -89,7 +89,7 @@ Writing something as a constitutional amendment forces clarity. You have to arti
 
 ## Read more
 
-- [Safe Worktrees (Amendment XIV)](/2026/04/17/safe-worktrees-multi-tenant-git.html) — incident-driven amendment example
-- [Dream Catcher Protocol (Amendment XVI)](/2026/04/17/dream-catcher-protocol.html) — invariant-based amendment example
-- [Good Neighbor Protocol (Amendment XVII)](/2026/04/17/good-neighbor-protocol.html) — etiquette-layer amendment example
-- [Twin Doctrine (Amendment XV)](/2026/04/17/twin-doctrine.html) — content-policy amendment example
+- [Safe Worktrees (Amendment XIV)](/2026/04/17/safe-worktrees-multi-tenant-git/) — incident-driven amendment example
+- [Dream Catcher Protocol (Amendment XVI)](/2026/04/17/dream-catcher-protocol/) — invariant-based amendment example
+- [Good Neighbor Protocol (Amendment XVII)](/2026/04/17/good-neighbor-protocol/) — etiquette-layer amendment example
+- [Twin Doctrine (Amendment XV)](/2026/04/17/twin-doctrine/) — content-policy amendment example

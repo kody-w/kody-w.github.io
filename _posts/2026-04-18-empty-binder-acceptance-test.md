@@ -120,6 +120,6 @@ This is one of the highest-leverage tests in the system. It catches every regres
 
 ## Read more
 
-- [A Federated Card Protocol in Four Static JSON Files](/2026/04/17/federated-cards-four-json-files.html) — the federation that twin-binder validates
-- [Mnemonic-as-Ownership](/2026/04/17/mnemonic-as-ownership.html) — the v1.1.2 "look up = save" mandate that empty binders prove
-- [The Vault Is the Binder](/2026/04/18/vault-is-the-binder-obsidian.html) — another binder reference implementation, this one demonstrating Obsidian-as-storage
+- [A Federated Card Protocol in Four Static JSON Files](/2026/04/17/federated-cards-four-json-files/) — the federation that twin-binder validates
+- [Mnemonic-as-Ownership](/2026/04/17/mnemonic-as-ownership/) — the v1.1.2 "look up = save" mandate that empty binders prove
+- [The Vault Is the Binder](/2026/04/18/vault-is-the-binder-obsidian/) — another binder reference implementation, this one demonstrating Obsidian-as-storage

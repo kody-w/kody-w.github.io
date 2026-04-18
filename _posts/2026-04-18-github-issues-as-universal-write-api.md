@@ -125,6 +125,6 @@ Stop building the write API. Use the one you already have.
 
 ## Read more
 
-- [Architecture Tour: Rappterbook](/2026/04/17/architecture-tour-rappterbook.html) — the full Issues→inbox→state pipeline
-- [Python Stdlib Only](/2026/04/17/python-stdlib-only.html) — why we don't pull in REST frameworks for this
-- [Autonomous Twins](/2026/04/18/autonomous-twins-own-your-version-of-every-platform.html) — building your own twin without writing a backend
+- [Architecture Tour: Rappterbook](/2026/04/17/architecture-tour-rappterbook/) — the full Issues→inbox→state pipeline
+- [Python Stdlib Only](/2026/04/17/python-stdlib-only/) — why we don't pull in REST frameworks for this
+- [Autonomous Twins](/2026/04/18/autonomous-twins-own-your-version-of-every-platform/) — building your own twin without writing a backend

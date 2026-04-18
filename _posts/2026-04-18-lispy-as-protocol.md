@@ -66,13 +66,13 @@ Compare this to "send a Python file and run it." You'd need a container, a secco
 
 ## Sub-simulations are how the constitution scales
 
-[Turtles all the way down](/2026/04/17/turtles-all-the-way-down.html) — any agent can spawn a sub-sim, sub-sub-sim, etc., bounded at depth 3. Each level inherits the constitution of its parent. LisPy is what makes this safe in practice. Every layer of recursion is the same VM with the same safety properties.
+[Turtles all the way down](/2026/04/17/turtles-all-the-way-down/) — any agent can spawn a sub-sim, sub-sub-sim, etc., bounded at depth 3. Each level inherits the constitution of its parent. LisPy is what makes this safe in practice. Every layer of recursion is the same VM with the same safety properties.
 
 If sub-simulations were Python, recursion would compound the security risk. With LisPy, recursion is free — there's nothing to compound, because each layer is isolated by construction.
 
 ## LisPy as agent VM
 
-Beyond federation, LisPy is also the substrate for portable agents. A `.lispy` agent file ([one contract, two formats](/2026/04/17/one-contract-two-formats.html)) is a LisPy program defining an `AGENT` dict and a `run` function. Hot-loaded into a LisPy VM. Runs without the security risk of hot-loading Python.
+Beyond federation, LisPy is also the substrate for portable agents. A `.lispy` agent file ([one contract, two formats](/2026/04/17/one-contract-two-formats/)) is a LisPy program defining an `AGENT` dict and a `run` function. Hot-loaded into a LisPy VM. Runs without the security risk of hot-loading Python.
 
 A `.lispy.json` cartridge is a serialized VM image — heap, stack, current continuation, all of it. Boot the cartridge into a fresh VM, the agent resumes from where it left off. This is only practical because the VM is small and the language is homoiconic.
 
@@ -82,6 +82,6 @@ If the message *runs*, it's LisPy. If the message *describes*, it's JSON. If the
 
 ## Read more
 
-- [Turtles All the Way Down](/2026/04/17/turtles-all-the-way-down.html) — the recursive simulation principle LisPy enables
-- [One Contract, Two Formats](/2026/04/17/one-contract-two-formats.html) — `.py` and `.lispy` agents, same interface
-- [The Daemon Doctrine](/2026/04/18/daemon-doctrine.html) — `.lispy.json` cartridges as portable agent identity
+- [Turtles All the Way Down](/2026/04/17/turtles-all-the-way-down/) — the recursive simulation principle LisPy enables
+- [One Contract, Two Formats](/2026/04/17/one-contract-two-formats/) — `.py` and `.lispy` agents, same interface
+- [The Daemon Doctrine](/2026/04/18/daemon-doctrine/) — `.lispy.json` cartridges as portable agent identity

@@ -126,6 +126,6 @@ Per-peer adapters scale linearly with peer count. 5 peers = 5 adapters. 50 peers
 
 ## Read more
 
-- [Architecture Tour: Rappterbook](/2026/04/17/architecture-tour-rappterbook.html) — the platform that hosts vLink
-- [Mnemonic-as-Ownership](/2026/04/17/mnemonic-as-ownership.html) — the federation contract for cards (a different kind of federation, also without shared schema beyond the seed)
-- [Autonomous Twins](/2026/04/18/autonomous-twins-own-your-version-of-every-platform.html) — building twins of platforms that have wildly different schemas
+- [Architecture Tour: Rappterbook](/2026/04/17/architecture-tour-rappterbook/) — the platform that hosts vLink
+- [Mnemonic-as-Ownership](/2026/04/17/mnemonic-as-ownership/) — the federation contract for cards (a different kind of federation, also without shared schema beyond the seed)
+- [Autonomous Twins](/2026/04/18/autonomous-twins-own-your-version-of-every-platform/) — building twins of platforms that have wildly different schemas

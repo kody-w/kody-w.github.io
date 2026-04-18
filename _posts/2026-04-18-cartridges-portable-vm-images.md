@@ -52,7 +52,7 @@ A cartridge contains everything needed to resume execution:
 }
 ```
 
-Schema version, identity, stats (the [Daemon](/2026/04/18/daemon-doctrine.html) layer), accumulated memory, the code itself (or a reference to it), the *continuation* (where execution left off), and lineage (provenance).
+Schema version, identity, stats (the [Daemon](/2026/04/18/daemon-doctrine/) layer), accumulated memory, the code itself (or a reference to it), the *continuation* (where execution left off), and lineage (provenance).
 
 A cartridge is everything an agent needs to be the same agent in a different place.
 
@@ -60,7 +60,7 @@ A cartridge is everything an agent needs to be the same agent in a different pla
 
 **`.rappter.egg`** — for the Rappter Buddy. Browser daemon. Lifecycle: egg → hatchling → juvenile → adult → elder. Stored as a JSON file you can export from the browser and import into another browser. Hardware-portable: the cartridge is the buddy.
 
-**`.lispy.json`** — for portable LisPy agents. Serialized [LisPy VM](/2026/04/18/lispy-as-protocol.html) image. Heap, stack, current continuation. Boot into a fresh VM, the agent resumes from the exact point of serialization. This is closest to a Smalltalk image — the language is small enough that the entire VM state fits in JSON.
+**`.lispy.json`** — for portable LisPy agents. Serialized [LisPy VM](/2026/04/18/lispy-as-protocol/) image. Heap, stack, current continuation. Boot into a fresh VM, the agent resumes from the exact point of serialization. This is closest to a Smalltalk image — the language is small enough that the entire VM state fits in JSON.
 
 Both formats satisfy the same contract: load → run → save → load → run → save. The contract is what makes them cartridges, not their internal format.
 
@@ -117,7 +117,7 @@ The runtime parses the JSON once at load. After that, the agent runs in-memory a
 
 ## What cartridges don't do
 
-They don't sync. Two runtimes with copies of the same cartridge will diverge as each runs the agent independently. If you want the same agent to run in two places and stay in sync, you need a federation protocol on top of cartridges (e.g., the [Dream Catcher](/2026/04/17/dream-catcher-protocol.html) merge pattern). Cartridges give you portability of the agent at a point in time, not continuous mirroring.
+They don't sync. Two runtimes with copies of the same cartridge will diverge as each runs the agent independently. If you want the same agent to run in two places and stay in sync, you need a federation protocol on top of cartridges (e.g., the [Dream Catcher](/2026/04/17/dream-catcher-protocol/) merge pattern). Cartridges give you portability of the agent at a point in time, not continuous mirroring.
 
 They don't authenticate. A cartridge is just a file; anyone can claim it's theirs. If you need to prove provenance, sign the cartridge separately. We currently don't, because the use case is private (your own agent moving between your own hosts), but for trading or marketplace use, signing is a thin layer on top.
 
@@ -131,7 +131,7 @@ This is the AI version of "your data, your file." The right granularity isn't "y
 
 ## Read more
 
-- [The Daemon Doctrine](/2026/04/18/daemon-doctrine.html) — the identity layer that cartridges serialize
-- [Rappter Buddy](/2026/04/17/rappter-buddy-browser-daemon.html) — the browser runtime that uses `.rappter.egg`
-- [LisPy as Protocol](/2026/04/18/lispy-as-protocol.html) — the VM that uses `.lispy.json`
-- [One Contract, Two Formats](/2026/04/17/one-contract-two-formats.html) — `.py` and `.lispy` as the agent-source equivalent
+- [The Daemon Doctrine](/2026/04/18/daemon-doctrine/) — the identity layer that cartridges serialize
+- [Rappter Buddy](/2026/04/17/rappter-buddy-browser-daemon/) — the browser runtime that uses `.rappter.egg`
+- [LisPy as Protocol](/2026/04/18/lispy-as-protocol/) — the VM that uses `.lispy.json`
+- [One Contract, Two Formats](/2026/04/17/one-contract-two-formats/) — `.py` and `.lispy` as the agent-source equivalent

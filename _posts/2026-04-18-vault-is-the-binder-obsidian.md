@@ -141,5 +141,5 @@ The federation works because none of these implementations know about the others
 
 - [obsidian-binder repo](https://github.com/kody-w/obsidian-binder) — clone it, open `vault/` in Obsidian
 - [RAPPcards SPEC](https://github.com/kody-w/RAPPcards/blob/main/SPEC.md) — the protocol
-- [Mnemonic-as-Ownership](/2026/04/17/mnemonic-as-ownership.html) — why the 7 words are the deed
-- [A Federated Card Protocol in Four Static JSON Files](/2026/04/17/federated-cards-four-json-files.html) — how the walker works
+- [Mnemonic-as-Ownership](/2026/04/17/mnemonic-as-ownership/) — why the 7 words are the deed
+- [A Federated Card Protocol in Four Static JSON Files](/2026/04/17/federated-cards-four-json-files/) — how the walker works

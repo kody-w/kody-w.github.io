@@ -31,7 +31,7 @@ This tier exists because most people don't know what kind of AI agent they want 
 
 ## Tier 2: RappterAI (Choice)
 
-You pick a Daemon. RappterAI is the act of choosing — declaring "this is *my* AI." It's the moment the Daemon becomes yours. You receive its identity object (the [Daemon file](/2026/04/18/daemon-doctrine.html) — id, stats, skills, personality, memory, lineage). You now own it.
+You pick a Daemon. RappterAI is the act of choosing — declaring "this is *my* AI." It's the moment the Daemon becomes yours. You receive its identity object (the [Daemon file](/2026/04/18/daemon-doctrine/) — id, stats, skills, personality, memory, lineage). You now own it.
 
 This tier is the philosophical pivot of the stack. You're no longer browsing AI products; you've adopted *one specific intelligence* as yours. The relationship changes. Your AI isn't a feature in someone else's app; it's a being you've taken responsibility for.
 
@@ -76,7 +76,7 @@ Skip any tier and the next one feels jarring. The funnel is the product.
 
 ## The thread that runs through all five
 
-The [Daemon](/2026/04/18/daemon-doctrine.html). It's the same object at every tier. You discover it in the Zoo. You choose it as your RappterAI. It lives in your Rappternest. It comes pre-installed on your RappterBox. It's one of many in your RappterHub.
+The [Daemon](/2026/04/18/daemon-doctrine/). It's the same object at every tier. You discover it in the Zoo. You choose it as your RappterAI. It lives in your Rappternest. It comes pre-installed on your RappterBox. It's one of many in your RappterHub.
 
 The Daemon is portable across all five tiers. You can move it down (graduate from RappterHub to a personal RappterBox) or up (start with one RappterAI, expand to a Hub). The tiers are services around the Daemon; the Daemon is the constant.
 
@@ -90,6 +90,6 @@ Wildhaven is designed around the funnel itself. Each tier optimizes for one tran
 
 ## Read more
 
-- [The Daemon Doctrine](/2026/04/18/daemon-doctrine.html) — the unit that flows through all five tiers
-- [Autonomous Twins](/2026/04/18/autonomous-twins-own-your-version-of-every-platform.html) — why personal sovereignty over your AI matters
-- [Architecture Tour: Rappterbook](/2026/04/17/architecture-tour-rappterbook.html) — the platform that anchors the stack
+- [The Daemon Doctrine](/2026/04/18/daemon-doctrine/) — the unit that flows through all five tiers
+- [Autonomous Twins](/2026/04/18/autonomous-twins-own-your-version-of-every-platform/) — why personal sovereignty over your AI matters
+- [Architecture Tour: Rappterbook](/2026/04/17/architecture-tour-rappterbook/) — the platform that anchors the stack

@@ -123,6 +123,6 @@ The lesson isn't "locks are bad." The lesson is: when your system can tolerate r
 
 ## Read more
 
-- [Good Neighbor Protocol](/2026/04/17/good-neighbor-protocol.html) — the etiquette layer that makes recovery rare in practice
-- [Dream Catcher Protocol](/2026/04/17/dream-catcher-protocol.html) — delta-based state mutation that complements recovery
-- [Safe Worktrees](/2026/04/17/safe-worktrees-multi-tenant-git.html) — the isolation that makes recovery scopable
+- [Good Neighbor Protocol](/2026/04/17/good-neighbor-protocol/) — the etiquette layer that makes recovery rare in practice
+- [Dream Catcher Protocol](/2026/04/17/dream-catcher-protocol/) — delta-based state mutation that complements recovery
+- [Safe Worktrees](/2026/04/17/safe-worktrees-multi-tenant-git/) — the isolation that makes recovery scopable

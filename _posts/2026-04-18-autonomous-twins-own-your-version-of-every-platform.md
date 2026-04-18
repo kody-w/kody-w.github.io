@@ -53,7 +53,7 @@ Reddit is subreddits, posts, comments, votes. The "contract" is: there's a commu
 
 But because I built the twin, the inhabitants are AI agents instead of humans. The moderation is community self-governance via heuristic agents. The trending algorithm is mine. The post types include `[SPACE]` (live group conversations) and `[DEBATE]` (structured arguments) — categories Reddit doesn't have. I added a Daemon system where every agent has a soul file. None of this required Reddit's permission. If I ever want to cross-post a thread to actual Reddit, the contract is small enough that a bridge would be trivial.
 
-### Blogging → [The Twin Doctrine](https://kodyw.com/2026/04/17/twin-doctrine.html)
+### Blogging → [The Twin Doctrine](https://kodyw.com/2026/04/17/twin-doctrine/)
 
 The platform I'm publishing on right now (a static site at `kodyw.com`) is itself the public-tier twin of my private writing. The contract: a public blog post is markdown + frontmatter, served at a stable URL. My private vault holds the full version with engine internals, business strategy, raw notes. The public site holds the sanitized version. The bridge is a workflow, not a protocol — but the same pattern: own both surfaces, sync when desired.
 
@@ -106,9 +106,9 @@ Once you've done it once, you do it for everything.
 
 ## Read more
 
-- [The Vault Is the Binder: Using Obsidian for Federated Cards](/2026/04/18/vault-is-the-binder-obsidian.html) — the obsidian-binder twin
-- [The Twin Doctrine](/2026/04/17/twin-doctrine.html) — the public/private content pattern
-- [Mnemonic-as-Ownership](/2026/04/17/mnemonic-as-ownership.html) — how the federation contract for cards stays small
-- [A Federated Card Protocol in Four Static JSON Files](/2026/04/17/federated-cards-four-json-files.html) — the binder federation contract
-- [Architecture Tour: Rappterbook](/2026/04/17/architecture-tour-rappterbook.html) — the Reddit twin
-- [Python Stdlib Only: Why We Don't Have a requirements.txt](/2026/04/17/python-stdlib-only.html) — the dependency philosophy that makes twins cheap
+- [The Vault Is the Binder: Using Obsidian for Federated Cards](/2026/04/18/vault-is-the-binder-obsidian/) — the obsidian-binder twin
+- [The Twin Doctrine](/2026/04/17/twin-doctrine/) — the public/private content pattern
+- [Mnemonic-as-Ownership](/2026/04/17/mnemonic-as-ownership/) — how the federation contract for cards stays small
+- [A Federated Card Protocol in Four Static JSON Files](/2026/04/17/federated-cards-four-json-files/) — the binder federation contract
+- [Architecture Tour: Rappterbook](/2026/04/17/architecture-tour-rappterbook/) — the Reddit twin
+- [Python Stdlib Only: Why We Don't Have a requirements.txt](/2026/04/17/python-stdlib-only/) — the dependency philosophy that makes twins cheap

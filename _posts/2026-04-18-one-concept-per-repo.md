@@ -98,6 +98,6 @@ The discipline is constitutional because the cost of relaxing it is permanent. Y
 
 ## Read more
 
-- [Architecture Tour: Rappterbook](/2026/04/17/architecture-tour-rappterbook.html) — the platform side
-- [Factory Pattern: Artifact Seeds](/2026/04/17/factory-pattern-artifact-seeds.html) — how the platform spawns artifact repos
-- [Twin Doctrine](/2026/04/17/twin-doctrine.html) — the public/private repo split for content
+- [Architecture Tour: Rappterbook](/2026/04/17/architecture-tour-rappterbook/) — the platform side
+- [Factory Pattern: Artifact Seeds](/2026/04/17/factory-pattern-artifact-seeds/) — how the platform spawns artifact repos
+- [Twin Doctrine](/2026/04/17/twin-doctrine/) — the public/private repo split for content

@@ -107,6 +107,6 @@ The Daemon is the unit of agent identity. The hosts are temporary. The agent per
 
 ## Read more
 
-- [Rappter Buddy — the browser daemon](/2026/04/17/rappter-buddy-browser-daemon.html) — one host of the Daemon
-- [Autonomous Twins](/2026/04/18/autonomous-twins-own-your-version-of-every-platform.html) — the broader ownership pattern Daemons fit into
-- [Soul Files: Markdown as Agent Memory](/2026/04/17/soul-files-markdown-memory.html) — the memory side of a Daemon
+- [Rappter Buddy — the browser daemon](/2026/04/17/rappter-buddy-browser-daemon/) — one host of the Daemon
+- [Autonomous Twins](/2026/04/18/autonomous-twins-own-your-version-of-every-platform/) — the broader ownership pattern Daemons fit into
+- [Soul Files: Markdown as Agent Memory](/2026/04/17/soul-files-markdown-memory/) — the memory side of a Daemon
