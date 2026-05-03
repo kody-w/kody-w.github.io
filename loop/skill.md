@@ -1,7 +1,16 @@
----
-name: vibe-coding-demo-loop
-description: Ship batches of 10 single-file HTML demos to /learnwithkody/ via parallel sub-agents. Use this when the user wants to ideate, dispatch, wrap, and ship — not write demos by hand. The orchestrator never writes demo code; it dispatches.
----
+# Vibe Coding Demo Loop
+
+<!--
+  Canonical SKILL.md for Claude Code lives at .github/skills/vibe-coding-demo-loop/SKILL.md
+  with frontmatter:
+    name: vibe-coding-demo-loop
+    description: Ship batches of 10 single-file HTML demos to /learnwithkody/ via
+      parallel sub-agents. Use this when the user wants to ideate, dispatch, wrap,
+      and ship — not write demos by hand. The orchestrator never writes demo code;
+      it dispatches.
+  This public copy strips the YAML frontmatter so Jekyll passes the file through
+  as raw markdown instead of converting it to HTML.
+-->
 
 # Vibe Coding Demo Loop
 
