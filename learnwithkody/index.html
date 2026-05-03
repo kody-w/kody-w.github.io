@@ -10,9 +10,11 @@ description: Vibe coding, agent systems, and local-first builds — the prompts 
     <p class="lwk-kicker">Learn with Kody</p>
     <h1>Vibe coding, agent systems, and local-first builds</h1>
     <p class="lwk-hero-sub">
-      Real projects I shipped by talking to Claude, Copilot, and Codex — with the
-      prompts that built them, the architecture decisions that mattered, and the
-      cuts I made along the way. Fork anything. Steal every prompt.
+      Real-time ocean physics. A 50-piece improvising orchestra. A CPU
+      simulating a CPU simulating a CPU. Conway's Game of Life with
+      inherited DNA. A Mandelbrot zoom that doesn't break at depth 10^14.
+      All single HTML files. All built from one paragraph each. Fork
+      anything. Steal every prompt.
     </p>
     <div class="lwk-cta-row">
       <a class="btn" href="/learnwithkody/examples/">Browse vibe coding examples →</a>
@@ -60,10 +62,11 @@ description: Vibe coding, agent systems, and local-first builds — the prompts 
   </section>
 
   <section class="lwk-section">
-    <h2>Latest examples</h2>
+    <h2>The audacious 10</h2>
+    <p>Each of these started as a single paragraph. The model wrote the rest. Click any of them — they all run live in your browser.</p>
     <div class="lwk-examples-grid">
-      {% assign latest = site.examples | sort: 'order' | slice: 0, 6 %}
-      {% for ex in latest %}
+      {% assign featured = site.examples | where: 'featured', true | sort: 'order' %}
+      {% for ex in featured %}
         <a class="lwk-example-card" href="{{ ex.url }}">
           <div class="lwk-meta-row">
             {% if ex.difficulty %}<span class="lwk-pill lwk-difficulty lwk-{{ ex.difficulty }}">{{ ex.difficulty }}</span>{% endif %}
