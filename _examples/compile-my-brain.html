@@ -1,0 +1,49 @@
+---
+title: "Compile My Brain — From a 20-Minute Monologue to Six Coherent Artifacts"
+slug: compile-my-brain
+order: 12
+tagline: Talk for 20 minutes about a system. Get back a design doc, OpenAPI spec, schema, test plan, risk register, and Slack message — all consistent with each other.
+category: prompt
+difficulty: intermediate
+status: concept
+tags: [productivity, design, agents, planning]
+stack: [LLM, Voice Transcription, Long Context]
+highlights:
+  - "six artifacts"
+prompt: |
+  I'll talk for 20 minutes about a system I'm building. You take notes,
+  ask 5 clarifying questions, then output: a system design doc, an
+  OpenAPI spec, a database schema, a test plan, a risk register, and a
+  Slack message I can paste to my team to explain it. All six artifacts
+  must be consistent with each other — same entity names, same
+  invariants, same failure modes.
+lessons:
+  - "The bottleneck in design isn't thinking — it's transcribing the same idea into six different formats for six different audiences."
+  - "Consistency across artifacts is exactly what large models are uniquely good at; humans drift between the design doc and the schema by Tuesday."
+  - "Producing all six in one pass surfaces what's underspecified. If the model can't fill in the OpenAPI spec, your design isn't done."
+---
+
+<section class="lwk-section">
+  <h2>Why this exists</h2>
+  <p>Most design work dies in the gap between "I have a clear idea" and "I have six aligned documents." The thinking takes an afternoon. The translation into a design doc, an API spec, a schema, a test plan, a risk register, and a message your team will actually read takes a week — and by the time you're done, half of them disagree with each other. The translation cost dominates the actual design work, and it's the part nobody wants to do.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>What you get back</h2>
+  <ul>
+    <li>Structured notes from your monologue, organized by entity and concern.</li>
+    <li>Five clarifying questions, surfaced before any artifact is generated.</li>
+    <li>A system design doc with goals, non-goals, components, and data flow.</li>
+    <li>An OpenAPI spec — endpoints, request/response shapes, error codes.</li>
+    <li>A database schema with tables, columns, indexes, and foreign keys.</li>
+    <li>A test plan covering happy path, edge cases, and failure modes.</li>
+    <li>A risk register naming each failure mode and its mitigation.</li>
+    <li>A Slack message you can paste to your team without editing.</li>
+    <li>A consistency check that names every conflict between the six artifacts and forces you to resolve it.</li>
+  </ul>
+</section>
+
+<section class="lwk-section">
+  <h2>When to reach for this pattern</h2>
+  <p>Use this when you're kicking off a new service and need to give the team something reviewable on day one. Use it when you need to align engineering, product, and ops around the same vocabulary before the first standup. Use it when you've had the whiteboard conversation and now need to turn it into artifacts that survive contact with reality. The point is not to replace design — it's to compress the distance between having the idea and having something a team can argue with.</p>
+</section>

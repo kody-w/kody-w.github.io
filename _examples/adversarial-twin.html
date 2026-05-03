@@ -1,0 +1,47 @@
+---
+title: "The Adversarial Twin — A Code Review From the Engineer Who Hates Your Style"
+slug: adversarial-twin
+order: 13
+tagline: Read every repo I've pushed. Now play the smartest engineer who hates how I write code. Be specific. Be cruel. Be right.
+category: prompt
+difficulty: intermediate
+status: concept
+tags: [code-review, self-reflection, agents, growth]
+stack: [LLM, GitHub History, Long Context]
+highlights:
+  - "cruel and correct"
+prompt: |
+  Read everything I've pushed to GitHub. Now play the role of the
+  smartest engineer who hates my style and write a code review of my
+  latest PR. Be specific about the patterns I lean on too hard. Quote
+  exact lines. Compare them to better alternatives I've also written
+  elsewhere — so the critique is calibrated to my actual ceiling, not
+  a generic "best practice." Be cruel. Be right.
+lessons:
+  - "An LLM with full read access to your history can be a more honest reviewer than any human peer — it has no relationship to protect and no calendar to defend."
+  - "Calibrated critique requires evidence the model has and you don't. You've forgotten half the code you've shipped; the model hasn't."
+  - "The most valuable review is the one that uses your own better work as the bar. Generic best-practice scolding is noise. Your own past brilliance is signal."
+---
+
+<section class="lwk-section">
+  <h2>Why this exists</h2>
+  <p>Peer reviews are softened by relationships. Your teammate has to sit next to you tomorrow. They will round down. They will say "looks good" to the function you both know is a mess.</p>
+  <p>Senior engineers don't have time to read your entire history. The best feedback in the world is calibrated feedback, and calibration costs hours nobody on your team has.</p>
+  <p>The most useful critique is the one calibrated to your own ceiling — not industry best practice, not a style guide, not a Twitter thread. The bar is the best code you've ever written, and the question is why this PR isn't that.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>What you get back</h2>
+  <ul>
+    <li>Line-level critique with quoted alternatives pulled from your own repos. Not "consider extracting a helper" but "you wrote a cleaner version of this exact pattern in <code>repo-x/utils.py:42</code> two years ago."</li>
+    <li>Your top five stylistic crutches, ranked. The patterns you reach for when you're tired. The variable names you reuse out of muscle memory. The abstractions you keep half-finishing.</li>
+    <li>A better-version-of-you that the model has constructed from your best work — and a diff between that engineer and the one who opened this PR.</li>
+  </ul>
+</section>
+
+<section class="lwk-section">
+  <h2>When to reach for this pattern</h2>
+  <p>Before opening a PR you suspect is sloppy. You already know. Get the receipts before the team sees it.</p>
+  <p>After a string of bug-heavy weeks. When the regressions are coming from somewhere and you want a reviewer with full context and zero loyalty.</p>
+  <p>When you want growth feedback your team won't give you. The kind that names the habit, quotes the line, and shows you the version of yourself who knew better.</p>
+</section>

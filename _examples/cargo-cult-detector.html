@@ -1,0 +1,43 @@
+---
+title: "The Cargo-Cult Detector — Find the Code Nobody Understands"
+slug: cargo-cult-detector
+order: 11
+tagline: Audit a codebase for patterns copy-pasted without comprehension. Rank by danger. Trace the worst one to its origin essay.
+category: prompt
+difficulty: intermediate
+status: concept
+tags: [code-review, archaeology, agents, refactoring]
+stack: [LLM, Git History, Static Analysis]
+highlights:
+  - "danger ranking"
+prompt: |
+  Audit this codebase. Find every pattern that's been copy-pasted without
+  anyone understanding why — the "just works" code nobody can explain.
+  Rank by danger: how likely is it to fail silently when assumptions
+  shift? Pick the worst one and write a 1500-word essay tracing where
+  it probably came from — the Stack Overflow answer, the blog post, the
+  framework idiom that drifted out of context.
+lessons:
+  - "Most production bugs are inherited assumptions wearing the costume of intentional design."
+  - "\"It works on prod\" is not the same as \"it is correct\" — it just means the failure mode hasn't been triggered yet."
+  - "Code archaeology is a real engineering skill, and LLMs are the first tool that makes it cheap enough to do on a Tuesday."
+---
+
+<section class="lwk-section">
+  <h2>Why this exists</h2>
+  <p>Every codebase older than eighteen months is a graveyard of fossilized conventional wisdom. A retry loop someone copied from a 2014 blog post. A defensive null check that protects against a bug that was patched two major versions ago. A regex that handles an edge case nobody can name. The patterns persist because removing them feels reckless — the code works, doesn't it? — but nobody can actually explain what they do, only that they were there when they got here. Cargo cult code is the dark matter of software: invisible, load-bearing, and impossible to refactor until you can name it.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>What you get back</h2>
+  <ul>
+    <li>A ranked list of cargo-culted patterns with specific <code>file:line</code> references, so the audit lands as a checklist instead of a vibe.</li>
+    <li>A danger score per pattern with explicit justification — what assumption it depends on, how that assumption could shift, and what the silent failure looks like when it does.</li>
+    <li>A long-form origin essay for the worst offender, tracing the pattern back to the Stack Overflow thread, conference talk, or framework idiom it probably drifted out of, and explaining why the original context no longer applies here.</li>
+  </ul>
+</section>
+
+<section class="lwk-section">
+  <h2>When to reach for this pattern</h2>
+  <p>Run it on day one of onboarding to a legacy codebase, when you still have permission to ask dumb questions and the political capital to flag what looks weird. Run it as pre-refactor reconnaissance, before you touch a module everyone calls "the haunted one," so you go in with a map instead of a flashlight. Run it during incident retros on outages where the postmortem reads "we don't know why it broke" — because that sentence almost always means a fossilized assumption finally shifted, and the cargo-cult detector is the fastest way to find which one.</p>
+</section>

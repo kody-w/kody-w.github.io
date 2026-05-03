@@ -1,0 +1,44 @@
+---
+title: "Reverse-Time Debugger — Reconstruct the 60 Seconds Before a Crash"
+slug: reverse-time-debugger
+order: 10
+tagline: Don't fix the bug. Replay it. From a stack trace alone, reconstruct what the user was doing, what data was in flight, and what the developer was thinking.
+category: prompt
+difficulty: advanced
+status: concept
+tags: [debugging, postmortem, agents, forensics]
+stack: [LLM, Stack Trace, Postmortem]
+highlights:
+  - 60-second replay
+prompt: |
+  Here's a stack trace from production. Don't fix it.
+  Reconstruct the last 60 seconds before it crashed — what the user was
+  doing, what data was in flight, what the developer was probably
+  thinking when they wrote the buggy line. Then write the postmortem
+  from three perspectives: the user, the on-call engineer, and the
+  original author. Each in their own voice.
+lessons:
+  - "Most debugging energy goes into the fix. The fix is the cheap part. The story of how the system arrived at the failure is the expensive part, and almost nobody writes it down."
+  - "Reconstructing intent is harder and more useful than reproducing the bug. A repro tells you the system is broken. An intent reconstruction tells you why a competent engineer wrote a line that would eventually break."
+  - "Stack traces are forensic evidence, not error messages. Treated as evidence, they yield a timeline, a mental model, and a human moment — all of which survive the patch that closes the ticket."
+---
+
+<section class="lwk-section">
+  <h2>Why this exists</h2>
+  <p>Most postmortems are templates filled in. Severity, root cause, action items, owner, due date. The form gets completed, the ticket gets closed, and the only thing anyone learns is that the form exists. The interesting work — the part that actually transfers knowledge — is reconstructing the human moment of the failure. What was the user trying to do. What was the developer trying to do, six months ago, when they wrote the line that just blew up. Those two stories are what make a postmortem worth reading, and they are exactly what the template leaves out.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>What you get back</h2>
+  <ul>
+    <li>A minute-by-minute timeline of the last sixty seconds before the crash, inferred from the trace.</li>
+    <li>Three first-person postmortems, each in its own voice: the user who hit the error, the on-call engineer who got paged, and the original author of the buggy line.</li>
+    <li>The offending line of code reconstructed in its original context — surrounding logic, likely variable names, the shape of the data flowing through it.</li>
+    <li>The inferred mental model that produced the bug: the assumption the author was making, the case they didn't consider, the abstraction they trusted too far.</li>
+  </ul>
+</section>
+
+<section class="lwk-section">
+  <h2>When to reach for this pattern</h2>
+  <p>Use it for incident reviews where the "what" is already known but the "why" is not — the patch is in, the alert is green, and the team still cannot explain how the system got there. Use it to teach juniors how senior engineers read stack traces, because the value is not in the fix but in the inferences a trace lets you draw about humans and data. Use it on PR reviews for critical-path code, where understanding the author's mental model matters more than rubber-stamping the diff.</p>
+</section>
