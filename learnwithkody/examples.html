@@ -1,0 +1,86 @@
+---
+layout: default
+title: Vibe Coding Examples
+permalink: /learnwithkody/examples/
+description: A growing catalog of vibe-coded projects — live demos, source code, and the prompts that built them.
+---
+<div class="lwk-page">
+
+  <p class="lwk-breadcrumb">
+    <a href="/learnwithkody/">Learn with Kody</a>
+    <span>›</span>
+    <span>Vibe Coding Examples</span>
+  </p>
+
+  <header class="lwk-list-header">
+    <h1>{{ site.examples.size }} Vibe Coding Examples</h1>
+    <p class="lwk-tagline">
+      Real projects built by describing what I wanted to a coding model and shipping
+      the result. Every entry has a live demo, the source repo, and the seed prompt.
+    </p>
+  </header>
+
+  <section class="lwk-filters" id="lwk-filters">
+    <div class="lwk-filter-group">
+      <span class="lwk-filter-label">Category</span>
+      <button class="lwk-filter-btn is-active" data-filter-type="category" data-filter-value="all">All</button>
+      {% assign cats = site.examples | map: 'category' | uniq | sort %}
+      {% for cat in cats %}
+        {% if cat %}<button class="lwk-filter-btn" data-filter-type="category" data-filter-value="{{ cat }}">{{ cat }}</button>{% endif %}
+      {% endfor %}
+    </div>
+    <div class="lwk-filter-group">
+      <span class="lwk-filter-label">Difficulty</span>
+      <button class="lwk-filter-btn is-active" data-filter-type="difficulty" data-filter-value="all">All</button>
+      {% assign diffs = "beginner,intermediate,advanced" | split: "," %}
+      {% for d in diffs %}
+        {% assign found = site.examples | where: 'difficulty', d %}
+        {% if found.size > 0 %}<button class="lwk-filter-btn" data-filter-type="difficulty" data-filter-value="{{ d }}">{{ d }}</button>{% endif %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="lwk-examples-grid" id="lwk-grid">
+    {% assign sorted = site.examples | sort: 'order' %}
+    {% for ex in sorted %}
+      <a class="lwk-example-card" href="{{ ex.url }}"
+         data-category="{{ ex.category }}"
+         data-difficulty="{{ ex.difficulty }}"
+         data-tags="{{ ex.tags | join: ',' }}">
+        <div class="lwk-meta-row">
+          {% if ex.difficulty %}<span class="lwk-pill lwk-difficulty lwk-{{ ex.difficulty }}">{{ ex.difficulty }}</span>{% endif %}
+          {% if ex.category %}<span class="lwk-pill lwk-category">{{ ex.category }}</span>{% endif %}
+        </div>
+        <h3>{{ ex.title }}</h3>
+        <p>{{ ex.tagline }}</p>
+        {% if ex.stack %}
+        <p class="lwk-stack-mini"><strong>Stack:</strong> {{ ex.stack | join: " · " }}</p>
+        {% endif %}
+        {% if ex.tags %}
+        <div class="lwk-tags-line">
+          {% for tag in ex.tags limit:5 %}<span class="lwk-tag">#{{ tag }}</span>{% endfor %}
+        </div>
+        {% endif %}
+        <div class="lwk-card-footer">
+          <span class="lwk-read-more">Read the build →</span>
+        </div>
+      </a>
+    {% endfor %}
+  </section>
+
+  <p class="lwk-empty-state" id="lwk-empty" hidden>
+    No examples match those filters yet. Try clearing one.
+  </p>
+
+  <section class="lwk-section lwk-cta-section">
+    <h2>Got a project I should add?</h2>
+    <p>
+      Open an issue or a PR on
+      <a href="https://github.com/kody-w/kody-w.github.io" target="_blank" rel="noopener">this repo</a>
+      with the demo URL, source repo, and the seed prompt.
+    </p>
+  </section>
+
+</div>
+
+<script src="/js/lwk-filter.js"></script>

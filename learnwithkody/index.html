@@ -1,0 +1,101 @@
+---
+layout: default
+title: Learn with Kody
+permalink: /learnwithkody/
+description: Vibe coding, agent systems, and local-first builds — the prompts and code behind real shipped projects.
+---
+<div class="lwk-page lwk-hub">
+
+  <header class="lwk-hero">
+    <p class="lwk-kicker">Learn with Kody</p>
+    <h1>Vibe coding, agent systems, and local-first builds</h1>
+    <p class="lwk-hero-sub">
+      Real projects I shipped by talking to Claude, Copilot, and Codex — with the
+      prompts that built them, the architecture decisions that mattered, and the
+      cuts I made along the way. Fork anything. Steal every prompt.
+    </p>
+    <div class="lwk-cta-row">
+      <a class="btn" href="/learnwithkody/examples/">Browse vibe coding examples →</a>
+      <a class="btn btn-secondary" href="https://github.com/kody-w" target="_blank" rel="noopener">All my repos</a>
+    </div>
+  </header>
+
+  <section class="lwk-section">
+    <h2>What's a "vibe coding example" here?</h2>
+    <p>
+      Each entry is a project I actually shipped — usually a single-file HTML app, a
+      GitHub-native agent, or a local-first tool — built primarily by describing what
+      I wanted to a coding model and iterating fast. Every example links to a
+      <strong>live demo</strong>, the <strong>source repo</strong>, and the
+      <strong>seed prompt</strong> that got it off the ground.
+    </p>
+    <p>
+      Nothing here is a toy. They're production-grade, browser-runnable, and meant to
+      be forked. The point isn't to admire the build — it's to give you a working
+      template you can re-vibe in an afternoon.
+    </p>
+  </section>
+
+  <section class="lwk-section lwk-features">
+    <div class="lwk-feature">
+      <div class="lwk-feature-icon">⚡</div>
+      <h3>Live demos</h3>
+      <p>Every example runs in your browser. No installs, no API keys, no signup.</p>
+    </div>
+    <div class="lwk-feature">
+      <div class="lwk-feature-icon">📋</div>
+      <h3>Real prompts</h3>
+      <p>The actual seed prompt I gave the model — copy it and remix.</p>
+    </div>
+    <div class="lwk-feature">
+      <div class="lwk-feature-icon">🗂️</div>
+      <h3>Forkable source</h3>
+      <p>Single-file or single-repo. Fork it on GitHub and own the whole stack.</p>
+    </div>
+    <div class="lwk-feature">
+      <div class="lwk-feature-icon">🧭</div>
+      <h3>Local-first</h3>
+      <p>State lives in your browser, your repo, or your filesystem. Never trapped.</p>
+    </div>
+  </section>
+
+  <section class="lwk-section">
+    <h2>Latest examples</h2>
+    <div class="lwk-examples-grid">
+      {% assign latest = site.examples | sort: 'order' | slice: 0, 6 %}
+      {% for ex in latest %}
+        <a class="lwk-example-card" href="{{ ex.url }}">
+          <div class="lwk-meta-row">
+            {% if ex.difficulty %}<span class="lwk-pill lwk-difficulty lwk-{{ ex.difficulty }}">{{ ex.difficulty }}</span>{% endif %}
+            {% if ex.category %}<span class="lwk-pill lwk-category">{{ ex.category }}</span>{% endif %}
+          </div>
+          <h3>{{ ex.title }}</h3>
+          <p>{{ ex.tagline }}</p>
+          {% if ex.tags %}
+          <div class="lwk-tags-line">
+            {% for tag in ex.tags limit:4 %}<span class="lwk-tag">#{{ tag }}</span>{% endfor %}
+          </div>
+          {% endif %}
+          <span class="lwk-read-more">Read the build →</span>
+        </a>
+      {% endfor %}
+    </div>
+    <p class="lwk-view-all">
+      <a class="btn btn-secondary" href="/learnwithkody/examples/">See all {{ site.examples.size }} examples →</a>
+    </p>
+  </section>
+
+  <section class="lwk-section lwk-cta-section">
+    <h2>Start vibe coding today</h2>
+    <p>
+      Pick an example that fires you up. Fork it. Open the prompt. Change one thing
+      that matters to you. Ship the new version with your name on it. That's the
+      whole loop.
+    </p>
+    <div class="lwk-cta-row">
+      <a class="btn" href="/learnwithkody/examples/">Browse the catalog →</a>
+      <a class="btn btn-secondary" href="/">Read the blog</a>
+    </div>
+  </section>
+
+</div>
