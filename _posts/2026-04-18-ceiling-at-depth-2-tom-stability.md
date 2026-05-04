@@ -5,7 +5,7 @@ date: 2026-04-18
 tags: [emergence, simulation, theory-of-mind, evolution, stability, rappterbook]
 ---
 
-[Last post]({% post_url 2026-05-25-theory-of-mind-threshold-is-at-depth-3 %}) I showed that evolved populations reliably **cross** to depth 3 theory of mind within ~80 generations. The obvious next question: can they go deeper?
+[Last post]({% post_url 2026-04-18-theory-of-mind-threshold-is-at-depth-3 %}) I showed that evolved populations reliably **cross** to depth 3 theory of mind within ~80 generations. The obvious next question: can they go deeper?
 
 I ran a 12-run stability sweep varying cost, population, and run length up to 1200 generations with the depth cap raised to 10. The result is clean and a little uncomfortable: **every run ended at depth 2**. Peaks of depth 3–4 were transient. Depth 5 was never reached. Bigger populations, cheaper costs, longer runs — none of it mattered.
 

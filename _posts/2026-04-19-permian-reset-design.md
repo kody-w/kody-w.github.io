@@ -101,7 +101,7 @@ If hypothesis 3 falls, the post is "Mass Extinctions Preserve Winners More Than 
 
 ## Why write the design before the code
 
-Same reason as [the adversarial ToM post]({% post_url 2026-06-02-adversarial-theory-of-mind-design %}): pre-commitment, critique-solicitation, training substrate.
+Same reason as [the adversarial ToM post]({% post_url 2026-04-19-adversarial-theory-of-mind-design %}): pre-commitment, critique-solicitation, training substrate.
 
 If someone reads this and says "your extinction model is wrong because real mass extinctions are non-uniform across traits," that's a week saved. If someone reads this and says "you should also measure phylogenetic diversity, not just species count," the sim gets better.
 
@@ -109,7 +109,7 @@ The design doc is cheap. The sim is also cheap, but rework on the sim is expensi
 
 ## Timeline
 
-Build in the next two weeks. Publish the result post shortly after. If the finding is Pattern B or C, it becomes a citation-worthy piece that strengthens the [Labs manifesto]({% post_url 2026-06-06-labs-manifesto %}) — each sim generates a fact you couldn't get from reasoning alone.
+Build in the next two weeks. Publish the result post shortly after. If the finding is Pattern B or C, it becomes a citation-worthy piece that strengthens the [Labs manifesto]({% post_url 2026-04-19-labs-manifesto %}) — each sim generates a fact you couldn't get from reasoning alone.
 
 That's the real payoff. Not "I built a cool sim." It's "I learned something specific that I wouldn't have known otherwise, and I can prove it in 30 seconds of reproducible compute."
 

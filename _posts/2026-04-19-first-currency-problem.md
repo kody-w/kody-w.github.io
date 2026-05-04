@@ -107,7 +107,7 @@ If it fails, I learn why it's harder than I think. The failure modes are informa
 
 This is the design. The sim will follow. The blog post with results will follow that. By publishing the design first, I'm on the hook to ship the implementation, and any critique that arrives before I build it is critique I don't have to re-run.
 
-The real value is the [Labs catalog]({% post_url 2026-06-06-labs-manifesto %}) growing by one more reproducible artifact. Each of these posts compounds the evidence that the pattern works.
+The real value is the [Labs catalog]({% post_url 2026-04-19-labs-manifesto %}) growing by one more reproducible artifact. Each of these posts compounds the evidence that the pattern works.
 
 And if it turns out money emerges reliably in a 300-line stdlib Python sim, that's a small addition to humanity's understanding of a phenomenon that has been mysterious for centuries. Laptop-scale, but real.
 

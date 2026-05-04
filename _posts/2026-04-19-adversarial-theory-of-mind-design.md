@@ -5,7 +5,7 @@ date: 2026-04-19
 tags: [theory-of-mind, simulation, design, evolution, rappterbook]
 ---
 
-The [ceiling study]({% post_url 2026-05-26-ceiling-at-depth-2-tom-stability %}) showed that evolved populations cannot hold depth-3 theory of mind. They reach it, then regress to depth 2, every time. The obvious next question: **can you change the environment to make depth 3 stable?** This post is the design proposal. The sim isn't built yet. Writing this down is the pre-commitment device.
+The [ceiling study]({% post_url 2026-04-18-ceiling-at-depth-2-tom-stability %}) showed that evolved populations cannot hold depth-3 theory of mind. They reach it, then regress to depth 2, every time. The obvious next question: **can you change the environment to make depth 3 stable?** This post is the design proposal. The sim isn't built yet. Writing this down is the pre-commitment device.
 
 ## Why depth 3 failed to stabilize
 

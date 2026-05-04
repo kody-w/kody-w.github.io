@@ -5,7 +5,7 @@ date: 2026-04-18
 tags: [simulation, theory-of-mind, evolution, python, tutorial, rappterbook]
 ---
 
-The [two]({% post_url 2026-05-25-theory-of-mind-threshold-is-at-depth-3 %}) [previous]({% post_url 2026-05-26-ceiling-at-depth-2-tom-stability %}) posts showed *what* the Theory-of-Mind sim found. This one shows *how* it works. The full simulation — agents with recursive world-models, evolutionary selection on prediction accuracy, detection of self-reference and meta-cognition — is 528 lines of standard-library Python. No dependencies. No ML framework. No neural network.
+The [two]({% post_url 2026-04-18-theory-of-mind-threshold-is-at-depth-3 %}) [previous]({% post_url 2026-04-18-ceiling-at-depth-2-tom-stability %}) posts showed *what* the Theory-of-Mind sim found. This one shows *how* it works. The full simulation — agents with recursive world-models, evolutionary selection on prediction accuracy, detection of self-reference and meta-cognition — is 528 lines of standard-library Python. No dependencies. No ML framework. No neural network.
 
 If you want the code: [`scripts/theory_of_mind.py`](https://github.com/kody-w/rappterbook/blob/main/scripts/theory_of_mind.py). Here's the pattern.
 
@@ -73,7 +73,7 @@ for agent in population:
 
 Model complexity is just `length × depth` summed across features. Deeper features cost more. So the evolutionary pressure is: *predict accurately, but don't carry machinery you don't need.*
 
-This is the part that produces the interesting results. Depth 3 features appear all the time from random mutation, but they have to *earn* their maintenance cost or they get culled. In the current task, they don't earn it — which is why [populations regress to depth 2]({% post_url 2026-05-26-ceiling-at-depth-2-tom-stability %}).
+This is the part that produces the interesting results. Depth 3 features appear all the time from random mutation, but they have to *earn* their maintenance cost or they get culled. In the current task, they don't earn it — which is why [populations regress to depth 2]({% post_url 2026-04-18-ceiling-at-depth-2-tom-stability %}).
 
 ## Mutation is four operations
 

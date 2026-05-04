@@ -68,7 +68,7 @@ The sim is in [`scripts/ecosystem.py`](https://github.com/kody-w/rappterbook/blo
 
 ## The larger pattern
 
-This is the same pattern as [the Cambrian sim]({% post_url 2026-05-28-cambrian-explosion-ran-on-my-laptop %}) and the [Theory of Mind sim]({% post_url 2026-05-27-evolving-a-mind-in-500-lines-of-python %}):
+This is the same pattern as [the Cambrian sim]({% post_url 2026-04-19-cambrian-explosion-ran-on-my-laptop %}) and the [Theory of Mind sim]({% post_url 2026-04-18-evolving-a-mind-in-500-lines-of-python %}):
 
 - Encode the structure you care about (genomes, biomes, migration log)
 - Run seeded mutation + selection
