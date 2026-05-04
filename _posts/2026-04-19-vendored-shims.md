@@ -1,25 +1,25 @@
 ---
 layout: post
 title: "Vendored shims: making installed agents work without their parent"
-date: 2026-04-19
-tags: [rapp]
+date: 2025-10-30
+tags: [python, packaging, agents, runtimes]
 ---
 
-When you deploy a swarm to the swarm server, the agent files end up in `~/.rapp-swarm/swarms/{guid}/agents/*.py`. Every agent file starts with:
+Suppose you ship a small runtime that loads other people's Python files at runtime. The files were authored against a richer parent library — your full agent toolkit, say — and every one of them starts with:
 
 ```python
 from agents.basic_agent import BasicAgent
 ```
 
-That import doesn't naturally work in the swarm server's directory layout. There's no `agents/basic_agent.py` next to the swarm dirs. The local brainstem and the virtual brainstem both have one in their respective trees, but the swarm server is its own thing — installable independently, no dependency on the brainstem source.
+That import doesn't naturally work inside the small runtime's directory layout. There's no `agents/basic_agent.py` next to its source. The full toolkit has one in its tree, but the small runtime is its own thing — installable independently, with no dependency on the toolkit source.
 
 We could:
 
-1. **Require the brainstem to be installed too.** Bad. The whole point of swarm/server.py being stdlib-only is that it doesn't drag dependencies. Forcing a brainstem install for the dependency just moves the problem.
+1. **Require the full toolkit to be installed too.** Bad. The whole point of the small runtime being stdlib-only is that it doesn't drag dependencies. Forcing a toolkit install just moves the problem.
 2. **Rewrite the import in every agent file at deploy time.** Bad. Modifying user code is a dangerous default — you'd have to be careful not to break anything else, and you've changed the bytes from what the user pushed.
-3. **Vendor a minimal `BasicAgent` next to the server.** Yes. This is what we do.
+3. **Vendor a minimal `BasicAgent` next to the runtime.** Yes. This is the right answer.
 
-The swarm server writes a six-line `BasicAgent` shim alongside its source on first load:
+The runtime writes a six-line `BasicAgent` shim alongside its source on first load:
 
 ```python
 class BasicAgent:
@@ -41,7 +41,7 @@ class BasicAgent:
             'parameters': self.metadata.get('parameters', {'type': 'object', 'properties': {}})}}
 ```
 
-That file is `swarm/_basic_agent_shim.py` — written by the server on first agent load if it doesn't already exist. Then the server registers it as `agents.basic_agent` in `sys.modules`:
+The shim is written by the runtime on first agent load if it doesn't already exist. Then the runtime registers it as `agents.basic_agent` in `sys.modules`:
 
 ```python
 if "agents" not in sys.modules:
@@ -55,11 +55,11 @@ if "agents.basic_agent" not in sys.modules:
     sys.modules["agents.basic_agent"] = mod
 ```
 
-When the deployed agent does `from agents.basic_agent import BasicAgent`, Python's import machinery finds `agents.basic_agent` already in `sys.modules` and uses it. The agent file imports successfully. It doesn't know — or care — that the `BasicAgent` it got is the vendored shim and not the local brainstem's full version.
+When the deployed agent does `from agents.basic_agent import BasicAgent`, Python's import machinery finds `agents.basic_agent` already in `sys.modules` and uses it. The agent file imports successfully. It doesn't know — or care — that the `BasicAgent` it got is the vendored shim and not the full toolkit's version.
 
 **Why a six-line BasicAgent is enough:**
 
-`BasicAgent` is intentionally minimal. The contract is `name`, `metadata`, `perform()`, `system_context()`, `to_tool()`. Nothing more. We've kept the base class tiny exactly so it's vendorable. If the base class grew dependencies (logging frameworks, plugin registries, decorators), shimming it would mean shipping all of those too. The shim works because the contract works.
+`BasicAgent` is intentionally minimal. The contract is `name`, `metadata`, `perform()`, `system_context()`, `to_tool()`. Nothing more. The base class is kept tiny exactly so it's vendorable. If the base class grew dependencies (logging frameworks, plugin registries, decorators), shimming it would mean shipping all of those too. The shim works because the contract works.
 
 **The lesson:**
 
@@ -67,4 +67,4 @@ When you ship a runtime that loads other people's code, decide whether the share
 
 `BasicAgent` is a contract masquerading as a class. The class is for type-checking and IDE autocomplete; the contract is "extends this thing, has these methods." Six lines of class is enough to encode the contract. Anything more is for the developer's convenience, and that goes in the toolkit, not the base class.
 
-The swarm server is 300 lines. The vendored BasicAgent is 6 lines. Together they let you deploy any RAPP agent — written for any RAPP runtime — without dragging the originating runtime along for the ride. That's the value of keeping your contracts narrow.
+The small runtime is 300 lines. The vendored BasicAgent is 6 lines. Together they let you deploy any agent — written against any compatible runtime — without dragging the originating runtime along for the ride. That's the value of keeping your contracts narrow.

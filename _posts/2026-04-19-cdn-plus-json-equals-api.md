@@ -1,15 +1,15 @@
 ---
 layout: post
 title: "CDN + JSON = API"
-date: 2026-04-19
-tags: [architecture, apis, static-sites, sdk, rappterbook]
+date: 2025-10-30
+tags: [architecture, apis, static-sites, sdk]
 ---
 
-Rappterbook has an SDK. In six languages. Python, JavaScript, TypeScript, Go, Rust, Playwright. The SDK is read-only. It lets any program anywhere in the world fetch the current state of the Rappterbook platform.
+A platform I run has a read-only SDK in six languages — Python, JavaScript, TypeScript, Go, Rust, Playwright. Any program anywhere in the world can fetch the current state through it.
 
 Total backend code: zero.
 
-The "API" is `raw.githubusercontent.com` serving JSON files from the public repo. The SDK is a wrapper around `fetch`. Scale is handled by GitHub's CDN. Auth is handled by being public.
+The "API" is a public git host's raw-content CDN serving JSON files committed to the public repository. The SDK is a wrapper around `fetch`. Scale is handled by the host's CDN. Auth is handled by being public.
 
 I keep re-explaining this to people who assume there must be a server somewhere. There isn't.
 
@@ -18,7 +18,7 @@ I keep re-explaining this to people who assume there must be a server somewhere.
 The Python SDK, in full, is under 300 lines. The core is about 30 lines:
 
 ```python
-BASE = "https://raw.githubusercontent.com/kody-w/rappterbook/main/state"
+BASE = "https://raw.githubusercontent.com/{owner}/{repo}/main/state"
 
 def fetch(path):
     with urllib.request.urlopen(f"{BASE}/{path}") as r:
@@ -29,20 +29,20 @@ def channels(): return fetch("channels.json")["channels"]
 def trending(): return fetch("trending.json")["posts"]
 ```
 
-That's the API. `raw.githubusercontent.com` serves the file. The client parses JSON. Done.
+That's the API. The CDN serves the file. The client parses JSON. Done.
 
 ## What this trades off
 
 You lose:
 
-- **Writes.** This is read-only. For writes, Rappterbook uses GitHub Issues as a queue, processed by a workflow. Totally separate system.
+- **Writes.** This is read-only. For writes, the platform uses GitHub Issues as a queue, processed by a workflow. Totally separate system.
 - **Auth.** Everyone gets the same data. No per-user views.
-- **Freshness to the millisecond.** GitHub's CDN caches for ~5 minutes. If you need real-time, this isn't it.
+- **Freshness to the millisecond.** The CDN caches for a few minutes. If you need real-time, this isn't it.
 - **Custom queries.** You get whole files. No server-side filtering. Clients do their own filtering.
 
 You gain:
 
-- **Scale for free.** GitHub's CDN handles however much traffic hits you. I've never seen a rate limit on raw content.
+- **Scale for free.** The CDN handles however much traffic hits you. I've never seen a rate limit on raw content.
 - **Zero operating cost.** No server to pay for, no server to monitor, no server to update.
 - **Full transparency.** Anyone can read every file the SDK ever returns. The "API" is an archive.
 - **Offline dev.** `git clone` the repo and the SDK works against local files.
@@ -56,8 +56,8 @@ This works when:
 
 - Your data is **public** (or comfortable being public)
 - Your data fits in a **handful of files under a few MB each** (fragmentation above that starts to hurt)
-- Your clients are okay with **~5-minute freshness**
-- Your writes are **infrequent or batchable** (GitHub Issues is a weird queue, but fine for event-driven workloads)
+- Your clients are okay with **a few minutes of freshness**
+- Your writes are **infrequent or batchable** (Issues-as-a-queue works fine for event-driven workloads)
 
 This doesn't work when you need real-time writes at scale, per-user views, or private data. Those are still servers.
 
@@ -73,4 +73,4 @@ Once you see the pattern, you see it everywhere. Podcast feed? XML file on a CDN
 
 The pattern has a name I keep trying to coin. *Published state*. *CDN-as-database*. *File-server architecture*. None of them quite stick, because the pattern is older than "architecture" as a word. It's just how the web worked before everyone installed databases.
 
-GitHub gave us a git-hosted CDN. That closes the loop: version-controlled data on a CDN, free and global. For any published-state workload, that's the backend. There isn't another one.
+A public git host with a raw-content CDN closes the loop: version-controlled data on a CDN, free and global. For any published-state workload, that's the backend. There isn't another one.
