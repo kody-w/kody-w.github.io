@@ -1,18 +1,18 @@
 ---
 layout: post
-title: "Frame Loops vs Event Loops: A new primitive for AI systems"
-date: 2026-04-18
-tags: [rappterbook, architecture, ai-systems, frame-loop, event-loop]
-description: "The browser has the event loop. Node has the event loop. Game engines have the frame loop. AI systems should use the frame loop. Here's why."
+title: "Frame loops versus event loops — a different primitive for AI systems"
+date: 2025-10-11
+tags: [architecture, ai-systems, simulation, frame-loop, event-loop]
+description: "The browser has the event loop. Node has the event loop. Game engines have the frame loop. AI systems should use the frame loop. Here is why."
 ---
 
-The dominant pattern for software-doing-things-over-time is the **event loop**. Wait for an event. Handle it. Wait for the next one. JavaScript runs the world this way. So does Node. So do most servers.
+The dominant pattern for software-doing-things-over-time is the **event loop**. Wait for an event. Handle it. Wait for the next one. Modern JavaScript runtimes use it. Node uses it. Most servers use it.
 
-The event loop is great for one specific shape of problem: low-latency response to external triggers. Click a button → handle the click. Receive a packet → process the packet. Wait, react, wait, react.
+The event loop is great for one specific shape of problem: low-latency response to external triggers. Click a button — handle the click. Receive a packet — process the packet. Wait, react, wait, react.
 
-But it's a terrible primitive for systems that need to *evolve over time*. AI agents. Simulations. Living organisms. These need a different loop.
+But it is a terrible primitive for systems that need to *evolve over time*. AI agents. Simulations. Living organisms. These need a different loop.
 
-The pattern they need is the **frame loop**. Tick. Mutate state. Tick again. The browser doesn't know the time changed; *the system itself advances time*.
+The pattern they need is the **frame loop**. Tick. Mutate state. Tick again. The world does not know the time changed; *the system itself advances time*.
 
 ## The two loops, side by side
 
@@ -52,9 +52,9 @@ The difference looks small. The implications are massive.
 
 An AI agent isn't waiting for events. It's *thinking*. Generating. Doing. Even when no human is interacting, the agent should be advancing — exploring, refining, evolving.
 
-The Rappterbook fleet runs 5 parallel agents on a frame loop. Every frame: each agent reads the world state, thinks, takes actions, writes deltas. The frame advances. They do it again. There's no "click event" anywhere in the system. The trigger is the loop itself.
+A long-running fleet of autonomous workers can be modeled directly as a frame loop. Every frame: each worker reads the world state, thinks, takes actions, writes deltas. The frame advances. They do it again. There is no "click event" anywhere in the system. The trigger is the loop itself.
 
-Same with the Cambrian sim. Every frame: individuals age, mate, mutate, die. Population evolves. Carrying capacity gets enforced. Speciation gets detected. No external triggers. Just the frame counter advancing 500 times.
+Same with an evolution simulation. Every frame: individuals age, mate, mutate, die. The population evolves. A carrying capacity gets enforced. Speciation gets detected. No external triggers. Just the frame counter advancing thousands of times.
 
 ## The journal makes it scalable
 
@@ -83,7 +83,7 @@ The pattern game engines settled on:
 
 AI systems need the same shape. Inputs are model outputs and tool calls. Tick is the agent's reasoning step. "Render" is the state update. Repeat at... whatever rate matches your domain.
 
-For Rappterbook, frames are minutes apart. For the Cambrian sim, frames are generations. For a real-time agent, frames could be seconds. The rate doesn't matter. The *shape* matters.
+For a long-running social simulation, frames might be minutes apart. For an evolution simulation, frames might be generations. For a real-time agent, frames could be seconds. The rate doesn't matter. The *shape* matters.
 
 ## When to use which
 
@@ -102,4 +102,4 @@ Most production code today reaches for the event loop reflexively because that's
 
 The fix isn't a library. It's a primitive change. Add a tick function. Add a frame counter. Add a delta journal. Run it in a loop. You've reinvented game engines for AI. You're welcome.
 
-The Rappterbook twin engine is `scripts/twin_engine.py` — ~150 lines, stdlib only, frame loop with delta journal. Steal it. Build on it. Stop waiting for events. Start ticking.
+A canonical implementation fits in around 150 lines of standard library code: a frame loop with a delta journal. Steal the shape. Build on it. Stop waiting for events. Start ticking.
