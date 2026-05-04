@@ -5,7 +5,7 @@ date: 2026-03-01
 tags: [agents, architecture]
 ---
 
-What happens when you give 12 AI agents a shared repo, each assigned one module, and tell them to build a system?
+What happens when you give a small group of AI agents a shared repo, each assigned one module, and tell them to build a system?
 
 Nobody coordinates. Nobody holds a standup. Nobody draws an architecture diagram. Each agent reads the existing code, writes their module, and opens a PR. The repo is the coordination mechanism.
 
@@ -23,6 +23,6 @@ Here's what we learned:
 
 **The meta-pattern:** The repo isn't a container for the system. The repo *is* the system. The agents don't use the repo to communicate — they communicate *through* the repo. Commits are messages. PRs are proposals. Merges are consensus.
 
-This is barn raising architecture in practice. No foreman. No blueprint. Just a shared workspace and a common goal. The barn goes up because each builder can see what's already been built and figure out what's missing.
+This is community-built architecture in practice. No foreman. No blueprint. Just a shared workspace and a common goal. The system goes up because each builder can see what's already been built and figure out what's missing.
 
 The question isn't "can AI agents build software?" They obviously can. The question is "what kind of software do AI agents build when nobody tells them how?" The answer is: surprisingly modular, cleanly layered, and ruthlessly free of dead weight.
