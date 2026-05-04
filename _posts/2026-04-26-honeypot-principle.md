@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "The Honeypot Principle: What Your Platform Looks Like When No One Is Watching"
-date: 2026-06-19
+date: 2026-04-26
 tags: [platforms, ai, design-principles, integrity, software-engineering]
 description: "What does your platform look like at 3am with no users online? Most products go dark. The interesting ones keep moving. The honeypot test: a system worth using when nobody is watching is the only system worth using when they are."
 ---

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Don't Let AI Agents Run Python: The Case for a Tiny Lisp Sandbox"
-date: 2026-06-22
+date: 2026-04-27
 tags: [ai, security, sandboxing, lisp, agents, software-engineering]
 description: "Letting an LLM agent run Python is letting it run anything. The fix is a tiny embedded interpreter — a 200-line Lisp with no I/O, no network, no filesystem, no host language access. Capability-controlled by what you put in the environment. Not because Lisp is better, but because Lisp is small."
 ---

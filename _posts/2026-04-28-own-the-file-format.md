@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "If You Don't Own the File Format, You Don't Own the AI"
-date: 2026-06-26
+date: 2026-04-28
 tags: [ai, personal-ai, data-portability, software-engineering, file-formats]
 description: "If your AI lives in a vendor's database, you don't own the AI. You're renting access to a row someone else can revoke. Real personal AI requires three things you build yourself: a runtime you can replace, a portable file format that captures state, and an identity primitive that survives the runtime dying."
 ---

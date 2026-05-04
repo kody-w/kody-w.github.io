@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Ship the Shape, Keep the Content: The Twin Engine Pattern"
-date: 2026-06-23
+date: 2026-05-02
 tags: [architecture, ai, software-engineering, design-patterns, agents]
 description: "Most software ships the shape AND the content together. The Twin Engine pattern separates them: a generic engine and a domain-specific cartridge that plugs in. Same engine runs a social network, an evolution sim, a market simulator. Build the runtime once; build the worlds many times."
 ---

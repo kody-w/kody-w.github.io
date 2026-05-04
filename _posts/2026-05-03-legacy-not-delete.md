@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Legacy, Not Delete: Why AI-Generated Systems Need Different Memory"
-date: 2026-06-20
+date: 2026-05-03
 tags: [ai, software-engineering, code-generation, technical-debt, design-principles]
 description: "When code costs nothing to write, deletion is no longer a virtue. The right primitive for AI-generated systems isn't delete — it's legacy. Move retired code aside, keep it readable, never destroy it. Why memory beats hygiene in a world where the next refactor is one prompt away."
 ---

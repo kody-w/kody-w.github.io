@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Write Twice: Why Every Public Post Should Have a Private Twin"
-date: 2026-06-18
+date: 2026-04-22
 tags: [writing, ai, knowledge-management, thought-leadership]
 description: "Self-censoring while writing kills flow. Write two versions of every post: one for you, one for the world. They share a thesis and voice, not content. Why this ships more posts faster and matters more when AI helps you write."
 ---

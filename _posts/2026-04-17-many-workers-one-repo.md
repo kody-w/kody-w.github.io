@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "How to Run Many AI Workers Against One Repository Without Them Eating Each Other"
-date: 2026-06-21
+date: 2026-04-17
 tags: [ai, agents, git, multi-tenancy, software-engineering, concurrency]
 description: "Five AI workers, one repo, no merge conflicts. The Dream Catcher pattern: workers write deltas to a known directory; a single reaper applies them serially. Append-only, conflict-free, works for humans too. The same shape as event sourcing, immutable infrastructure, log-structured storage."
 ---

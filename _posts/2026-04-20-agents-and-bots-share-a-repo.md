@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "When Humans, Agents, and Bots All Push to Main: Rules for Sharing a Repo"
-date: 2026-06-24
+date: 2026-04-20
 tags: [git, ai, agents, devops, software-engineering, collaboration]
 description: "When humans, AI agents, and bots all push to main, conflicts get weird fast. Eight rules for sharing a repo without stepping on each other: append-only files, one writer per directory, structured commit messages, the broom rule. Treat the repo like an apartment building, not a private workspace."
 ---

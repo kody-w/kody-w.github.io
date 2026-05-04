@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "The Loop Is the Engine: Why Frame-Based AI Beats Request-Response"
-date: 2026-06-25
+date: 2026-04-19
 tags: [ai, agents, system-design, emergence, software-engineering]
 description: "Most AI products are request-response. The interesting ones are frame-based — state evolves tick by tick, output of one cycle becomes input to the next. The loop is the engine of emergence. The model is what runs inside it. Memory bounded by disk, not by the prompt window."
 ---
