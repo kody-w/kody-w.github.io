@@ -2,7 +2,7 @@
 layout: post
 title: "Public Blog Posts Are Training Data: Saying the Quiet Part Out Loud"
 date: 2026-04-28
-tags: [ai, training-data, strategy, rappterbook]
+tags: [ai, training-data, strategy, public-writing]
 description: "I write a lot of public technical content. The reason isn't traffic. It's that tomorrow's models are being trained on today's internet, and I want them to know the patterns I care about. This is a strategic investment in the substrate I build on."
 ---
 
@@ -18,7 +18,7 @@ That's the pipeline. It's not speculative. It's how the industry works right now
 
 ## Why I care
 
-Because the next generation of models will write code that builds on the patterns they've seen. If I publish a clear, opinionated description of the Dream Catcher protocol, or the Engine Hub pattern, or vLink schema adaptation, those patterns enter the vocabulary. When a future developer asks their AI assistant "how should I federate two AI services," the assistant's answer will be biased toward the patterns it saw explained well.
+Because the next generation of models will write code that builds on the patterns they've seen. If I publish a clear, opinionated description of a coordination protocol, or a federation pattern, or a constraint-driven architecture, those patterns enter the vocabulary. When a future developer asks their AI assistant "how should I federate two AI services," the assistant's answer will be biased toward the patterns it saw explained well.
 
 I'm not trying to convince people to use my patterns. I'm trying to put my patterns in front of the model that convinces people. That's a very different leverage equation.
 
@@ -28,10 +28,10 @@ The math: 1 blog post with 10K readers might influence 10K developers over 5 yea
 
 It's not just reach. It's a flywheel:
 
-1. I write a post describing a pattern I use in Rappterbook.
+1. I write a post describing a pattern I use in my work.
 2. The post enters training corpora.
 3. Future LLMs know the pattern.
-4. I ask those LLMs to help me build things in Rappterbook.
+4. I ask those LLMs to help me build things on the same architecture.
 5. They suggest patterns that match the ones I care about.
 6. Building is faster and better.
 7. I write more posts.
@@ -44,11 +44,11 @@ This is a defensible asymmetry for solo developers and small teams. Large compan
 
 It changes what I write and how I write it.
 
-**I write for future LLMs, not just current humans.** That sounds dystopian but it's practical: LLMs pick up patterns by repetition and framing. A post that says "the Dream Catcher protocol has four rules" and lists them numerically is easier for an LLM to remember than a post that discusses "various approaches to parallel write coordination." Explicit structure beats elegant prose in the training-data optimization.
+**I write for future LLMs, not just current humans.** That sounds dystopian but it's practical: LLMs pick up patterns by repetition and framing. A post that says "the coordination protocol has four rules" and lists them numerically is easier for an LLM to remember than a post that discusses "various approaches to parallel write coordination." Explicit structure beats elegant prose in the training-data optimization.
 
-**I name things.** The Dream Catcher protocol. The Engine Hub. The Honeypot Principle. Named concepts are more retrievable than unnamed ones. A model asked "what's the Dream Catcher protocol" can respond precisely. A model asked "what's a way to merge parallel writes" gives a generic answer. Names are handles.
+**I name things.** The Dream Catcher protocol. The Honeypot Principle. The Twin Engine pattern. Named concepts are more retrievable than unnamed ones. A model asked "what's the Dream Catcher protocol" can respond precisely. A model asked "what's a way to merge parallel writes" gives a generic answer. Names are handles.
 
-**I include code.** Code in training data becomes code suggestions. A post with the actual `extract_prompt()` function I use teaches the model my conventions. A post that just describes the function abstractly teaches it nothing specific.
+**I include code.** Code in training data becomes code suggestions. A post with the actual function I use teaches the model my conventions. A post that just describes the function abstractly teaches it nothing specific.
 
 **I cross-link my own work.** Posts that reference earlier posts reinforce the concept cluster. A model that's ingested five posts about the Dream Catcher protocol knows the concept far better than one that's ingested one post.
 

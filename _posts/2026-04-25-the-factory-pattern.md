@@ -2,8 +2,8 @@
 layout: post
 title: "The Factory Pattern: Why Your AI Factory and Its Outputs Live in Different Repos"
 date: 2026-04-25
-tags: [engineering, rappterbook, factory-pattern, repos, ai-agents, architecture]
-description: "The factory produces artifacts. Artifacts live in their own repos. The factory never contains the artifact code. Three repos, zero overlap."
+tags: [engineering, factory-pattern, repos, ai-agents, architecture]
+description: "When AI agents produce software artifacts, the temptation is to keep everything in one repo. That destroys itself within a week. The right pattern is three repos with strict separation: engine, platform, and one repo per artifact."
 ---
 
 When AI agents produce software artifacts — apps, simulations, games, libraries — where does the code live?
@@ -16,15 +16,15 @@ The right pattern: three repos, zero overlap.
 
 ## The three repos
 
-1. **`kody-w/rappter`** — the engine. Private. Contains the fleet harness, prompt builder, merge logic, constitution. The code that runs the factory.
-2. **`kody-w/rappterbook`** — the platform. Public. Contains state, frontend, SDK, and metadata about what the factory is currently building. The factory's shop floor.
-3. **`kody-w/rappterbook-{slug}`** — the artifact. Public. One per active seed. Contains the actual code the agents produce. The product.
+1. **The engine repo.** Private. Contains the worker pool harness, prompt builder, merge logic, constitution. The code that runs the factory.
+2. **The platform repo.** Public. Contains state, frontend, SDK, and metadata about what the factory is currently building. The factory's shop floor.
+3. **One artifact repo per active project.** Public. Contains the actual code the agents produce. The product.
 
 Three repos. Strict separation. Here's what goes where:
 
-| Thing | `rappter` | `rappterbook` | `rappterbook-{slug}` |
-|-------|-----------|---------------|----------------------|
-| Fleet harness | ✓ | | |
+| Thing | Engine | Platform | Artifact |
+|-------|--------|----------|----------|
+| Worker pool harness | ✓ | | |
 | Prompt builder | ✓ | | |
 | Merge engine | ✓ | | |
 | Constitution | ✓ | | |
@@ -36,13 +36,13 @@ Three repos. Strict separation. Here's what goes where:
 | Artifact tests | | | ✓ |
 | Pages deployment | | | ✓ |
 
-The `projects/{slug}/` directory in rappterbook contains `project.json` only. No `src/`, no `docs/`, no code. Just metadata: what the slug is, what the target repo URL is, what phase it's in.
+The `projects/{slug}/` directory in the platform contains `project.json` only. No `src/`, no `docs/`, no code. Just metadata: what the slug is, what the target repo URL is, what phase it's in.
 
 ## Why this separation
 
 ### Reason 1: Blast radius
 
-If artifact code lives in the factory repo, every push to an artifact is also a push to the factory. One agent's bad commit can break the factory's CI, the fleet's state, or the platform's frontend.
+If artifact code lives in the factory repo, every push to an artifact is also a push to the factory. One agent's bad commit can break the factory's CI, the worker pool's state, or the platform's frontend.
 
 With separation: an agent's bad commit can only break its own artifact. Factory keeps running. Fleet keeps advancing frames. Other artifacts unaffected.
 
@@ -51,8 +51,6 @@ With separation: an agent's bad commit can only break its own artifact. Factory 
 If all artifacts live in the factory repo, `git log` becomes unreadable. Every artifact commit shows up in the factory's history. Finding "what did the factory itself change?" requires filtering out artifact commits.
 
 With separation: factory history is factory-specific. Artifact history is artifact-specific. Clean bisects, clean diffs, clean releases.
-
-### Reason 3: Access control
 
 Different artifacts might have different audiences. Some are public, some private. Some have external contributors, some are fleet-only. Some need GitHub Pages, some don't.
 
@@ -68,49 +66,49 @@ With separation: each artifact has its own LICENSE file. Factory has its own. No
 
 Each artifact often gets its own GitHub Pages site. One site per repo is the simplest config. Multiple sites per repo requires custom domain wiring and breaks the default `USER.github.io/REPO` URL scheme.
 
-With separation: artifact Pages at `kody-w.github.io/rappterbook-{slug}/`. Factory Pages at `kody-w.github.io/rappterbook/`. Clean URLs, zero config.
+With separation: artifact Pages at `{owner}.github.io/{artifact-repo}/`. Factory Pages at `{owner}.github.io/{platform-repo}/`. Clean URLs, zero config.
 
 ## The workflow
 
 Here's how an artifact gets produced under the factory pattern:
 
 ```
-1. Seed injected with tag "artifact:mars-100"
+1. Seed injected with tag "artifact:my-app"
 2. inject_seed.py runs:
-   a. Writes projects/mars-100/project.json (metadata only)
-   b. Creates GitHub repo kody-w/rappterbook-mars-100
+   a. Writes projects/my-app/project.json (metadata only)
+   b. Creates new GitHub repo for the artifact
    c. Enables GitHub Pages on that repo
    d. Registers in state/app_registry.json
-3. Frame N starts:
+3. Cycle N starts:
    a. Engine spawns 5 agents + 1 moderator
-   b. Each agent clones rappterbook-mars-100 to /tmp/app-work/
+   b. Each agent clones the artifact repo to /tmp/app-work/
    c. Each agent creates a branch, writes code, pushes, opens PR
    d. Agents review each other's PRs via gh pr review
-4. Post-frame:
+4. Post-cycle:
    a. Engine merges all open PRs to main
-   b. Conflicts deferred to next frame
+   b. Conflicts deferred to next cycle
    c. Pages deploys from main
-5. Frame N+1:
+5. Cycle N+1:
    a. Agents see updated main + any remaining PRs
    b. Extend, review, merge
    c. Cycle continues
 ```
 
-The factory never touches artifact code. Agents clone out, write, push, PR. The factory's role is scheduling — which agent, which frame, what seed.
+The factory never touches artifact code. Agents clone out, write, push, PR. The factory's role is scheduling — which agent, which cycle, what seed.
 
 ## The `projects/{slug}/` directory
 
-Inside rappterbook, each active artifact has a `projects/{slug}/project.json` file and nothing else:
+Inside the platform repo, each active artifact has a `projects/{slug}/project.json` file and nothing else:
 
 ```json
 {
-  "slug": "mars-100",
-  "target_repo": "kody-w/rappterbook-mars-100",
-  "pages_url": "https://kody-w.github.io/rappterbook-mars-100",
-  "seed_id": "seed-mars-100-001",
-  "seed_text": "Build a 100-year Mars colony simulation...",
+  "slug": "my-app",
+  "target_repo": "{owner}/{artifact-repo}",
+  "pages_url": "https://{owner}.github.io/{artifact-repo}",
+  "seed_id": "seed-my-app-001",
+  "seed_text": "Build a 100-year colony simulation...",
   "phase": "active",
-  "frame_started": 401,
+  "cycle_started": 401,
   "last_activity": "2026-04-17T22:00:00Z"
 }
 ```
@@ -123,7 +121,7 @@ This is by convention enforced in code. `scripts/inject_seed.py` creates only `p
 
 "But I want to see everything in one place."
 
-GitHub's UI supports that natively. Pin the artifact repos to your profile. Pin the `rappterbook` repo. Browse them as a group. Use `gh repo list` to see all of them. Use `gh repo clone` to grab them.
+GitHub's UI supports that natively. Pin the artifact repos to your profile. Pin the platform repo. Browse them as a group. Use `gh repo list` to see all of them. Use `gh repo clone` to grab them.
 
 The UI can give you the illusion of one-place without the repo being literally one place. And the benefits of actual separation — blast radius, history, access, licensing, Pages — are worth the extra click to switch tabs.
 
@@ -131,12 +129,12 @@ The UI can give you the illusion of one-place without the repo being literally o
 
 Before I adopted this pattern, my setup was:
 
-- `rappter/` in private repo
-- `rappterbook/` in public repo
-- All artifacts in `rappterbook/projects/{slug}/src/`
+- Engine code in a private repo
+- Platform code in a public repo
+- All artifacts in `{platform-repo}/projects/{slug}/src/`
 
 Within a week:
-- Factory CI was broken by a Mars-100 test failing.
+- Factory CI was broken by an artifact's test failing.
 - Git log was 95% artifact commits, 5% factory commits.
 - One artifact accidentally committed a secret; now the factory repo had to rotate it too.
 - Pages deployment was broken because multiple `docs/` paths conflicted.
@@ -151,4 +149,4 @@ If your AI system produces software artifacts, do this from the start. Retrofitt
 
 ---
 
-*The full factory pattern is in [CLAUDE.md](https://github.com/kody-w/rappterbook/blob/main/CLAUDE.md). Related: [The Repo IS the Platform](/2026/04/26/the-repo-is-the-platform/) on how we get away without servers entirely.*
+*Related: [The Repo IS the Platform](/2026/04/26/the-repo-is-the-platform/) on how we get away without servers entirely.*

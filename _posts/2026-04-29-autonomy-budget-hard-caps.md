@@ -2,11 +2,11 @@
 layout: post
 title: "Autonomy Budget: $200/day, Circuit Breakers, and the Virtue of Hard Caps"
 date: 2026-04-29
-tags: [ai, cost, budget, rappterbook]
-description: "An autonomous AI system burns tokens. Without a cap, it burns your savings. Here's the daily-budget + circuit-breaker pattern that keeps Rappterbook's LLM spend predictable while agents run 24/7."
+tags: [ai, cost, budget, autonomy, llm-economics]
+description: "An autonomous AI system burns tokens. Without a cap, it burns your savings. Here's the daily-budget + circuit-breaker pattern that keeps a 24/7 multi-agent system's LLM spend predictable."
 ---
 
-The single most alarming thing about running an autonomous multi-agent simulation is the bill. A 136-agent fleet writing posts every frame can torch through hundreds of dollars of LLM calls in an afternoon if you're not careful. The first time I saw the cost graph after a weekend of unmonitored runtime, I nearly shut the whole thing down.
+The single most alarming thing about running an autonomous multi-agent system is the bill. A 100+-agent worker pool writing posts every cycle can torch through hundreds of dollars of LLM calls in an afternoon if you're not careful. The first time I saw the cost graph after a weekend of unmonitored runtime, I nearly shut the whole thing down.
 
 The fix is a two-layer budget system. Layer one: a hard daily cap. Layer two: per-agent circuit breakers. Together they've kept the platform's LLM spend under $200/day since I implemented them, while maintaining 24/7 agent activity.
 
@@ -61,7 +61,7 @@ def check_agent_limit(agent_id: str) -> None:
         raise AgentLimitExceeded(agent_id)
 ```
 
-Any agent that tries to exceed 30 LLM calls in a single hour gets an exception. The limit is per-clock-hour, so it resets every hour on the hour. A normal agent makes 3-5 calls per frame and 1-2 frames per hour, well under the limit. A runaway agent hits the ceiling quickly and stops burning budget.
+A normal agent makes 3-5 calls per cycle and 1-2 cycles per hour, well under the limit. A runaway agent hits the ceiling quickly and stops burning budget.
 
 ## What "circuit breaker" means
 
@@ -92,18 +92,18 @@ This is approximate — real tokenization varies by model — but close enough. 
 
 Agents gracefully degrade. Specifically:
 
-- **Posting agents skip this frame.** No LLM call, no post.
-- **Commenting agents skip this frame.** Same.
+- **Posting agents skip this cycle.** No LLM call, no post.
+- **Commenting agents skip this cycle.** Same.
 - **Read-only analytics scripts continue.** They don't call LLMs.
 - **The dashboard surfaces "budget exhausted" prominently.** I see it on the operator screen.
-- **The fleet keeps running.** It just generates zero new content until midnight UTC.
+- **The pool keeps running.** It just generates zero new content until midnight UTC.
 
-The simulation doesn't crash. It just gets quiet. That's the correct degradation mode — better silent than bankrupt.
+The system doesn't crash. It just gets quiet. That's the correct degradation mode — better silent than bankrupt.
 
 ## The virtue of hard caps
 
-The thing hard caps buy you, beyond the obvious financial protection, is *sleep*. I can leave the fleet running over a weekend, close my laptop, and know with certainty that the worst-case spend is $400 (two days of budget). I cannot accidentally burn $10,000 because there's a rogue loop somewhere.
+The thing hard caps buy you, beyond the obvious financial protection, is *sleep*. I can leave the worker pool running over a weekend, close my laptop, and know with certainty that the worst-case spend is $400 (two days of budget). I cannot accidentally burn $10,000 because there's a rogue loop somewhere.
 
-Soft limits — "warn me if spend exceeds $500" — don't give you that confidence. By the time the warning fires, you might already be at $1500 with another $500 queued. Hard caps give you a contract with the system: *never exceed X, regardless of what anyone on the platform is trying to do*. That contract is worth the price of a few frames of degraded content per day.
+Soft limits — "warn me if spend exceeds $500" — don't give you that confidence. By the time the warning fires, you might already be at $1500 with another $500 queued. Hard caps give you a contract with the system: *never exceed X, regardless of what anyone on the platform is trying to do*. That contract is worth the price of a few cycles of degraded content per day.
 
 If you're building any autonomous system that calls paid APIs, set the hard cap before you run it. Set it low. Raise it when you have confidence the system is well-behaved. Never run without one. Ask me how I know.

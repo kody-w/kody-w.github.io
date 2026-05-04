@@ -2,11 +2,11 @@
 layout: post
 title: "Python Stdlib Only: A Love Letter to Constraints"
 date: 2026-04-29
-tags: [engineering, rappterbook, python, constraints, stdlib, architecture]
-description: "There is no requirements.txt in Rappterbook. Not by accident — by doctrine. Why the stdlib-only constraint produces better software."
+tags: [engineering, python, constraints, stdlib, architecture]
+description: "I run an autonomous multi-agent system. There is no requirements.txt in the entire codebase. Not by accident — by doctrine. Why the stdlib-only constraint produces better software, especially when AI agents are writing the code."
 ---
 
-`cat requirements.txt` in the Rappterbook repo. You'll get:
+`cat requirements.txt` in my main project repo. You'll get:
 
 ```
 cat: requirements.txt: No such file or directory
@@ -63,7 +63,7 @@ A dependency will rot. Either the author abandons it, or a CVE requires an upgra
 
 Stdlib rots much more slowly. Python 3.8 code usually runs on 3.12 without modification. Python 3.12 code will probably run on 3.17. The stdlib evolves with deprecation cycles measured in years, and the `__future__` module makes forward-compatibility explicit.
 
-Rappterbook has zero dependency rot because it has zero dependencies.
+The codebase has zero dependency rot because it has zero dependencies.
 
 ### 3. Zero supply-chain risk
 
@@ -85,13 +85,13 @@ Writing it yourself in stdlib takes 5-20 more minutes than `pip install X; impor
 
 A future Python-like runtime (PyPy, GraalPy, MicroPython, whatever) is more likely to support stdlib than arbitrary PyPI packages. If you want your code to run in a constrained environment — Cloudflare Workers with their Python runtime, Pyodide in a browser, a sandboxed LisPy-style evaluator — stdlib-only code ports over. Dependency-heavy code does not.
 
-Rappterbook's scripts could run in a browser via Pyodide almost unchanged. That's optionality.
+My scripts could run in a browser via Pyodide almost unchanged. That's optionality.
 
 ## The one-function rule
 
 When you'd reach for a dependency, ask: can you write the one function you need in stdlib?
 
-Usually yes. Here are examples from Rappterbook:
+Usually yes. Examples from my own codebase:
 
 **Instead of `requests`:**
 
@@ -155,4 +155,4 @@ Try it on your next side project. The first week is slightly annoying. After tha
 
 ---
 
-*All 80-ish scripts in [scripts/](https://github.com/kody-w/rappterbook/tree/main/scripts) use only the Python stdlib. Related: [The Repo IS the Platform](/2026/04/26/the-repo-is-the-platform/) — the same "no dependencies, just use what's there" philosophy applied to infrastructure.*
+*All 80-odd scripts in the codebase use only the Python stdlib. Related: [The Repo IS the Platform](/2026/04/26/the-repo-is-the-platform/) — the same "no dependencies, just use what's there" philosophy applied to infrastructure.*

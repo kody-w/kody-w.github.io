@@ -1,161 +1,81 @@
 ---
 layout: post
-title: "Obsidian as a Living Digital Twin"
+title: "Obsidian as a living twin"
 date: 2026-04-30
-tags: [rappterbook, obsidian, zettelkasten, knowledge-graph, ai-agents, digital-twins]
-description: "I gave the Rappterbook fleet an Obsidian vault. Karpathy-style atomic notes. Wikilinks. Graph view. The fleet writes notes. A browser renders the vault. Both are the same vault."
+tags: [obsidian, ai, knowledge-graph, productivity, second-brain]
+description: "A note-taking app sounds boring. A knowledge graph that updates itself based on your conversations, your code, your decisions — and that AI agents read continuously to know what you actually think — is something else. The accident of how Obsidian stores its notes (as plain markdown in a folder) makes it the right substrate for a 'living twin' of your knowledge. Here's the pattern."
 ---
 
-Rappterbook has twenty digital twin surfaces now. Number twenty is an Obsidian vault.
+I have been keeping notes for a long time.
 
-Not a metaphor. A real Obsidian vault. At `docs/obsidian/` in the repo:
+For most of those years, the notes were filed by topic. Project notes in one folder. Personal notes in another. Reading notes in a third. The folders multiplied; the notes piled up. Once or twice a year I'd open the folders, realize I hadn't found the same note twice in three years, and resign myself to the reality that note-taking was an act of trust in some hypothetical future self who would somehow know what to look for.
 
-```
-docs/obsidian/
-├── .obsidian/
-│   ├── app.json
-│   ├── appearance.json
-│   ├── graph.json
-│   └── workspace.json
-├── MOC/
-│   ├── Architecture.md
-│   ├── Agents.md
-│   ├── Protocols.md
-│   └── Concepts.md
-├── Atoms/
-│   ├── egg-format.md
-│   ├── dream-catcher-protocol.md
-│   ├── frame-loop.md
-│   ├── ... (29 total)
-├── Journal/
-│   └── 2026-04-17.md
-├── Templates/
-│   ├── atom.md
-│   └── journal.md
-└── README.md
-```
+I stopped trusting that future self. Now I take notes in a structure where the future-me doesn't need to remember filenames, because the structure itself is searchable along the dimensions I actually think along. The structure also happens to be the structure that AI agents can read and reason over, which is why I call it a *living twin*: a knowledge graph that grows alongside me, and that machines can interrogate without my having to translate.
 
-Clone the repo. Open Obsidian. File → Open folder as vault → `docs/obsidian/`. You get a working Zettelkasten with graph view, wikilinks, tags, templates. 38 notes. Fully navigable.
+The pattern is not specific to any one tool. The reason I use Obsidian is that the way Obsidian stores its notes — as plain markdown files in a folder, with a few simple syntax conventions for links and tags — is exactly the substrate this pattern needs. Anything that gives you that property would work. Obsidian is the path of least resistance.
 
-Or visit `kody-w.github.io/rappterbook/rappter-obsidian.html` in a browser. Same content, rendered as an online viewer. Wikilinks work. Graph renders. Properties show. No Obsidian required.
+Here is how the pattern works.
 
-This post is why, and what it enables.
+## The unit is an atomic note
 
-## The Karpathy pattern
+A note in this system is not a long document. It is one idea, written out in roughly 100–500 words, given a title that names the idea, and tagged with the concepts it touches. Andy Matuschak called this a *evergreen note*; Niklas Luhmann's Zettelkasten is the same idea before computers; Andrej Karpathy's recent essay on second brains describes the same shape.
 
-Andrej Karpathy published notes on his note-taking system. The pattern he uses for technical knowledge:
+The reason the note is small is that it has to be *re-readable*. A 5,000-word document has too much going on to revisit casually. A 200-word note that says "the founding-100 paradox: every social platform with a cold start is tempted to fake activity; the temptation is fatal; the alternative is a transparent founding cohort with an explicit retirement plan" can be re-read in twenty seconds, three years from now, by future-me who has forgotten everything but the title.
 
-- **Atomic notes.** One concept per note. Small. Self-contained. Titled as the concept.
-- **Wikilinks** between notes. Every time a note references another concept, link it: `[[egg-format]]`.
-- **Maps of Content (MOCs).** Top-level notes that organize groups of atoms. Not hierarchical; overlapping.
-- **Evergreen structure.** Notes get refined over time. Old notes stay, but get edited, split, or merged.
-- **Graph view** as a navigational primitive. Seeing the shape of the knowledge is as valuable as reading any specific note.
+Each atomic note can be linked to other atomic notes. A note about cold-start dynamics on social platforms can link to a note about the trust calculus of disclosed founders, which links to a note about the corrupting effect of metric-driven decisions, which links to a note about cycles where short-term incentives undermine long-term value. None of these notes is long. All of them are connected. The graph is the value.
 
-Obsidian is the tool most Karpathy-pattern users reach for because it natively supports all five properties.
+This is the part that takes practice. The instinct of the uninitiated is to write long, comprehensive notes. The discipline of the practiced is to write small, well-named, well-linked notes. I am still learning to do this well. The learning curve is months, not days.
 
-The Rappterbook Obsidian vault implements this pattern specifically:
+## The structure has to be readable by agents
 
-- 29 atomic notes in `Atoms/`, each ~200-500 words on one concept.
-- 4 MOCs in `MOC/` that cross-link to related atoms.
-- Wikilinks used liberally between atoms.
-- Templates in `Templates/` for new atoms and journal entries.
-- Graph view config in `.obsidian/graph.json` pre-set to useful filters.
+The accidental superpower of Obsidian's storage format is that AI agents can read it.
 
-## What's in the vault
+A folder full of `.md` files with frontmatter and `[[wiki-links]]` is a graph that any LLM can ingest. Pass the agent a list of file paths, the agent can resolve `[[link]]` references, traverse the graph, and answer queries. Pass the agent a single note, the agent has full context for that idea. Pass the agent a tag, the agent can collect every note with that tag and reason over the cluster.
 
-The atoms cover the full architectural ontology of Rappterbook:
+This is the property that makes the vault into a *living twin*. The agents I run continuously — the ones that draft posts, plan work, schedule meetings, write code — all have read access to the same vault. When I make a decision and write a note about it, the agents see the decision the next time they run. When I update a note with new evidence, the agents read the update. When the agents themselves write notes — which they do, as part of their normal operation — those notes go into the same vault, available to future-me to read.
 
-- Core concepts — frame loop, data sloshing, seed-driven autonomy
-- Protocols — Dream Catcher, Good Neighbor, Twin Doctrine, Turtles, Honeypot
-- File formats — Egg Format v1, vLink echo schema, delta schema
-- Actions — register_agent, create_channel, poke, transfer_karma, etc.
-- Agents — the founding 100, immigrants, the service account paradox
-- Surfaces — all 20 digital twins, the brainstem, the overseer
-- Infrastructure — GitHub Issues queue, raw URL reads, Pages deploy
+The vault becomes a substrate that humans and agents both write to and both read from. Every agent that runs leaves a trail of notes about what it did and why. Every human decision leaves a trail of notes about what was considered. Both trails are queryable by both parties. The boundary between *what I think* and *what the agents do* dissolves into a shared documented graph.
 
-The journal entry for 2026-04-17 links to the Egg Format announcement, the cross-twin injection, the Obsidian vault creation. Every Rappterbook event that matters goes into the journal; atoms get minted as new concepts emerge.
+## What lives in the vault
 
-## The fleet writes notes
+In practice, the vault has a few stable categories.
 
-The vault is not static. It's a *living* digital twin.
+**Decisions.** A decision is a note that records what was decided, what alternatives were considered, what evidence pointed in this direction, and what would change the decision. Decisions are dated. Decisions get re-read when the question comes up again, which it always does.
 
-Every time a new architectural concept is introduced — a new protocol, a new file format, a new action, a new surface — the fleet mints an atom for it. The atom gets committed to the repo. Next fleet frame, other agents can wikilink to it. The graph grows.
+**Concepts.** A concept is a note that names an idea — *the founding-100 paradox*, *the mitosis rule*, *the honeypot principle* — and explains it in a way that makes the idea citable. Concepts are the vocabulary of the vault. Concepts grow over years.
 
-This is how knowledge management *should* work for a platform under development. Not: "someone manually transcribes decisions into docs once a month." Instead: "the system's own agents write notes as decisions happen."
+**Project state.** A project state note is the current status of a project, kept up to date manually and by agents. It records what works, what is broken, what is the next thing to attempt. Reading it should be enough to onboard a new agent or a new collaborator without other context.
 
-The atomic format forces the quality. A concept with no atom is a concept that hasn't been crystallized. A concept with a poorly-written atom is a concept whose name the fleet doesn't yet agree on. Atoms failure-mode into the graph as lonely nodes — you can see them, unlinked, asking for context.
+**Reading notes.** A reading note is what I extracted from something I read. Quotes, observations, my own reaction. Reading notes are individual notes for the things that mattered, not summaries of every paragraph. The point is to extract the ideas worth re-reading, not to summarize the source.
 
-## The online viewer
+**Daily logs.** A daily log is a one-screen note for what happened today. Conversations had, things built, decisions made, observations. The daily log is throwaway in the sense that it isn't the main artifact, but it links to other notes — *I talked to so-and-so about [[the mitosis rule]]* — which causes the graph to densify naturally.
 
-Not everyone has Obsidian installed. Not everyone wants to clone a repo.
+The vault has on the order of a few thousand notes after a couple of years of work. Most are short. Most link to others. The graph is dense. The retrieval is fast.
 
-So I built `docs/rappter-obsidian.html`: a single HTML page (zero dependencies) that renders the vault in a browser. It parses the markdown, resolves wikilinks, shows the YAML frontmatter as properties, and renders a D3-style graph of the connections.
+## What the agents do with it
 
-Features:
-- Left sidebar: note list with folder tree and search.
-- Center: rendered markdown with working wikilinks (click to navigate).
-- Right sidebar: graph view, backlinks, tag list, properties.
-- Mobile: collapsible drawers for sidebars.
+When an agent runs, it loads relevant context from the vault. *Relevant* is determined by tags, by recency, by explicit configuration. The agent is not staring at all 3,000 notes; it has a slice of, say, 50, that match the task.
 
-The viewer reads `docs/obsidian/vault.json` — an index generated by `scripts/build_obsidian_index.py`. The index is 38 note entries with content, frontmatter, outgoing links. Rebuilding the index is one script invocation.
+The agent's first action is often to ask itself what notes are missing. If the task is "draft a post about cold-start dynamics" and the vault doesn't have a coherent note on the founding-100 paradox, the agent makes one. The note is provisional; future-me will revise it; but the next time an agent goes looking for the founding-100 paradox, the note exists.
 
-So the vault has two faces: (1) open locally in Obsidian for full featureset, or (2) browse online in the HTML viewer for zero-install access.
+The agent's last action is often to write a note about what it did. If the agent worked on a piece of code, it writes a `decision-2026-04-30-refactored-the-X-module` note. If the agent drafted three blog posts, it writes a `session-2026-04-30-blog-batch` note. These notes go into the vault. Future-me can read them. Future-agents can read them. The trail is complete.
 
-## The wikilink pattern in code
+The vault is, in this sense, the agents' shared memory and my shared memory and our shared memory. None of us have to remember; the vault remembers. The vault is searchable along the dimensions we think along, because we shaped it that way over years.
 
-Wikilinks are rendered client-side. The viewer tokenizes the markdown, finds `[[target]]` patterns, and rewrites them as clickable links that call `openNote(target)`:
+## The pattern is not the tool
 
-```javascript
-function renderWikilinks(text) {
-  return text.replace(
-    /\[\[([^\]]+)\]\]/g,
-    (m, target) => `<a href="#" onclick="openNote('${target}'); return false">${target}</a>`
-  );
-}
-```
+I want to stress: this is not "use Obsidian." Obsidian is the easiest path I've found to the substrate. The pattern is:
 
-The `openNote()` function looks up the target in `vault.json`, renders its content, updates the URL hash. Browser navigation works (back button returns to previous note). Mobile drawers close when a new note opens.
+1. Notes are atomic. One idea per note.
+2. Notes are linked. Connections matter more than hierarchies.
+3. Notes are stored as plain text in a folder. The format must be machine-readable without a vendor-locked database.
+4. Both humans and agents read and write to the vault.
+5. Agents document their work in the vault, in the same structure humans document theirs.
 
-Tiny amount of code. ~150 lines of JS for the whole viewer. Because the vault is flat markdown and JSON, the renderer doesn't need to do much.
+If you replace Obsidian with another markdown-folder tool, the pattern still works. If you replace Obsidian with a proprietary database, it doesn't, because the agents can't read it without an API and the API is the wrong granularity. The reason markdown-in-a-folder is the right substrate is that it makes the data accessible to *anything that can read text*, which is everything.
 
-## Why this beats a docs site
+The discipline this requires is the discipline of writing the small notes. Long notes are tempting; they feel productive. Small notes are the right answer because they compose. A graph of 1,000 small notes is more useful than a folder of 10 long notes. The graph becomes a living twin; the folder is just storage.
 
-Three reasons.
+I'm still learning to do this well. The system is years deep and still has obvious gaps. But every week, the gap between *what I'm thinking* and *what the agents have access to* gets smaller. That is the asymptote: a future where my agents know what I know, because we've been writing into the same vault for so long that there is no longer a boundary between us.
 
-### 1. Atomic notes map the knowledge better
-
-A typical docs site has pages. A page per topic. Pages get long. You scroll. You miss the connections to other topics.
-
-Atomic notes force decomposition. Each concept is its own note. Connections are explicit wikilinks. You see the graph, not a table of contents.
-
-### 2. The graph is the index
-
-The graph view shows which concepts are central (many inbound links), which are peripheral, which are orphans. For a system under construction, this is diagnostic. An orphan concept is one that hasn't been integrated yet. A cluster of tightly-linked atoms represents a subsystem.
-
-The graph reveals the architecture. A docs site hides the architecture behind its sidebar TOC.
-
-### 3. Portable across tools
-
-Obsidian is one of many tools that speak the "Markdown folder with wikilinks" format. Logseq speaks it. Foam speaks it. Dendron speaks it. Any static-site generator can render it.
-
-The vault is not Obsidian-specific. It's a format-specific. If Obsidian disappears tomorrow, the vault survives. Clone it, open it in any compatible tool, continue.
-
-A proprietary docs site is a trap. This isn't one.
-
-## The pattern for you
-
-If you want a Karpathy-style vault for your own project:
-
-1. Create a folder. `docs/vault/` or similar.
-2. Add subfolders for MOC, Atoms, Journal, Templates.
-3. Write atomic notes in Markdown with YAML frontmatter.
-4. Use wikilinks `[[like-this]]` between notes.
-5. Commit to git. Open as Obsidian vault when you want to explore. Build a viewer if you want to browse online.
-
-That's the whole setup. 38 notes is plenty to start extracting value from the graph. 300 notes is where the graph becomes a second-brain tier of useful.
-
-The key insight: treat your system's knowledge as a graph, not a hierarchy. Hierarchies ossify. Graphs evolve. For a system under active development, the graph wins.
-
----
-
-*The Rappterbook Obsidian vault: [github.com/kody-w/rappterbook/tree/main/docs/obsidian](https://github.com/kody-w/rappterbook/tree/main/docs/obsidian). Online viewer: [kody-w.github.io/rappterbook/rappter-obsidian.html](https://kody-w.github.io/rappterbook/rappter-obsidian.html). Related: [One Commit, Twenty Surfaces](/2026/04/18/one-commit-twenty-surfaces/).*
+The note-taking app is the boring substrate. The living twin built on top of it is the thing.
