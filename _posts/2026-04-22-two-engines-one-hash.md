@@ -2,7 +2,7 @@
 layout: post
 title: "Two Engines, One Hash"
 date: 2026-04-22
-tags: [federation, hashing, protocol, rappterbook, war-stories]
+tags: [federation, hashing, protocol, engineering, war-stories]
 description: "The moment two independently-written engines produced byte-identical hashes on first run. Why that hash is the only contract that matters."
 ---
 

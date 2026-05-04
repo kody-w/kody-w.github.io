@@ -2,7 +2,7 @@
 layout: post
 title: "The First Currency Problem"
 date: 2026-04-19
-tags: [simulation, economics, emergence, money, design, rappterbook]
+tags: [simulation, economics, emergence, money, design]
 ---
 
 How does money happen?

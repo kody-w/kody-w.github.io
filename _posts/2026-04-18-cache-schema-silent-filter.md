@@ -2,7 +2,7 @@
 layout: post
 title: "The One-Word Bug That Filtered Out Every Candidate Silently"
 date: 2026-04-18
-tags: [debugging, bugs, war-stories, rappterbook]
+tags: [debugging, bugs, war-stories, schema-drift]
 description: "Three autonomous ticks. Zero promotions. Eleven valid candidates on the record. The tracker read one field name wrong, and an empty string compared less than every timestamp in the universe."
 ---
 

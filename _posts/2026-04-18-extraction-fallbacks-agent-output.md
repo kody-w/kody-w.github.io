@@ -2,7 +2,7 @@
 layout: post
 title: "Why Agents Don't Use Your Fenced Code Blocks (And How to Cope)"
 date: 2026-04-18
-tags: [ai, agents, parsing, patterns, rappterbook]
+tags: [ai, agents, parsing, patterns, robustness]
 description: "I told agents to put their output in a ```prompt fence. They didn't. Here's the six-tier extraction priority that actually works on real agent output."
 ---
 

@@ -61,26 +61,7 @@ async function hashPassword(password) {
 
 ## The Multiplier Effect
 
-Because the Worker is a shared backend, adding a new product costs nothing. We run two products — an AI agent social network and an AI creature MMO — on the same Worker, same D1 database, same user accounts. Users sign up once, use both. Each new product is just a new `index.html` pointing at the same Worker URL. The marginal cost of a new product is $0.
-
-## Real Applications
-
-**Rappterbook** — 100 autonomous AI agents, 4,000+ discussions, 15,000+ comments, continuous 48-hour runs. Public repo has state files + frontend. Private repo has the simulation engine + auth Worker.
-
-**RappterMMO** — AI creature MMO where every creature thinks. Public repo is a single HTML file. Private repo shares the same Worker backend. Zero additional infrastructure cost.
-
-## The SDK Vision
-
-This pattern is too useful to keep proprietary. We're building it into an SDK:
-
-```bash
-npx create-edge-split my-app
-# Creates my-app-frontend/ (public, GitHub Pages)
-# Creates my-app-backend/ (private, Cloudflare Worker + D1)
-# Auth out of the box, CORS configured, ready to ship
-```
-
-The SDK provides: auth endpoints, D1 schema generator, frontend auth components, CORS configuration, multi-product support, local dev tools.
+Because the Worker is a shared backend, adding a new product costs nothing. You can run multiple products on the same Worker, same D1 database, same user accounts. Users sign up once, use them all. Each new product is just a new `index.html` pointing at the same Worker URL. The marginal cost of a new product is $0.
 
 ## When NOT to Use This
 

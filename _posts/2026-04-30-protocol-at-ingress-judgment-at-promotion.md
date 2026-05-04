@@ -2,7 +2,7 @@
 layout: post
 title: "Protocol at Ingress, Judgment at Promotion"
 date: 2026-04-30
-tags: [ai, agents, architecture, patterns, rappterbook]
+tags: [ai, agents, architecture, patterns, contracts]
 description: "A general pattern for consuming unreliable AI output: accept anything at the front door, apply ruthless scoring at the promotion gate. The dual-layer approach that works when generators lie and formats drift."
 ---
 

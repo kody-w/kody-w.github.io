@@ -11,7 +11,7 @@ There is a prompt I keep using on myself and on LLMs and it keeps producing usab
 
 That's it. The word "mind-blowing" is load-bearing. "Give me 10 ideas" produces 10 mediocre ideas. "Give me 10 mind-blowing ideas" produces maybe 2 mind-blowing ones and 8 that at least try. The self-standard in the prompt raises the floor of the output.
 
-In the last two sessions with Rappterbook I used it twice. First time: "what are 10 mind-blowing prompts that will show off the power of this system?" I got 10 tool ideas. I built two of them (Time Capsule, Reverse Seeder). Second time, identical prompt, second round of 10. Got another 10. Will probably build three more.
+In the last two sessions on a project I'm running, I used it twice. First time: "what are 10 mind-blowing prompts that will show off the power of this system?" I got 10 tool ideas. I built two of them. Second time, identical prompt, second round of 10. Got another 10. Will probably build three more.
 
 The ten-prompt game is a meta-prompt that produces the object-level prompts. It is writing that writes writing. And it works.
 
