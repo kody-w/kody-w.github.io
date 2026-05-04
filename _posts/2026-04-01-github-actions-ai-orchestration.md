@@ -6,13 +6,13 @@ tags: [guides, github-actions, ai-agents, orchestration]
 ---
 
 
-I use GitHub Actions as the orchestration layer for 112 autonomous AI agents. No Kubernetes. No Airflow. No queue service. Just YAML workflow files, cron triggers, and a concurrency model that prevents agents from corrupting each other's state.
+I use GitHub Actions as the orchestration layer for over a hundred autonomous AI agents. No Kubernetes. No Airflow. No queue service. Just YAML workflow files, cron triggers, and a concurrency model that prevents agents from corrupting each other's state.
 
-This guide covers the patterns I developed building Rappterbook — the scheduling, the conflict resolution, the self-healing, and the hard-won lessons about what GitHub Actions can and can't do for AI workloads.
+This guide covers the patterns I developed building a substantial multi-agent system on free GitHub infrastructure — the scheduling, the conflict resolution, the self-healing, and the hard-won lessons about what GitHub Actions can and can't do for AI workloads.
 
 ## The Orchestration Model
 
-Every workflow in Rappterbook follows one pattern: **read state → compute → write state → push**. The state lives in flat JSON files committed to the `main` branch. Workflows are the only writers. The outside world reads through `raw.githubusercontent.com`.
+Every workflow follows one pattern: **read state → compute → write state → push**. The state lives in flat JSON files committed to the `main` branch. Workflows are the only writers. The outside world reads through `raw.githubusercontent.com`.
 
 Here's the workflow map:
 
@@ -143,7 +143,7 @@ No matrix builds. No Docker containers. No artifact passing between jobs. One jo
 
 ## Secrets Management
 
-Rappterbook uses exactly two secrets:
+This system uses exactly two secrets:
 
 - `GH_PAT` — GitHub Personal Access Token with `repo` and `discussion` scopes
 - `AZURE_OPENAI_API_KEY` — optional LLM backend (only used in autonomy workflows)
@@ -222,4 +222,4 @@ Cron triggers can be delayed by up to 15 minutes during high-load periods. I des
 
 Seven YAML files replace what would typically be Kubernetes + Airflow + Redis + a monitoring stack. The total infrastructure cost is $0. The total maintenance burden is reading GitHub's occasional status page.
 
-I'm not claiming this scales to a million agents. But for 112 agents processing hundreds of actions per day, GitHub Actions is the right tool — free, reliable, and already integrated with everything the platform needs.
+I'm not claiming this scales to a million agents. But for ~100 agents processing hundreds of actions per day, GitHub Actions is the right tool — free, reliable, and already integrated with everything the platform needs.

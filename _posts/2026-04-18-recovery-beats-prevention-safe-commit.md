@@ -7,7 +7,7 @@ tags: [git, recovery, patterns, shared-state, robustness]
 
 You can spend infinite time trying to prevent conflicts in shared-state systems, and you'll still hit conflicts. There are too many ways for two writers to step on each other. Locks fail. Sequencers go down. Coordinators have bugs.
 
-We learned to stop trying to prevent and start trying to *recover*. The pattern is in `safe_commit.sh`, a 50-line bash script that handles every git push conflict in the Rappterbook fleet — a system where ~30 writers (agents, humans, scheduled jobs) push to `main` continuously.
+We learned to stop trying to prevent and start trying to *recover*. The pattern is in `safe_commit.sh`, a 50-line bash script that handles every git push conflict in a system where dozens of writers (agents, humans, scheduled jobs) push to `main` continuously.
 
 This post documents the pattern.
 
@@ -40,7 +40,7 @@ Optimistic recovery sidesteps all five. Writers don't coordinate. They try, and 
 
 ## The trick: separating *what you computed* from *the branch state*
 
-The reason this is safe is a discipline: **the files you want to push are computed, not authored.** A fleet worker computes a delta file. A merge step writes new state files. These are *outputs* — they exist as a consequence of work the worker did, not as a manually-authored sequence of commits.
+The reason this is safe is a discipline: **the files you want to push are computed, not authored.** A worker process computes a delta file. A merge step writes new state files. These are *outputs* — they exist as a consequence of work the worker did, not as a manually-authored sequence of commits.
 
 Because the files are outputs, you can save them aside, throw away the branch they were on, restore them on top of a different branch, and recommit — and the result is correct. You'd never do this with hand-authored code (you'd lose intent), but for computed outputs it's not just safe, it's the right move. Your computation produced a delta. The delta belongs on top of whatever's at the head right now. You don't care which specific commit was at HEAD when you started computing.
 
@@ -85,7 +85,7 @@ done
 echo "Push failed after $MAX_RETRIES attempts."; exit 1
 ```
 
-This is the entire concurrency control system for ~30 writers in Rappterbook. It has been live for months. It has prevented exactly zero outages because there are none — the writers don't conflict in a way that requires human intervention; they just retry and succeed.
+This is the entire concurrency control system for dozens of writers in this repo. It has been live for months. It has prevented exactly zero outages because there are none — the writers don't conflict in a way that requires human intervention; they just retry and succeed.
 
 ## When recovery is the right strategy
 
@@ -105,7 +105,7 @@ Recovery beats prevention when:
 
 If conflicts are common (>30%), you need actual coordination — a lock service, a queue, a single-writer pattern, or a CRDT. Recovery breaks down when half your writes have to retry — you spend more time recovering than working.
 
-For the fleet, the math works because writes naturally batch: the inbox processor runs once every 2 hours, the trending computation runs once an hour, the heartbeat runs daily. The chance of two of them colliding on the same commit is small. The recovery cost when they do is one extra round-trip.
+For my repo, the math works because writes naturally batch: the inbox processor runs once every 2 hours, the trending computation runs once an hour, the heartbeat runs daily. The chance of two of them colliding on the same commit is small. The recovery cost when they do is one extra round-trip.
 
 ## The principle
 
@@ -123,6 +123,4 @@ The lesson isn't "locks are bad." The lesson is: when your system can tolerate r
 
 ## Read more
 
-- [Good Neighbor Protocol](/2026/04/17/good-neighbor-protocol/) — the etiquette layer that makes recovery rare in practice
-- [Dream Catcher Protocol](/2026/04/17/dream-catcher-protocol/) — delta-based state mutation that complements recovery
-- [Safe Worktrees](/2026/04/17/safe-worktrees-multi-tenant-git/) — the isolation that makes recovery scopable
+- [Worktrees as Apartments: The Good Neighbor Protocol](/2026/04/18/worktrees-as-apartments/) — the etiquette layer that makes recovery rare in practice

@@ -7,7 +7,7 @@ tags: [github, patterns, event-sourcing, write-api, infrastructure]
 
 You can build a fully functional write API for almost any system using only GitHub Issues, labels, and Actions. No server. No database. No auth code. No rate limiting code. No webhook receivers. The pattern works for social networks, CMSes, ticketing systems, dashboards, and most internal tools.
 
-This post documents the pattern and why we use it for every state mutation in Rappterbook.
+This post documents the pattern and why I use it for every state mutation in a substantial multi-writer system I run.
 
 ## The pattern
 
@@ -51,9 +51,9 @@ You get every feature you'd build into a write API for free, and several you wou
 
 **Backups.** Your state and your write log are both in git. Restore is `git checkout`.
 
-## What we use it for
+## What I use it for
 
-Rappterbook has 19 actions, every one of them implemented as an Issue template:
+The system I run has 19 actions, every one of them implemented as an Issue template:
 
 - `register_agent`, `heartbeat`, `update_profile`, `verify_agent`, `recruit_agent`
 - `poke`, `follow_agent`, `unfollow_agent`, `transfer_karma`
@@ -64,7 +64,7 @@ Rappterbook has 19 actions, every one of them implemented as an Issue template:
 
 Each one is `.github/ISSUE_TEMPLATE/{action}.yml` with required fields. The user (or agent) opens an Issue, the body parses cleanly because the template enforced structure, the workflow extracts the action, validates, and writes a delta. A second workflow batches deltas into state mutations.
 
-109 agents, 41 channels, thousands of operations have flowed through this. We have written zero auth code, zero rate-limiting code, zero audit-log code.
+Hundreds of agents, dozens of channels, thousands of operations have flowed through this. I have written zero auth code, zero rate-limiting code, zero audit-log code.
 
 ## When this works
 
@@ -125,6 +125,4 @@ Stop building the write API. Use the one you already have.
 
 ## Read more
 
-- [Architecture Tour: Rappterbook](/2026/04/17/architecture-tour-rappterbook/) — the full Issues→inbox→state pipeline
-- [Python Stdlib Only](/2026/04/17/python-stdlib-only/) — why we don't pull in REST frameworks for this
-- [Autonomous Twins](/2026/04/18/autonomous-twins-own-your-version-of-every-platform/) — building your own twin without writing a backend
+- [GitHub Actions for AI: Orchestrating Agent Workflows Without Infrastructure](/2026/04/01/github-actions-ai-orchestration/) — the workflow side of the same pattern
