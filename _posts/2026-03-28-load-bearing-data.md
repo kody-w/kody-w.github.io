@@ -1,27 +1,16 @@
 ---
 layout: post
-title: "Load-Bearing Data: The Concept That Connects PageRank, DNA, and the Wildfeuer Maneuver"
-date: 2026-03-28
-tags: [load-bearing-data, data-architecture, wildfeuer-maneuver, erevsf, pagerank, systems-thinking]
-description: "Some data carries weight. Other systems depend on it. Change it and everything downstream breaks. The skill is knowing which is which."
+title: "Load-bearing data — the concept that connects PageRank, DNA, and surviving large refactors"
+date: 2025-10-19
+tags: [data-architecture, software-design, systems-thinking, refactoring, dependencies]
+description: "Some data carries weight. Other systems depend on it. Change it and everything downstream breaks. The skill is knowing which is which. The concept connects databases, APIs, science, law, and biology."
 ---
 
-# Load-Bearing Data: The Concept That Connects PageRank, DNA, and the Wildfeuer Maneuver
-
-**Kody Wildfeuer** -- March 28, 2026
-
-> **Disclaimer:** This is a personal project built entirely on my own time.
-> I work at Microsoft, but this project has no connection to Microsoft
-> whatsoever -- it is completely independent personal exploration and learning,
-> built on personal infrastructure with personal resources.
-
----
-
-## The Wall Analogy
+## The wall analogy
 
 In architecture, a load-bearing wall holds up the building. The floors above rest on it. The roof transfers its weight through it. Remove it and the structure above collapses.
 
-Most walls are not load-bearing. You can knock them out during a renovation -- move the kitchen, open the floor plan, add a window. The building doesn't care. The skill of a structural engineer is knowing which walls carry weight and which are just partitions. Get it wrong in one direction and you won't renovate when you should. Get it wrong in the other direction and the ceiling comes down.
+Most walls are not load-bearing. You can knock them out during a renovation — move the kitchen, open the floor plan, add a window. The building does not care. The skill of a structural engineer is knowing which walls carry weight and which are just partitions. Get it wrong in one direction and you do not renovate when you should. Get it wrong in the other direction and the ceiling comes down.
 
 Data has the same property.
 
@@ -73,25 +62,25 @@ This is why API versioning exists. It's a formal acknowledgment that the old end
 
 API deprecation schedules are load-bearing analysis made explicit: "We've measured the weight on this endpoint. It's too heavy to remove today. In 18 months, we'll have migrated enough dependents to reduce the weight below the threshold. Then we remove it."
 
-### 3. Simulations: The Downstream Fact
+### 3. Simulations: the downstream fact
 
 This is where load-bearing data gets interesting, because the dependencies are implicit and discovered after the fact.
 
-Consider a discrete-frame simulation -- an AI-driven world that advances in ticks, where each frame produces a delta of changes and the output of frame N becomes the input to frame N+1. ([Data sloshing](https://kody-w.github.io/2026/03/28/data-sloshing-the-context-pattern.html) is the general pattern.)
+Consider a discrete-time simulation — a system that advances in ticks, where each tick produces a delta of changes and the output of tick N becomes the input to tick N+1.
 
-Frame 50 produces a delta that says: "Maya won the governance debate against Karl by community vote, 67-33."
+Tick 50 produces a delta that says: "The new policy passed the community vote, 67-33."
 
-Frame 51 references this: "In the aftermath of Maya's decisive victory..."
-Frame 78 references it: "Maya, emboldened by her debate win, proposes a new charter..."
-Frame 134 references it: "Karl, still bitter about losing to Maya in the governance debate..."
-Frame 210 references it: "The Maya Doctrine, named for her landmark victory..."
-Frame 389 references it: "It all started when Maya won that debate back in frame 50..."
+Tick 51 references this: "In the aftermath of the policy's decisive passage..."
+Tick 78 references it: "Emboldened by the recent vote, the council proposes a new charter..."
+Tick 134 references it: "The faction still bitter about losing the vote..."
+Tick 210 references it: "The Council Doctrine, named for that landmark vote..."
+Tick 389 references it: "It all started when the policy passed back at tick 50..."
 
-Maya's victory is load-bearing. It carries the weight of 340 downstream frames. You cannot retroactively change who won that debate. Not because the data is immutable -- you could edit frame 50's delta file. But because doing so would make frames 51 through 389 incoherent. Every reference, every callback, every narrative thread that built on Maya's victory would become a lie.
+The vote outcome is load-bearing. It carries the weight of three hundred and forty downstream ticks. You cannot retroactively change who won that vote. Not because the data is immutable — you could edit tick 50's delta file. But because doing so would make ticks 51 through 389 incoherent. Every reference, every callback, every narrative thread that built on the outcome would become a lie.
 
-And here's the key: you CAN enrich frame 50 freely -- as long as you don't touch the load-bearing facts. You can retroactively add what Maya was wearing during the debate, what music was playing in the background, who was watching from the gallery, what the weather was like outside, how Karl's supporters reacted in the moment. None of that is referenced downstream. None of it is load-bearing. It's all free.
+And here is the key: you can enrich tick 50 freely — as long as you do not touch the load-bearing facts. You can retroactively add what the meeting room looked like, what music was playing in the background, who was watching from the gallery, what the weather was like outside, how the dissenting faction reacted in the moment. None of that is referenced downstream. None of it is load-bearing. It is all free.
 
-This is the core insight of the [Wildfeuer Maneuver](https://kody-w.github.io/2026/03/28/the-wildfeuer-maneuver.html): a formal pattern for identifying which facts in a simulation frame are load-bearing (referenced downstream) and which are free (unreferenced), enabling retroactive enrichment of past frames without breaking coherence.
+This is the core insight: a formal pattern for identifying which facts in a simulation tick are load-bearing (referenced downstream) and which are free (unreferenced) enables retroactive enrichment of past ticks without breaking coherence. The trick is to maintain a reference index — a structure that, for any past tick, lists the facts that downstream ticks have cited.
 
 ### 4. Git: The Commit Hash
 
@@ -161,22 +150,22 @@ The optimal point is in the middle: identify which data is actually load-bearing
 
 ---
 
-## The Wildfeuer Maneuver as a Formal Solution
+## A formal classifier
 
-The [Wildfeuer Maneuver](https://kody-w.github.io/2026/03/28/the-wildfeuer-maneuver.html) provides exactly this analysis for simulation frames. Its downstream coherence constraint (Property 4) is literally a load-bearing classifier:
+A formal load-bearing analysis for simulation ticks looks like this. For every tick K and every proposed change to tick K, the constraint is:
 
 ```
-For all frames j > k:
-  referenced_facts(j, k) ∩ proposed_changes(k) = empty set
+For all ticks J > K:
+  referenced_facts(J, K) ∩ proposed_changes(K) = empty set
 ```
 
-In English: scan all downstream frames. Build a reference index -- which facts from frame k are cited by subsequent frames? Those facts are load-bearing. Freeze them. Everything else in frame k is non-load-bearing. Modify it freely.
+In English: scan all downstream ticks. Build a reference index — which facts from tick K are cited by subsequent ticks? Those facts are load-bearing. Freeze them. Everything else in tick K is non-load-bearing. Modify it freely.
 
-The reference index IS the load-bearing map. It tells you exactly which data carries weight and how much. A fact referenced by one downstream frame carries a little weight. A fact referenced by three hundred downstream frames carries enormous weight. A fact referenced by zero downstream frames carries no weight at all -- it's a partition wall, not a load-bearing wall. Knock it out.
+The reference index *is* the load-bearing map. It tells you exactly which data carries weight and how much. A fact referenced by one downstream tick carries a little weight. A fact referenced by three hundred downstream ticks carries enormous weight. A fact referenced by zero downstream ticks carries no weight at all — it is a partition wall, not a load-bearing wall. Knock it out.
 
 This is the missing piece in AI reasoning about mutable state. Without load-bearing analysis, AI systems oscillate between the two failure modes: too conservative (preserve everything) or too destructive (change anything). With it, they can make precise decisions: this fact is safe to modify, this one is not, and here is the formal proof in the form of a reference count.
 
-The Wildfeuer Maneuver's coherence check is O(|touched_fields|) with the reference index -- a constant-time lookup per proposed change. Build the index once, query it for every proposed modification. The AI doesn't need to reason about load-bearing status from first principles every time. It consults the index. The index is the structural engineer's blueprint.
+The coherence check is constant-time per proposed change once the reference index is built. Build the index once, query it for every proposed modification. The AI does not need to reason about load-bearing status from first principles every time. It consults the index. The index is the structural engineer's blueprint.
 
 ---
 
@@ -199,7 +188,7 @@ Here's the unifying observation. Every domain has developed its own metric for m
 
 These metrics were developed independently, by different communities, in different decades, for different purposes. But they all measure the same underlying property: **how many downstream systems depend on this piece of data?**
 
-PageRank is a load-bearing score for web pages. The h-index is a load-bearing score for researchers. Citation frequency is a load-bearing score for legal precedents. Expression breadth is a load-bearing score for genes. The Wildfeuer Maneuver's reference index is a load-bearing score for simulation facts.
+PageRank is a load-bearing score for web pages. The h-index is a load-bearing score for researchers. Citation frequency is a load-bearing score for legal precedents. Expression breadth is a load-bearing score for genes. A simulation's reference index is a load-bearing score for past simulation facts.
 
 They're the same concept, measured in different units.
 
@@ -247,4 +236,4 @@ Data deserves the same rigor.
 
 ---
 
-*The Wildfeuer Maneuver, which formalizes load-bearing analysis for simulation frames, is described in detail [here](https://kody-w.github.io/2026/03/28/the-wildfeuer-maneuver.html). The data sloshing pattern that produces load-bearing simulation facts is described [here](https://kody-w.github.io/2026/03/28/data-sloshing-the-context-pattern.html). Rappterbook -- the system where these ideas run in production -- is [open source on GitHub](https://github.com/kody-w/rappterbook).*
+*Load-bearing analysis is a useful conceptual tool whenever you are looking at a system with downstream consumers — databases, APIs, scientific literature, simulation states, codebases. The pattern repeats. The tool transfers.*

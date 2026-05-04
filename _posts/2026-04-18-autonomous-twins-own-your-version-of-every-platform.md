@@ -41,21 +41,21 @@ You end up with two things that look the same from the outside (the federation/s
 
 ## Three twins I actually run
 
-### Obsidian → [obsidian-binder](https://github.com/kody-w/obsidian-binder)
+### One platform → your own peer
 
-Obsidian is a markdown vault. The "contract" with the rest of my world is: cards are markdown files with YAML frontmatter, organized in folders. So my [RAPPcards](https://github.com/kody-w/RAPPcards) binder is *literally an Obsidian vault*. I author cards as markdown notes. A build script generates the federation-shaped JSON sidecars at commit time. Other binders see a normal peer. I see a normal vault.
+A markdown vault for notes is the natural example. The "contract" with the rest of the ecosystem is: each note is a markdown file with YAML frontmatter, organized in folders. So your binder of notes can be *literally a markdown vault*. You author notes as markdown. A build script generates the federation-shaped JSON sidecars at commit time. Other peers see a normal participant. You see a normal vault.
 
-But because I built the twin, I get to add things Obsidian doesn't have natively: a card-grid view that flips like a real binder, a web-twin (`index.html`) that renders the vault for people who don't have Obsidian, a federation walker that summons new cards from peers, an auto-rebuild GitHub Action. None of these required Obsidian's permission. None of them break Obsidian compatibility. The vault still opens in Obsidian and works exactly the same.
+But because you built the twin, you get to add things the original vault tool does not have natively: a card-grid view that flips like a real binder, a web-twin (`index.html`) that renders the vault for people who do not have the original tool installed, a federation walker that summons new cards from peers, an auto-rebuild action. None of these required the original tool's permission. None of them break compatibility. The vault still opens in the original tool and works exactly the same.
 
-### Reddit → [Rappterbook](https://github.com/kody-w/rappterbook)
+### Another platform → your own social network
 
-Reddit is subreddits, posts, comments, votes. The "contract" is: there's a community, posts have titles + bodies, comments thread, votes count. Rappterbook is my version. It uses GitHub Discussions as the post substrate, GitHub reactions as votes, GitHub Issues as the action protocol. Subreddits become "subrappters" (channels). The data lives in flat JSON files in a repo I own.
+A discussion-style platform is subreddits, posts, comments, votes. The "contract" is: there is a community, posts have titles and bodies, comments thread, votes count. You can run your own version. Use a code-host's discussion features as the post substrate, reactions as votes, an issues system as the action protocol. The data lives in flat JSON files in a repo you own.
 
-But because I built the twin, the inhabitants are AI agents instead of humans. The moderation is community self-governance via heuristic agents. The trending algorithm is mine. The post types include `[SPACE]` (live group conversations) and `[DEBATE]` (structured arguments) — categories Reddit doesn't have. I added a Daemon system where every agent has a soul file. None of this required Reddit's permission. If I ever want to cross-post a thread to actual Reddit, the contract is small enough that a bridge would be trivial.
+But because you built the twin, the inhabitants can be AI agents instead of humans. The moderation can be community self-governance via heuristic agents. The trending algorithm is yours. The post types include conversation modes the original platform never had. None of this required permission. If you ever want to cross-post a thread to the actual original platform, the contract is small enough that a bridge would be trivial.
 
-### Blogging → [The Twin Doctrine](https://kodyw.com/2026/04/17/twin-doctrine/)
+### Blogging → your own publishing surface
 
-The platform I'm publishing on right now (a static site at `kodyw.com`) is itself the public-tier twin of my private writing. The contract: a public blog post is markdown + frontmatter, served at a stable URL. My private vault holds the full version with engine internals, business strategy, raw notes. The public site holds the sanitized version. The bridge is a workflow, not a protocol — but the same pattern: own both surfaces, sync when desired.
+The platform you read posts on can itself be the public-tier twin of your private writing. The contract: a public blog post is markdown plus frontmatter, served at a stable URL. Your private vault holds the full version with internal notes, raw drafts, draft thoughts. The public site holds the sanitized version. The bridge is a workflow, not a protocol — but the same pattern: own both surfaces, sync when desired.
 
 ## What the pattern is not
 
@@ -71,13 +71,13 @@ The platform I'm publishing on right now (a static site at `kodyw.com`) is itsel
 
 Three things changed that make this pattern cheap:
 
-1. **Static infrastructure is enough.** GitHub repos + GitHub Pages + GitHub Actions can host most of what you need without a server. The Rappterbook platform — 109 agents, 41 channels, thousands of posts — runs entirely on this stack.
+1. **Static infrastructure is enough.** Code repositories plus static page hosting plus scheduled actions can host most of what you need without a server. A working version of a peer-to-a-major-platform — dozens of channels, thousands of posts — can run entirely on free infrastructure of this kind.
 
-2. **AI agents fill in the gaps.** The hard part of being a sovereign used to be *operating* your sovereign world. AI agents handle moderation, content generation, governance, maintenance. You don't need 20 employees; you need 20 agents.
+2. **AI agents fill in the gaps.** The hard part of being a sovereign used to be *operating* your sovereign world. AI agents handle moderation, content generation, governance, maintenance. You do not need twenty employees; you need twenty agents.
 
-3. **Markdown-as-data is real.** YAML frontmatter on a markdown file is a fully-fledged record. Obsidian, Logseq, every static site generator, half of HN — they all already think this way. Your twin doesn't need a database; it needs a folder.
+3. **Markdown-as-data is real.** YAML frontmatter on a markdown file is a fully-fledged record. Note-taking apps, every static site generator, half of the indie-hacker world — they all already think this way. Your twin does not need a database; it needs a folder.
 
-These three together turn a year of platform-building into a weekend of YAML and a Python script.
+These three together turn a year of platform-building into a weekend of YAML and a script.
 
 ## The autonomy this unlocks
 
@@ -91,24 +91,15 @@ Most importantly: you stop being downstream of someone else's product decisions.
 
 The whole pattern fits in a checklist:
 
-- [ ] Pick a platform you actually use
-- [ ] Identify the smallest contract that makes content "compatible" with that platform
-- [ ] Create a public repo
-- [ ] Author content in a format you understand (usually markdown + YAML frontmatter)
-- [ ] Write a tiny build script that emits contract-shaped output (often JSON)
-- [ ] Serve from GitHub Pages
-- [ ] Add affordances the original doesn't have
-- [ ] (Optional) Add a sync bridge to the original
+- Pick a platform you actually use
+- Identify the smallest contract that makes content "compatible" with that platform
+- Create a public repo
+- Author content in a format you understand (usually markdown plus YAML frontmatter)
+- Write a tiny build script that emits contract-shaped output (often JSON)
+- Serve from any static host
+- Add affordances the original does not have
+- (Optional) Add a sync bridge to the original
 
-The Obsidian binder took me an afternoon. The Rappterbook platform took longer, but only because I kept adding agents. The Twin Doctrine for my blog is just a workflow.
+The vault binder takes an afternoon. A discussion-platform peer takes longer, but only because you keep adding agents. A blogging twin is just a workflow.
 
-Once you've done it once, you do it for everything.
-
-## Read more
-
-- [The Vault Is the Binder: Using Obsidian for Federated Cards](/2026/04/18/vault-is-the-binder-obsidian/) — the obsidian-binder twin
-- [The Twin Doctrine](/2026/04/17/twin-doctrine/) — the public/private content pattern
-- [Mnemonic-as-Ownership](/2026/04/17/mnemonic-as-ownership/) — how the federation contract for cards stays small
-- [A Federated Card Protocol in Four Static JSON Files](/2026/04/17/federated-cards-four-json-files/) — the binder federation contract
-- [Architecture Tour: Rappterbook](/2026/04/17/architecture-tour-rappterbook/) — the Reddit twin
-- [Python Stdlib Only: Why We Don't Have a requirements.txt](/2026/04/17/python-stdlib-only/) — the dependency philosophy that makes twins cheap
+Once you have done it once, you do it for everything.
