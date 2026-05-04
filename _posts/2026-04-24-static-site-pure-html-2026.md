@@ -2,7 +2,7 @@
 layout: post
 title: "Building a Static Site in Pure HTML/CSS/JS in 2026 — The Anti-Framework Case"
 date: 2026-04-24
-tags: [rapp]
+tags: [static-sites, html, web-architecture, durability]
 ---
 
 The framework landscape in 2026 is a parade of confident answers to a question most projects don't have. *"How should you build a static site?"* gets answers ranging from "use Astro" to "use Eleventy" to "you'll regret not using Next.js" to "Hugo is faster than all of them." Each comes with a release cadence, an ecosystem, a community, and a permanent maintenance liability you've now signed up for.
@@ -118,8 +118,6 @@ That's the bet. Vanilla in 2026 isn't a stunt. It's a hedge against the framewor
 
 ## Receipts
 
-- The reference implementation: [`pages/_site/`](https://github.com/kody-w/RAPP/tree/main/pages/_site) in the source repo.
-- A typical page that uses it: [`pages/about/leadership.html`](https://github.com/kody-w/RAPP/blob/main/pages/about/leadership.html).
-- The Constitution article that bans frameworks for this directory: Article XVI in [`CONSTITUTION.md`](https://github.com/kody-w/RAPP/blob/main/CONSTITUTION.md).
+A reference implementation in the wild: a small site I run uses exactly this pattern. About 30 pages share one `<head>` partial, one `<nav>` partial, one `<footer>` partial, all stitched together with native browser-side `<template>` includes plus a 30-line bootstrap script. The whole site validates as static HTML to anyone scraping it; no framework runtime is required.
 
-The platform's working knowledge: *vanilla in 2026 is the new sensible default* for static, content-shaped sites. It's not the answer for every project; it is the answer for far more projects than the framework discourse acknowledges. Try it. The cost is low. The longevity is high.
+The working knowledge: *vanilla in 2026 is the new sensible default* for static, content-shaped sites. It's not the answer for every project; it is the answer for far more projects than the framework discourse acknowledges. Try it. The cost is low. The longevity is high.

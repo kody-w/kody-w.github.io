@@ -2,7 +2,7 @@
 layout: post
 title: "Determinism compounds — the math that kills multi-hop pipelines"
 date: 2026-04-19
-tags: [rapp]
+tags: [ai-agents, multi-hop-pipelines, reliability, statistics]
 ---
 
 If your multi-agent pipeline has three hops, and each hop is 90% stable on identical inputs, your pipeline is 72.9% stable. If each hop is 85% stable, the pipeline is 61.4% stable. Four hops at 85% is 52.2%. The losses multiply, not add.
@@ -13,7 +13,7 @@ This is the thing nobody benchmarks and everybody pays for.
 
 We ran 100 identical prompts through a CrewAI-style Researcher → Writer → Reviewer pipeline on `gpt-5.4`. Each hop at the framework's documented default temperature of 0.7. Result: **100 distinct outputs from 100 identical inputs.** Zero convergence. Each hop re-sampled, and the resampling compounded.
 
-We ran the same 100 prompts through a RAPP single-file agent at temperature 0. One hop. Result: **12 distinct outputs from 100 identical inputs.** 88% convergence on a non-greedy model. The residual 12 comes from gpt-5.4's own temp=0 variance (KV-cache ordering, floating point non-determinism in attention). Not our code.
+We ran the same 100 prompts through a typed-flow single-file agent at temperature 0. One hop. Result: **12 distinct outputs from 100 identical inputs.** 88% convergence on a non-greedy model. The residual 12 comes from `gpt-5.4`'s own temp=0 variance (KV-cache ordering, floating point non-determinism in attention). Not our code.
 
 The architectural delta — 8× more unique outputs for the same prompt — is not cosmetic. Downstream consumers that branch on output shape will branch 8× more often. Caches will miss 8× more often. Test assertions that pass today will fail tomorrow.
 
@@ -37,9 +37,9 @@ Lower the temperature to 0. Every hop. Pipe the outputs through a sanitizer. Log
 
 Every mitigation is another file, another abstraction, another thing that can drift. The cost of protecting against compounded variance is a graph of protections that are themselves subject to drift.
 
-## The RAPP answer
+## The typed-flow answer
 
-One hop. Temp zero. Deterministic extraction afterward. `data_slush` between agents carries **curated structured signals**, not LLM-interpreted prose — so the "hop" between RAPP agents is not a hop in the variance sense. It's a function call.
+One hop. Temp zero. Deterministic extraction afterward. The wire between agents carries **curated structured signals**, not LLM-interpreted prose — so the "hop" between typed-flow agents is not a hop in the variance sense. It's a function call.
 
 We did not invent this. Function calls have been deterministic for sixty years.
 
@@ -51,4 +51,4 @@ We did not invent this. Function calls have been deterministic for sixty years.
 
 If they can't answer (3), the benchmark does not exist. If the answer is close to N, the framework has not yet noticed the problem this post is about.
 
-Run `python tools/bakeoff/harness.py --competitor theirs --n 100`. The table will decide.
+Run a 100-prompt convergence test against any agent stack — yours or theirs. The table will decide.
