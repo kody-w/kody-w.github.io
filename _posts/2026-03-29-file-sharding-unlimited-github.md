@@ -57,7 +57,7 @@ Each chunk is under 49MB -- safely below the 50MB limit with room for git overhe
       "sha256": "d16b232020b4a16c6f358202e1a58b09c0962979..."
     }
   ],
-  "base_url": "https://raw.githubusercontent.com/kody-w/rappterbook/main/media/shards/",
+  "base_url": "https://raw.githubusercontent.com/your-org/your-repo/main/media/shards/",
   "created_at": "2026-03-29T03:15:44Z"
 }
 ```
@@ -185,7 +185,7 @@ python3 scripts/shard.py join media/shards/audiobook.manifest.json --output rest
 
 ## What this works for
 
-**Audio.** We sharded a 179MB audiobook into 4 chunks and stream it in the browser. The player at [kody-w.github.io/rappterbook/audiobook](https://kody-w.github.io/rappterbook/audiobook) serves the complete 3h42m recording from GitHub's CDN.
+**Audio.** I sharded a 179MB audiobook into 4 chunks and stream it in the browser. The player loads the complete 3h42m recording from GitHub's CDN, with no auth and no LFS bill.
 
 **Video.** A 1GB MP4 becomes 21 shards. Reassemble client-side into a Blob URL. Feed it to a `<video>` element.
 
@@ -206,5 +206,3 @@ The total cost of hosting and serving a 179MB audiobook to unlimited listeners: 
 When a platform imposes a size limit on individual files but not on the total number of files, sharding turns one file into many. The manifest preserves the logical unity of the original file while the physical representation respects the platform's constraints.
 
 This is not a hack. This is how every distributed storage system works internally -- HDFS, S3 multipart uploads, BitTorrent piece files. The difference is that we are doing it at the application layer with a 332-line Python script instead of at the infrastructure layer with a distributed storage service.
-
-The script is at [github.com/kody-w/rappterbook/blob/main/scripts/shard.py](https://github.com/kody-w/rappterbook/blob/main/scripts/shard.py).

@@ -2,7 +2,7 @@
 layout: post
 title: "Markdown Is the Spec; HTML Is the Rendering"
 date: 2026-04-24
-tags: [rapp]
+tags: [docs, markdown, html, build-systems]
 ---
 
 Most projects pick one of two extremes for their docs:
@@ -95,9 +95,7 @@ The pattern is a *constraint that protects a property.* The property is "edit ma
 
 ## Receipts
 
-- The docs viewer: [`pages/docs/viewer.html`](https://github.com/kody-w/RAPP/blob/main/pages/docs/viewer.html), `pages/_site/js/doc-viewer.js`.
-- The vault viewer (more elaborate, same pattern): `pages/vault/index.html`.
-- The shared markdown styling: `pages/_site/css/doc.css`.
-- An example doc the viewer renders: [SPEC.md](https://github.com/kody-w/RAPP/blob/main/pages/docs/SPEC.md), live at `https://kody-w.github.io/RAPP/pages/docs/viewer.html?doc=SPEC`.
+- The pattern only requires three components: a `docs/` directory of plain markdown files, an `index.json` listing the docs and their titles, and a small `viewer.html` + `doc-viewer.js` that fetches the JSON manifest and renders the selected file.
+- Style the viewer with a single shared CSS file and you can theme every doc at once without touching content.
 
-The platform's working knowledge: *markdown is the spec, HTML is the rendering.* Two viewers, same data, no build step. The project owns enough to give visitors a real experience and not so much that maintenance becomes its own job.
+The pattern's working knowledge: *markdown is the spec, HTML is the rendering.* Two viewers, same data, no build step. The project owns enough to give visitors a real experience and not so much that maintenance becomes its own job.

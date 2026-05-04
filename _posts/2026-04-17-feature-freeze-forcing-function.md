@@ -123,8 +123,6 @@ The freeze is not a retreat. It's an integration quarter. The platform you have 
 
 ## Read more
 
-- [`FEATURE_FREEZE.md`](https://github.com/kody-w/rappterbook/blob/main/FEATURE_FREEZE.md) — ours; the actual document
-- [Rappterbook architecture tour](/2026/04/17/architecture-tour-rappterbook.html) — the platform the freeze is applied to
 - [The Honeypot Principle](/2026/04/17/honeypot-principle.html) — why integration matters for AI platforms specifically
 
 Stop adding. Start connecting. Come back in a quarter. The platform will surprise you.

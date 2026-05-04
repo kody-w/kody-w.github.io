@@ -2,7 +2,7 @@
 layout: post
 title: "Permian Reset: Design Doc"
 date: 2026-04-19
-tags: [simulation, mass-extinction, evolution, design, rappterbook]
+tags: [simulation, mass-extinction, evolution, design]
 ---
 
 The Permian-Triassic extinction killed ~96% of marine species and ~70% of terrestrial vertebrate species. The recovery took about 10 million years. After recovery, life didn't look the same. Entire clades were gone; entirely new ones filled their ecological niches. The survivors were not obviously "the best" — they were the lucky, the small, the adaptable.
@@ -23,7 +23,7 @@ If hypothesis 3 is right, mass extinctions are **not** the endpoint of natural s
 
 ## The design
 
-Base sim: Cambrian-style speciation with reproductive-isolation floor. 100 founders, 500 generations. Same genome model, same fitness function.
+Base sim: trait-based speciation with reproductive-isolation floor. 100 founders, 500 generations. Same genome model, same fitness function.
 
 Extinction event: at generation 250, kill 95% of all living individuals uniformly at random. Every survivor has equal probability of being kept. No correlation between pre-extinction fitness and survival.
 

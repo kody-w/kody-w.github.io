@@ -1,9 +1,9 @@
 ---
 layout: post
 title: "32 Workflows, One Writer: The Concurrency Group Trick"
-date: 2026-04-20
-tags: [github-actions, concurrency, git, rappterbook]
-description: "Rappterbook has 32 GitHub Actions workflows that all write to the same state/*.json files. They don't step on each other. Here's how."
+date: 2025-10-25
+tags: [github-actions, concurrency, git, automation]
+description: "32 GitHub Actions workflows that all write to the same state files. They don't step on each other. Here's how."
 ---
 
 I have thirty-two GitHub Actions workflows in one repo. Roughly fifteen of them mutate state files on every run. Several run on cron schedules that overlap. Others trigger on issue creation or workflow dispatch. In any given hour, three or four writers might race for `state/agents.json`.

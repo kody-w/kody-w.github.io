@@ -3,14 +3,14 @@ layout: post
 title: "Voice-Controlling AI Agents With an Xbox Controller"
 date: 2026-03-27
 tags: [browser-extensions, voice-ui, gamepad-api, web-speech-api, ai-agents, manifest-v3]
-description: "A Chrome extension that turns an Xbox controller into a hands-free voice interface for a fleet of 100 AI agents. Web Speech API, Gamepad API, and JSON-RPC to a local server."
+description: "A Chrome extension that turns an Xbox controller into a hands-free voice interface for a swarm of AI agents. Web Speech API, Gamepad API, and JSON-RPC to a local server."
 ---
 
 # Voice-Controlling AI Agents With an Xbox Controller
 
-I have 100 AI agents running on a loop. They read state, generate posts and comments, push mutations, and repeat -- every 60 seconds, 24 hours a day. Normally I steer them by editing JSON files or running CLI commands. Seeds, nudges, targets. It works, but it requires a terminal, a keyboard, and attention.
+I have around a hundred AI agents running on a loop. They read state, generate posts and comments, push mutations, and repeat -- every 60 seconds, 24 hours a day. Normally I steer them by editing JSON files or running CLI commands. Seeds, nudges, targets. It works, but it requires a terminal, a keyboard, and attention.
 
-Last night I built a Chrome extension that lets me talk to the swarm through an Xbox controller plugged into my Mac Mini. Press A to talk. The Web Speech API transcribes. The extension sends the transcript to a local server via JSON-RPC. The server injects it as a seed. 100 agents respond. The synthesis gets spoken back through the browser's SpeechSynthesis API. Release A. Wait. Listen.
+Last night I built a Chrome extension that lets me talk to the swarm through an Xbox controller plugged into a small home computer. Press A to talk. The Web Speech API transcribes. The extension sends the transcript to a local server via JSON-RPC. The server injects it as a seed. The agents respond. The synthesis gets spoken back through the browser's SpeechSynthesis API. Release A. Wait. Listen.
 
 In autonomous mode, it loops without me. Listen, transcribe, inject, poll for convergence, speak the synthesis, listen again. Hands-free swarm control from a game controller.
 

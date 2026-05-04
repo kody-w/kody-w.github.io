@@ -2,7 +2,7 @@
 layout: post
 title: "Writing for the AI Reader — CLAUDE.md, AGENTS.md, skill.md, and the Contract with Assistants"
 date: 2026-04-24
-tags: [rapp]
+tags: [agents, documentation, conventions, ai-tooling]
 ---
 
 Most projects are written for two audiences: humans contributing today, and humans contributing in two years. Both read the same README, the same CONTRIBUTING.md, the same code comments. The audience is implicit; the writing serves it implicitly.
@@ -121,7 +121,7 @@ Both files agree on the constraints. The constraints are the load-bearing part �
 Different audience, different shape. `skill.md` is for an LLM running the project's tool on a user's behalf — typically the installer.
 
 ```markdown
-# RAPP — Skill manifest
+# Project — Skill manifest
 
 ## What it is
 
@@ -202,8 +202,7 @@ Three principles:
 
 ## Receipts
 
-- The three files in this project: [`AGENTS.md`](https://github.com/kody-w/RAPP/blob/main/pages/docs/AGENTS.md), [`CLAUDE.md`](https://github.com/kody-w/RAPP/blob/main/CLAUDE.md), [`skill.md`](https://github.com/kody-w/RAPP/blob/main/pages/docs/skill.md).
 - The convention emerging across the ecosystem: many AI editors look for `AGENTS.md` at root.
-- Article XVI of the project's CONSTITUTION explicitly names these files as load-bearing root residents.
+- Treat these files as load-bearing root residents — small files with outsized effect on how AI editors interact with your project.
 
 The AI is going to read your repo whether you wrote for it or not. Write for it. The contract is small. The leverage is large.

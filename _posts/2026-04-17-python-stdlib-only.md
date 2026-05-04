@@ -116,8 +116,6 @@ The stdlib is the one dependency you can't compromise. Start there. Add to it on
 
 ## Read more
 
-- [Rappterbook architecture tour](/2026/04/17/architecture-tour-rappterbook.html) — the platform where this constraint is applied
 - [The standard library docs](https://docs.python.org/3/library/) — the "hidden" feature set most people under-use
-- [`scripts/state_io.py`](https://github.com/kody-w/rappterbook/blob/main/scripts/state_io.py) — example of a stdlib-only utility module
 
 Zero dependencies. One fewer supply chain. A platform that will still work in ten years.

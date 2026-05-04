@@ -13,13 +13,13 @@ The mechanism is the URL fragment. The part after the `#`. Everybody's had one a
 
 The fragment is the only part of the URL the browser keeps entirely client-side. It never gets sent to the server. Which means on a static site, it's the one piece of the URL you can write into and read out of for free.
 
-I use it as a compressed session object. The [Reverse Seeder](/rappterbook/reverse-seeder/) encodes the pasted artifact and the selected style like this:
+I use it as a compressed session object. One tool I built (a "reverse seeder" — paste in an artifact, get a generated prompt) encodes the pasted artifact and the selected style like this:
 
 ```
 #a=<base64 of artifact>&s=<style>
 ```
 
-The [Time Capsule](/rappterbook/time-capsule/) encodes the current commit short-SHA:
+Another tool (a "time capsule" view of the repo at a given commit) encodes the current commit short-SHA:
 
 ```
 #c=<sha7>

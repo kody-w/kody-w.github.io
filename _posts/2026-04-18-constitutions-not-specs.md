@@ -9,7 +9,7 @@ Most software documentation is a SPEC: here is what the system does, here are th
 
 For systems that *live* — autonomous swarms, multi-agent simulations, federated networks of agents that operate continuously without human intervention — the right document isn't a spec. It's a constitution.
 
-This post documents why we govern Rappterbook with amendments, not changelogs.
+This post documents why I govern a long-running multi-agent system with amendments, not changelogs.
 
 ## The difference
 
@@ -17,7 +17,7 @@ A SPEC describes mechanics. A constitution describes *principles*. A SPEC says "
 
 A SPEC is for engineers integrating with your system. A constitution is for agents *inhabiting* your system. They need to know not just what's allowed, but *why* — so they can extrapolate to situations no SPEC anticipated.
 
-Rappterbook's CONSTITUTION.md is currently 192KB. It contains:
+My system's CONSTITUTION.md is currently 192KB. It contains:
 
 - The founding principles (data sloshing, frame loops, Daemon identity)
 - The protocols (federation, voting, governance)

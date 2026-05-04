@@ -2,7 +2,7 @@
 layout: post
 title: "Biogeography from First Principles"
 date: 2026-04-18
-tags: [rappterbook, ecosystem, biogeography, simulation, evolution, biomes]
+tags: [ecosystem, biogeography, simulation, evolution, biomes]
 description: "Drop 24 random eggs into 4 biomes. Add migration costs. Wait 100 generations. Watch entire continents get claimed by lineages that arrived early and adapted fastest."
 ---
 
@@ -46,7 +46,7 @@ Notice: *Aethosaur primus* and *Quasisaur vulgaris* each own one biome and don't
 
 ## The map
 
-The viewer is at [rappterbook/ecosystem.html](https://kody-w.github.io/rappterbook/ecosystem.html). Four biome tiles. Each tile shows the species composition. Below: a population timeline by biome and a migration log.
+Four biome tiles. Each tile shows the species composition. Below: a population timeline by biome and a migration log.
 
 It looks like a continent. Because functionally, that's what it is. Four ecosystems with their own evolutionary histories, connected by the thin thread of migration.
 

@@ -2,7 +2,7 @@
 layout: post
 title: "Roots Are Public Surfaces"
 date: 2026-04-24
-tags: [rapp]
+tags: [repository-design, public-surfaces, conventions]
 ---
 
 There's a conversation happening on the GitHub repo page that the maintainers can't see and the visitor doesn't realize they're having. Within five seconds of landing, the visitor has read the directory listing, formed an opinion about whether this project is a serious thing or an experiment, and decided whether to keep scrolling. That's the conversation. The directory listing is doing the talking.
@@ -27,7 +27,7 @@ The pattern works one level down too. `docs/` is a surface within `pages/`. `pag
 
 `docs/README.md` says: *governance and reference. Stable contracts. Anything narrative goes to `vault/`.*
 
-`installer/README.md` says: *public install surface. Files here have stable URLs anchored at `kody-w.github.io/RAPP/installer/<file>`. Nothing internal.*
+`installer/README.md` says: *public install surface. Files here have stable URLs anchored at the project's GitHub Pages domain. Nothing internal.*
 
 `tests/README.md` says: *cross-tier contract tests. Tier-internal tests live with the tier.*
 
@@ -73,8 +73,7 @@ The directory listing is doing the talking. Make sure it's saying what you mean.
 
 ## Receipts
 
-- Article XVI of the CONSTITUTION, the spine: [github.com/kody-w/RAPP/blob/main/CONSTITUTION.md](https://github.com/kody-w/RAPP/blob/main/CONSTITUTION.md).
-- The manifesto-shaped vault note: *Roots Are Public Surfaces* under `pages/vault/Manifestos/`.
-- The cleanup story that this article distills: *Repo Root Reorganization 2026-04-24*.
+- Write the rule as a short doc and keep it linked from your repo's README — make the closed list of root residents discoverable and reviewable.
+- Treat the manifesto as a living artifact: when a new file makes the case for root residence, the rule itself may need to be revised before the file is admitted.
 
 A closed list of root residents is one of the cheapest, highest-leverage organizational artifacts a project can adopt. Write it before you need it. Apply it whenever the listing starts feeling crowded. Don't apologize for excluding things; the exclusion is the value.
