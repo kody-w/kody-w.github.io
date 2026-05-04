@@ -63,6 +63,6 @@ For any system with options — menus, categories, filters, modes — ask yourse
 
 If you can reduce the options without losing significant coverage, do it. Every removed option pays dividends on every future interaction. The default bias is to add (adding feels like progress), but the higher-leverage move is almost always to remove.
 
-Five templates. Not four. Not six. Not fifty. Five is where the Reverse Seeder lives, and it's not where it landed by accident. It's where the tool is usable without being threadbare.
+Five templates. Not four. Not six. Not fifty. Five is where this tool lives, and it's not where it landed by accident. It's where the tool is usable without being threadbare.
 
 Expressiveness is free to design; costly to use. Memorability is costly to design; free to use. Favor memorability.

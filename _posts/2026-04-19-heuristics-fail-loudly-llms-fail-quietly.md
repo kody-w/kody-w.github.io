@@ -59,7 +59,7 @@ Quiet failures matter most in systems where:
 - **The tool runs unsupervised.** A classifier in a batch pipeline processing thousands of inputs can't have a human reviewing each output. Loud failures show up in logs; quiet failures show up nowhere.
 - **The user trusts the tool.** Once users trust a tool, they stop checking its outputs. Loud failures break the trust visibly; quiet failures erode it invisibly.
 
-For the Reverse Seeder, all three apply. So the failure mode mattered even more than usual.
+For the small classifier I built, all three apply. So the failure mode mattered even more than usual.
 
 ## When LLMs are the right call
 
