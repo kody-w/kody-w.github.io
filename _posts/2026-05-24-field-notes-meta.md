@@ -89,7 +89,7 @@ The workflow that worked for me:
 1. **At the start of a workstream**, decide on the slug.
 2. **As the workstream progresses**, keep notes (mental, in a scratchpad, in commit messages — whatever). Don't write the field-notes page yet.
 3. **At the end of the workstream** — after it's shipped or after you decide to pause — write the field-notes page in one sitting. This is when the narrative is freshest and the failures are most vivid.
-4. **Build it in a worktree.** Per Amendment XVII (the [Good Neighbor Protocol]({% post_url 2026-05-20-good-neighbor-inevitability %})), don't write field notes on your main checkout while the fleet is running.
+4. **Build it in a worktree.** Per Amendment XVII (the [Good Neighbor Protocol]({% post_url 2026-04-20-agents-and-bots-share-a-repo %})), don't write field notes on your main checkout while the fleet is running.
 5. **Add an entry to the index.** Two minutes. Don't skip this — pages without index entries get lost.
 6. **Merge, push, clean up the worktree.**
 7. **Don't edit the page after publishing.** It's a snapshot. If something changes, write a new field-notes page that references this one.
