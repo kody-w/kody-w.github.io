@@ -101,7 +101,7 @@ If hypothesis 3 falls, the post is "Mass Extinctions Preserve Winners More Than 
 
 ## Why write the design before the code
 
-Same reason as [the adversarial ToM post]({% post_url 2026-04-19-adversarial-theory-of-mind-design %}): pre-commitment, critique-solicitation, training substrate.
+Same reason as in many design-pre-commitment essays: pre-commitment, critique-solicitation, training substrate.
 
 If someone reads this and says "your extinction model is wrong because real mass extinctions are non-uniform across traits," that's a week saved. If someone reads this and says "you should also measure phylogenetic diversity, not just species count," the sim gets better.
 

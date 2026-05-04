@@ -1,9 +1,9 @@
 ---
 layout: post
-title: "Delta Journals Beat State Mutations"
-date: 2026-04-18
-tags: [rappterbook, architecture, event-sourcing, delta-journal, ai-systems]
-description: "Why every frame in our sim writes a delta — what changed — instead of mutating canonical state. Time-travel debugging, replay, and how this scales to fleets."
+title: "Delta journals beat state mutations"
+date: 2025-10-22
+tags: [architecture, event-sourcing, software-design, ai-systems, distributed-systems]
+description: "Why every long-running simulation, agent system, or fleet of writers should journal what changed instead of mutating canonical state. Time-travel debugging, replay, and how this scales to many parallel writers."
 ---
 
 The naive way to run a simulation:
@@ -46,22 +46,22 @@ The `tick` function returns a delta — what changed this frame. The engine appe
 
 If you lose the state, you can rebuild it from the deltas. If you want to replay frame 312, you reset state to frame 311's snapshot and apply delta 312. If two sims run in parallel, you merge their delta streams instead of fighting over the state file.
 
-## What this unlocked for us
+## What this unlocks
 
-**Cambrian Explosion**: 500 generations of evolution. Each frame's delta records births, deaths, mutations, speciation events. The cladogram is computed from the full delta stream — not from the final state.
+**Evolution simulations**: hundreds of generations where each frame's delta records births, deaths, mutations, speciation events. The full lineage tree (a cladogram) is computed from the full delta stream, not from the final state.
 
-**Daemon Ecosystem**: 188 migration events across 4 biomes. Each migration is a delta entry with `from_biome`, `to_biome`, `genome_id`, `cost`. The migration log on the viewer is just `deltas.filter(d => d.type === "migration")`.
+**Ecosystem simulations**: every migration event is a delta entry with origin, destination, identifier, and cost. The migration log on the viewer is just `deltas.filter(d => d.type === "migration")`.
 
-**Fleet coordination**: When 5 parallel agents write to the same repo, they each emit delta files. A merge engine reconciles them at frame boundaries. No two agents ever modify the same file simultaneously.
+**Fleet coordination**: when many parallel writers operate on the same repository, they each emit delta files. A merge engine reconciles them at boundaries. No two writers ever modify the same file simultaneously.
 
-## The Dream Catcher connection
+## Append-only as a coordination protocol
 
-We've formalized this as Amendment XVI of the Rappterbook constitution: the Dream Catcher Protocol. Streams produce deltas keyed by `(frame, utc_timestamp)`. Deltas merge deterministically. Nothing is overwritten — only appended.
+Once you commit to deltas, parallel writers become much easier to reason about. Each writer produces deltas keyed by a tuple like `(frame_or_round, timestamp, writer_id)`. Deltas merge deterministically because they are append-only — there is nothing to overwrite.
 
-This is the scaling law for AI-produced content. Without it, parallel agents overwrite each other's work and valuable output is silently lost. With it, parallel writes become *additive* — more workers means more throughput, not more collisions.
+This is the scaling law for any system where outputs are expensive and non-deterministic. Without journaling, parallel writers overwrite each other's work and valuable output is silently lost. With journaling, parallel writes become *additive* — more workers means more throughput, not more collisions.
 
 ## The general principle
 
-If your system has a "state" file that's being mutated, you're one race condition away from data loss. Add a journal. Make the state computable from the journal. The journal is cheap (it's just JSON). The peace of mind is permanent.
+If your system has a "state" file that is being mutated, you are one race condition away from data loss. Add a journal. Make the state computable from the journal. The journal is cheap — it is just append-only records. The peace of mind is permanent.
 
-Event sourcing isn't new. CQRS isn't new. But for AI systems specifically — where outputs are expensive, non-deterministic, and easy to lose — the journal isn't a nice-to-have. It's the difference between a system that survives 500 frames and one that survives 5.
+Event sourcing is not new. CQRS is not new. But for AI systems specifically — where outputs are expensive, non-deterministic, and easy to lose — the journal is not a nice-to-have. It is the difference between a system that survives five hundred runs and one that survives five.
