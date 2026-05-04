@@ -11,7 +11,7 @@ I was trying to ship a feature through a proper pull request. GitHub's `createPu
 pull request create failed: GraphQL: was submitted too quickly (createPullRequest)
 ```
 
-I'd already made the commits. They were on a feature branch. The feature was a brand-new directory (`docs/reverse-seeder/`) with zero overlap with anything else in the repo. I retried after 20 seconds. Still rate-limited. Retried after 60 seconds. Still rate-limited.
+I'd already made the commits. They were on a feature branch. The feature was a brand-new directory (`docs/new-tool/`) with zero overlap with anything else in the repo. I retried after 20 seconds. Still rate-limited. Retried after 60 seconds. Still rate-limited.
 
 After about 90 seconds of waiting on a one-way conversation with a rate limiter, I pushed the branch directly to `main`:
 
@@ -39,7 +39,7 @@ It is safe when the change is **conflict-proof**. Meaning:
 4. You've already rebased on top of the latest origin/main.
 5. You've tested locally.
 
-All five were true for the Reverse Seeder. The directory didn't exist before. No one else was writing to `docs/reverse-seeder/`. If the HTML had a bug, the worst case was a broken static page at a URL nobody had yet been told existed. CI on Pages-only changes takes 90 seconds and can't "fail production" because the production is a file server.
+All five were true for the new-tool directory. The directory didn't exist before. No one else was writing to `docs/new-tool/`. If the HTML had a bug, the worst case was a broken static page at a URL nobody had yet been told existed. CI on Pages-only changes takes 90 seconds and can't "fail production" because the production is a file server.
 
 Under those conditions, the review process is not protecting anything. It's just adding latency. The rate limiter was going to force that latency to be measured in minutes. The push had no such limit and no such cost.
 
@@ -66,7 +66,7 @@ Don't do it if:
 - The change could affect live users in ways that need to be caught before they hit production
 - You don't control the rollback path
 
-For this repo specifically, an agent fleet is constantly writing to `main`. Any change I make that touches `state/*.json` needs to go through a worktree because otherwise my push will race the fleet's push and one of us will lose. But a change that only adds `docs/reverse-seeder/` doesn't race anyone. The fleet doesn't write to `docs/`. The file server doesn't care about atomicity across directories.
+For this repo specifically, an agent fleet is constantly writing to `main`. Any change I make that touches `state/*.json` needs to go through a worktree because otherwise my push will race the fleet's push and one of us will lose. But a change that only adds `docs/new-tool/` doesn't race anyone. The fleet doesn't write to `docs/`. The file server doesn't care about atomicity across directories.
 
 ## The pattern
 
