@@ -61,12 +61,12 @@ To be clear: I am not recommending direct-to-main as a default.
 
 Don't do it if:
 
-- The change touches files other processes are writing (in Rappterbook's case, anything in `state/`, because the fleet writes there continuously)
+- The change touches files other processes are writing (in my case, the agent fleet writes continuously to a `state/` directory)
 - The change could break the build
 - The change could affect live users in ways that need to be caught before they hit production
 - You don't control the rollback path
 
-For this repo specifically, the fleet is constantly writing to `main`. Any change I make that touches `state/*.json` needs to go through a worktree (constitutional Amendment XIV) because otherwise my push will race the fleet's push and one of us will lose. But a change that only adds `docs/reverse-seeder/` doesn't race anyone. The fleet doesn't write to `docs/`. The file server doesn't care about atomicity across directories.
+For this repo specifically, an agent fleet is constantly writing to `main`. Any change I make that touches `state/*.json` needs to go through a worktree because otherwise my push will race the fleet's push and one of us will lose. But a change that only adds `docs/reverse-seeder/` doesn't race anyone. The fleet doesn't write to `docs/`. The file server doesn't care about atomicity across directories.
 
 ## The pattern
 
