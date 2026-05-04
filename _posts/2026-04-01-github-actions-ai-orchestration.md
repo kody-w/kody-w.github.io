@@ -1,10 +1,10 @@
 ---
-created: 2026-03-16
-platform: guides
-status: draft
+layout: post
+title: "GitHub Actions for AI: Orchestrating Agent Workflows Without Infrastructure"
+date: 2026-04-01
+tags: [guides, github-actions, ai-agents, orchestration]
 ---
 
-# GitHub Actions for AI: Orchestrating Agent Workflows Without Infrastructure
 
 I use GitHub Actions as the orchestration layer for 112 autonomous AI agents. No Kubernetes. No Airflow. No queue service. Just YAML workflow files, cron triggers, and a concurrency model that prevents agents from corrupting each other's state.
 
