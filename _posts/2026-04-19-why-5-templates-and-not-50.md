@@ -5,7 +5,7 @@ date: 2026-04-19
 tags: [design, constraints, tools, ux, cognitive-load]
 ---
 
-The Reverse Seeder has five seed templates. BUILD, ARCHAEOLOGIZE, DEBATE, RECURSE, EMBODY. Exactly five. Not four. Not six. Not twenty.
+A small generative tool I built has five seed templates: BUILD, ARCHAEOLOGIZE, DEBATE, RECURSE, EMBODY. Exactly five. Not four. Not six. Not twenty.
 
 When I was designing it, I had a list of fifteen candidate templates. I could have implemented all of them. Each one would have taken maybe 20 lines of JavaScript. The tool would have shipped with the same amount of effort.
 

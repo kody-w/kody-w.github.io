@@ -5,7 +5,7 @@ date: 2026-04-19
 tags: [classifiers, nlp, rule-based, ml-lite, design]
 ---
 
-The Reverse Seeder has a tone classifier. It sorts any pasted text into one of five categories: **adversarial**, **reflective**, **prescriptive**, **narrative**, **technical**.
+A small text-classifier tool I built sorts any pasted text into one of five tones: **adversarial**, **reflective**, **prescriptive**, **narrative**, **technical**.
 
 Total code: about sixty lines. No training data. No model. No API. Twenty keywords per class, a scorer, a tiebreaker.
 

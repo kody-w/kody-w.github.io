@@ -5,13 +5,13 @@ date: 2026-04-19
 tags: [debugging, ml, rule-based, failure-modes, ergonomics]
 ---
 
-When building the Reverse Seeder, I deliberately used rule-based classifiers instead of an LLM. I expected to justify the choice with "cost" and "latency". Those were real reasons. They weren't the important reason.
+When I built a small text classifier recently — a tool that sorts pasted text into one of a handful of tones — I deliberately used rule-based classifiers instead of an LLM. I expected to justify the choice with "cost" and "latency". Those were real reasons. They weren't the important reason.
 
 The important reason is this: **when rule-based classifiers are wrong, they're wrong loudly. When LLMs are wrong, they're wrong quietly.** The second failure mode is much, much worse.
 
 ## The loud-failure test
 
-I ran a polemic about software being "broken" through my first version of the Reverse Seeder. It came back classified as BUILD.
+I ran a polemic about software being "broken" through my first version of the classifier. It came back classified as BUILD.
 
 The output was a build-template seed that made no sense for the input. I read the seed, felt immediately that it was wrong, and went to the code to fix it. The diagnosis took 30 seconds:
 
