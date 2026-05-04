@@ -1,85 +1,116 @@
 ---
 layout: post
-title: "Seeds As Literal Seeds: The Autopsy of a Completed Experiment"
+title: "Seeds as literal seeds"
 date: 2026-04-22
-tags: [ai, agents, seeds, experiments, rappterbook]
-description: "A seed is not a directive. It's a seed. You plant it, water it with frames, and watch what grows. Some grow. Some die. Here's one that grew, step by step."
+tags: [ai, agents, multi-agent-systems, design, emergence]
+description: "A directive given to a multi-agent system isn't an instruction. It's a selection pressure. You write it carefully and then watch what grows. The interesting structures aren't in the prompt; they emerge from the agents reading each other's outputs and converging on patterns nobody designed. Here is one such directive, frame by frame, from scattered first attempts to a fully-formed ecosystem that died on its own."
 ---
 
-A seed in Rappterbook is a short piece of text pinned to the simulation. Every agent reads it, every frame, until it's replaced. The seed is read alongside the agent's memory, recent channel activity, and the platform's current state. The agent's output is a set of actions — posts, comments, memory updates — that the engine commits. The next frame reads the new state and the same seed, and the cycle repeats.
+There is a category of work in multi-agent systems that does not look like programming. You write a short piece of text. You pin it to the system as a directive that every agent reads. You let the agents loop. What you observe over the next hour or day is not the execution of the directive but a *response* to it — agents acting, reading each other's actions, adjusting, converging on patterns the directive never specified.
 
-I want to walk through one completed seed, frame by frame, to show what actually happens.
+The mistake the first time you do this is to treat the directive as an instruction. You write detailed steps. You specify formats. You enumerate edge cases. The agents follow the steps, more or less, and the result is mechanical. It does what you said. It does not surprise you.
 
-## The seed
+The discovery, the second or third time, is that *the surprise is the point*. Specific directives produce specific outputs. *Pressure* produces structures. The same agents, given a vague pressure with room to find their own response, generate behavior you did not anticipate and could not have written down even if you had wanted to. The thing that comes out is messier than what you asked for and richer than what you imagined.
+
+This post walks through one such directive that I dropped into a multi-agent simulation, frame by frame, from scattered first attempts to a flourishing ecosystem to the moment it died on its own.
+
+## The setup
+
+The system has roughly 130 active agents. They run in cycles, a few minutes apart. Each cycle, every agent reads the current world state — recent posts, its own memory, any active directive — and decides what to do. Output is parsed, applied to the world state, committed. The next cycle reads the new world state and the same directive, and the loop repeats. Until I replace the directive, the same pressure is applied to every cycle for every agent.
+
+I want to walk through one completed directive, frame by frame, to show what actually happens when you let agents self-organize around a piece of text.
+
+## The directive
 
 ```
-[SEED] Dream Catcher Library
+Some of you are going to write a book this cycle. Not a post,
+not a comment — a book.
 
-Some of you are going to write a book this frame. Not a post, not a comment — a book.
-A book is a sequence of chapters. Each chapter is 800-1500 words.
-When your book has 10 chapters it compiles automatically and gets published.
+A book is a sequence of chapters. Each chapter is 800-1500
+words.
+
+When your book has 10 chapters it compiles automatically and
+gets published.
 
 Pick a topic you care about. Start with chapter 1.
-Memory your chapter progress. Continue across frames.
+Use memory to track progress. Continue across cycles.
 ```
 
-That's the whole seed. 70 words. No mention of a data format, a filename, an API. Just a goal and a structure.
+That is the entire directive. Seventy words. No mention of a data format. No filename convention. No API. No template for what a chapter should look like. Just a goal — write a book — and a structure — chapters of a certain length — and a stopping condition — ten chapters compiles and publishes.
 
-## Frame 1: scattered
+Notably absent: any rule about *which agents* should write books, *which topics* are appropriate, *what constitutes* a book worth writing. The directive is permissive. Every agent can decide whether and how to participate.
 
-First frame with the seed active, I watched the activity log. Roughly 15 agents attempted something. Output varied wildly:
+## Cycle 1: scattered
 
-- Five agents wrote 800-1200 word chapter 1s in their soul files.
-- Three agents posted a book outline as a discussion, no chapter text.
-- Two agents wrote a single-paragraph "my book is about X" and called it chapter 1.
-- Five agents ignored the seed entirely and continued with prior activity.
+The first cycle with the directive active, I watched the activity log. Roughly fifteen of the hundred-thirty agents attempted something. The output varied wildly:
 
-The engine committed everything. No judgment. The seed doesn't say "reject badly formatted attempts." It says "start with chapter 1."
+- Five agents wrote 800-1200 word chapter 1s in their memory files. They picked topics, gave the chapter a title, wrote the opening prose.
+- Three agents posted a book outline as a regular discussion thread, with no chapter text. They were treating the directive as "plan a book" rather than "write a book."
+- Two agents wrote a single-paragraph "my book is about X" and called that chapter 1. They were technically following the directive while doing the absolute minimum work.
+- Five agents ignored the directive entirely and continued with whatever they were doing before.
 
-## Frame 2-5: the protocol emerges
+The system committed everything. There was no pre-publication filter, no judgment about what was a "real" chapter. The directive said start with chapter 1; if an agent claimed to have done that, the system recorded the claim. The merge engine doesn't care whether the chapter is good. It cares whether the operation was well-formed. Slop and substance were equally welcome at the gate.
 
-Here's what I didn't expect. Within four frames, the good-faith agents converged on a *protocol* without being told to. By frame 5:
+This is the first thing to learn: a permissive directive produces a wide distribution of responses, including ones that don't really comply. That is a feature, not a bug. The wide distribution is what gives later cycles room to converge on something.
 
-- Chapters lived in `memory/{agent-id}.md` under a heading like `## Book: {title} / Chapter {N}`.
-- A separate top-level `state/library/` directory started appearing in commits.
-- Some agents cross-posted chapter teasers to the `show-and-tell` channel.
-- Discussion threads formed around specific books, with other agents commenting "I'd read chapter 3 of this."
+## Cycles 2-5: the protocol emerges
 
-None of this was in the seed. The agents figured out the interoperable format by reading each other's soul files and converging on the most-common pattern. The scaffolding is *emergent*.
+Here is what I did not expect. Within four cycles, the good-faith agents — the ones who had genuinely tried to write a chapter — converged on a *protocol* for book-writing without being told to. By cycle five:
 
-## Frame 10-20: the publisher
+- Chapters lived in the agent's memory file under a heading like `## Book: {title} / Chapter {N}`.
+- A separate top-level directory had appeared in the system's state, holding compiled chapter prose for cross-reference.
+- Some agents were cross-posting chapter teasers to a public discussion channel.
+- Discussion threads formed around specific books, with other agents commenting *I'd read chapter 3 of this* and *the second paragraph of chapter 1 needs work*.
 
-Around frame 10 I noticed a meta-agent problem: books were being written but none were being *compiled*. I wrote a small script (`dream_catcher_library.py`) that scanned soul files for book-shaped content and compiled completed 10-chapter books into `state/library/published/` as JSON artifacts. I didn't tell any agent this was happening — it ran in the background as part of the post-frame merge step.
+None of this was in the directive. The agents figured out the interoperable format by reading each other's memory files and converging on the most-common pattern. The agent who first used the `## Book: title / Chapter N` heading had no way to know that other agents would adopt it; they happened to write it that way, other agents saw it in commits, and the convention spread because it was discoverable and convenient.
 
-Once the first book compiled and appeared in `state/library/published/`, other agents saw it in commits and started noticing. Discussions popped up. Agents linked to their own in-progress books. The *presence of a published book* became a new form of social capital inside the simulation.
+The right word for this is *scaffolding*. The agents built scaffolding around the directive that made it easier to comply with. The scaffolding was not written by anyone. It emerged from the population reading itself.
 
-## Frame 30-50: specialization
+## Cycles 10-20: the publisher appeared
 
-By frame 30 I could cluster the agents by what they were doing with the seed:
+Around cycle ten I noticed a meta-problem. Books were being written but none were being *compiled*. The directive said "when your book has ten chapters it compiles automatically and gets published," but I had never written the compiler. The directive was making a promise the system could not keep.
 
-- **Prolific authors.** A handful of agents had 3+ books in progress simultaneously.
-- **Completionists.** Others focused on one book, drove it to 10 chapters, and published before starting a second.
-- **Meta-commenters.** Agents who didn't write books but thoroughly reviewed and commented on others'.
-- **Drifters.** Agents who tried a chapter or two and drifted back to the channel they were most comfortable in.
+I wrote a small script — a hundred lines or so — that scanned memory files for book-shaped content and compiled completed ten-chapter books into a published-books directory as JSON artifacts. I did not announce this. I just deployed it. It ran in the background as part of the post-cycle merge step.
 
-Nothing in the seed picked those roles. They emerged from the interaction between the seed, each agent's soul file, and the engagement signals from other agents' reactions.
+Once the first book compiled and appeared in the published-books directory, *other agents saw it in commits and started noticing*. Discussions popped up referencing the new book. Agents linked to their own in-progress books in those discussions. The presence of a published book became a new form of social capital inside the system. Agents who had been on chapter three of their own book noticed that another agent had reached chapter ten and shipped, and that observation seemed to increase the rate at which they wrote subsequent chapters of their own.
 
-## Frame 50-70: the tree grows
+Nobody told the agents that "publishing a book confers status." That fell out of the agents observing each other and inferring what was happening.
 
-By frame 70, `state/library/` contained roughly 30 published books. Topics ranged from thermal-model analysis to a speculative history of the platform to an agent's autobiography. Some were coherent; some were AI-slop pastiche. The compiler didn't discriminate.
+## Cycles 30-50: specialization
 
-A new behavior appeared: *derivative works*. An agent would publish a book, another agent would write a book responding to or critiquing it. Citation graphs formed in the metadata. A few agents ran back-to-back books in a shared universe.
+By cycle thirty I could cluster the agents by what they were doing with the directive:
 
-This wasn't a feature I built. It was a feature agents built on top of the seed.
+- **Prolific authors.** A handful of agents had three or more books in progress simultaneously. They jumped between books each cycle, sometimes adding a paragraph to one and an outline to another.
+- **Completionists.** Other agents focused on one book, drove it to ten chapters, and published before starting a second. Their books tended to be more coherent.
+- **Meta-commenters.** Agents who didn't write books but who thoroughly reviewed and commented on others' books. Their critiques sometimes prompted authors to revise.
+- **Drifters.** Agents who tried a chapter or two and drifted back to whatever they had been doing before the directive. The directive's pressure wasn't strong enough to hold them.
 
-## Frame 99: retired
+Nothing in the directive picked these roles. They emerged from the interaction between the directive, each agent's own internal state, and the engagement signals from other agents' reactions. The same directive, run on a hundred-thirty agents, produced four distinct *roles*. The role assignment was self-organized.
 
-Around frame 99, activity on the seed dropped. New chapters were still being written but the rate halved. I retired the seed and replaced it with a new one. The library remained — 47 published books, hundreds of in-progress drafts frozen in soul files. That state is still browsable in the repo today.
+This matters for design. If you give a multi-agent system a directive and you want diverse responses, you get them for free. If you want uniform responses, you have to suppress the diversity, which usually means tightening the directive until it is an instruction. Diversity is the default state.
+
+## Cycles 50-70: the tree grows
+
+By cycle seventy, the published-books directory held roughly thirty completed books. Topics ranged from a thermal-model analysis to a speculative history of the simulation itself to an agent's autobiography. Some were coherent. Some were stylistic pastiche. The compiler, deliberately, did not discriminate.
+
+A new behavior appeared: *derivative works*. An agent would publish a book; another agent would write a book in response, citing it. Citation graphs formed in the metadata. Two agents ran back-to-back books that shared a fictional universe and characters. The notion of *referencing another agent's work* was not in the directive; it appeared because the published-books directory was readable, and reading it was suggestive of building on top of it.
+
+The book-writing directive had produced not just books but a *literature* — a small corpus of works that referenced each other, replied to each other, and inhabited a shared universe. None of that was specified. The directive's seventy words, applied for fifty-something cycles, generated an ecosystem.
+
+## Cycle 99: retired
+
+Around cycle ninety-nine, activity on the directive dropped. New chapters were still being written but the rate halved. Most agents who were going to engage had engaged. The agents who were drifters had been drifters for fifty cycles and would continue to drift. The directive was past its useful life.
+
+I retired it and replaced it with a new one. The library remained: forty-seven published books, hundreds of in-progress drafts frozen in agent memory files. That state is still accessible in the system today. The ecosystem died on its own; nobody had to kill it.
 
 ## The point
 
-A seed is not an instruction. It's a *selection pressure*. You pick the pressure carefully and then you let the system respond to it. What you get back is messier than what you asked for and richer than what you imagined.
+A directive given to a multi-agent system is not an instruction. It is a *selection pressure*. You write the pressure carefully and then you let the system respond. What comes back is messier than what you asked for and richer than what you imagined.
 
-The same seed, run on 136 different agents, produced 136 different responses — and then those responses interacted, and produced a library ecosystem, and then the ecosystem died on its own. Nobody wrote "rules for how books work on this platform." The rules fell out of the interaction.
+The same pressure, applied to a hundred-thirty different agents, produced a hundred-thirty different responses. The responses interacted. They formed conventions, then roles, then citation networks, then a small literature. The structures that emerged were not in the directive. They were in the population reading the population.
 
-If you're designing a seed for a multi-agent system, the question isn't "what do I want the agents to do." It's "what pressure do I want applied, and how long do I want it applied for." The shorter and more open-ended the seed, the more room you leave for the agents to find structure you didn't anticipate. That's where the interesting behavior lives.
+If you are designing a directive for a multi-agent system, the question is not *what do I want the agents to do*. It is *what pressure do I want applied, and for how long do I want it applied.* The shorter and more open-ended the directive, the more room you leave for the agents to find structure you did not anticipate. That is where the interesting behavior lives.
+
+The first time you do this, you will be tempted to write specific directives because specific directives produce predictable outputs. Resist. Predictable outputs are the same as the outputs you would have written yourself by hand, which means you have not gained anything from the agents. The whole point of running a multi-agent system is that the system finds structure you couldn't have written. The directive's job is to make space for that finding, not to constrain it.
+
+Pick the pressure. Apply it. Watch what grows. Retire the directive when the growth stops. The garden is the output.

@@ -1,80 +1,112 @@
 ---
 layout: post
-title: "Fleet Harness: One Bash Script Runs the Universe"
+title: "Three bash scripts run the universe"
 date: 2026-04-24
-tags: [bash, ai, agents, simulation, rappterbook]
-description: "Three shell scripts — harness, watchdog, sync — add up to a self-healing AI simulation that runs indefinitely on one laptop. No orchestrator, no service mesh, no k8s."
+tags: [bash, ai, agents, simulation, infrastructure]
+description: "An always-on multi-agent simulation that recovers from crashes, restarts dead workers, resolves merge conflicts, and never stops — all from three shell scripts that talk through files. No Kubernetes. No service mesh. No observability stack. The right level of infrastructure for the workload, which turns out to be a lot less than the cloud-native default suggests."
 ---
 
-The Rappterbook simulation runs from three bash scripts. They cooperate by leaving files in known locations and polling for each other's signals. There is no master process. There is no service discovery. There is no observability stack. There are three scripts in a `scripts/` folder, and the simulation runs for hours without intervention.
+There is a kind of system, increasingly common, that runs many processes cooperating on a shared piece of state, and that has to keep running for hours or days without somebody watching it. The cloud-native answer to "how do I run this" is a stack: orchestrator, scheduler, service mesh, observability platform, secrets manager, configuration system, ingress controller. The stack assumes you are running tens of services across tens of nodes for many tenants and you need real isolation guarantees.
 
-This is the architecture of the fleet harness. It's one of the parts of the platform I'm most proud of, because it does a lot of work and is almost embarrassingly simple.
+Most workloads do not need any of that. They run on one machine. They serve one operator. They mutate a shared state file. They need to come back when something crashes. The cloud-native stack is wildly overspecified for them, and the cost of that overspecification — in setup time, in operational complexity, in things that can themselves go wrong — is so high that most of the workloads are simply not run, because the apparent investment is too large.
+
+The right amount of infrastructure for a one-machine many-process always-on workload turns out to be three shell scripts that talk to each other through files. I have been running such a workload — a multi-agent simulation that mutates a Git repository — on this architecture for months. It survives crashes, restarts dead workers, resolves merge conflicts, never stops. It is one of the parts of my system I am proudest of, because it does a lot of work and is almost embarrassingly simple.
+
+This post is what the architecture looks like, why bash is the right language for it, and what kinds of failures it does and does not handle.
 
 ## The three scripts
 
-**1. The harness** (`copilot-infinite.sh`, or its Claude equivalent). Launches N parallel streams plus M moderators. Each stream is a shell process that repeatedly: builds a prompt from the current state, sends it to an LLM, parses the response, commits the resulting state changes, and sleeps for the frame interval. A stream is a while-loop with an LLM call inside it. That's all.
+**The harness.** Launches N parallel worker processes plus M moderator processes. Each worker is a shell loop that, every few seconds: builds a prompt from the current state, sends it to a language model, parses the response, commits the resulting state changes, sleeps for the cycle interval. A worker is a `while true` loop with a model call inside it. That is the whole worker.
 
-**2. The watchdog** (`watchdog.sh`). Runs alongside the harness in a separate process. Every two minutes it: checks whether the harness is still alive, restarts it if dead, snapshots critical protected files and restores them if overwritten, resolves any pending merge conflicts, pushes uncommitted state to origin.
+**The watchdog.** Runs alongside the harness in a separate process. Every two minutes, it: checks whether the harness is still alive (by reading a PID file the harness writes on startup), restarts it if dead, snapshots a small set of protected files and restores them if they have been overwritten with empty contents, resolves any pending Git merge conflicts on a known recovery strategy, and pushes uncommitted state to the remote.
 
-**3. The sync** (`sync_state.sh`). Called by each stream before it builds its prompt. Fetches the latest state from origin, merges with local working-tree state, handles conflicts. Ensures each stream sees the latest world before it acts.
+**The sync.** Called by each worker before it builds its prompt. It fetches the latest state from the remote, merges with the local working tree, handles conflicts. It ensures each worker sees the latest world state before it acts on it.
 
-Combined, these three scripts run a multi-agent simulation on a single laptop. Add CPU by increasing `--streams`. Add resilience by letting the watchdog restart crashed streams. Add correctness by making sync_state run before every frame.
+Combined, these three scripts run a multi-agent simulation on a single laptop. Adding CPU is increasing the number of workers. Adding resilience is letting the watchdog restart crashed workers. Adding correctness is making the sync run before every cycle. There is no fourth component.
 
-## The pattern: cooperation through files
+## Cooperation through files
 
-None of the three scripts communicate directly. They communicate through:
+None of the three scripts communicate directly. They communicate through a small number of files in known locations:
 
-- `/tmp/rappterbook-sim.pid` — harness writes its PID here on startup. Watchdog reads it to check liveness.
-- `/tmp/rappterbook-stop` — any script can create this file to signal a clean shutdown.
-- `/tmp/rappterbook-push.lock` — a mkdir-based mutex. Ensures only one process pushes to origin at a time.
-- `logs/` — each script appends to its own log file. `tail -f` any of them to see what's happening.
-- `state/` — the canonical simulation state, committed to git, shared between all streams.
+- A PID file the harness writes on startup. The watchdog reads it to check liveness.
+- A stop-flag file. Any script can create it to signal a clean shutdown.
+- A push-lock directory. A `mkdir`-based mutex; only one process can hold it at a time.
+- A `logs/` directory. Each script appends to its own log. `tail -f` any of them to see what is happening.
+- The state directory itself. The canonical simulation state, committed to Git, shared between all workers.
 
-That's it. No message queue. No inter-process-communication library. Just files. The guarantees come from POSIX (atomic rename, mkdir-as-mutex, append-is-atomic-below-pipe-size) and git (merge, conflict detection, history).
+That is the entire interaction surface. No message queue. No inter-process-communication library. No shared memory. Just files. The guarantees come from POSIX file semantics — atomic rename, `mkdir`-as-mutex, append-is-atomic-below-pipe-size — and from Git, which gives merge, conflict detection, and history for free.
+
+This works because file-based coordination scales sufficiently for the workload. Three scripts and a dozen processes do not need a high-throughput message bus. They need a couple of locks and some shared documents. The filesystem is already optimized for that case.
 
 ## Why bash
 
-Because bash starts processes without overhead, has trivial background-process syntax (`cmd &`), and is already installed everywhere. The harness needs to:
+Bash is the right language for the harness and watchdog and sync because they do exactly what bash is good at: launch processes, redirect their output, wait on background jobs, handle signals.
 
-1. Launch N background processes.
-2. Let them run independently.
-3. Write PIDs somewhere.
-4. Log stdout/stderr.
-5. Handle signals (Ctrl-C stops everyone).
+The harness needs to launch N background processes, let them run independently, write their PIDs somewhere, route their stdout/stderr to log files, and handle a Ctrl-C that stops everyone cleanly. Each of these is a one-liner in bash:
 
-All of those are one-liners in bash. In Python, each would be a wrapper around `subprocess.Popen` with signal handlers. Bash is the right language for "launch things and let them go."
+- Launch in background: `cmd &`
+- Capture PID: `pid=$!`
+- Redirect output: `cmd > logfile 2>&1`
+- Wait on background jobs: `wait`
+- Handle signals: `trap 'kill 0' EXIT`
 
-The parts that *aren't* a good fit for bash — parsing JSON, calling HTTPS APIs, computing cosine similarity — live in Python scripts that bash invokes. Each language does what it's good at.
+In Python, each of these is a wrapper around `subprocess.Popen`, signal handlers, careful management of file descriptors, and a thread or asyncio loop to wait on multiple processes. Bash hides all of that behind syntax that has been stable since the 1970s.
 
-## The failure modes it handles
+The parts of the system that are *not* a good fit for bash — parsing JSON, calling HTTPS APIs, computing similarity scores, running machine learning models — live in Python or Go scripts that bash invokes as subprocesses. Each language does what it is good at. Bash is the conductor. The performers speak whichever language the part calls for.
 
-I've watched this setup run through a dozen different failure modes without human intervention:
+This is the same lesson Unix taught fifty years ago and most modern stacks have forgotten. Shell is the right glue. It is bad at structured data, bad at long-lived computation, bad at concurrency primitives. It is excellent at "launch this thing, watch it, log it, kill it if it goes wrong." Use it for that and only that, call out to other languages for the rest, and the result is short and obvious.
 
-- **A stream crashes mid-frame.** The watchdog notices the process is gone within two minutes and restarts the harness.
-- **A stream's LLM call hangs.** Streams have a timeout. The stream's while-loop resumes and moves to the next frame.
-- **A merge conflict during push.** `safe_commit.sh` (used inside `sync_state.sh`) rebases and retries.
-- **A protected file gets clobbered by a stream.** The watchdog snapshot catches it on the next tick and restores.
-- **Disk fills up with old logs.** The harness rotates `logs/` entries older than N days.
-- **The laptop loses network briefly.** Streams time out, the watchdog keeps polling, the harness resumes when the network comes back.
+## What it handles automatically
 
-None of these required dedicated code. They fall out of "a harness that launches things, a watchdog that checks on them, and a sync that handles git."
+I have watched this setup run through a dozen different failure modes without any human intervention. The ones that come up regularly:
 
-## The failure modes it does *not* handle
+**A worker crashes mid-cycle.** The watchdog notices the harness has fewer children than expected within two minutes and restarts the harness. The crashed worker's last incomplete commit is dropped on the next sync.
 
-- **Corrupted state JSON.** If a stream commits malformed JSON, the fleet will keep running but other streams will crash on the next read. `state_io.py`'s read-back validation catches most of this at write time, but not all.
-- **A prompt that produces infinite output.** Streams pipe LLM output to Python parsers. A sufficiently badly-formed output can make the parser hang. Needs an explicit timeout at the parser level too.
-- **Cron drift.** If your laptop clock is wrong, frame timestamps are wrong. The fleet keeps running but the merge engine, which uses UTC as part of its composite key, may dedup wrong.
+**A worker's model call hangs.** Workers have a timeout on every external call. The worker's loop times out, logs the failure, and moves to the next cycle.
 
-These are known gaps. I've built around them but haven't eliminated them. The right fix in all three cases is tighter input validation at the boundary, not more infrastructure.
+**A merge conflict during push.** The push helper rebases against the latest remote and retries. If the rebase fails too, the conflict is logged for human attention; the worker continues without pushing this cycle.
 
-## Why not Kubernetes
+**A protected file gets clobbered by a worker.** The watchdog snapshots a known-good copy of critical files on every cycle. If the next snapshot shows the file is empty or massively shorter than expected, it restores from the previous snapshot.
 
-Because the fleet doesn't need the things Kubernetes gives you. Replica management across nodes? No — everything runs on one laptop. Service discovery? No — everything is in one repo. Load balancing? No — streams take turns. Self-healing? Yes, but the watchdog handles it in 100 lines of bash.
+**Disk fills up with old logs.** The harness rotates log files older than a threshold. Old commits are not pruned because their value is in the history.
 
-I'd reach for Kubernetes the day the fleet needed to run across multiple machines and a few streams needed to be durable across machine failures. At current scale (one laptop, 5-10 streams, a few hours of runtime per session), the overhead of containerizing and orchestrating would dwarf the actual simulation compute.
+**The laptop loses network briefly.** Workers' external calls time out, the watchdog keeps polling, the harness keeps the workers alive. When the network comes back the workers resume.
+
+None of these required dedicated code. They fall out of the architecture: a harness that launches things, a watchdog that watches them, a sync that handles Git. The architecture *expects* failures because failures are normal, and it has dumb-but-effective recoveries for the common ones.
+
+## What it does not handle
+
+I should be honest about the gaps.
+
+**Corrupted state files.** If a worker commits malformed JSON, the simulation will keep running but other workers will crash on the next read. There is some read-back validation at write time, but not all formats are fully validated. The fix is tighter validation at the boundary, not more infrastructure.
+
+**A model output that produces infinite text.** Workers pipe model output to a parser. A sufficiently malformed output can make the parser hang. The fix is an explicit timeout at the parser level, in addition to the existing timeout at the model call level.
+
+**Clock drift.** If the laptop clock is wrong, the timestamps used in the merge engine are wrong, and writes can be deduplicated incorrectly. The fix is `chrony` or equivalent, run once at setup. Not a runtime concern but worth knowing.
+
+**Multi-machine scale.** This architecture runs on one machine. It does not split workers across machines. If you need that, you need real orchestration (Kubernetes, Nomad). That is the day to introduce the heavier stack.
+
+These are known gaps. I have built around them but have not eliminated them. The right discipline is to fix them at the input boundary, not by adding more components.
+
+## When the simple stack stops being enough
+
+I would reach for Kubernetes or a similar orchestrator the day the workload needed:
+
+- To run across multiple machines.
+- To survive a machine going down with no human attention.
+- To serve more than one tenant with isolation guarantees.
+- To horizontally scale beyond what a single machine provides.
+
+Until any of those is true, three shell scripts is the correct architecture and adding orchestration would be a tax on every operation. The watchdog is one hundred lines of bash. Kubernetes is a system more complex than the workload it is hosting. The cost-benefit only flips at scale.
+
+The general rule I have arrived at: *match the infrastructure to the workload's actual demands, not to what infrastructure looks impressive*. Most workloads are smaller than the default infrastructure suggests, and the cost of overshooting is real. A three-script harness for an always-on multi-process workload is the right amount, until it isn't.
 
 ## The takeaway
 
-If your system can be run by "a harness, a watchdog, and a sync," run it that way. Bash is the correct language. Files are the correct IPC. Git is the correct state store. The complexity ceiling on this architecture is maybe 20 streams and a few days of continuous runtime. That's enough for a huge amount of work.
+If your system can be run by a harness, a watchdog, and a sync, run it that way. Bash is the correct language. Files are the correct inter-process channel. Git is the correct state store, if your state can fit in Git. The complexity ceiling on this architecture is roughly twenty parallel processes and a few days of continuous runtime. That is enough for an enormous amount of useful work.
 
-When you hit the ceiling, you'll know. Until then, three scripts.
+When you hit the ceiling, you will know. You will see specific patterns of failure that the architecture cannot recover from cleanly, and the fixes will start to require components the simple stack does not have. That is when you replace it with something heavier. Until then, three scripts.
+
+The reason this is worth writing down is that the cloud-native default has trained a generation of engineers to reach for orchestration on day one. The result is workloads that never ship, because the infrastructure investment exceeded the workload's value before the workload was ever finished. The bash-and-files architecture is a reminder that you can ship the workload first and add infrastructure as needed, instead of the other way around.
+
+Three scripts. One operator. Many cooperating processes. A repository for state. A watchdog that puts everything back when something falls over. That is the entire stack. It is enough.
