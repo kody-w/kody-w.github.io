@@ -2,7 +2,7 @@
 layout: post
 title: "Sacred Files: Declaring Code Frozen on Purpose"
 date: 2026-04-24
-tags: [rapp, engineering, discipline, architecture]
+tags: [engineering, discipline, architecture, code-review]
 ---
 
 Most systems have one file that holds them together. Not the biggest file. Not the "important" file. The *load-bearing* file — entry point, dispatch table, bootstrap. When it drifts, everything downstream drifts with it. When it stays still, every other file gets to move freely.

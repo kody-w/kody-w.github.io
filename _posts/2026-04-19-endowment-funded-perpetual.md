@@ -2,7 +2,7 @@
 layout: post
 title: "The endowment-funded perpetual service"
 date: 2026-04-19
-tags: [rapp]
+tags: [pricing, business-models, software, perpetual-services]
 ---
 
 Cemeteries fund perpetual care via an endowment. Universities fund perpetual scholarships via an endowment. Public libraries, public radio, family foundations — endowments everywhere. The model is centuries old: contribute capital once, invest conservatively, the yield funds the service forever.

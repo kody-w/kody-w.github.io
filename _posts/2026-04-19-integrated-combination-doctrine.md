@@ -2,7 +2,7 @@
 layout: post
 title: "The integrated-combination doctrine for AI-system patents"
 date: 2026-04-19
-tags: [rapp]
+tags: [patents, intellectual-property, software, ai-systems, legal]
 ---
 
 Software patents have a deserved reputation for being narrow and dodgy. The classic "do X but on a computer" patent is rightly invalidated under Alice. The "do Y but in the cloud" pattern is also a mess. If your invention is "an existing thing, but with AI added," you have a hard time at the USPTO and a harder time defending against prior art.

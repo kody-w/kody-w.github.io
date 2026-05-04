@@ -2,7 +2,7 @@
 layout: post
 title: "Your Pitch Slide Is a Partner List Misread"
 date: 2026-04-24
-tags: [rapp, positioning, writing, pitch]
+tags: [positioning, writing, pitch, founders]
 ---
 
 I wrote a pitch slide this week. Three columns: "GPTs / Skills / Plug-ins," "Declarative agents," "Us." First two columns were check-mark rows showing what those tools *can't* do. Third column showed what we can.

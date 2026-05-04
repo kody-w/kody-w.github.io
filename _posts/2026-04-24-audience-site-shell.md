@@ -2,7 +2,7 @@
 layout: post
 title: "The Audience Site Shell — No Build Step Required"
 date: 2026-04-24
-tags: [rapp]
+tags: [vanilla-web, html, css, javascript, no-build, static-sites]
 ---
 
 Most "scalable static site" tutorials end up reaching for a bundler. Astro, 11ty, Next.js, Hugo. The pitch is always the same: "you'll regret it when you scale past ten pages."
@@ -69,12 +69,10 @@ The discipline this enforces is what makes the layout scalable, not the file cou
 
 The cost of a new audience page is now ~60 lines of HTML — title, meta tags, content. The chrome is automatic. The theme is automatic. The nav highlights the current section automatically. Stripping the inline token redundancy from existing pages (the next pass) will drop their average size by 150 lines each.
 
-More importantly: a new contributor can navigate the system without reading framework docs. The repo is the contract. `pages/_site/` is small enough that someone can read the entire shared infrastructure in fifteen minutes and know everything the site can do.
+More importantly: a new contributor can navigate the system without reading framework docs. The repo is the contract. The shared `_site/` directory is small enough that someone can read the entire shared infrastructure in fifteen minutes and know everything the site can do.
 
 ## When this stops scaling
 
-Honestly: probably around 50 pages, when sectioned nav stops being enough and search becomes mandatory. The manifest data is already in place; `_site/js/search.js` is on the platform backlog. Past that — say, hundreds of pages with internationalization — vanilla starts to creak. But by the time you're there, the cost of migrating to a bundler is paid for many times over by what you saved not adopting one early.
+Honestly: probably around 50 pages, when sectioned nav stops being enough and search becomes mandatory. The manifest data is already in place; a small `_site/js/search.js` is the next step. Past that — say, hundreds of pages with internationalization — vanilla starts to creak. But by the time you're there, the cost of migrating to a bundler is paid for many times over by what you saved not adopting one early.
 
 The actual point: *vanilla HTML/CSS/JS in 2026 is more capable than the framework discourse suggests.* You can ship a real site without npm. The discipline is small. The blast radius of any mistake is one file. And future-you doesn't have to keep up with anyone else's release notes to keep your site working.
-
-The repo with this layout: [github.com/kody-w/RAPP/tree/main/pages](https://github.com/kody-w/RAPP/tree/main/pages). Open the source for any page. There's no missing piece.

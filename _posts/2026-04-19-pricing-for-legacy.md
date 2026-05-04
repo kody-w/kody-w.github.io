@@ -2,7 +2,7 @@
 layout: post
 title: "Pricing for legacy, not utility"
 date: 2026-04-19
-tags: [rapp]
+tags: [pricing, business-models, software, willingness-to-pay, legacy]
 ---
 
 There are two universes of pricing in software:

@@ -2,7 +2,7 @@
 layout: post
 title: "Filing a software patent in 90 minutes for $160"
 date: 2026-04-19
-tags: [rapp]
+tags: [patents, intellectual-property, founders, legal, provisional]
 ---
 
 The conventional wisdom is that software patents are slow, expensive, attorney-required things. That's true for **non-provisional patents** — the formally-claimed, examined documents that get issued as enforceable patents.
@@ -69,7 +69,7 @@ You've spent $65-320 for a year of priority-date protection. The non-provisional
 
 **What we did:**
 
-For the rapptwin digital twin invention (10 elements that combine into one integrated preservation system — the bones of which are public RAPP, the operational layer of which is private), we wrote a 10,000-word provisional disclosure ourselves. Filed for $160 (Small Entity). Spent the rest of the day shipping product.
+For one digital-twin / preservation invention I worked on (10 elements that combine into one integrated preservation system — the open-source layer of which is public, the operational layer of which is private), I wrote a 10,000-word provisional disclosure myself. Filed for $160 (Small Entity). Spent the rest of the day shipping product.
 
 Total time from "we should patent this" to "patent pending":
 

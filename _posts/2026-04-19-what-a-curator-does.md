@@ -2,7 +2,7 @@
 layout: post
 title: "What a Curator does"
 date: 2026-04-19
-tags: [rapp]
+tags: [operations, roles, customer-success, archival, preservation]
 ---
 
 A "Curator" is one of the operational roles for any preservation-shaped product (digital twin, archival, memorial, legacy). Loosely modeled after museum curators — they're the human in the loop between the customer and the system, doing work the software can't do.

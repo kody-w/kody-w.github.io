@@ -2,7 +2,7 @@
 layout: post
 title: "Open the bones, close the body, sell the soul"
 date: 2026-04-19
-tags: [rapp]
+tags: [open-source, business-models, commercial, open-core, founders]
 ---
 
 Most open-source-with-commercial-arm projects struggle with the boundary. What goes public? What stays private? When does upstreaming a feature compete with your paid product? When does keeping a feature private starve the community?

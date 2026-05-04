@@ -2,7 +2,7 @@
 layout: post
 title: "The Directory-README Pattern — Per-Folder Scale Rules as the Rib of Organizational Discipline"
 date: 2026-04-24
-tags: [rapp]
+tags: [engineering, repo-organization, architecture, conventions, documentation]
 ---
 
 A repo's root rule says *what belongs at root.* That's the spine. It's necessary and not sufficient. The moment a contributor steps one level down — into `docs/`, `pages/`, `installer/`, `tests/` — the spine offers no guidance. The next file they're about to add could land in any of half a dozen places. They guess. Sometimes they guess right. Sometimes the next maintainer cleans up after them.
@@ -130,10 +130,4 @@ A fractal organization has *the same shape at every level.* Closed list of resid
 
 That's why the pattern scales. A new contributor walking down the tree doesn't have to learn five different organizational schemes. They learn one shape, see it at every level, and add their file confidently. The discipline is the same; only the destination differs.
 
-## Receipts
-
-- Article XVI of the CONSTITUTION (the spine): [github.com/kody-w/RAPP/blob/main/CONSTITUTION.md](https://github.com/kody-w/RAPP/blob/main/CONSTITUTION.md).
-- The four ribs in this project: `pages/docs/README.md`, `pages/README.md`, `installer/README.md`, `tests/README.md`.
-- The pattern's payoff in action: *Repo Root Reorganization 2026-04-24* under `pages/vault/Architecture/`.
-
-The platform's working knowledge: *the spine is the law; the rib is the front door.* New contributors meet the rib first. Make sure it's saying what you mean.
+The working knowledge: *the spine is the law; the rib is the front door.* New contributors meet the rib first. Make sure it's saying what you mean.

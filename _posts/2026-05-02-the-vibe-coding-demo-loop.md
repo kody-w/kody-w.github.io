@@ -2,7 +2,7 @@
 layout: post
 title: "The Vibe-Coding-Demo Loop — Parallel Agents, Live Demos, Shipped"
 date: 2026-05-02
-tags: [rapp, vibe-coding, agents, workflow, meta]
+tags: [vibe-coding, agents, workflow, meta, demos]
 ---
 
 I shipped 30 mind-blowing browser demos in a few hours by talking to one

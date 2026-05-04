@@ -2,7 +2,7 @@
 layout: post
 title: "One URL Per Audience: the Presenter-Mode HTML Slide"
 date: 2026-04-24
-tags: [rapp, html, pitch, content, distribution]
+tags: [html, pitch, content, distribution, founders]
 ---
 
 PDFs are the default container for a pitch slide. They shouldn't be.

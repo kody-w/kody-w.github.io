@@ -2,7 +2,7 @@
 layout: post
 title: "Offline-resilient send queue"
 date: 2026-04-19
-tags: [rapp]
+tags: [offline-first, web, queues, networking, ux]
 ---
 
 A message is halfway out the door when the network disappears.

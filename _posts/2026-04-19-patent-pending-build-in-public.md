@@ -2,7 +2,7 @@
 layout: post
 title: "Patent-pending in build-in-public: how we say what we have without giving it away"
 date: 2026-04-19
-tags: [rapp]
+tags: [patents, build-in-public, intellectual-property, founders, strategy]
 ---
 
 Build-in-public and patent strategy are usually in tension. Build-in-public says "share everything" — architecture, decisions, postmortems, code. Patent strategy says "disclose nothing publicly until the priority date is locked, otherwise prior art exists and you lose."
