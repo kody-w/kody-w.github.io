@@ -1,0 +1,46 @@
+---
+title: Grand Prix
+slug: grand-prix
+order: 109
+featured: true
+tagline: "8 named drivers, 12-lap procedural circuit, DRS, tire wear, safety car, podium ceremony."
+category: game
+difficulty: advanced
+status: live
+tags: [autoplay, motorsport, f1, procedural-track, drs, podium, canvas-2d]
+stack: [HTML, JavaScript, Canvas 2D]
+demo: /learnwithkody/demos/91-grand-prix.html
+repo: https://github.com/kody-w/kody-w.github.io
+highlights:
+  - "Procedural Catmull-Rom track with corners, hairpins, chicane, pit lane"
+  - "Grip-circle physics with drafting (+5%) and DRS (+10%) in 3 zones"
+  - "Pit window strategy varies per driver — early softs vs late hards"
+prompt: |
+  Build a single-file 8-car Grand Prix on a procedural circuit. 12 laps,
+  DRS zones, drafting, tire wear, pit window strategy, optional safety
+  car. Lights out start, killfeed-equivalent OVERTAKES feed, position
+  table with gap and tire bar, announcer banners (LIGHTS OUT, FIRST BLOOD,
+  FASTEST LAP, SAFETY CAR, FINAL LAP, CHEQUERED FLAG, MAGIC LAP). Podium
+  ceremony with confetti and full classification. Auto-rematch on a fresh
+  circuit. No user input — autoplay forever.
+lessons:
+  - "Catmull-Rom splines through 6-9 control points produce a varied procedural track every match — without them, every race feels like the same loop."
+  - "Per-driver pit-window randomization (lap 4-9 weighted by skill) is the entire reason races are non-deterministic — strategists vs early-tire-changers."
+  - "A drama-cam that tightens on battling cars during DRS zones is the cheapest cinematography for motorsport — leader-lock alone makes mid-pack fights invisible."
+---
+
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>Eight named drivers from a 24-driver / 14-team roster line up on a procedural Catmull-Rom circuit — corners, hairpins, chicane, pit lane. Lights out, race begins. Grip-circle physics, drafting at +5%, DRS zones at +10%, tire wear that degrades grip per lap. Per-driver pit windows vary the strategy. Random safety car after a spin. Position table tracks gap, pit status, and tire bar. Twelve laps, then a podium ceremony with confetti, full classification, and the fastest lap highlighted.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>Real F1 storylines emerge. Test runs produced a 5-lead-change race won by 1.83 seconds, a DRS-train overtake from P4 to P1 in a single lap, magic laps on worn rubber, late-race safety cars that bunched the field. The 24-driver roster means each race has a different lineup of liveries to root for. Six minutes of motorsport drama, then a fresh circuit with a new lineup.</p>
+</section>
+
+<aside class="lwk-try-embed">
+  <h3>Watch it run</h3>
+  <iframe src="/learnwithkody/demos/91-grand-prix.html" loading="lazy" title="Grand Prix"></iframe>
+  <p><a href="/learnwithkody/demos/91-grand-prix.html">Open in a new tab →</a></p>
+</aside>

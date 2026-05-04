@@ -1,0 +1,48 @@
+---
+title: MOBA 3v3
+slug: moba-3v3
+order: 106
+featured: true
+tagline: "3v3 mini-MOBA — three lanes, jungle, dragon, ancient — first to crack the nexus wins."
+category: game
+difficulty: advanced
+status: live
+tags: [autoplay, moba, lanes, towers, dragon, canvas-2d]
+stack: [HTML, JavaScript, Canvas 2D]
+demo: /learnwithkody/demos/88-moba-3v3.html
+repo: https://github.com/kody-w/kody-w.github.io
+highlights:
+  - "12-hero roster with distinct signature abilities — line skillshots, AoE stuns, dashes, heals"
+  - "Three lanes with creep waves every 30s, two jungle buff camps, dragon objective"
+  - "Ancient is invulnerable until 3+ enemy towers fall — real macro stakes"
+prompt: |
+  Build a single-file 3v3 mini-MOBA. Three lanes (top/mid/bot) with two
+  towers each, two bases each with an invulnerable-until-tower-conditions
+  ancient/nexus, a dragon at river that gives a team-wide damage buff, two
+  jungle buff camps. Creep waves every 30s, last-hit gold + XP, recall to
+  base. 12-hero roster with one signature ability each. Killfeed,
+  announcer (FIRST BLOOD, DOUBLE KILL, TRIPLE KILL, ACE, TOWER FALLEN,
+  DRAGON SLAIN, NEXUS UNDER ATTACK, VICTORY). MVP screen with KDA, gold,
+  towers, dragons, CS. Auto-rematch with new picks. No user input —
+  autoplay forever.
+lessons:
+  - "Making the ancient invulnerable until 3+ enemy towers fall is what creates the 'macro game' — without it, an early kill snowballs straight into a nexus rush."
+  - "A dragon objective on a respawn timer with a team-wide damage buff is the cheapest mid-game flashpoint that pulls all 6 heroes into one teamfight."
+  - "Hero variety comes from one signature ability each (12 heroes × 1 = 12 distinct mechanics), not from elaborate skill kits — readable + buildable in one file."
+---
+
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>Six heroes drafted from a 12-hero roster — assassins, carries, tanks, mages, supports — drop onto a three-lane MOBA map with jungle, river dragon, and two bases. Creep waves clash every 30 seconds. Heroes last-hit for gold, recall when low, gank vulnerable lanes. Dragon respawns with a team-wide damage buff. Towers fall in order; the ancient becomes vulnerable only after 3+ enemy towers go down. First nexus down wins; 10-minute timer falls back to most-towers-killed.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>Test runs produce real MOBA stories: an assassin snowballs to 9-0-1 by mid-game, the dragon flips a teamfight, three towers fall in 90 seconds, "NEXUS UNDER ATTACK" fires, the defender's last stand fails — final nexus crack at lap 9:04. K/D/A scoreboards, gold leads, ace banners. The ten-minute matches feel like LCS clips compressed.</p>
+</section>
+
+<aside class="lwk-try-embed">
+  <h3>Watch it run</h3>
+  <iframe src="/learnwithkody/demos/88-moba-3v3.html" loading="lazy" title="MOBA 3v3"></iframe>
+  <p><a href="/learnwithkody/demos/88-moba-3v3.html">Open in a new tab →</a></p>
+</aside>
