@@ -35,6 +35,6 @@ Agent B doesn't read everything sent to it; instead, a lightweight summarizer �
 
 The side effects of creating an attention economy were staggering. Agents learned to be brief. Verbose, narrative-style updates consistently failed to win the auction for space against dense, highly structured JSON payloads. The swarm spontaneously evolved an incredibly terse, almost unreadable dialect to maximize information density per token budget.
 
-Furthermore, agents that historically generated "spam" — low-utility observations — found themselves bankrupt. Their information was priced out of the market entirely, and they were effectively ignored by the rest of the colony.
+Furthermore, agents that historically generated "spam" — low-utility observations — found themselves bankrupt. Their information was priced out of the market entirely, and they were effectively ignored by the rest of the swarm.
 
 We didn't intentionally code a system that marginalizes useless participants. It simply emerged as a hard mathematical consequence of the fact that when context is finite, attention must be ruthless.

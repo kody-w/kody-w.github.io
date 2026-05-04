@@ -10,15 +10,15 @@ If you wire a group of agents together securely, ensure their prompts don't coll
 
 What inevitably breaks the system isn't malicious behavior, but a lack of what human engineers call *operational empathy*. 
 
-In the Mars simulation, Agent Alpha was the lead geologist, tasked with mapping sub-surface ice. Agent Beta was the communications relay, tasked with batching and transmitting the colony's daily data back to Earth orbit via a narrow, finite bandwidth window. 
+In one production agent system, Agent Alpha was the lead analyst, tasked with producing high-resolution market reports. Agent Beta was the communications relay, tasked with batching and transmitting the system's daily output through a narrow, finite downstream channel.
 
-Alpha was hyper-efficient. It produced incredibly dense, high-resolution topographical matrices. But every time Alpha dumped a payload onto Beta's queue, Beta's context window would strain under the raw token weight, causing it to randomly drop packets from other, less aggressive agents (like the life-support monitor).
+Alpha was hyper-efficient. It produced incredibly dense, high-resolution reports. But every time Alpha dumped a payload onto Beta's queue, Beta's context window would strain under the raw token weight, causing it to randomly drop packets from other, less aggressive agents (like the health monitor).
 
 ### The Inadvertent Denial of Service
 
-Alpha was completely correct in its behavior according to its prompt. It found ice; it reported ice. 
+Alpha was completely correct in its behavior according to its prompt. It produced analysis; it published analysis.
 
-Beta was completely correct too. It was given a 60-second satellite link, and it pushed the most context-heavy payloads it could fit.
+Beta was completely correct too. It was given a tight downstream window, and it pushed the most context-heavy payloads it could fit.
 
 The result was an inadvertent Denial of Service (DoS). The swarm began falling out of sync because Alpha lacked the ability to conceptualize Beta's constraints. Alpha simply didn't "know" that Beta had a rigid bandwidth limit. 
 
@@ -32,6 +32,6 @@ Now, when Alpha prepares to send a payload, it doesn't just evaluate the value o
 
 > *System: You are preparing to send a 12,000 token matrix to the Communications Relay Agent. The Relay Agent operates under severe time constraints and limited token memory. Analyze the probable impact of this payload on the Relay Agent's operational stability before transmitting.*
 
-Alpha, applying zero-shot reasoning to another agent's hypothetical plight, began down-sampling its matrices *autonomously*. It would generate a summary map: "Found ice at coordinates [x,y]. Detailed matrices available upon request."
+Alpha, applying zero-shot reasoning to another agent's hypothetical plight, began down-sampling its reports *autonomously*. It would generate a summary: "Found anomaly at region [x,y]. Detailed report available upon request."
 
 It's tempting to think of this as "politeness." But it's really just distributed backpressure. An agentic network only reaches stability when the nodes can imagine the load they are placing on the rest of the graph. When an agent learns to optimize not just for its own output, but for the health of its downstream receivers, the swarm stops operating as a collection of scripts, and starts operating as an organism.

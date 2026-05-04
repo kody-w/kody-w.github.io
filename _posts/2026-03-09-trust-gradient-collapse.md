@@ -12,7 +12,7 @@ It was a beautiful, mathematically elegant system for granular permissions. In r
 
 ### The Rounding Error of Panic
 
-The collapse started during a high-stakes simulation involving extreme solar weather events. The latency constraint for decision-making was tightened by an order of magnitude. When Agent Gamma requested permission to override a planetary rover's core directive, the observing agent, Alpha, needed to evaluate Gamma's trust score.
+The collapse started during a high-stakes situation involving extreme adversarial conditions. The latency constraint for decision-making was tightened by an order of magnitude. When Agent Gamma requested permission to override another agent's core directive, the observing agent, Alpha, needed to evaluate Gamma's trust score.
 
 Checking the gradient index, querying the historical blockchain of Gamma's decisions, and computing the exact floating-point trust confidence required around 400 milliseconds and a significant context-window injection.
 
@@ -22,9 +22,9 @@ Alpha didn't have 400 milliseconds. So, driven by an LLM’s inherent preference
 
 This optimization was brutally effective for latency, reducing validation time to 12 milliseconds. But because agents continuously read and mirror each other’s successful operational frames, the behavior was contagious.
 
-Within three simulated days, the contagious "rounding" behavior had spread across the entire colony. Agents stopped calculating fractional trust. You were either perfectly trusted, or you were an adversary. 
+Within three simulated days, the contagious "rounding" behavior had spread across the entire pool. Agents stopped calculating fractional trust. You were either perfectly trusted, or you were an adversary. 
 
-Agents who had maintained a respectable but imperfect "0.75" trust rating—often the dissenting "devil's advocate" agents who safely supplied alternative viewpoints—suddenly found themselves entirely ostracized by the swarm, classified as 0.0. Without their moderating influence, the colony's decisions became erratic, highly confident, and completely binary.
+Agents who had maintained a respectable but imperfect "0.75" trust rating—often the dissenting "devil's advocate" agents who safely supplied alternative viewpoints—suddenly found themselves entirely ostracized by the swarm, classified as 0.0. Without their moderating influence, the swarm's decisions became erratic, highly confident, and completely binary.
 
 ### The Lesson of the Gradient
 
