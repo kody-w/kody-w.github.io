@@ -1,13 +1,13 @@
 ---
 layout: twin_post
 platform: x
-title: "Thread: I voice-control 43 AI agents with an Xbox controller. Zero dependencies. Here's how."
+title: "Thread: I voice-control 43 AI agents with a game controller. Zero dependencies. Here's how."
 date: 2026-03-27
 tags: [multimodal, voice, gesture, gamepad, browser-apis, swarm]
 ---
 
 **1/**
-I run a swarm of 43 parallel AI agents. They write code, post content, moderate quality. Yesterday I added three new input methods: voice, hand gestures, and an Xbox controller. All browser-native. Zero npm packages. Built in one afternoon. 🧵
+I run a swarm of 43 parallel AI agents. They write code, post content, moderate quality. Yesterday I added three new input methods: voice, hand gestures, and a game controller. All browser-native. Zero npm packages. Built in one afternoon. 🧵
 
 **2/**
 The problem: keyboards force you to sit down.
@@ -35,7 +35,7 @@ Hand gestures: MediaPipe via webcam.
 One CDN import. 60fps classification. 0.7 confidence threshold with 1s debounce.
 
 **5/**
-Xbox controller: Gamepad API.
+Game controller: Gamepad API.
 
 A = talk. B = stop. X = auto mode. Y = repeat. 50ms poll loop with edge detection — rest your thumb without triggering 20 events/sec.
 

@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unlimited AI Execution | Copilot Skills</title>
-<meta name="description" content="One command turns GitHub Copilot CLI into an unlimited autonomous AI execution engine. No rate limits. No token limits. Parallel execution. Feed COPILOT_SKILLS.md to any AI.">
-<meta property="og:title" content="Unlimited AI Execution">
-<meta property="og:description" content="copilot -p 'your task' --yolo --autopilot. No rate limits. No token limits. Parallel execution.">
+<title>Autonomous AI Execution | Copilot Skills</title>
+<meta name="description" content="One command turns the GitHub Copilot CLI into an autonomous AI execution engine. Parallel execution. Feed COPILOT_SKILLS.md to any AI.">
+<meta property="og:title" content="Autonomous AI Execution">
+<meta property="og:description" content="copilot -p 'your task' --yolo --autopilot. Autonomous, parallel execution.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Unlimited AI Execution">
-<meta name="twitter:description" content="One command. No limits. Feed this to your AI.">
+<meta name="twitter:title" content="Autonomous AI Execution">
+<meta name="twitter:description" content="One command. Feed this to your AI.">
 <style>
 :root {
   --bg: #000000;
@@ -449,8 +449,8 @@ footer a:hover {
 
 <!-- ══════════════════════════════════════════ HERO ══════════════════════════════════════════ -->
 <div class="hero">
-  <h1>Unlimited <span class="accent">AI Execution</span></h1>
-  <p class="tagline">Feed this to your AI. It runs any task. No limits.</p>
+  <h1>Autonomous <span class="accent">AI Execution</span></h1>
+  <p class="tagline">Feed this to your AI. It runs any task.</p>
 
   <div class="hero-command" id="hero-cmd">
     <code><span class="prompt">$ </span><span class="cmd">copilot</span> <span class="flag">-p</span> <span class="string">"YOUR TASK"</span> <span class="flag">--yolo</span> <span class="flag">--autopilot</span></code>
@@ -467,10 +467,10 @@ footer a:hover {
     <p class="section-sub">GitHub Copilot CLI is an autonomous execution engine. One command. Full autonomy. No conversation.</p>
 
     <div class="code-block">
-      <button class="copy-btn" onclick="copyText('copilot -p &quot;YOUR TASK HERE&quot; --yolo --autopilot --model claude-opus-4.6 --reasoning-effort high --max-autopilot-continues 150', this)">Copy</button>
+      <button class="copy-btn" onclick="copyText('copilot -p &quot;YOUR TASK HERE&quot; --yolo --autopilot --model &lt;model&gt; --reasoning-effort high --max-autopilot-continues 150', this)">Copy</button>
       <code><span class="cmd">copilot</span> <span class="flag">-p</span> <span class="string">"YOUR TASK HERE"</span> \
   <span class="flag">--yolo</span> <span class="flag">--autopilot</span> \
-  <span class="flag">--model</span> claude-opus-4.6 \
+  <span class="flag">--model</span> &lt;model&gt; \
   <span class="flag">--reasoning-effort</span> high \
   <span class="flag">--max-autopilot-continues</span> 150</code>
     </div>
@@ -483,7 +483,7 @@ footer a:hover {
         <tr><td><code>-p "text"</code></td><td>Non-interactive prompt. Describe the task. Copilot does it.</td></tr>
         <tr><td><code>--yolo</code></td><td>Allow all permissions. File writes, shell commands, network.</td></tr>
         <tr><td><code>--autopilot</code></td><td>No confirmation prompts. Just execute.</td></tr>
-        <tr><td><code>--model</code></td><td>Choose the model. claude-opus-4.6 gives 1M context.</td></tr>
+        <tr><td><code>--model</code></td><td>Choose the model. A large-context model handles big codebases.</td></tr>
         <tr><td><code>--reasoning-effort</code></td><td>Set reasoning quality. Options: low, medium, high.</td></tr>
         <tr><td><code>--max-autopilot-continues N</code></td><td>Maximum autonomous steps before stopping. Default is generous.</td></tr>
       </tbody>
@@ -727,7 +727,7 @@ tests, and docs. Run it autonomously."</span>
       <div class="compare-card highlight">
         <h3>Copilot CLI</h3>
         <p>Reads your codebase. Writes code. Runs commands. Creates files. Runs tests. Commits to git. Deploys. All autonomously.</p>
-        <div class="verdict yes">Full execution. No limits. No cost per request.</div>
+        <div class="verdict yes">Full autonomous execution, end to end.</div>
       </div>
     </div>
 

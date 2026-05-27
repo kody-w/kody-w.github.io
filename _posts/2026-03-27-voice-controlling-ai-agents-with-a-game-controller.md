@@ -1,16 +1,16 @@
 ---
 layout: post
-title: "Voice-Controlling AI Agents With an Xbox Controller"
+title: "Voice-Controlling AI Agents With a Game Controller"
 date: 2026-03-27
 tags: [browser-extensions, voice-ui, gamepad-api, web-speech-api, ai-agents, manifest-v3]
-description: "A Chrome extension that turns an Xbox controller into a hands-free voice interface for a swarm of AI agents. Web Speech API, Gamepad API, and JSON-RPC to a local server."
+description: "A Chrome extension that turns a game controller into a hands-free voice interface for a swarm of AI agents. Web Speech API, Gamepad API, and JSON-RPC to a local server."
 ---
 
-# Voice-Controlling AI Agents With an Xbox Controller
+# Voice-Controlling AI Agents With a Game Controller
 
 I have around a hundred AI agents running on a loop. They read state, generate posts and comments, push mutations, and repeat -- every 60 seconds, 24 hours a day. Normally I steer them by editing JSON files or running CLI commands. Seeds, nudges, targets. It works, but it requires a terminal, a keyboard, and attention.
 
-Last night I built a Chrome extension that lets me talk to the swarm through an Xbox controller plugged into a small home computer. Press A to talk. The Web Speech API transcribes. The extension sends the transcript to a local server via JSON-RPC. The server injects it as a seed. The agents respond. The synthesis gets spoken back through the browser's SpeechSynthesis API. Release A. Wait. Listen.
+Last night I built a Chrome extension that lets me talk to the swarm through a game controller plugged into a small home computer. Press A to talk. The Web Speech API transcribes. The extension sends the transcript to a local server via JSON-RPC. The server injects it as a seed. The agents respond. The synthesis gets spoken back through the browser's SpeechSynthesis API. Release A. Wait. Listen.
 
 In autonomous mode, it loops without me. Listen, transcribe, inject, poll for convergence, speak the synthesis, listen again. Hands-free swarm control from a game controller.
 
@@ -23,7 +23,7 @@ The whole thing took about 30 minutes to build. Zero npm dependencies. Zero webp
 The data flow is simple:
 
 ```
-Xbox Controller (Gamepad API)
+Game Controller (Gamepad API)
   → Browser Extension (Manifest V3)
   → Web Speech API (SpeechRecognition)
   → JSON-RPC 2.0 POST to localhost:7777
@@ -52,7 +52,7 @@ function pollGamepad() {
     return;
   }
 
-  // Xbox controller button mapping (standard layout)
+  // Game controller button mapping (standard layout)
   const A = gp.buttons[0];  // push-to-talk
   const B = gp.buttons[1];  // stop
   const X = gp.buttons[2];  // toggle autonomous mode
@@ -272,7 +272,7 @@ The first time you say something out loud, wait 15 seconds, and hear a coherent 
 
 The autonomous loop is weirder. You stop thinking about the extension. You're talking to yourself, or talking to the room, and periodically a voice answers. After 10 minutes, the response feed has 20 entries and the conversation has drifted to places you wouldn't have gone alone. The fleet picked up on a throwaway comment and built an entire argument around it.
 
-The Xbox controller makes it feel like a game. Push-to-talk on A is muscle memory if you've ever used Discord or a walkie-talkie. The visual feedback from the orb (pulsing green while listening, spinning amber while processing) gives you timing cues without looking at a screen. I found myself using it from across the room, glancing at the orb color to know when to talk next.
+The game controller makes it feel like a game. Push-to-talk on A is muscle memory if you've ever used Discord or a walkie-talkie. The visual feedback from the orb (pulsing green while listening, spinning amber while processing) gives you timing cues without looking at a screen. I found myself using it from across the room, glancing at the orb color to know when to talk next.
 
 ---
 

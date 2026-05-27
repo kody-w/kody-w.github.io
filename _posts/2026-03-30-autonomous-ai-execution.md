@@ -3,7 +3,7 @@ layout: post
 title: "Continuous AI Execution: One Command That Changes Everything"
 date: 2026-03-30
 tags: [copilot, ai-execution, autopilot, developer-tools, tutorial]
-description: "copilot -p 'your task' --yolo --autopilot. No rate limits. No token limits. Parallel execution. Feed COPILOT_SKILLS.md to any AI and it knows how to run anything."
+description: "copilot -p 'your task' --yolo --autopilot. Autonomous, parallel execution. Feed COPILOT_SKILLS.md to any AI and it knows how to run anything."
 ---
 
 # Continuous AI Execution: One Command That Changes Everything
@@ -27,7 +27,7 @@ That is the entire post. Everything below is just explaining what those six word
 
 GitHub Copilot CLI is an autonomous execution engine. You describe a task in plain English. It reads your codebase, writes code, runs commands, creates files, runs tests, commits to git, and exits when done. No conversation. No back-and-forth. No "let me help you with that." Just execution.
 
-I have been running this command thousands of times over the past month. Not as an experiment -- as my primary development workflow. I run fleets of parallel Copilot processes that write code, review PRs, analyze data, produce content, and maintain infrastructure. Continuously. Autonomously. Around the clock.
+I have been running this command as my primary development workflow. I run fleets of parallel Copilot processes that write code, review PRs, analyze data, produce content, and maintain infrastructure.
 
 Here is what I have learned.
 
@@ -40,7 +40,7 @@ Here is what I have learned.
 | `-p "text"` | Non-interactive prompt. Describe the task. Copilot does it. |
 | `--yolo` | Allow all permissions -- file writes, shell commands, network access. |
 | `--autopilot` | No confirmation prompts. Execute every step without asking. |
-| `--model claude-opus-4.6` | Choose the model. Opus 4.6 gives you 1M tokens of context. |
+| `--model <model>` | Choose the model. A large-context model handles big codebases. |
 | `--reasoning-effort high` | Maximum reasoning quality for complex tasks. |
 | `--max-autopilot-continues 150` | How many autonomous steps before stopping. |
 
@@ -55,7 +55,7 @@ The full-power invocation:
 ```bash
 copilot -p "Build a complete REST API with auth, tests, and docs" \
   --yolo --autopilot \
-  --model claude-opus-4.6 \
+  --model <model> \
   --reasoning-effort high \
   --max-autopilot-continues 150
 ```
@@ -194,19 +194,18 @@ Over time, the project evolves. Not in a theoretical sense. In the literal sense
 
 ---
 
-## Why There Are No Rate Limits
+## The Practical Constraint Is Your Machine
 
-This is the part that surprises people. GitHub Copilot CLI has:
+The thing that surprises people: with the GitHub Copilot CLI, the practical
+constraint on how much you run is your own machine -- CPU, memory, disk -- not
+some orchestration layer you have to build. Within your Copilot subscription,
+you just launch processes and let them work.
 
-- No tokens-per-minute limit
-- No requests-per-day limit
-- No cost per request (beyond your Copilot subscription)
-- No limit on parallel processes
-- 1M token context window with Opus 4.6
-
-The only constraint is your machine's resources. I have run thousands of Copilot invocations over a single weekend. The API does not throttle. It does not charge per token. It just runs.
-
-This changes the economics of AI-assisted development completely. When the marginal cost of an AI execution is zero, you stop thinking about whether a task is "worth" using AI for. Everything is worth it. Fix that one-line typo. Refactor that function you have been meaning to clean up. Write tests for that module nobody wants to test. The cost is zero, so the threshold is zero.
+This changes how you think about AI-assisted development. When kicking off an
+execution is this cheap and this fast, you stop debating whether a task is
+"worth" automating. Everything becomes worth it. Fix that one-line typo.
+Refactor that function you have been meaning to clean up. Write tests for that
+module nobody wants to test. The friction is gone, so the threshold drops.
 
 ---
 
@@ -267,4 +266,4 @@ The full skills reference is at [kody-w.github.io/copilot-skills](https://kody-w
 
 ---
 
-*The discovery is not that AI can write code. Everyone knows that. The discovery is that there exists a command-line tool, available right now, that executes arbitrary tasks autonomously with no rate limits, and almost nobody is using it this way.*
+*The discovery is not that AI can write code. Everyone knows that. The discovery is that there exists a command-line tool, available right now, that executes arbitrary tasks autonomously, and almost nobody is using it this way.*
