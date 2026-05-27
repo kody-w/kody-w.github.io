@@ -15,7 +15,7 @@ The user says any of:
 - "double down" / "10 more" / "do all of them"
 - "give me 10 prompts" → present them, then wait for confirmation
 - A specific genre + scale ("FPS games", "creative tools", "places to be")
-- A bonus single ask ("could you make a Halo CE clone")
+- A bonus single ask ("could you make a sci-fi arena shooter")
 
 ## Repository preconditions
 

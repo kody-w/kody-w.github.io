@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>BLOOD GULCH DOUBLES — 2v2 CTF</title>
+<title>CANYON DOUBLES — 2v2 CTF</title>
 <style>
   html,body{margin:0;padding:0;background:#000;color:#cfd;font-family:'Consolas','Courier New',monospace;overflow:hidden;height:100%}
   #wrap{position:relative;width:1280px;height:720px;margin:0 auto;background:#0a0d10;box-shadow:0 0 60px #000}
@@ -48,16 +48,16 @@
     <div id="killfeed"></div>
     <div id="announcer"></div>
     <div id="subann"></div>
-    <div id="broadcast"><span id="liveDot"></span>LIVE • BLOOD GULCH DOUBLES • CTF</div>
+    <div id="broadcast"><span id="liveDot"></span>LIVE • CANYON DOUBLES • CTF</div>
     <div id="mvp"></div>
   </div>
-  <div id="intro">LOADING BLOOD GULCH...</div>
+  <div id="intro">LOADING CANYON...</div>
 </div>
 <script>
 'use strict';
 /* ======================================================================
-   BLOOD GULCH DOUBLES — 2v2 CTF
-   Single-file Halo CE-flavored capture the flag broadcast simulator.
+   CANYON DOUBLES — 2v2 CTF
+   Single-file arena-shooter-flavored capture the flag broadcast simulator.
 ====================================================================== */
 
 const W = 1280, H = 720;
@@ -384,8 +384,8 @@ function killVehicle(v, attacker){
   if (attacker){
     attacker.stats.vKills++;
     killfeedAdd({
-      killer: attacker.name, weapon: 'Warthog Wreck',
-      victim: (v.team==='red'?'RED':'BLUE')+' Warthog',
+      killer: attacker.name, weapon: 'Buggy Wreck',
+      victim: (v.team==='red'?'RED':'BLUE')+' Buggy',
       killerTeam: attacker.team, victimTeam: v.team,
     });
   }
@@ -851,7 +851,7 @@ function aiVehicle(v, dt){
     if (!e.alive || e.team===v.team) continue;
     if (e.inVehicle) continue;
     if (dist(v.pos, e.pos) < 24 && Math.hypot(v.vel.x,v.vel.y) > 1.4){
-      applyDamage(e, 200, v.driver, 'Warthog Splatter');
+      applyDamage(e, 200, v.driver, 'Buggy Splatter');
     }
   }
 
@@ -1296,7 +1296,7 @@ function drawVehicle(v){
   // label
   ctx.fillStyle='#fff';
   ctx.font='bold 10px Consolas'; ctx.textAlign='center';
-  ctx.fillText('WARTHOG', v.pos.x, v.pos.y-30);
+  ctx.fillText('BUGGY', v.pos.x, v.pos.y-30);
   // respawn timer if dead — drawn elsewhere
 }
 

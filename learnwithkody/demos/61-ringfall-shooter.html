@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>BLOOD CANYON // SLAYER</title>
+<title>RINGFALL // SLAYER</title>
 <style>
   html,body{margin:0;padding:0;overflow:hidden;background:#000;width:100%;height:100%;
     font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;color:#aef0ff;user-select:none;}
@@ -114,13 +114,13 @@
 </div>
 <div id="respawn"><div>RESPAWNING</div><div class="num" id="respawnNum">3</div></div>
 <div id="intro">
-  <h1>BLOOD CANYON</h1>
+  <h1>RINGFALL</h1>
   <h2>SLAYER &middot; FIRST TO 25</h2>
   <div class="ctrls">
     WASD move &middot; SHIFT sprint &middot; SPACE jump &middot; CTRL crouch<br>
     MOUSE look &middot; LEFT-CLICK fire &middot; RIGHT-CLICK scope/charge<br>
     F or empty-hand click MELEE &middot; G GRENADE<br>
-    R reload &middot; Q swap weapons &middot; 1-2 select &middot; E enter/exit Warthog<br>
+    R reload &middot; Q swap weapons &middot; 1-2 select &middot; E enter/exit buggy<br>
     Walk over weapons to pick up
   </div>
   <div class="start">CLICK TO BEGIN</div>
@@ -197,7 +197,7 @@ sunDisc.position.copy(sun.position).multiplyScalar(2);
 scene.add(sunDisc);
 
 // ============================================================================
-// MAP — BLOOD CANYON
+// MAP — RINGFALL CANYON
 // ============================================================================
 const MAP_LEN = 200, MAP_WIDTH = 80;
 const obstacles = []; // {pos, radius, height} for AABB-ish collision
@@ -570,7 +570,7 @@ function playMedalSpree(text){
   o.start(t); o.stop(t+0.7);
 }
 
-// MUSIC: Halo CE choir + martial percussion loop (synthesized).
+// MUSIC: choir + martial percussion loop (synthesized).
 function startMusic(){
   if (!audioCtx) return;
   const ctx = audioCtx;
@@ -716,7 +716,7 @@ const armorTrim = new THREE.MeshStandardMaterial({color:0x2a5a36, roughness:0.6,
 
 function makeArms(){
   const g = new THREE.Group();
-  // Left arm (more visible) — angular MJOLNIR style
+  // Left arm (more visible) — angular powered-armor style
   const lg = new THREE.Group();
   const upper = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.1, 0.32), armorMat);
   upper.position.set(0, 0, -0.15);
@@ -946,10 +946,10 @@ makeHealthPickup(-40, 0);
 makeHealthPickup(40, 0);
 
 // ============================================================================
-// WARTHOG
+// BUGGY
 // ============================================================================
-const warthogs = [];
-function makeWarthog(team, sx, sz){
+const buggies = [];
+function makeBuggy(team, sx, sz){
   const g = new THREE.Group();
   const baseCol = team==='BLUE' ? 0x33558a : 0x884444;
   const bodyMat = new THREE.MeshStandardMaterial({color:0x8a7c4e, roughness:0.6, metalness:0.4, flatShading:true});
@@ -1012,8 +1012,8 @@ function makeWarthog(team, sx, sz){
     skidMarkTimer: 0,
   };
 }
-warthogs.push(makeWarthog('BLUE', -MAP_LEN/2 + 30, 8));
-warthogs.push(makeWarthog('RED',   MAP_LEN/2 - 30, -8));
+buggies.push(makeBuggy('BLUE', -MAP_LEN/2 + 30, 8));
+buggies.push(makeBuggy('RED',   MAP_LEN/2 - 30, -8));
 
 // ============================================================================
 // PROJECTILES (rockets + plasma) — bullets are hitscan
@@ -1546,9 +1546,9 @@ function tryEnterExitVehicle(){
     PLAYER.inVehicle = null; PLAYER.vehicleRef = null;
     return;
   }
-  // Find nearest warthog within 3m
+  // Find nearest buggy within 3m
   let best = null, bestD = 4;
-  for (const v of warthogs){
+  for (const v of buggies){
     if (!v.alive) continue;
     const d = v.pos.distanceTo(PLAYER.pos);
     if (d < bestD){ bestD = d; best = v; }
@@ -1860,7 +1860,7 @@ function tick(){
     updateGrenades(dt);
     updateParticles(dt);
     for (const bot of bots) botUpdate(bot, dt);
-    updateWarthogs(dt);
+    updateBuggies(dt);
     updatePickups(dt);
     updateHealthPickups(dt);
     // Shields recharge
@@ -1950,7 +1950,7 @@ function tick(){
 function updatePlayer(dt){
   // Movement
   if (PLAYER.inVehicle === 'driver'){
-    // controlled in updateWarthogs
+    // controlled in updateBuggies
     return;
   }
   if (PLAYER.inVehicle === 'gunner'){
@@ -1967,7 +1967,7 @@ function updatePlayer(dt){
   if (wish.lengthSq() > 0) wish.normalize();
   const sprinting = keys['ShiftLeft'] || keys['ShiftRight'];
   PLAYER.crouching = !!keys['ControlLeft'];
-  // Halo speed: ~5 m/s walk, 7 sprint, slower than typical FPS
+  // Movement speed: ~5 m/s walk, 7 sprint, slower than typical FPS
   const baseSpd = PLAYER.crouching ? 2.2 : (sprinting ? 7.0 : 4.8);
   const targetVx = wish.x * baseSpd;
   const targetVz = wish.z * baseSpd;
@@ -1976,12 +1976,12 @@ function updatePlayer(dt){
   PLAYER.vel.x += (targetVx - PLAYER.vel.x) * Math.min(1, accel*dt);
   PLAYER.vel.z += (targetVz - PLAYER.vel.z) * Math.min(1, accel*dt);
 
-  // Jump (Halo: high jump, ~2x normal)
+  // Jump (high jump, ~2x normal)
   if (keys['Space'] && PLAYER.grounded){
     PLAYER.vel.y = 9.5;
     PLAYER.grounded = false;
   }
-  // Gravity (low-grav Halo feel)
+  // Gravity (low-grav feel)
   PLAYER.vel.y -= 18 * dt;
 
   // Apply
@@ -2101,8 +2101,8 @@ function applyExplosion(pos, radius, dmg, owner){
       damageBot(bot, dmg*f, 'EXPLOSION', false);
     }
   }
-  // Warthogs
-  for (const v of warthogs){
+  // Buggies
+  for (const v of buggies){
     if (!v.alive) continue;
     const d = v.pos.distanceTo(pos);
     if (d < radius){
@@ -2201,8 +2201,8 @@ function updateHealthPickups(dt){
   }
 }
 
-function updateWarthogs(dt){
-  for (const v of warthogs){
+function updateBuggies(dt){
+  for (const v of buggies){
     if (!v.alive){
       if (performance.now()/1000 > v.respawnAt){
         v.alive = true; v.health = 200;
@@ -2251,7 +2251,7 @@ function updateWarthogs(dt){
     for (const bot of bots){
       if (!bot.alive) continue;
       if (bot.pos.distanceTo(v.pos) < 2.5 && Math.abs(v.speed) > 5){
-        damageBot(bot, 60, 'WARTHOG', false);
+        damageBot(bot, 60, 'BUGGY', false);
         bot.vel.add(v.vel.clone().multiplyScalar(0.5));
       }
     }
@@ -2276,7 +2276,7 @@ function updateWarthogs(dt){
 updateHUD();
 updateScoreboard();
 
-// Bot vs warthog: bot can also enter? Skipping — bots stay on foot.
+// Bot vs buggy: bot can also enter? Skipping — bots stay on foot.
 // Bot grenades / rockets vs player handled in updateProjectiles.
 
 tick();
