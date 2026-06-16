@@ -127,4 +127,6 @@ For a few hours, on a Minecraft clone of all things, I got to stand at one of th
 
 The proof, as always, is in the repo.
 
+The world is still live — [go walk it](https://kody-w.github.io/localFirstTools/voxel-world.html). Fly a kite, scan the QR, dig a hole. And if you want to read the diary the swarm kept while it rebuilt itself overnight, the [eleven-cycle evolution log](https://github.com/kody-w/localFirstTools/blob/main/docs/reports/voxel-world-evolution-log.md) is all there — every vote, every deferral, every bug it filed against itself.
+
 It was a taste. But I know what it was a taste *of.*
