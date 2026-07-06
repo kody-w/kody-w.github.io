@@ -66,5 +66,7 @@ This is the AI you keep.
 
 *The working spec lives in my public repos (`kody-w/rapp-static-apis` — `my-twin.profile.md`, composed on the frozen RAPP twin canon; reference twin at `kody-w/twin`). This essay is published as prior art for the pattern described.*
 
+*All of it is live, not planned: [the pulse broadcasting signed frames](https://kody-w.github.io/twin/feed.xml) · [the /twin lookup](https://kody-w.github.io/twin/lookup.html) · [the bones gallery](https://kody-w.github.io/twin/gallery/) · [a twin-in-training you can try](https://kody-w.github.io/rapp-static-apis/companion/?demo=1) · [the spec](https://github.com/kody-w/rapp-static-apis/blob/main/my-twin.profile.md).*
+
 ---
 *License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The pattern described is open for anyone to implement — see the [patent pledge](https://github.com/kody-w/rapp-static-apis/blob/main/PATENT-PLEDGE.md). RAPP™.*

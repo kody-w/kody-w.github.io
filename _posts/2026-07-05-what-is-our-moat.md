@@ -57,6 +57,17 @@ Moats aren't declared; they're activated, in order:
 4. **First cohort** — the workshop: fork the template, one-liner hatch, a GitHub account is all you need. First non-founder twins → first pairings → the graph moat is born.
 5. **Let the tumbler run** — deployed fidelity stays honest with no ops burden, forever.
 
+### Show, don't tell — live as of July 6
+
+Every step above that claims "done" has a public door you can open right now:
+
+1. **Published + timestamped** ✅ — [the essay](https://kodyw.com/the-ai-you-keep/) ([mirror](https://kody-w.github.io/2026/07/05/the-ai-you-keep/)) · [the spec](https://github.com/kody-w/rapp-static-apis/blob/main/my-twin.profile.md) · [the patent pledge](https://github.com/kody-w/rapp-static-apis/blob/main/PATENT-PLEDGE.md) · [the TWIN LICENSE](https://github.com/kody-w/twin/blob/main/TWIN-LICENSE.md)
+2. **The pulse is broadcasting** ✅ — [feed.xml](https://kody-w.github.io/twin/feed.xml) · [the signed genesis frame](https://github.com/kody-w/twin/tree/main/frames) · [verify it yourself](https://github.com/kody-w/twin/blob/main/tools/verify-frame.mjs) · [/twin lookup](https://kody-w.github.io/twin/lookup.html) · [the bones gallery](https://kody-w.github.io/twin/gallery/)
+3. **The 90-second proof** 🔨 — the pieces are live: [the twin-in-training](https://kody-w.github.io/rapp-static-apis/companion/?demo=1) (one twin, frames, revert, splice, QR sync) and [the encounter surface](https://kody-w.github.io/rapp-static-apis/rapp-go/); the two-device recording is next.
+4. **The workshop** 🔨 — [fork the template](https://github.com/kody-w/twin/blob/main/TEMPLATE.md) · [the one-liner hatch](https://github.com/kody-w/twin/blob/main/SUMMON.md); first cohort pending.
+5. **The tumbler runs** ✅ — [the harness](https://github.com/kody-w/rapp-static-apis/tree/main/tumbler) · [a real judged run](https://github.com/kody-w/rapp-static-apis/blob/main/tumbler/runs/2026-07-06T02-31-07-839Z-27cf/log.jsonl) · [the sabotage that got rejected](https://github.com/kody-w/rapp-static-apis/blob/main/tumbler/runs/2026-07-06T02-30-19-522Z-fd2e/log.jsonl)
+
+
 ## The one-paragraph answer
 
 We are the **AI medium**: the layer where a person's AI self persists. Our brand is **the AI you keep** — yours, alive, quiet, forever, private to the bone, inheritable by design. And our moat is not the pattern, which we give away loudly — it's the **position** (incumbents can't follow without commoditizing themselves), the **clock** (signed history can't be faked, and ours starts first), and the **graph** (relationships that live in two histories can't be copied from either side). Spec is the sword, patent is the shield, the network is the castle — and the castle gets built one paired twin at a time.
