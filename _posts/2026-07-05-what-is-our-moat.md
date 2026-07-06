@@ -60,3 +60,6 @@ Moats aren't declared; they're activated, in order:
 ## The one-paragraph answer
 
 We are the **AI medium**: the layer where a person's AI self persists. Our brand is **the AI you keep** — yours, alive, quiet, forever, private to the bone, inheritable by design. And our moat is not the pattern, which we give away loudly — it's the **position** (incumbents can't follow without commoditizing themselves), the **clock** (signed history can't be faked, and ours starts first), and the **graph** (relationships that live in two histories can't be copied from either side). Spec is the sword, patent is the shield, the network is the castle — and the castle gets built one paired twin at a time.
+
+---
+*License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The pattern described is open for anyone to implement — see the [patent pledge](https://github.com/kody-w/rapp-static-apis/blob/main/PATENT-PLEDGE.md). RAPP™.*

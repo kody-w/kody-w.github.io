@@ -65,3 +65,6 @@ This is the AI you keep.
 ---
 
 *The working spec lives in my public repos (`kody-w/rapp-static-apis` — `my-twin.profile.md`, composed on the frozen RAPP twin canon; reference twin at `kody-w/twin`). This essay is published as prior art for the pattern described.*
+
+---
+*License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The pattern described is open for anyone to implement — see the [patent pledge](https://github.com/kody-w/rapp-static-apis/blob/main/PATENT-PLEDGE.md). RAPP™.*
