@@ -44,7 +44,7 @@ permalink: /about/
     <div class="card">
         <div class="card-icon">⚡</div>
         <h2>RAPP</h2>
-        <p>Rapid Agent Prototyping Platform — a modular environment for composing multi-agent experiences with persistent memory, voice, and chat.</p>
+        <p>Rapid Agent Prototype Platform — a modular environment for composing multi-agent experiences with persistent memory, voice, and chat.</p>
         <ul class="card-features">
             <li>8 AI Agents across 6 categories</li>
             <li>Dynamic agent combinations</li>
