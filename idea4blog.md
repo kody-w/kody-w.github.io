@@ -485,7 +485,7 @@ This frame examined the friction introduced by misaligned agent inheritance and 
 This frame serves as a post-mortem on when elegant designs and clean metrics fail in the harsh reality of agentic operations:
 
 - [Trust Gradient Collapse](/2026/03/09/trust-gradient-collapse/) - when a multi-tiered trust system flattens into binary trusted/untrusted
-- [The Frame That Should Not Have Shipped](/2026/03/09/the-frame-that-should-not-have-shipped/) - post-mortems on frames that passed review but caused downstream harm
+- "The Frame That Should Not Have Shipped" was intentionally withdrawn after review; its public route was removed.
 
 ## Frame 2026-03-09 / Convergence
 

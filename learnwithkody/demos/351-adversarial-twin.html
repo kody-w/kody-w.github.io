@@ -1,0 +1,996 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; script-src-attr 'none'; style-src 'unsafe-inline'; img-src 'none'; font-src 'none'; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Adversarial Twin — Evidence Workbench</title>
+<style>
+:root {
+  --bg: #090d13;
+  --panel: #111824;
+  --panel-2: #172131;
+  --ink: #edf3fb;
+  --muted: #9aabc0;
+  --line: #2b3a4f;
+  --accent: #77e0c1;
+  --accent-2: #ffc857;
+  --danger: #ff7d8f;
+  --ok: #8ce99a;
+  --focus: #9cc8ff;
+  --shadow: 0 18px 50px rgba(0, 0, 0, .3);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(119, 224, 193, .1), transparent 30rem),
+    radial-gradient(circle at 88% 4%, rgba(255, 200, 87, .08), transparent 28rem),
+    var(--bg);
+  color: var(--ink);
+  font: 16px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+button, input, textarea, select { font: inherit; }
+button, input, textarea, select { color: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: .48; }
+a { color: var(--accent); }
+.skip-link {
+  position: fixed;
+  z-index: 20;
+  left: 1rem;
+  top: 1rem;
+  padding: .7rem 1rem;
+  border-radius: .55rem;
+  background: var(--ink);
+  color: var(--bg);
+  transform: translateY(-180%);
+}
+.skip-link:focus { transform: translateY(0); }
+.shell { width: min(1160px, calc(100% - 2rem)); margin: 0 auto; }
+header { padding: 3.5rem 0 2rem; }
+.eyebrow {
+  margin: 0 0 .65rem;
+  color: var(--accent);
+  font: 700 .76rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+h1 { max-width: 820px; margin: 0; font-size: clamp(2rem, 6vw, 4.5rem); line-height: .98; letter-spacing: -.045em; }
+.lede { max-width: 760px; margin: 1.1rem 0 0; color: var(--muted); font-size: 1.05rem; }
+.privacy {
+  display: inline-flex;
+  gap: .5rem;
+  align-items: center;
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font-size: .86rem;
+}
+.privacy::before { content: "●"; color: var(--ok); }
+.card {
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: rgba(17, 24, 36, .94);
+  box-shadow: var(--shadow);
+}
+.prompt-card { margin-top: 1.8rem; padding: 1rem; }
+.card-head, .section-head, .row-head, .toolbar {
+  display: flex;
+  gap: .8rem;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.label {
+  color: var(--accent-2);
+  font: 700 .72rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+pre {
+  margin: .85rem 0 0;
+  padding: 1rem;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: .7rem;
+  background: #090e16;
+  color: #dce8f7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: .86rem/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.button {
+  min-height: 2.65rem;
+  padding: .65rem .95rem;
+  border: 1px solid var(--line);
+  border-radius: .65rem;
+  background: var(--panel-2);
+  color: var(--ink);
+  font-weight: 750;
+}
+.button:hover:not(:disabled) { border-color: var(--accent); }
+.button.primary { border-color: #3a8c77; background: var(--accent); color: #07110e; }
+.button.warm { border-color: #9b772a; background: var(--accent-2); color: #171003; }
+.button.ghost { background: transparent; }
+.button.small { min-height: 2.15rem; padding: .42rem .7rem; font-size: .84rem; }
+.button.danger { border-color: #713845; color: #ffb6c0; }
+.button[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); color: var(--accent); }
+main { padding-bottom: 5rem; }
+.guide {
+  position: sticky;
+  z-index: 8;
+  top: 0;
+  margin-bottom: 1rem;
+  padding: .8rem;
+  border: 1px solid var(--line);
+  border-radius: 0 0 .9rem .9rem;
+  background: rgba(9, 13, 19, .94);
+  backdrop-filter: blur(12px);
+}
+.guide strong { font-size: .92rem; }
+.guide p { margin: .15rem 0 0; color: var(--muted); font-size: .82rem; }
+.progress {
+  width: min(18rem, 100%);
+  height: .5rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #060a10;
+}
+.progress > span { display: block; width: 0; height: 100%; background: var(--accent); transition: width .2s ease; }
+.work-section { margin-top: 1rem; padding: clamp(1rem, 3vw, 1.5rem); }
+h2, h3, h4, p { overflow-wrap: anywhere; }
+h2 { margin: 0; font-size: 1.3rem; letter-spacing: -.015em; }
+h3 { margin: 0; font-size: 1.02rem; }
+h4 { margin: 0; font-size: .95rem; }
+.section-note { max-width: 720px; margin: .35rem 0 1rem; color: var(--muted); font-size: .91rem; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; }
+.grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.full { grid-column: 1 / -1; }
+label.field { display: grid; align-content: start; gap: .35rem; color: var(--muted); font-size: .83rem; font-weight: 700; }
+.hint { color: var(--muted); font-size: .76rem; font-weight: 450; }
+input, textarea, select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: .58rem;
+  background: #0b111b;
+  padding: .68rem .75rem;
+}
+textarea { min-height: 6rem; resize: vertical; }
+input::placeholder, textarea::placeholder { color: #6f8299; opacity: 1; }
+input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.view-controls { margin: 1rem 0; padding: .75rem; border: 1px solid var(--line); border-radius: .75rem; background: #0b111b; }
+.lens-stage { display: grid; gap: 1rem; }
+.lens-stage.compare { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.lens {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: .85rem;
+  background: #0d141f;
+}
+.lens[data-lens="a"] { border-top: 3px solid var(--accent); }
+.lens[data-lens="b"] { border-top: 3px solid var(--accent-2); }
+fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+legend { padding: 0; font-weight: 850; font-size: 1.08rem; }
+.claim-list, .disagreement-list { display: grid; gap: .8rem; margin: 1rem 0; }
+.claim-row, .disagreement-row {
+  padding: .9rem;
+  border: 1px solid var(--line);
+  border-radius: .75rem;
+  background: var(--panel);
+}
+.claim-row textarea { min-height: 4.8rem; }
+.checkline {
+  display: flex;
+  gap: .65rem;
+  align-items: flex-start;
+  color: var(--ink);
+  font-size: .9rem;
+}
+.checkline input { width: 1.1rem; height: 1.1rem; margin-top: .18rem; accent-color: var(--accent); flex: 0 0 auto; }
+.plain-note { padding: .8rem; border-left: 3px solid var(--accent-2); background: rgba(255, 200, 87, .06); color: var(--muted); font-size: .86rem; }
+.checks { display: grid; gap: .45rem; margin: 1rem 0; padding: 0; list-style: none; }
+.checks li { display: flex; gap: .55rem; align-items: flex-start; padding: .55rem .65rem; border-radius: .55rem; background: #0b111b; color: var(--muted); }
+.checks li.pass { color: var(--ok); }
+.checks li.fail { color: #ffc0c9; }
+.mark { width: 1.2rem; flex: 0 0 auto; font-weight: 900; }
+.status {
+  min-height: 2.9rem;
+  margin-top: .8rem;
+  padding: .72rem .85rem;
+  border: 1px solid var(--line);
+  border-radius: .65rem;
+  background: #0b111b;
+  color: var(--muted);
+}
+.packet-actions { margin-top: 1rem; }
+.footer-note { margin: 1rem 0 0; color: var(--muted); font-size: .8rem; }
+[hidden] { display: none !important; }
+@media (max-width: 850px) {
+  .lens-stage.compare, .grid.three { grid-template-columns: 1fr; }
+}
+@media (max-width: 650px) {
+  .shell { width: min(100% - 1rem, 1160px); }
+  header { padding-top: 2rem; }
+  .grid { grid-template-columns: 1fr; }
+  .guide { margin-inline: -.5rem; }
+  .button { width: 100%; }
+  .toolbar .button, .card-head .button, .row-head .button { width: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: .001ms !important; animation-duration: .001ms !important; animation-iteration-count: 1 !important; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#workbench">Skip to workbench</a>
+
+<header class="shell">
+  <p class="eyebrow">Prompt to Proof · Lesson 5</p>
+  <h1>Build an adversarial review that can show its receipts.</h1>
+  <p class="lede">Run two review lenses independently, record claims against exact evidence, resolve disagreement, and keep the final decision human.</p>
+  <p class="privacy">Local-only workbench: no network calls, storage, grading, or AI generation.</p>
+
+  <section class="card prompt-card" aria-labelledby="prompt-heading">
+    <div class="card-head">
+      <span class="label" id="prompt-heading">Canonical prompt</span>
+      <button class="button small" type="button" id="copyPrompt">Copy exact prompt</button>
+    </div>
+    <pre id="canonicalPrompt">Read everything I've pushed to GitHub. Now play the role of the
+smartest engineer who hates my style and write a code review of my
+latest PR. Be specific about the patterns I lean on too hard. Quote
+exact lines. Compare them to better alternatives I've also written
+elsewhere — so the critique is calibrated to my actual ceiling, not
+a generic "best practice." Be cruel. Be right.</pre>
+  </section>
+</header>
+
+<main class="shell" id="workbench">
+  <div class="guide" aria-label="Tutorial progress">
+    <div class="toolbar">
+      <div>
+        <strong id="progressText">0 of 7 structural gates ready</strong>
+        <p>Completeness is not correctness. Read and judge the evidence yourself.</p>
+      </div>
+      <div class="progress" role="progressbar" aria-label="Structural gate progress" aria-valuemin="0" aria-valuemax="7" aria-valuenow="0">
+        <span id="progressBar"></span>
+      </div>
+    </div>
+  </div>
+
+  <form id="reviewForm" novalidate>
+    <section class="card work-section" aria-labelledby="scope-title">
+      <div class="section-head">
+        <h2 id="scope-title">1 · Scope the evidence</h2>
+        <span class="label">Same source set, different lenses</span>
+      </div>
+      <p class="section-note">Name what both reviewers could inspect. Do not paste secrets; this page keeps data in memory but cannot make sensitive code safe to share.</p>
+      <div class="grid three">
+        <label class="field">Review target
+          <span class="hint">PR, patch, commit, or local change label</span>
+          <input id="reviewTarget" data-scope type="text" placeholder="PR #42 · checkout flow">
+        </label>
+        <label class="field">History comparison scope
+          <span class="hint">Repos, branches, or date range searched</span>
+          <input id="historyScope" data-scope type="text" placeholder="app + api repos · 2023–2026">
+        </label>
+        <label class="field">Evidence boundary
+          <span class="hint">What was unavailable or intentionally excluded</span>
+          <input id="evidenceBoundary" data-scope type="text" placeholder="Generated files and vendor code excluded">
+        </label>
+        <label class="field full">Shared evidence notes
+          <span class="hint">Optional facts both lenses should see; observations only, not the verdict</span>
+          <textarea id="sharedEvidence" placeholder="Tests run, changed paths, constraints, links, or pasted excerpts…"></textarea>
+        </label>
+      </div>
+    </section>
+
+    <section class="card work-section" aria-labelledby="lenses-title">
+      <div class="section-head">
+        <h2 id="lenses-title">2 · Work two lenses independently</h2>
+        <span class="label">Isolation before comparison</span>
+      </div>
+      <p class="section-note">Finish and attest each pass before unlocking Compare. A complete claim needs a topic, criticism, exact location, exact quote, severity, and a stronger comparator.</p>
+
+      <div class="view-controls toolbar" aria-label="Lens view">
+        <div class="toolbar">
+          <button class="button small" type="button" data-view="a" aria-pressed="true">Work Lens A</button>
+          <button class="button small" type="button" data-view="b" aria-pressed="false">Work Lens B</button>
+          <button class="button small" type="button" data-view="both" aria-pressed="false" id="compareButton" disabled>Compare lenses</button>
+        </div>
+        <span class="hint" id="compareHint">Complete both independent-pass attestations to compare.</span>
+      </div>
+
+      <div class="lens-stage" id="lensStage">
+        <fieldset class="lens" id="lensA" data-lens="a">
+          <legend>Lens A</legend>
+          <div class="grid">
+            <label class="field">Lens name
+              <input id="lensAName" type="text" value="Maintainability skeptic">
+            </label>
+            <label class="field">Independent review question
+              <input id="lensAFocus" type="text" value="Where does this change make future edits harder?">
+            </label>
+          </div>
+          <div class="claim-list" id="claimsA" aria-label="Lens A claims"></div>
+          <button class="button small ghost" type="button" data-add-claim="a">+ Add Lens A claim</button>
+          <label class="checkline">
+            <input id="lensAAttest" type="checkbox">
+            <span>I completed Lens A without consulting Lens B's claims.</span>
+          </label>
+        </fieldset>
+
+        <fieldset class="lens" id="lensB" data-lens="b" hidden>
+          <legend>Lens B</legend>
+          <div class="grid">
+            <label class="field">Lens name
+              <input id="lensBName" type="text" value="Reliability skeptic">
+            </label>
+            <label class="field">Independent review question
+              <input id="lensBFocus" type="text" value="Where can this change fail under real operating conditions?">
+            </label>
+          </div>
+          <div class="claim-list" id="claimsB" aria-label="Lens B claims"></div>
+          <button class="button small ghost" type="button" data-add-claim="b">+ Add Lens B claim</button>
+          <label class="checkline">
+            <input id="lensBAttest" type="checkbox">
+            <span>I completed Lens B without consulting Lens A's claims.</span>
+          </label>
+        </fieldset>
+      </div>
+    </section>
+
+    <section class="card work-section" aria-labelledby="disagreement-title">
+      <div class="section-head">
+        <h2 id="disagreement-title">3 · Record disagreements</h2>
+        <button class="button small ghost" type="button" id="addDisagreement">+ Add disagreement</button>
+      </div>
+      <p class="section-note">Do not average two opinions. Capture both positions, then name the evidence and resolution that decides between them.</p>
+      <div class="disagreement-list" id="disagreements"></div>
+      <label class="checkline">
+        <input id="noDisagreement" type="checkbox">
+        <span>No material disagreement remains after comparison. Any partially filled rows above still have to be resolved.</span>
+      </label>
+    </section>
+
+    <section class="card work-section" aria-labelledby="judge-title">
+      <div class="section-head">
+        <h2 id="judge-title">4 · Pass the human judge gate</h2>
+        <span class="label">No auto-grading</span>
+      </div>
+      <p class="section-note">The app can detect blanks. It cannot tell whether a quote proves a claim, whether an alternative is better, or whether the verdict is wise.</p>
+      <div class="plain-note">Judge the evidence chain, not the cruelty of the persona. “Be right” is the gate; “be cruel” is only the pressure test.</div>
+      <div class="grid" style="margin-top:1rem">
+        <label class="field">Judge name or role
+          <input id="judgeName" type="text" placeholder="PR author, teammate, or review lead">
+        </label>
+        <label class="field">Verdict
+          <select id="judgeVerdict">
+            <option value="">Choose a human verdict…</option>
+            <option>Revise before review</option>
+            <option>Request targeted changes</option>
+            <option>Proceed with documented risk</option>
+            <option>Evidence is insufficient</option>
+          </select>
+        </label>
+        <label class="field full">Decision criteria
+          <input id="judgeCriteria" type="text" placeholder="Correctness, maintainability, regression risk, and proportionality">
+        </label>
+        <label class="field full">Rationale tied to evidence
+          <textarea id="judgeRationale" placeholder="Which cited claims control the decision, which do not, and why?"></textarea>
+        </label>
+      </div>
+      <label class="checkline">
+        <input id="judgeAttest" type="checkbox">
+        <span>I checked the cited locations and quotes myself. This verdict is human judgment, not an automatic score.</span>
+      </label>
+    </section>
+
+    <section class="card work-section" aria-labelledby="packet-title">
+      <div class="section-head">
+        <h2 id="packet-title">5 · Check, seal, and export</h2>
+        <span class="label">Markdown packet</span>
+      </div>
+      <ul class="checks" id="checkList">
+        <li data-check="scope"><span class="mark">○</span><span>Review target, history scope, and evidence boundary are named.</span></li>
+        <li data-check="lensA"><span class="mark">○</span><span>Lens A has at least one claim, and every nonempty claim is evidence-complete.</span></li>
+        <li data-check="lensB"><span class="mark">○</span><span>Lens B has at least one claim, and every nonempty claim is evidence-complete.</span></li>
+        <li data-check="independent"><span class="mark">○</span><span>Both independent-pass attestations are checked.</span></li>
+        <li data-check="compared"><span class="mark">○</span><span>The lenses were compared after both independent passes.</span></li>
+        <li data-check="disagreement"><span class="mark">○</span><span>Disagreements are resolved, or none remains.</span></li>
+        <li data-check="judge"><span class="mark">○</span><span>The human judge supplied criteria, verdict, rationale, and attestation.</span></li>
+      </ul>
+      <div class="toolbar">
+        <div class="toolbar">
+          <button class="button" type="button" id="runChecks">Run structural checks</button>
+          <button class="button warm" type="button" id="sealPacket" disabled>Seal review packet</button>
+        </div>
+        <button class="button danger ghost" type="button" id="resetWorkbench">Reset workbench</button>
+      </div>
+      <div class="toolbar packet-actions">
+        <button class="button primary" type="button" id="copyPacket" disabled>Copy sealed packet</button>
+        <button class="button" type="button" id="exportPacket" disabled>Export .md</button>
+      </div>
+      <div class="status" id="status" role="status" aria-live="polite">Start with the evidence scope, then complete each lens in isolation.</div>
+      <p class="footer-note">Nothing is uploaded or saved. Resetting or closing this page clears the workbench.</p>
+    </section>
+  </form>
+</main>
+
+<template id="claimTemplate">
+  <article class="claim-row">
+    <div class="row-head">
+      <h4>Claim</h4>
+      <button class="button small danger ghost remove-row" type="button">Remove</button>
+    </div>
+    <div class="grid" style="margin-top:.75rem">
+      <label class="field">Pattern or topic
+        <input data-field="topic" type="text" placeholder="Repeated branching, hidden state, weak boundary…">
+      </label>
+      <label class="field">Severity
+        <select data-field="severity">
+          <option value="">Choose…</option>
+          <option>Blocker</option>
+          <option>High</option>
+          <option>Medium</option>
+          <option>Low</option>
+          <option>Question</option>
+        </select>
+      </label>
+      <label class="field full">Specific claim
+        <textarea data-field="claim" placeholder="State what this code does, why it matters, and the concrete risk."></textarea>
+      </label>
+      <label class="field">Exact location
+        <input data-field="location" type="text" placeholder="src/file.ts:42–57 or commit URL">
+      </label>
+      <label class="field">Exact quote
+        <textarea data-field="quote" placeholder="Paste the smallest code excerpt that supports the claim."></textarea>
+      </label>
+      <label class="field full">Stronger comparator from your history
+        <textarea data-field="alternative" placeholder="repo/path:line + exact alternative + why it is a fair comparison"></textarea>
+      </label>
+    </div>
+  </article>
+</template>
+
+<template id="disagreementTemplate">
+  <article class="disagreement-row">
+    <div class="row-head">
+      <h4>Disagreement</h4>
+      <button class="button small danger ghost remove-row" type="button">Remove</button>
+    </div>
+    <div class="grid" style="margin-top:.75rem">
+      <label class="field">Topic
+        <input data-field="topic" type="text" placeholder="Whether this duplication is justified">
+      </label>
+      <label class="field">Resolution
+        <select data-field="resolution">
+          <option value="">Choose…</option>
+          <option>Lens A controls</option>
+          <option>Lens B controls</option>
+          <option>Both survive with narrower scope</option>
+          <option>Neither is supported</option>
+          <option>More evidence required</option>
+        </select>
+      </label>
+      <label class="field">Lens A position
+        <textarea data-field="a" placeholder="What Lens A claims"></textarea>
+      </label>
+      <label class="field">Lens B position
+        <textarea data-field="b" placeholder="What Lens B claims"></textarea>
+      </label>
+      <label class="field full">Deciding evidence and reasoning
+        <textarea data-field="evidence" placeholder="Cite the location or test that resolves the disagreement, then explain how."></textarea>
+      </label>
+    </div>
+  </article>
+</template>
+
+<script>
+(function () {
+  "use strict";
+
+  const form = document.getElementById("reviewForm");
+  const status = document.getElementById("status");
+  const claimTemplate = document.getElementById("claimTemplate");
+  const disagreementTemplate = document.getElementById("disagreementTemplate");
+  const claimContainers = {
+    a: document.getElementById("claimsA"),
+    b: document.getElementById("claimsB")
+  };
+  const state = { compared: false, sealed: false, sealedAt: "", resetTimer: 0 };
+
+  function value(id) {
+    return document.getElementById(id).value.trim();
+  }
+
+  function announce(message) {
+    status.textContent = message;
+  }
+
+  function fallbackCopy(text) {
+    const area = document.createElement("textarea");
+    area.value = text;
+    area.setAttribute("readonly", "");
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    const copied = document.execCommand("copy");
+    area.remove();
+    if (!copied) {
+      throw new Error("Copy command was unavailable.");
+    }
+  }
+
+  async function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return;
+      } catch (error) {
+        fallbackCopy(text);
+        return;
+      }
+    }
+    fallbackCopy(text);
+  }
+
+  function downloadText(filename, text) {
+    const blob = new Blob([text], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function addClaim(lens) {
+    unseal();
+    document.getElementById(lens === "a" ? "lensAAttest" : "lensBAttest").checked = false;
+    state.compared = false;
+    const fragment = claimTemplate.content.cloneNode(true);
+    claimContainers[lens].appendChild(fragment);
+    renumberRows(claimContainers[lens], lens === "a" ? "Lens A claim" : "Lens B claim");
+    update();
+  }
+
+  function addDisagreement() {
+    unseal();
+    const fragment = disagreementTemplate.content.cloneNode(true);
+    document.getElementById("disagreements").appendChild(fragment);
+    renumberRows(document.getElementById("disagreements"), "Disagreement");
+    update();
+  }
+
+  function renumberRows(container, label) {
+    const rows = Array.from(container.children);
+    rows.forEach(function (row, index) {
+      row.querySelector("h4").textContent = label + " " + (index + 1);
+      row.querySelector(".remove-row").disabled = rows.length === 1;
+    });
+  }
+
+  function rowValues(row) {
+    const data = {};
+    row.querySelectorAll("[data-field]").forEach(function (field) {
+      data[field.dataset.field] = field.value.trim();
+    });
+    return data;
+  }
+
+  function dataHasAnyValue(data) {
+    return Object.values(data).some(Boolean);
+  }
+
+  function claimDataComplete(data) {
+    return ["topic", "severity", "claim", "location", "quote", "alternative"].every(function (key) {
+      return Boolean(data[key]);
+    });
+  }
+
+  function claimSetReady(rows) {
+    const usedRows = rows.filter(dataHasAnyValue);
+    return usedRows.length > 0 && usedRows.every(claimDataComplete);
+  }
+
+  function rowHasAnyValue(row) {
+    return dataHasAnyValue(rowValues(row));
+  }
+
+  function disagreementComplete(row) {
+    const data = rowValues(row);
+    return ["topic", "resolution", "a", "b", "evidence"].every(function (key) {
+      return Boolean(data[key]);
+    });
+  }
+
+  function claimsReady(lens) {
+    return claimSetReady(Array.from(claimContainers[lens].children).map(rowValues));
+  }
+
+  function disagreementReady() {
+    const rows = Array.from(document.getElementById("disagreements").children);
+    const usedRows = rows.filter(rowHasAnyValue);
+    if (usedRows.length > 0) {
+      return usedRows.every(disagreementComplete);
+    }
+    return document.getElementById("noDisagreement").checked;
+  }
+
+  function getChecks() {
+    const scopeReady = Array.from(form.querySelectorAll("[data-scope]")).every(function (field) {
+      return Boolean(field.value.trim());
+    });
+    const judgeReady = Boolean(
+      value("judgeName") &&
+      value("judgeVerdict") &&
+      value("judgeCriteria") &&
+      value("judgeRationale") &&
+      document.getElementById("judgeAttest").checked
+    );
+    return {
+      scope: scopeReady,
+      lensA: Boolean(value("lensAName") && value("lensAFocus") && claimsReady("a")),
+      lensB: Boolean(value("lensBName") && value("lensBFocus") && claimsReady("b")),
+      independent: document.getElementById("lensAAttest").checked && document.getElementById("lensBAttest").checked,
+      compared: state.compared,
+      disagreement: disagreementReady(),
+      judge: judgeReady
+    };
+  }
+
+  function updateChecks(checks) {
+    Object.keys(checks).forEach(function (key) {
+      const item = document.querySelector('[data-check="' + key + '"]');
+      const mark = item.querySelector(".mark");
+      item.classList.toggle("pass", checks[key]);
+      item.classList.toggle("fail", !checks[key]);
+      mark.textContent = checks[key] ? "✓" : "○";
+    });
+    const count = Object.values(checks).filter(Boolean).length;
+    document.getElementById("progressText").textContent = count + " of 7 structural gates ready";
+    const progress = document.querySelector(".progress");
+    progress.setAttribute("aria-valuenow", String(count));
+    document.getElementById("progressBar").style.width = ((count / 7) * 100) + "%";
+    return count;
+  }
+
+  function setView(view) {
+    const lensA = document.getElementById("lensA");
+    const lensB = document.getElementById("lensB");
+    lensA.hidden = view === "b";
+    lensB.hidden = view === "a";
+    document.getElementById("lensStage").classList.toggle("compare", view === "both");
+    document.querySelectorAll("[data-view]").forEach(function (button) {
+      button.setAttribute("aria-pressed", String(button.dataset.view === view));
+    });
+    if (view === "both") {
+      state.compared = true;
+      announce("Both lenses are visible. Compare claims before resolving disagreements.");
+    } else {
+      announce("Working " + (view === "a" ? "Lens A" : "Lens B") + " in isolation.");
+    }
+    update();
+  }
+
+  function updateComparisonLock() {
+    const independent = document.getElementById("lensAAttest").checked && document.getElementById("lensBAttest").checked;
+    const compareButton = document.getElementById("compareButton");
+    compareButton.disabled = !independent;
+    document.getElementById("compareHint").textContent = independent
+      ? "Comparison unlocked. Reveal both lenses when both passes are final."
+      : "Complete both independent-pass attestations to compare.";
+    if (!independent && state.compared) {
+      state.compared = false;
+      setView("a");
+    }
+  }
+
+  function unseal() {
+    if (!state.sealed) {
+      return;
+    }
+    state.sealed = false;
+    state.sealedAt = "";
+    document.getElementById("copyPacket").disabled = true;
+    document.getElementById("exportPacket").disabled = true;
+    announce("The packet changed after sealing. Review the checks and seal it again.");
+  }
+
+  function update() {
+    updateComparisonLock();
+    const checks = getChecks();
+    const count = updateChecks(checks);
+    const ready = count === 7;
+    document.getElementById("sealPacket").disabled = !ready;
+    if (!state.sealed) {
+      document.getElementById("copyPacket").disabled = true;
+      document.getElementById("exportPacket").disabled = true;
+    }
+  }
+
+  function markdownBlock(text) {
+    return text ? text : "_Not provided_";
+  }
+
+  function fencedText(text, language) {
+    const content = markdownBlock(text);
+    const runs = content.match(/`+/g) || [];
+    const longestRun = runs.reduce(function (longest, run) {
+      return Math.max(longest, run.length);
+    }, 0);
+    const fence = "`".repeat(Math.max(3, longestRun + 1));
+    return fence + (language || "") + "\n" + content + "\n" + fence;
+  }
+
+  function claimMarkdown(lens) {
+    const rows = Array.from(claimContainers[lens].children).filter(rowHasAnyValue);
+    if (rows.length === 0) {
+      return "_No claims recorded._";
+    }
+    return rows.map(function (row, index) {
+      const data = rowValues(row);
+      return [
+        "### Claim " + (index + 1) + " · " + markdownBlock(data.topic),
+        "",
+        "- **Severity:** " + markdownBlock(data.severity),
+        "- **Location:** " + markdownBlock(data.location),
+        "- **Claim:** " + markdownBlock(data.claim),
+        "- **Exact quote:**",
+        "",
+        fencedText(data.quote, "text"),
+        "",
+        "- **Stronger comparator:** " + markdownBlock(data.alternative)
+      ].join("\n");
+    }).join("\n\n");
+  }
+
+  function disagreementMarkdown() {
+    const rows = Array.from(document.getElementById("disagreements").children).filter(rowHasAnyValue);
+    if (rows.length === 0) {
+      return document.getElementById("noDisagreement").checked
+        ? "_No material disagreement remained after comparison._"
+        : "_Disagreement review incomplete._";
+    }
+    return rows.map(function (row, index) {
+      const data = rowValues(row);
+      return [
+        "### Disagreement " + (index + 1) + " · " + markdownBlock(data.topic),
+        "",
+        "- **Lens A:** " + markdownBlock(data.a),
+        "- **Lens B:** " + markdownBlock(data.b),
+        "- **Resolution:** " + markdownBlock(data.resolution),
+        "- **Deciding evidence:** " + markdownBlock(data.evidence)
+      ].join("\n");
+    }).join("\n\n");
+  }
+
+  function buildPacket() {
+    const prompt = document.getElementById("canonicalPrompt").textContent.trim();
+    return [
+      "# Adversarial Twin Review Packet",
+      "",
+      "- **Sealed:** " + markdownBlock(state.sealedAt),
+      "- **Review target:** " + markdownBlock(value("reviewTarget")),
+      "- **History scope:** " + markdownBlock(value("historyScope")),
+      "- **Evidence boundary:** " + markdownBlock(value("evidenceBoundary")),
+      "",
+      "## Shared evidence notes",
+      "",
+      markdownBlock(value("sharedEvidence")),
+      "",
+      "## Lens A · " + markdownBlock(value("lensAName")),
+      "",
+      "**Question:** " + markdownBlock(value("lensAFocus")),
+      "",
+      claimMarkdown("a"),
+      "",
+      "## Lens B · " + markdownBlock(value("lensBName")),
+      "",
+      "**Question:** " + markdownBlock(value("lensBFocus")),
+      "",
+      claimMarkdown("b"),
+      "",
+      "## Disagreements",
+      "",
+      disagreementMarkdown(),
+      "",
+      "## Human judge gate",
+      "",
+      "- **Judge:** " + markdownBlock(value("judgeName")),
+      "- **Criteria:** " + markdownBlock(value("judgeCriteria")),
+      "- **Verdict:** " + markdownBlock(value("judgeVerdict")),
+      "- **Rationale:** " + markdownBlock(value("judgeRationale")),
+      "- **Evidence checked by human:** " + (document.getElementById("judgeAttest").checked ? "Yes" : "No"),
+      "",
+      "## Canonical prompt",
+      "",
+      fencedText(prompt, "text"),
+      "",
+      "> Structural checks confirm presence, not truth. The verdict above is human judgment."
+    ].join("\n");
+  }
+
+  function runRegressionChecks() {
+    const complete = {
+      topic: "branching",
+      severity: "High",
+      claim: "The branch hides a state transition.",
+      location: "src/app.js:42",
+      quote: "if (ready) { return; }",
+      alternative: "src/flow.js:18"
+    };
+    const partial = Object.assign({}, complete, { quote: "" });
+    if (claimSetReady([complete, partial]) || !claimSetReady([complete, {}])) {
+      throw new Error("Regression: partial claim rows must block sealing while blank rows remain ignorable.");
+    }
+    const quoted = "before ````` after";
+    const openingFence = fencedText(quoted, "text").split("\n")[0];
+    if (openingFence !== "``````text") {
+      throw new Error("Regression: exact-quote fences must exceed the longest backtick run.");
+    }
+    const policy = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+    const required = ["default-src 'none'", "script-src 'unsafe-inline'", "script-src-attr 'none'", "connect-src 'none'", "object-src 'none'", "base-uri 'none'", "form-action 'none'"];
+    if (!policy || !required.every(function (directive) { return policy.content.includes(directive); })) {
+      throw new Error("Regression: restrictive inline-only CSP is incomplete.");
+    }
+  }
+
+  document.getElementById("copyPrompt").addEventListener("click", async function () {
+    try {
+      await copyText(document.getElementById("canonicalPrompt").textContent.trim());
+      announce("Exact canonical prompt copied.");
+    } catch (error) {
+      announce("Copy was blocked. Select the visible prompt and copy it manually.");
+    }
+  });
+
+  document.querySelectorAll("[data-add-claim]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      addClaim(button.dataset.addClaim);
+      setView(button.dataset.addClaim);
+      const container = claimContainers[button.dataset.addClaim];
+      container.lastElementChild.querySelector("input").focus();
+    });
+  });
+
+  document.getElementById("addDisagreement").addEventListener("click", function () {
+    addDisagreement();
+    document.getElementById("disagreements").lastElementChild.querySelector("input").focus();
+  });
+
+  document.querySelectorAll("[data-view]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      if (!button.disabled) {
+        setView(button.dataset.view);
+      }
+    });
+  });
+
+  form.addEventListener("click", function (event) {
+    const remove = event.target.closest(".remove-row");
+    if (!remove) {
+      return;
+    }
+    const row = remove.closest(".claim-row, .disagreement-row");
+    const container = row.parentElement;
+    const lens = container.closest(".lens");
+    if (lens) {
+      document.getElementById(lens.dataset.lens === "a" ? "lensAAttest" : "lensBAttest").checked = false;
+      state.compared = false;
+    }
+    row.remove();
+    const label = container.id === "claimsA" ? "Lens A claim" : container.id === "claimsB" ? "Lens B claim" : "Disagreement";
+    renumberRows(container, label);
+    unseal();
+    if (lens) {
+      setView(lens.dataset.lens);
+    }
+    update();
+  });
+
+  function handleEdit(event) {
+    const lens = event.target.closest(".lens");
+    if (lens && event.target.id !== "lensAAttest" && event.target.id !== "lensBAttest") {
+      document.getElementById(lens.dataset.lens === "a" ? "lensAAttest" : "lensBAttest").checked = false;
+      state.compared = false;
+      if (document.querySelector('[data-view="both"]').getAttribute("aria-pressed") === "true") {
+        setView(lens.dataset.lens);
+      }
+    }
+    if (event.target.closest(".disagreement-row") && event.target.value.trim()) {
+      document.getElementById("noDisagreement").checked = false;
+    }
+    unseal();
+    update();
+  }
+
+  form.addEventListener("input", handleEdit);
+  form.addEventListener("change", handleEdit);
+
+  document.getElementById("runChecks").addEventListener("click", function () {
+    const checks = getChecks();
+    const count = updateChecks(checks);
+    announce(count === 7
+      ? "All seven structural gates are ready. Read the evidence, then seal the human-reviewed packet."
+      : count + " of 7 gates are ready. Open the unfinished rows marked with circles.");
+  });
+
+  document.getElementById("sealPacket").addEventListener("click", function () {
+    const checks = getChecks();
+    if (!Object.values(checks).every(Boolean)) {
+      announce("The packet cannot be sealed until all structural gates are ready.");
+      update();
+      return;
+    }
+    state.sealed = true;
+    state.sealedAt = new Date().toISOString();
+    document.getElementById("copyPacket").disabled = false;
+    document.getElementById("exportPacket").disabled = false;
+    announce("Packet sealed after the human gate. Copy or export is now available.");
+  });
+
+  document.getElementById("copyPacket").addEventListener("click", async function () {
+    try {
+      await copyText(buildPacket());
+      announce("Sealed Markdown review packet copied.");
+    } catch (error) {
+      announce("Copy was blocked. Use Export .md instead.");
+    }
+  });
+
+  document.getElementById("exportPacket").addEventListener("click", function () {
+    downloadText("adversarial-twin-review.md", buildPacket());
+    announce("Sealed Markdown review packet exported.");
+  });
+
+  document.getElementById("resetWorkbench").addEventListener("click", function () {
+    const button = document.getElementById("resetWorkbench");
+    if (button.dataset.confirm !== "true") {
+      button.dataset.confirm = "true";
+      button.textContent = "Confirm reset";
+      announce("Press Confirm reset within five seconds to clear every field.");
+      window.clearTimeout(state.resetTimer);
+      state.resetTimer = window.setTimeout(function () {
+        button.dataset.confirm = "false";
+        button.textContent = "Reset workbench";
+      }, 5000);
+      return;
+    }
+    window.clearTimeout(state.resetTimer);
+    form.reset();
+    claimContainers.a.replaceChildren();
+    claimContainers.b.replaceChildren();
+    document.getElementById("disagreements").replaceChildren();
+    state.compared = false;
+    state.sealed = false;
+    state.sealedAt = "";
+    addClaim("a");
+    addClaim("b");
+    addDisagreement();
+    button.dataset.confirm = "false";
+    button.textContent = "Reset workbench";
+    setView("a");
+    document.getElementById("reviewTarget").focus();
+    announce("Workbench reset. No data was retained.");
+  });
+
+  runRegressionChecks();
+  addClaim("a");
+  addClaim("b");
+  addDisagreement();
+  update();
+})();
+</script>
+</body>
+</html>

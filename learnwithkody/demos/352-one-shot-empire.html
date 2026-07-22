@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; script-src-attr 'none'; style-src 'unsafe-inline'; img-src 'none'; font-src 'none'; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>One-Shot Empire — Artifact Workbench</title>
+<style>
+:root {
+  --bg: #0c0b12;
+  --panel: #15131e;
+  --panel-2: #1d1929;
+  --ink: #f7f2ff;
+  --muted: #b2a9c4;
+  --line: #393149;
+  --accent: #f3b562;
+  --accent-2: #b89cff;
+  --ok: #7de2a8;
+  --danger: #ff8fa7;
+  --focus: #a9d7ff;
+  --field-bg: #0d0b14;
+  --placeholder: #a79bb8;
+  --shadow: 0 18px 52px rgba(0, 0, 0, .32);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 85% 0%, rgba(184, 156, 255, .13), transparent 30rem),
+    radial-gradient(circle at 10% 10%, rgba(243, 181, 98, .09), transparent 28rem),
+    var(--bg);
+  color: var(--ink);
+  font: 16px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+button, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--accent); }
+.skip-link {
+  position: fixed;
+  z-index: 30;
+  left: 1rem;
+  top: 1rem;
+  padding: .7rem 1rem;
+  border-radius: .55rem;
+  background: var(--ink);
+  color: var(--bg);
+  transform: translateY(-180%);
+}
+.skip-link:focus { transform: translateY(0); }
+.shell { width: min(1120px, calc(100% - 2rem)); margin: 0 auto; }
+header { padding: 3.5rem 0 2rem; }
+.eyebrow {
+  margin: 0 0 .65rem;
+  color: var(--accent);
+  font: 750 .76rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+h1 { max-width: 900px; margin: 0; font-size: clamp(2.1rem, 6vw, 4.6rem); line-height: .98; letter-spacing: -.045em; }
+.lede { max-width: 770px; margin: 1.1rem 0 0; color: var(--muted); font-size: 1.05rem; }
+.local-note {
+  display: inline-flex;
+  gap: .5rem;
+  align-items: center;
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font-size: .86rem;
+}
+.local-note::before { content: "●"; color: var(--ok); }
+.card {
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: rgba(21, 19, 30, .95);
+  box-shadow: var(--shadow);
+}
+.prompt-card { margin-top: 1.8rem; padding: 1rem; }
+.card-head, .section-head, .toolbar, .artifact-head {
+  display: flex;
+  gap: .8rem;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.label {
+  color: var(--accent);
+  font: 750 .72rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+pre {
+  margin: .85rem 0 0;
+  padding: 1rem;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: .7rem;
+  background: #0a0910;
+  color: #eee7fb;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: .86rem/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.button {
+  min-height: 2.65rem;
+  padding: .65rem .95rem;
+  border: 1px solid var(--line);
+  border-radius: .65rem;
+  background: var(--panel-2);
+  color: var(--ink);
+  font-weight: 760;
+}
+.button:hover:not(:disabled) { border-color: var(--accent); }
+.button.primary { border-color: #a57435; background: var(--accent); color: #1b1105; }
+.button.secondary { border-color: #66508d; background: var(--accent-2); color: #120d1b; }
+.button.ghost { background: transparent; }
+.button.small { min-height: 2.15rem; padding: .42rem .7rem; font-size: .84rem; }
+.button.danger { border-color: #74394a; color: #ffc0cc; }
+main { padding-bottom: 5rem; }
+.guide {
+  position: sticky;
+  z-index: 10;
+  top: 0;
+  margin-bottom: 1rem;
+  padding: .8rem;
+  border: 1px solid var(--line);
+  border-radius: 0 0 .9rem .9rem;
+  background: rgba(12, 11, 18, .94);
+  backdrop-filter: blur(12px);
+}
+.guide strong { font-size: .92rem; }
+.guide p { margin: .15rem 0 0; color: var(--muted); font-size: .82rem; }
+.progress {
+  width: min(18rem, 100%);
+  height: .5rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #08070c;
+}
+.progress > span { display: block; width: 0; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .2s ease; }
+.work-section { margin-top: 1rem; padding: clamp(1rem, 3vw, 1.5rem); }
+h2, h3, p { overflow-wrap: anywhere; }
+h2 { margin: 0; font-size: 1.3rem; letter-spacing: -.015em; }
+h3 { margin: 0; font-size: 1.05rem; }
+.section-note { max-width: 760px; margin: .35rem 0 1rem; color: var(--muted); font-size: .91rem; }
+.idea-box {
+  display: grid;
+  gap: .65rem;
+  padding: 1rem;
+  border: 1px solid #625139;
+  border-radius: .8rem;
+  background: rgba(243, 181, 98, .05);
+}
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; }
+.full { grid-column: 1 / -1; }
+label.field { display: grid; align-content: start; gap: .35rem; color: var(--muted); font-size: .83rem; font-weight: 720; }
+.hint { color: var(--muted); font-size: .76rem; font-weight: 450; }
+input, textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: .58rem;
+  background: var(--field-bg);
+  padding: .68rem .75rem;
+}
+textarea { min-height: 6rem; resize: vertical; }
+input::placeholder, textarea::placeholder { color: var(--placeholder); opacity: 1; }
+input:focus-visible, textarea:focus-visible, button:focus-visible, a:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.artifact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1rem; }
+.artifact {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--accent-2);
+  border-radius: .85rem;
+  background: #100e17;
+}
+.artifact:nth-child(odd) { border-top-color: var(--accent); }
+.artifact-index {
+  display: inline-grid;
+  place-items: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  margin-right: .4rem;
+  border-radius: .5rem;
+  background: var(--panel-2);
+  color: var(--accent);
+  font: 800 .78rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.artifact-status {
+  padding: .25rem .55rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: .72rem;
+  font-weight: 780;
+}
+.artifact-status.complete { border-color: #367e59; color: var(--ok); }
+.context {
+  margin: .75rem 0;
+  padding: .65rem .7rem;
+  border-left: 3px solid var(--accent-2);
+  background: rgba(184, 156, 255, .06);
+  color: var(--muted);
+  font-size: .79rem;
+}
+.context strong { color: var(--ink); }
+.artifact .grid { grid-template-columns: 1fr; }
+.artifact textarea { min-height: 5rem; }
+.evidence {
+  border-color: #6d5838;
+  background: #110e0b;
+}
+.evidence-label { color: var(--accent); }
+.checks { display: grid; gap: .45rem; margin: 1rem 0; padding: 0; list-style: none; }
+.checks li { display: flex; gap: .55rem; align-items: flex-start; padding: .55rem .65rem; border-radius: .55rem; background: #0d0b14; color: var(--muted); }
+.checks li.pass { color: var(--ok); }
+.checks li.fail { color: #ffc0cc; }
+.mark { width: 1.2rem; flex: 0 0 auto; font-weight: 900; }
+.status {
+  min-height: 2.9rem;
+  margin-top: .8rem;
+  padding: .72rem .85rem;
+  border: 1px solid var(--line);
+  border-radius: .65rem;
+  background: #0d0b14;
+  color: var(--muted);
+}
+.footer-note { margin: 1rem 0 0; color: var(--muted); font-size: .8rem; }
+@media (max-width: 820px) {
+  .artifact-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 650px) {
+  .shell { width: min(100% - 1rem, 1120px); }
+  header { padding-top: 2rem; }
+  .grid { grid-template-columns: 1fr; }
+  .guide { margin-inline: -.5rem; }
+  .button { width: 100%; }
+  .toolbar .button, .card-head .button { width: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: .001ms !important; animation-duration: .001ms !important; animation-iteration-count: 1 !important; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#workbench">Skip to workbench</a>
+
+<header class="shell">
+  <p class="eyebrow">Prompt to Proof · Lesson 6</p>
+  <h1>Turn one startup sentence into artifacts you can inspect.</h1>
+  <p class="lede">Manually build the problem, audience, offer, landing copy, backlog, and first experiment—then check their completeness and evidence without pretending an AI did the work.</p>
+  <p class="local-note">Local-only workbench: no network calls, storage, domain checks, or generated claims.</p>
+
+  <section class="card prompt-card" aria-labelledby="prompt-heading">
+    <div class="card-head">
+      <span class="label" id="prompt-heading">Canonical prompt</span>
+      <button class="button small" type="button" id="copyPrompt">Copy exact prompt</button>
+    </div>
+    <pre id="canonicalPrompt">Here's one sentence: "[idea]". Output the entire startup:
+a domain name you've verified is available, three logo concepts in
+SVG, the landing page HTML, the pricing page, the first fifty GitHub
+issues prioritized, a ten-slide pitch deck in markdown, and a
+personalized cold DM to each of my first five customers — LinkedIn
+profiles attached. Every artifact stays in voice with the others.</pre>
+  </section>
+</header>
+
+<main class="shell" id="workbench">
+  <div class="guide" aria-label="Tutorial progress">
+    <div class="toolbar">
+      <div>
+        <strong id="progressText">0 of 8 checks ready</strong>
+        <p>Checks count required fields and evidence anchors. They do not judge quality or truth.</p>
+      </div>
+      <div class="progress" role="progressbar" aria-label="Artifact completeness progress" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0">
+        <span id="progressBar"></span>
+      </div>
+    </div>
+  </div>
+
+  <form id="empireForm" novalidate>
+    <section class="card work-section" aria-labelledby="sentence-title">
+      <div class="section-head">
+        <h2 id="sentence-title">1 · Lock the source sentence</h2>
+        <span class="label">One source of truth</span>
+      </div>
+      <p class="section-note">Write the smallest version of the idea. The page will echo it as context for every template, but it will not generate content from it.</p>
+      <div class="idea-box">
+        <label class="field" for="ideaSentence">Startup sentence
+          <span class="hint">Try: A [product] for [specific audience] that helps them [change] when [trigger].</span>
+        </label>
+        <textarea id="ideaSentence" maxlength="500" placeholder="One sentence only…"></textarea>
+        <span class="hint" id="ideaCount">0 / 500 characters</span>
+      </div>
+    </section>
+
+    <section class="card work-section" aria-labelledby="artifacts-title">
+      <div class="section-head">
+        <h2 id="artifacts-title">2 · Build six editable artifacts</h2>
+        <span class="label">Write every field by hand</span>
+      </div>
+      <p class="section-note">Gold-bordered fields are evidence anchors. Cite an interview note, observation, repository path, dataset, test result, or other inspectable source—never invented proof.</p>
+
+      <div class="artifact-grid">
+        <section class="artifact" data-artifact="problem" aria-labelledby="problem-title">
+          <div class="artifact-head">
+            <h3 id="problem-title"><span class="artifact-index">01</span>Problem</h3>
+            <span class="artifact-status" data-status="problem">0 / 2 content fields</span>
+          </div>
+          <p class="context"><strong>Source sentence:</strong> <span data-idea-echo>No sentence entered yet.</span></p>
+          <div class="grid">
+            <label class="field">Observed pain
+              <textarea id="problemPain" placeholder="What repeatedly goes wrong, for whom, and in what situation?"></textarea>
+            </label>
+            <label class="field evidence"><span class="evidence-label">Evidence anchor</span>
+              <span class="hint">Quote or reference that shows the pain exists</span>
+              <textarea id="problemEvidence" placeholder="Interview 03, 12:10 — exact quote; support ticket #…"></textarea>
+            </label>
+            <label class="field">Current workaround
+              <textarea id="problemWorkaround" placeholder="What do people do today, and what does it cost them?"></textarea>
+            </label>
+          </div>
+        </section>
+
+        <section class="artifact" data-artifact="audience" aria-labelledby="audience-title">
+          <div class="artifact-head">
+            <h3 id="audience-title"><span class="artifact-index">02</span>Audience</h3>
+            <span class="artifact-status" data-status="audience">0 / 3 content fields</span>
+          </div>
+          <p class="context"><strong>Source sentence:</strong> <span data-idea-echo>No sentence entered yet.</span></p>
+          <div class="grid">
+            <label class="field">Narrow segment
+              <textarea id="audienceSegment" placeholder="Role, context, behavior, and constraints—not 'everyone.'"></textarea>
+            </label>
+            <label class="field">Trigger moment
+              <textarea id="audienceTrigger" placeholder="What event makes this problem urgent now?"></textarea>
+            </label>
+            <label class="field">Explicit exclusion
+              <textarea id="audienceExclusion" placeholder="Who looks adjacent but is not the first customer?"></textarea>
+            </label>
+            <label class="field evidence"><span class="evidence-label">Evidence anchor</span>
+              <span class="hint">Where this audience definition came from</span>
+              <textarea id="audienceEvidence" placeholder="Interview set, community thread, usage data, or field note…"></textarea>
+            </label>
+          </div>
+        </section>
+
+        <section class="artifact" data-artifact="offer" aria-labelledby="offer-title">
+          <div class="artifact-head">
+            <h3 id="offer-title"><span class="artifact-index">03</span>Offer</h3>
+            <span class="artifact-status" data-status="offer">0 / 3 content fields</span>
+          </div>
+          <p class="context"><strong>Source sentence:</strong> <span data-idea-echo>No sentence entered yet.</span></p>
+          <div class="grid">
+            <label class="field">Promise
+              <textarea id="offerPromise" placeholder="What concrete change do you promise, without unsupported superlatives?"></textarea>
+            </label>
+            <label class="field">Mechanism
+              <textarea id="offerMechanism" placeholder="How will the product cause that change?"></textarea>
+            </label>
+            <label class="field">Constraint or boundary
+              <textarea id="offerConstraint" placeholder="What does the first version explicitly not promise?"></textarea>
+            </label>
+            <label class="field evidence"><span class="evidence-label">Evidence anchor</span>
+              <span class="hint">Why this promise is plausible</span>
+              <textarea id="offerEvidence" placeholder="Prototype result, manual service result, comparable workflow, or source…"></textarea>
+            </label>
+          </div>
+        </section>
+
+        <section class="artifact" data-artifact="landing" aria-labelledby="landing-title">
+          <div class="artifact-head">
+            <h3 id="landing-title"><span class="artifact-index">04</span>Landing copy</h3>
+            <span class="artifact-status" data-status="landing">0 / 3 content fields</span>
+          </div>
+          <p class="context"><strong>Source sentence:</strong> <span data-idea-echo>No sentence entered yet.</span></p>
+          <div class="grid">
+            <label class="field">Headline
+              <input id="landingHeadline" type="text" placeholder="The promised change in one line">
+            </label>
+            <label class="field">Subhead
+              <textarea id="landingSubhead" placeholder="Audience + mechanism + boundary, in plain language"></textarea>
+            </label>
+            <label class="field evidence"><span class="evidence-label">Proof block</span>
+              <span class="hint">Real evidence only; label a placeholder as unverified</span>
+              <textarea id="landingProof" placeholder="Measured result + source, or 'Unverified: collect before publishing'"></textarea>
+            </label>
+            <label class="field">Call to action
+              <input id="landingCta" type="text" placeholder="Join the five-user pilot">
+            </label>
+          </div>
+        </section>
+
+        <section class="artifact" data-artifact="backlog" aria-labelledby="backlog-title">
+          <div class="artifact-head">
+            <h3 id="backlog-title"><span class="artifact-index">05</span>Backlog</h3>
+            <span class="artifact-status" data-status="backlog">0 / 4 content fields</span>
+          </div>
+          <p class="context"><strong>Source sentence:</strong> <span data-idea-echo>No sentence entered yet.</span></p>
+          <div class="grid">
+            <label class="field">Now
+              <textarea id="backlogNow" placeholder="Smallest task that tests or delivers the core promise"></textarea>
+            </label>
+            <label class="field">Definition of done
+              <textarea id="backlogDone" placeholder="Observable result that closes the Now item"></textarea>
+            </label>
+            <label class="field">Next
+              <textarea id="backlogNext" placeholder="What follows only if Now works?"></textarea>
+            </label>
+            <label class="field">Later / not yet
+              <textarea id="backlogLater" placeholder="Good ideas intentionally kept out of the first proof"></textarea>
+            </label>
+          </div>
+        </section>
+
+        <section class="artifact" data-artifact="experiment" aria-labelledby="experiment-title">
+          <div class="artifact-head">
+            <h3 id="experiment-title"><span class="artifact-index">06</span>Experiment</h3>
+            <span class="artifact-status" data-status="experiment">0 / 4 content fields</span>
+          </div>
+          <p class="context"><strong>Source sentence:</strong> <span data-idea-echo>No sentence entered yet.</span></p>
+          <div class="grid">
+            <label class="field">Falsifiable hypothesis
+              <textarea id="experimentHypothesis" placeholder="If we do X for audience Y, then measurable Z will happen because…"></textarea>
+            </label>
+            <label class="field">Smallest test
+              <textarea id="experimentMethod" placeholder="Who sees what, for how long, with no product theater?"></textarea>
+            </label>
+            <label class="field">Metric
+              <input id="experimentMetric" type="text" placeholder="Qualified replies, completed tasks, paid pilots…">
+            </label>
+            <label class="field">Decision threshold
+              <input id="experimentThreshold" type="text" placeholder="Proceed if 3 of 10 schedule a pilot">
+            </label>
+            <label class="field evidence"><span class="evidence-label">Result record</span>
+              <span class="hint">Where raw outcomes will be captured</span>
+              <textarea id="experimentRecord" placeholder="Sheet name, issue, notebook page, or observation log…"></textarea>
+            </label>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="card work-section" aria-labelledby="checks-title">
+      <div class="section-head">
+        <h2 id="checks-title">3 · Verify and carry the packet forward</h2>
+        <span class="label">Presence, not truth</span>
+      </div>
+      <p class="section-note">A green row means all required fields contain text. Read the evidence yourself and check that the six artifacts describe the same company before using the packet.</p>
+      <ul class="checks" id="checkList">
+        <li data-check="idea"><span class="mark">○</span><span>One startup sentence is present.</span></li>
+        <li data-check="problem"><span class="mark">○</span><span>Problem template is complete.</span></li>
+        <li data-check="audience"><span class="mark">○</span><span>Audience template is complete.</span></li>
+        <li data-check="offer"><span class="mark">○</span><span>Offer template is complete.</span></li>
+        <li data-check="landing"><span class="mark">○</span><span>Landing-copy template is complete.</span></li>
+        <li data-check="backlog"><span class="mark">○</span><span>Backlog template is complete.</span></li>
+        <li data-check="experiment"><span class="mark">○</span><span>Experiment template is complete.</span></li>
+        <li data-check="evidence"><span class="mark">○</span><span>All five evidence anchors are present.</span></li>
+      </ul>
+      <div class="toolbar">
+        <div class="toolbar">
+          <button class="button" type="button" id="runChecks">Run deterministic checks</button>
+          <button class="button primary" type="button" id="copyPacket">Copy packet</button>
+          <button class="button secondary" type="button" id="exportPacket">Export .md</button>
+        </div>
+        <button class="button danger ghost" type="button" id="resetWorkbench">Reset workbench</button>
+      </div>
+      <div class="status" id="status" role="status" aria-live="polite">Enter one sentence, then work through the six templates in order.</div>
+      <p class="footer-note">Nothing is uploaded or saved. Domain availability, customer identity, and market claims must be verified with real sources outside this sandbox.</p>
+    </section>
+  </form>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  const form = document.getElementById("empireForm");
+  const status = document.getElementById("status");
+  const state = { resetTimer: 0 };
+  const artifactFields = {
+    problem: ["problemPain", "problemWorkaround"],
+    audience: ["audienceSegment", "audienceTrigger", "audienceExclusion"],
+    offer: ["offerPromise", "offerMechanism", "offerConstraint"],
+    landing: ["landingHeadline", "landingSubhead", "landingCta"],
+    backlog: ["backlogNow", "backlogDone", "backlogNext", "backlogLater"],
+    experiment: ["experimentHypothesis", "experimentMethod", "experimentMetric", "experimentThreshold"]
+  };
+  const evidenceFields = ["problemEvidence", "audienceEvidence", "offerEvidence", "landingProof", "experimentRecord"];
+
+  function value(id) {
+    return document.getElementById(id).value.trim();
+  }
+
+  function announce(message) {
+    status.textContent = message;
+  }
+
+  function fallbackCopy(text) {
+    const area = document.createElement("textarea");
+    area.value = text;
+    area.setAttribute("readonly", "");
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    const copied = document.execCommand("copy");
+    area.remove();
+    if (!copied) {
+      throw new Error("Copy command was unavailable.");
+    }
+  }
+
+  async function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return;
+      } catch (error) {
+        fallbackCopy(text);
+        return;
+      }
+    }
+    fallbackCopy(text);
+  }
+
+  function downloadText(filename, text) {
+    const blob = new Blob([text], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function artifactCounts(name) {
+    const fields = artifactFields[name];
+    const complete = fields.filter(function (id) {
+      return Boolean(value(id));
+    }).length;
+    return { complete: complete, total: fields.length };
+  }
+
+  function getChecks() {
+    const checks = { idea: Boolean(value("ideaSentence")) };
+    Object.keys(artifactFields).forEach(function (name) {
+      const counts = artifactCounts(name);
+      checks[name] = counts.complete === counts.total;
+    });
+    checks.evidence = evidenceFields.every(function (id) {
+      return Boolean(value(id));
+    });
+    return checks;
+  }
+
+  function updateIdea() {
+    const idea = value("ideaSentence");
+    document.querySelectorAll("[data-idea-echo]").forEach(function (node) {
+      node.textContent = idea || "No sentence entered yet.";
+    });
+    document.getElementById("ideaCount").textContent = document.getElementById("ideaSentence").value.length + " / 500 characters";
+  }
+
+  function updateArtifactBadges() {
+    Object.keys(artifactFields).forEach(function (name) {
+      const counts = artifactCounts(name);
+      const badge = document.querySelector('[data-status="' + name + '"]');
+      badge.textContent = counts.complete + " / " + counts.total + " content fields";
+      badge.classList.toggle("complete", counts.complete === counts.total);
+    });
+  }
+
+  function updateChecks(checks) {
+    Object.keys(checks).forEach(function (key) {
+      const item = document.querySelector('[data-check="' + key + '"]');
+      item.classList.toggle("pass", checks[key]);
+      item.classList.toggle("fail", !checks[key]);
+      item.querySelector(".mark").textContent = checks[key] ? "✓" : "○";
+    });
+    const count = Object.values(checks).filter(Boolean).length;
+    document.getElementById("progressText").textContent = count + " of 8 checks ready";
+    const progress = document.querySelector(".progress");
+    progress.setAttribute("aria-valuenow", String(count));
+    document.getElementById("progressBar").style.width = ((count / 8) * 100) + "%";
+    return count;
+  }
+
+  function update() {
+    updateIdea();
+    updateArtifactBadges();
+    updateChecks(getChecks());
+  }
+
+  function block(text) {
+    return text || "_Not provided_";
+  }
+
+  function relativeLuminance(hex) {
+    const match = /^#([0-9a-f]{6})$/i.exec(hex);
+    if (!match) {
+      throw new Error("Regression: contrast colors must remain six-digit hex values.");
+    }
+    const channels = [0, 2, 4].map(function (offset) {
+      const channel = parseInt(match[1].slice(offset, offset + 2), 16) / 255;
+      return channel <= 0.04045 ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+  }
+
+  function contrastRatio(first, second) {
+    const light = Math.max(relativeLuminance(first), relativeLuminance(second));
+    const dark = Math.min(relativeLuminance(first), relativeLuminance(second));
+    return (light + 0.05) / (dark + 0.05);
+  }
+
+  function runRegressionChecks() {
+    const styles = getComputedStyle(document.documentElement);
+    const placeholder = styles.getPropertyValue("--placeholder").trim();
+    const fieldBackground = styles.getPropertyValue("--field-bg").trim();
+    if (contrastRatio(placeholder, fieldBackground) < 4.5) {
+      throw new Error("Regression: instructional placeholders require at least 4.5:1 contrast.");
+    }
+    const policy = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+    const required = ["default-src 'none'", "script-src 'unsafe-inline'", "script-src-attr 'none'", "connect-src 'none'", "object-src 'none'", "base-uri 'none'", "form-action 'none'"];
+    if (!policy || !required.every(function (directive) { return policy.content.includes(directive); })) {
+      throw new Error("Regression: restrictive inline-only CSP is incomplete.");
+    }
+  }
+
+  function buildPacket() {
+    const checks = getChecks();
+    const count = Object.values(checks).filter(Boolean).length;
+    const prompt = document.getElementById("canonicalPrompt").textContent.trim();
+    return [
+      "# One-Shot Empire Artifact Packet",
+      "",
+      "- **Structural checks:** " + count + " / 8",
+      "- **Source sentence:** " + block(value("ideaSentence")),
+      "",
+      "## Problem",
+      "",
+      "- **Observed pain:** " + block(value("problemPain")),
+      "- **Evidence:** " + block(value("problemEvidence")),
+      "- **Current workaround:** " + block(value("problemWorkaround")),
+      "",
+      "## Audience",
+      "",
+      "- **Narrow segment:** " + block(value("audienceSegment")),
+      "- **Trigger moment:** " + block(value("audienceTrigger")),
+      "- **Explicit exclusion:** " + block(value("audienceExclusion")),
+      "- **Evidence:** " + block(value("audienceEvidence")),
+      "",
+      "## Offer",
+      "",
+      "- **Promise:** " + block(value("offerPromise")),
+      "- **Mechanism:** " + block(value("offerMechanism")),
+      "- **Constraint:** " + block(value("offerConstraint")),
+      "- **Evidence:** " + block(value("offerEvidence")),
+      "",
+      "## Landing copy",
+      "",
+      "- **Headline:** " + block(value("landingHeadline")),
+      "- **Subhead:** " + block(value("landingSubhead")),
+      "- **Proof block:** " + block(value("landingProof")),
+      "- **Call to action:** " + block(value("landingCta")),
+      "",
+      "## Backlog",
+      "",
+      "- **Now:** " + block(value("backlogNow")),
+      "- **Definition of done:** " + block(value("backlogDone")),
+      "- **Next:** " + block(value("backlogNext")),
+      "- **Later / not yet:** " + block(value("backlogLater")),
+      "",
+      "## Experiment",
+      "",
+      "- **Hypothesis:** " + block(value("experimentHypothesis")),
+      "- **Smallest test:** " + block(value("experimentMethod")),
+      "- **Metric:** " + block(value("experimentMetric")),
+      "- **Decision threshold:** " + block(value("experimentThreshold")),
+      "- **Result record:** " + block(value("experimentRecord")),
+      "",
+      "## Canonical prompt",
+      "",
+      "```text",
+      prompt,
+      "```",
+      "",
+      "> This packet reports field presence, not market truth. Verify every claim and source before publishing."
+    ].join("\n");
+  }
+
+  document.getElementById("copyPrompt").addEventListener("click", async function () {
+    try {
+      await copyText(document.getElementById("canonicalPrompt").textContent.trim());
+      announce("Exact canonical prompt copied.");
+    } catch (error) {
+      announce("Copy was blocked. Select the visible prompt and copy it manually.");
+    }
+  });
+
+  form.addEventListener("input", update);
+
+  document.getElementById("runChecks").addEventListener("click", function () {
+    const checks = getChecks();
+    const count = updateChecks(checks);
+    if (count === 8) {
+      announce("All eight presence checks pass. Now inspect coherence and verify every evidence source yourself.");
+      return;
+    }
+    const firstMissing = Object.keys(checks).find(function (key) {
+      return !checks[key];
+    });
+    const labels = {
+      idea: "source sentence",
+      problem: "problem template",
+      audience: "audience template",
+      offer: "offer template",
+      landing: "landing-copy template",
+      backlog: "backlog template",
+      experiment: "experiment template",
+      evidence: "evidence anchors"
+    };
+    announce(count + " of 8 checks pass. The first incomplete area is the " + labels[firstMissing] + ".");
+  });
+
+  document.getElementById("copyPacket").addEventListener("click", async function () {
+    try {
+      await copyText(buildPacket());
+      announce("Markdown artifact packet copied, including its current completeness count.");
+    } catch (error) {
+      announce("Copy was blocked. Use Export .md instead.");
+    }
+  });
+
+  document.getElementById("exportPacket").addEventListener("click", function () {
+    downloadText("one-shot-empire-packet.md", buildPacket());
+    announce("Markdown artifact packet exported.");
+  });
+
+  document.getElementById("resetWorkbench").addEventListener("click", function () {
+    const button = document.getElementById("resetWorkbench");
+    if (button.dataset.confirm !== "true") {
+      button.dataset.confirm = "true";
+      button.textContent = "Confirm reset";
+      announce("Press Confirm reset within five seconds to clear every artifact.");
+      window.clearTimeout(state.resetTimer);
+      state.resetTimer = window.setTimeout(function () {
+        button.dataset.confirm = "false";
+        button.textContent = "Reset workbench";
+      }, 5000);
+      return;
+    }
+    window.clearTimeout(state.resetTimer);
+    form.reset();
+    button.dataset.confirm = "false";
+    button.textContent = "Reset workbench";
+    update();
+    document.getElementById("ideaSentence").focus();
+    announce("Workbench reset. No data was retained.");
+  });
+
+  runRegressionChecks();
+  update();
+})();
+</script>
+</body>
+</html>

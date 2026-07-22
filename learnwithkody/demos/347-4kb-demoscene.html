@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; script-src-attr 'none'; style-src 'unsafe-inline'; style-src-attr 'none'; img-src 'none'; font-src 'none'; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>4KB → 8KB Constraint Lab</title>
+<style>
+:root{
+  --bg:#080b12;
+  --panel:#111724;
+  --panel-2:#171f30;
+  --line:#2a3852;
+  --text:#f4f7fb;
+  --muted:#a9b6c9;
+  --cyan:#63e6ff;
+  --violet:#b8a7ff;
+  --green:#61e6a7;
+  --amber:#ffd166;
+  --red:#ff7d8e;
+  --shadow:0 20px 55px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 12% 0,rgba(99,230,255,.11),transparent 30rem),
+    radial-gradient(circle at 88% 8%,rgba(184,167,255,.12),transparent 28rem),
+    var(--bg);
+  color:var(--text);
+  font:16px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+button,textarea,input{font:inherit}
+button{
+  min-height:44px;
+  border:1px solid var(--line);
+  border-radius:.7rem;
+  padding:.62rem .9rem;
+  background:var(--panel-2);
+  color:var(--text);
+  font-weight:700;
+  cursor:pointer;
+}
+button:hover{border-color:var(--cyan);background:#1c2940}
+button:disabled{cursor:not-allowed;opacity:.5}
+button.primary{background:var(--cyan);border-color:var(--cyan);color:#061018}
+button.primary:hover{background:#98efff}
+button.secondary{background:transparent}
+button:focus-visible,textarea:focus-visible,input:focus-visible,pre:focus-visible{
+  outline:3px solid var(--amber);
+  outline-offset:3px;
+}
+.skip{
+  position:fixed;
+  left:1rem;
+  top:1rem;
+  z-index:20;
+  transform:translateY(-200%);
+  padding:.7rem 1rem;
+  border-radius:.6rem;
+  background:var(--text);
+  color:var(--bg);
+  font-weight:800;
+}
+.skip:focus{transform:none}
+.shell{width:min(1180px,calc(100% - 2rem));margin:0 auto;padding:2rem 0 4rem}
+.hero{padding:1rem 0 1.4rem}
+.eyebrow{
+  margin:0 0 .45rem;
+  color:var(--cyan);
+  font-size:.78rem;
+  font-weight:850;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+h1,h2,h3,p{margin-top:0}
+h1{max-width:850px;margin-bottom:.65rem;font-size:clamp(2rem,6vw,4rem);line-height:1.02;letter-spacing:-.04em}
+h2{font-size:1.22rem;letter-spacing:-.01em}
+h3{font-size:1rem}
+.lede{max-width:760px;color:var(--muted);font-size:1.05rem}
+.badges{display:flex;flex-wrap:wrap;gap:.55rem}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  min-height:30px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:.25rem .7rem;
+  color:var(--muted);
+  background:rgba(17,23,36,.8);
+  font-size:.82rem;
+  font-weight:750;
+}
+.panel{
+  border:1px solid var(--line);
+  border-radius:1rem;
+  background:rgba(17,23,36,.94);
+  box-shadow:var(--shadow);
+}
+.prompt-panel{margin:1rem 0;padding:1.15rem}
+.panel-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:1rem;
+  margin-bottom:.75rem;
+}
+.panel-head h2,.panel-head p{margin-bottom:0}
+.hint{color:var(--muted);font-size:.9rem}
+.seed{
+  margin:0;
+  padding:1rem;
+  overflow:auto;
+  border:1px solid var(--line);
+  border-radius:.75rem;
+  background:#090e18;
+  color:#dce8f8;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  font:clamp(.79rem,2vw,.9rem)/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+.prompt-actions,.actions{display:flex;align-items:center;flex-wrap:wrap;gap:.65rem;margin-top:.8rem}
+.live{min-height:1.5em;color:var(--muted);font-size:.88rem}
+.lab-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);gap:1rem;margin-top:1rem}
+.editor-panel,.side-panel{padding:1.15rem}
+label{display:block;margin-bottom:.42rem;font-weight:780}
+textarea{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:.75rem;
+  padding:.85rem;
+  resize:vertical;
+  background:#090e18;
+  color:var(--text);
+  caret-color:var(--cyan);
+}
+#artifact{
+  min-height:430px;
+  tab-size:2;
+  font:14px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+#deltaNotes{min-height:120px}
+.side-stack{display:grid;gap:1rem;align-content:start}
+.meter-card{padding:1.15rem}
+.byte-total{display:flex;align-items:baseline;gap:.5rem;margin:.35rem 0 .75rem}
+.byte-total output{font-size:clamp(2rem,8vw,3.1rem);line-height:1;font-weight:900;color:var(--cyan);letter-spacing:-.04em}
+.byte-total span{color:var(--muted)}
+progress{width:100%;height:.8rem;accent-color:var(--cyan)}
+.progress-copy{margin:.35rem 0 1rem;color:var(--muted);font-size:.82rem}
+fieldset{margin:0 0 1rem;padding:.75rem;border:1px solid var(--line);border-radius:.75rem}
+legend{padding:0 .35rem;color:var(--muted);font-size:.82rem;font-weight:800}
+.radios{display:flex;gap:1rem;flex-wrap:wrap}
+.radio{display:flex;align-items:center;gap:.45rem;margin:0;font-weight:720;cursor:pointer}
+.radio input{width:1.1rem;height:1.1rem;accent-color:var(--cyan)}
+.compare-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.86rem}
+th,td{padding:.58rem .45rem;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em}
+.result{font-weight:850}
+.pass{color:var(--green)}
+.fail{color:var(--red)}
+.checklist{display:grid;gap:.55rem;margin:.8rem 0 0;padding:0;list-style:none}
+.check{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:.55rem;
+  align-items:start;
+  padding:.62rem;
+  border:1px solid var(--line);
+  border-radius:.65rem;
+  background:#0c1220;
+}
+.check .mark{
+  display:grid;
+  place-items:center;
+  width:1.35rem;
+  height:1.35rem;
+  border-radius:50%;
+  background:var(--line);
+  color:var(--bg);
+  font-size:.78rem;
+  font-weight:950;
+}
+.check.is-pass .mark{background:var(--green)}
+.check.is-fail .mark{background:var(--red);color:#fff}
+.check b{display:block;font-size:.88rem}
+.check small{display:block;color:var(--muted);font-size:.76rem}
+.check strong{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+.check.is-pass strong{color:var(--green)}
+.check.is-fail strong{color:var(--red)}
+.summary{
+  margin:.85rem 0 0;
+  padding:.65rem .75rem;
+  border-left:3px solid var(--violet);
+  background:rgba(184,167,255,.08);
+  color:var(--muted);
+  font-size:.86rem;
+}
+.safety{
+  margin:.8rem 0 0;
+  padding:.75rem;
+  border:1px solid rgba(255,209,102,.35);
+  border-radius:.65rem;
+  color:#f8df9a;
+  background:rgba(255,209,102,.06);
+  font-size:.83rem;
+}
+.state-panel{margin-top:1rem;padding:1rem 1.15rem}
+.state-row{display:flex;align-items:flex-start;gap:.65rem}
+.state-row input{width:1.15rem;height:1.15rem;margin-top:.2rem;accent-color:var(--cyan)}
+.state-row label{margin:0}
+.state-row small{display:block;color:var(--muted);font-weight:450}
+.sr-only{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  padding:0!important;
+  margin:-1px!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;
+  border:0!important;
+}
+.copy-helper{position:fixed;opacity:0;pointer-events:none}
+@media(max-width:850px){
+  .lab-grid{grid-template-columns:1fr}
+  #artifact{min-height:340px}
+}
+@media(max-width:560px){
+  .shell{width:min(100% - 1rem,1180px);padding-top:1rem}
+  .panel-head{display:block}
+  .panel-head button{margin-top:.65rem;width:100%}
+  .actions button{flex:1 1 45%}
+  .prompt-actions button{width:100%}
+  .check{grid-template-columns:auto 1fr}
+  .check strong{grid-column:2}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#workspace">Skip to the artifact editor</a>
+<div class="shell">
+  <header class="hero">
+    <p class="eyebrow">Prompt to Proof · Lesson 1</p>
+    <h1>Make every byte defend itself.</h1>
+    <p class="lede">Edit one self-contained HTML artifact, measure its real UTF-8 size, and compare it with both 4KB and 8KB ceilings. This lab never runs the source you paste.</p>
+    <div class="badges" aria-label="Workbench properties">
+      <span class="badge">Dependency-free</span>
+      <span class="badge">UTF-8 measured</span>
+      <span class="badge">Static-only</span>
+      <span class="badge">Offline-ready</span>
+    </div>
+  </header>
+
+  <section class="panel prompt-panel" aria-labelledby="prompt-title">
+    <div class="panel-head">
+      <div>
+        <h2 id="prompt-title">Canonical seed prompt</h2>
+        <p class="hint">Copy this unchanged, then make your artifact prove the claim.</p>
+      </div>
+      <button type="button" id="copyPrompt">Copy seed prompt</button>
+    </div>
+    <pre class="seed" id="seedPrompt" tabindex="0">Build me a complete interactive web app — a game, tool, anything — that
+fits in a single self-contained HTML file under 4KB. No frameworks, no
+CDN imports, no external assets. Then build it again at 8KB and tell me
+what each extra byte bought. Account for every line. Treat whitespace
+as a luxury good.</pre>
+    <p class="live" id="promptStatus" role="status" aria-live="polite"></p>
+  </section>
+
+  <main id="workspace" class="lab-grid">
+    <section class="panel editor-panel" aria-labelledby="editor-title">
+      <div class="panel-head">
+        <div>
+          <h2 id="editor-title">Artifact source</h2>
+          <p class="hint">Plain text only. There is deliberately no preview or run button.</p>
+        </div>
+      </div>
+      <label for="artifact">Editable single-file HTML</label>
+      <textarea id="artifact" aria-describedby="artifact-help" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
+      <p class="hint" id="artifact-help">The meter counts encoded UTF-8 bytes on every edit. Pasted markup and scripts remain inert text.</p>
+      <div class="actions">
+        <button type="button" class="secondary" id="resetArtifact">Reset sample</button>
+        <button type="button" id="copyArtifact">Copy artifact</button>
+        <button type="button" class="primary" id="downloadArtifact">Download HTML</button>
+      </div>
+      <p class="live" id="artifactStatus" role="status" aria-live="polite"></p>
+    </section>
+
+    <div class="side-stack">
+      <aside class="panel meter-card" aria-labelledby="meter-title">
+        <h2 id="meter-title">Deterministic verification</h2>
+        <p class="hint">Local rules, not an AI judgment.</p>
+        <div class="byte-total">
+          <output id="byteCount" for="artifact">0</output>
+          <span>UTF-8 bytes</span>
+        </div>
+        <progress id="budgetProgress" max="4096" value="0"><span id="progressFallback">0 of 4096 bytes</span></progress>
+        <p class="progress-copy" id="progressCopy">0% of the selected budget</p>
+
+        <fieldset>
+          <legend>Active target</legend>
+          <div class="radios">
+            <label class="radio"><input type="radio" name="budget" value="4096" checked> 4KB · 4,096</label>
+            <label class="radio"><input type="radio" name="budget" value="8192"> 8KB · 8,192</label>
+          </div>
+        </fieldset>
+
+        <div class="compare-wrap">
+          <table>
+            <caption class="sr-only">Artifact byte comparison with both fixed budgets</caption>
+            <thead><tr><th>Budget</th><th>Used</th><th>Difference</th><th>Result</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">4KB</th><td id="used4">0 / 4,096</td><td id="diff4">4,096 left</td><td class="result" id="result4">Within</td></tr>
+              <tr><th scope="row">8KB</th><td id="used8">0 / 8,192</td><td id="diff8">8,192 left</td><td class="result" id="result8">Within</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <ul class="checklist" aria-label="Verification rules">
+          <li class="check" id="checkPresent"><span class="mark" aria-hidden="true">•</span><span><b>Artifact present</b><small>Rule: encoded bytes &gt; 0</small></span><strong>Wait</strong></li>
+          <li class="check" id="checkMeasured"><span class="mark" aria-hidden="true">•</span><span><b>UTF-8 measured</b><small>TextEncoder, with Blob fallback</small></span><strong>Wait</strong></li>
+          <li class="check" id="checkTarget"><span class="mark" aria-hidden="true">•</span><span><b>Fits selected budget</b><small id="targetRule">Rule: bytes ≤ 4,096</small></span><strong>Wait</strong></li>
+          <li class="check" id="checkDependency"><span class="mark" aria-hidden="true">•</span><span><b>Dependency syntax scan</b><small id="dependencyRule">Conservative lexical scan; manual review still required</small></span><strong>Wait</strong></li>
+          <li class="check" id="checkLedger"><span class="mark" aria-hidden="true">•</span><span><b>Expansion ledger</b><small>Explain what the extra budget buys</small></span><strong>Wait</strong></li>
+        </ul>
+        <p class="summary" id="verificationSummary" aria-live="polite">Verification is waiting for an artifact.</p>
+        <p class="safety"><strong>Preview disabled by design.</strong> This page never inserts, imports, or executes artifact text. Inspect downloaded code before running it elsewhere.</p>
+      </aside>
+
+      <section class="panel side-panel" aria-labelledby="ledger-title">
+        <h2 id="ledger-title">What did 8KB buy?</h2>
+        <label for="deltaNotes">Expansion ledger</label>
+        <textarea id="deltaNotes" placeholder="Example: +620 bytes bought keyboard controls; +410 bytes bought an aria-live status. The rest stayed unspent."></textarea>
+        <p class="hint">Name the capability, its approximate cost, and why it is load-bearing.</p>
+      </section>
+    </div>
+  </main>
+
+  <section class="panel state-panel" aria-labelledby="state-title">
+    <h2 id="state-title">Optional local state</h2>
+    <div class="state-row">
+      <input type="checkbox" id="rememberState">
+      <label for="rememberState">Remember this lab on this device
+        <small>Off by default. When enabled, only this artifact, ledger, and selected budget are stored in this browser. Uncheck to delete them.</small>
+      </label>
+    </div>
+    <p class="live" id="stateStatus" role="status" aria-live="polite">Nothing is being saved.</p>
+  </section>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const STARTER = `<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Tiny counter</title>
+<style>
+body{font:18px system-ui;display:grid;place-items:center;min-height:100vh;margin:0;background:#101522;color:#fff}
+button{font:inherit;padding:.8rem 1rem}
+</style>
+<main><h1>One tiny counter ✦</h1><button id="count">Count: 0</button></main>
+<script>
+let n=0,b=document.querySelector("#count");
+b.onclick=()=>b.textContent="Count: "+ ++n
+<\/script>`;
+  const STORE_KEY = "lwk-prompt-to-proof-347";
+  const $ = id => document.getElementById(id);
+  const artifact = $("artifact");
+  const notes = $("deltaNotes");
+  const remember = $("rememberState");
+  const budgetInputs = Array.from(document.querySelectorAll('input[name="budget"]'));
+  const checks = ["checkPresent","checkMeasured","checkTarget","checkDependency","checkLedger"];
+  const RESOURCE_ATTRIBUTES = {
+    script:["src"],
+    link:["href","imagesrcset"],
+    img:["src","srcset"],
+    source:["src","srcset"],
+    iframe:["src"],
+    audio:["src"],
+    video:["src","poster"],
+    track:["src"],
+    embed:["src"],
+    object:["data"],
+    input:["src"],
+    image:["href","xlink:href"],
+    use:["href","xlink:href"],
+    feimage:["href","xlink:href"],
+    base:["href"],
+    html:["manifest"],
+    body:["background"],
+    table:["background"],
+    td:["background"],
+    th:["background"],
+    form:["action"]
+  };
+
+  function utf8Bytes(text) {
+    if (typeof TextEncoder !== "undefined") return new TextEncoder().encode(text).byteLength;
+    return new Blob([text]).size;
+  }
+
+  function number(value) {
+    return value.toLocaleString("en-US");
+  }
+
+  function selectedBudget() {
+    const selected = budgetInputs.find(input => input.checked);
+    return selected ? Number(selected.value) : 4096;
+  }
+
+  function dependencyFinding(text) {
+    if (/@import\b/i.test(text)) return "CSS @import";
+    if (/\burl\s*\(/i.test(text)) return "CSS resource function";
+    if (/(?:^|[^\w-])(?:-webkit-)?image-set\s*\(/i.test(text)) return "CSS image-set()";
+    if (/\b(?:fetch|importScripts)\s*\(/i.test(text)) return "runtime loader call";
+    if (/\bimport\s*\(/i.test(text)) return "dynamic import()";
+    if (/\b(?:Worker|SharedWorker|WebSocket|EventSource)\b/.test(text)) return "runtime resource API";
+    if (/\bnavigator\s*\.\s*sendBeacon\s*\(/i.test(text)) return "sendBeacon()";
+
+    const tags = text.matchAll(/<\s*([a-z][\w:-]*)\b([^>]*)>/gi);
+    for (const match of tags) {
+      const tag = match[1].toLowerCase();
+      const watched = RESOURCE_ATTRIBUTES[tag];
+      if (!watched) {
+        if (tag === "meta" && /\bhttp-equiv\s*=\s*(?:"\s*refresh\s*"|'\s*refresh\s*'|refresh\b)/i.test(match[2])) {
+          return "meta refresh";
+        }
+        continue;
+      }
+      const attributes = match[2].matchAll(/([^\s"'<>\/=]+)(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s"'=<>`]+))?/g);
+      for (const attribute of attributes) {
+        const name = attribute[1].toLowerCase();
+        if (watched.includes(name)) return "<" + tag + "> " + name;
+      }
+    }
+    return "";
+  }
+
+  function setCheck(id, passed) {
+    const item = $(id);
+    item.classList.toggle("is-pass", passed);
+    item.classList.toggle("is-fail", !passed);
+    item.querySelector(".mark").textContent = passed ? "✓" : "!";
+    item.querySelector("strong").textContent = passed ? "Pass" : "Wait";
+  }
+
+  function setBudgetRow(limit, suffix, bytes) {
+    const remaining = limit - bytes;
+    $("used" + suffix).textContent = number(bytes) + " / " + number(limit);
+    $("diff" + suffix).textContent = remaining >= 0 ? number(remaining) + " left" : number(Math.abs(remaining)) + " over";
+    const result = $("result" + suffix);
+    result.textContent = remaining >= 0 ? "Within" : "Over";
+    result.className = "result " + (remaining >= 0 ? "pass" : "fail");
+  }
+
+  function render() {
+    const text = artifact.value;
+    const bytes = utf8Bytes(text);
+    const target = selectedBudget();
+    const present = bytes > 0;
+    const dependency = dependencyFinding(text);
+    const outcomes = {
+      checkPresent: present,
+      checkMeasured: present,
+      checkTarget: present && bytes <= target,
+      checkDependency: present && !dependency,
+      checkLedger: notes.value.trim().length > 0
+    };
+
+    $("byteCount").textContent = number(bytes);
+    $("budgetProgress").max = target;
+    $("budgetProgress").value = Math.min(bytes, target);
+    $("progressFallback").textContent = number(bytes) + " of " + number(target) + " bytes";
+    const percentage = target ? Math.round((bytes / target) * 100) : 0;
+    $("progressCopy").textContent = number(percentage) + "% of the selected " + (target === 4096 ? "4KB" : "8KB") + " budget";
+    $("targetRule").textContent = "Rule: bytes ≤ " + number(target);
+    $("dependencyRule").textContent = dependency
+      ? "Found " + dependency + "; remote and relative references both fail"
+      : "No common dependency syntax found; manual review still required";
+    setBudgetRow(4096, "4", bytes);
+    setBudgetRow(8192, "8", bytes);
+    checks.forEach(id => setCheck(id, outcomes[id]));
+    const passed = checks.filter(id => outcomes[id]).length;
+    $("verificationSummary").textContent = passed + " of " + checks.length + " rules pass. The artifact is " +
+      (bytes <= 4096 && present ? "within both budgets." : bytes <= 8192 && present ? "over 4KB but within 8KB." : present ? "over both budgets." : "empty.");
+    $("copyArtifact").disabled = !present;
+    $("downloadArtifact").disabled = !present;
+  }
+
+  function announce(id, message) {
+    $(id).textContent = message;
+  }
+
+  function fallbackCopy(text) {
+    const helper = document.createElement("textarea");
+    helper.value = text;
+    helper.setAttribute("readonly", "");
+    helper.className = "copy-helper";
+    document.body.appendChild(helper);
+    helper.select();
+    let copied = false;
+    try {
+      copied = document.execCommand("copy");
+    } catch (error) {
+      copied = false;
+    }
+    helper.remove();
+    return copied;
+  }
+
+  async function copyText(text, statusId, label) {
+    let copied = false;
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(text);
+        copied = true;
+      } catch (error) {
+        copied = false;
+      }
+    }
+    if (!copied) copied = fallbackCopy(text);
+    announce(statusId, copied ? label + " copied." : "Copy was blocked. Select the text and copy it manually.");
+  }
+
+  function downloadArtifact() {
+    const blob = new Blob([artifact.value], {type:"text/html;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "byte-budget-artifact.html";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    announce("artifactStatus", "Downloaded byte-budget-artifact.html without running it.");
+  }
+
+  function storageRead() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function storageRemove() {
+    try {
+      localStorage.removeItem(STORE_KEY);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function saveState(showStatus) {
+    if (!remember.checked) return;
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify({
+        version:1,
+        optedIn:true,
+        artifact:artifact.value,
+        notes:notes.value,
+        budget:selectedBudget()
+      }));
+      if (showStatus) announce("stateStatus", "Saved locally on this device.");
+    } catch (error) {
+      remember.checked = false;
+      announce("stateStatus", "Local storage is unavailable; nothing was saved.");
+    }
+  }
+
+  function restore() {
+    const saved = storageRead();
+    if (!saved || saved.optedIn !== true || saved.version !== 1) {
+      artifact.value = STARTER;
+      return;
+    }
+    remember.checked = true;
+    artifact.value = typeof saved.artifact === "string" ? saved.artifact : STARTER;
+    notes.value = typeof saved.notes === "string" ? saved.notes : "";
+    const budget = saved.budget === 8192 ? 8192 : 4096;
+    budgetInputs.forEach(input => { input.checked = Number(input.value) === budget; });
+    announce("stateStatus", "Restored your opted-in local lab.");
+  }
+
+  artifact.addEventListener("input", () => {
+    render();
+    saveState(false);
+  });
+  notes.addEventListener("input", () => {
+    render();
+    saveState(false);
+  });
+  budgetInputs.forEach(input => input.addEventListener("change", () => {
+    render();
+    saveState(false);
+  }));
+  remember.addEventListener("change", () => {
+    if (remember.checked) {
+      saveState(true);
+    } else {
+      const removed = storageRemove();
+      announce("stateStatus", removed ? "Local lab data deleted. Nothing is being saved." : "Storage could not be accessed; saving remains off.");
+    }
+  });
+  $("copyPrompt").addEventListener("click", () => copyText($("seedPrompt").textContent, "promptStatus", "Seed prompt"));
+  $("copyArtifact").addEventListener("click", () => copyText(artifact.value, "artifactStatus", "Artifact"));
+  $("downloadArtifact").addEventListener("click", downloadArtifact);
+  $("resetArtifact").addEventListener("click", () => {
+    artifact.value = STARTER;
+    notes.value = "";
+    budgetInputs.forEach(input => { input.checked = Number(input.value) === 4096; });
+    render();
+    saveState(false);
+    announce("artifactStatus", "Starter restored. No code was executed.");
+    artifact.focus();
+  });
+
+  restore();
+  render();
+})();
+</script>
+</body>
+</html>

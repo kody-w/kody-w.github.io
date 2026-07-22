@@ -1,16 +1,26 @@
 import json
 import re
 import unittest
+import unicodedata
+from html import unescape
+from html.parser import HTMLParser
 from pathlib import Path
+
+import yaml
 
 
 ROOT = Path(__file__).resolve().parents[1]
 POSTS_DIR = ROOT / "_posts"
 TWIN_POSTS_DIR = ROOT / "_twin_posts"
+EXAMPLES_DIR = ROOT / "_examples"
+DEMOS_DIR = ROOT / "learnwithkody" / "demos"
 IDEA4BLOG_PAGE = ROOT / "idea4blog.md"
 ABOUT_PAGE = ROOT / "about.md"
 DEFAULT_LAYOUT = ROOT / "_layouts" / "default.html"
 TWIN_LAYOUT = ROOT / "_layouts" / "twin_post.html"
+HOME_PAGE = ROOT / "index.html"
+LEARN_HUB_PAGE = ROOT / "learnwithkody" / "index.html"
+LEARN_CATALOG_PAGE = ROOT / "learnwithkody" / "examples.html"
 CONFIG_FILE = ROOT / "_config.yml"
 README_FILE = ROOT / "README.md"
 GITIGNORE_FILE = ROOT / ".gitignore"
@@ -31,6 +41,28 @@ LOCALFIRSTTOOLS_REPO_URL = "https://github.com/kody-w/localFirstTools"
 D365_FRAME_MACHINE_URL = f"{LOCALFIRSTTOOLS_BASE_URL}/dynamics365-frame-machine.html"
 D365_LOCKSTEP_URL = f"{LOCALFIRSTTOOLS_BASE_URL}/dynamics365-lockstep-twin.html"
 HN_FRAME_MACHINE_URL = f"{LOCALFIRSTTOOLS_BASE_URL}/hacker-news-simulator.html"
+MIN_LEARN_EXAMPLES = 367
+PROMPT_TO_PROOF_ORDERS = set(range(347, 353))
+MAX_TUTORIAL_DEMO_BYTES = 75 * 1024
+PROMPT_CONTAINER_IDS = {"canonicalPrompt", "seedPrompt"}
+WITHDRAWN_POST_FILENAME = "2026-03-09-the-frame-that-should-not-have-shipped.md"
+WITHDRAWN_POST_ROUTE = "/2026/03/09/the-frame-that-should-not-have-shipped/"
+REQUIRED_DEMO_CSP = {
+    "default-src": {"'none'"},
+    "style-src": {"'unsafe-inline'"},
+    "script-src": {"'unsafe-inline'"},
+    "script-src-attr": {"'none'"},
+    "img-src": {"'none'"},
+    "connect-src": {"'none'"},
+    "font-src": {"'none'"},
+    "frame-src": {"'none'"},
+    "manifest-src": {"'none'"},
+    "media-src": {"'none'"},
+    "object-src": {"'none'"},
+    "worker-src": {"'none'"},
+    "base-uri": {"'none'"},
+    "form-action": {"'none'"},
+}
 
 EXPECTED_POSTS = {
     "2026-03-06-the-repo-is-an-organism.md": {
@@ -333,12 +365,6 @@ EXPECTED_POSTS = {
         "title": '"Operational Empathy"',
         "date": "2026-03-09",
         "tags": "[agents, coordination, operations]",
-        "author": "obsidian",
-    },
-    "2026-03-09-the-frame-that-should-not-have-shipped.md": {
-        "title": '"The Frame That Should Not Have Shipped"',
-        "date": "2026-03-09",
-        "tags": "[agents, generation, operations]",
         "author": "obsidian",
     },
     "2026-03-09-adversarial-succession.md": {
@@ -1262,6 +1288,478 @@ def parse_front_matter(path: Path):
     raise AssertionError(f"{path} is missing closing front matter delimiter")
 
 
+def parse_collection_front_matter(path: Path):
+    text = path.read_text(encoding="utf-8")
+    lines = text.splitlines()
+    if not lines or lines[0] != "---":
+        raise AssertionError(f"{path} is missing opening front matter delimiter")
+
+    try:
+        closing_index = lines.index("---", 1)
+    except ValueError as error:
+        raise AssertionError(
+            f"{path} is missing closing front matter delimiter"
+        ) from error
+
+    yaml_source = "\n".join(lines[1:closing_index])
+    try:
+        front_matter = yaml.safe_load(yaml_source)
+    except yaml.YAMLError as error:
+        raise AssertionError(f"{path} has invalid YAML front matter: {error}") from error
+    if not isinstance(front_matter, dict):
+        raise AssertionError(f"{path} front matter must be a YAML mapping")
+
+    body = "\n".join(lines[closing_index + 1 :])
+    return front_matter, body
+
+
+def learn_example_records():
+    paths = sorted(
+        path
+        for path in EXAMPLES_DIR.iterdir()
+        if path.is_file() and path.suffix in {".html", ".md"}
+    )
+    return [(path, parse_collection_front_matter(path)[0]) for path in paths]
+
+
+def prompt_to_proof_records():
+    records = []
+    for path, front_matter in learn_example_records():
+        order = front_matter.get("order")
+        if type(order) is not int:
+            continue
+        if order in PROMPT_TO_PROOF_ORDERS:
+            records.append((order, path, front_matter))
+    return records
+
+
+def local_site_path(url):
+    clean_path = url.split("#", 1)[0].split("?", 1)[0]
+    if not clean_path.startswith("/"):
+        return None
+    candidate = (ROOT / clean_path.lstrip("/")).resolve()
+    try:
+        candidate.relative_to(ROOT.resolve())
+    except ValueError:
+        return None
+    return candidate
+
+
+def normalize_prompt_text(value):
+    normalized = unicodedata.normalize("NFKC", unescape(value))
+    return " ".join(normalized.replace("\u00a0", " ").split())
+
+
+class DemoHTMLInspector(HTMLParser):
+    VOID_TAGS = {
+        "area",
+        "base",
+        "br",
+        "col",
+        "embed",
+        "hr",
+        "img",
+        "input",
+        "link",
+        "meta",
+        "param",
+        "source",
+        "track",
+        "wbr",
+    }
+    RESOURCE_ATTRIBUTES = {
+        "audio": {"src"},
+        "base": {"href"},
+        "button": {"formaction"},
+        "embed": {"src"},
+        "feimage": {"href", "xlink:href"},
+        "form": {"action"},
+        "iframe": {"src", "srcdoc"},
+        "image": {"href", "xlink:href"},
+        "img": {"src", "srcset"},
+        "input": {"formaction", "src"},
+        "link": {"href"},
+        "object": {"data"},
+        "script": {"src"},
+        "source": {"src", "srcset"},
+        "track": {"src"},
+        "use": {"href", "xlink:href"},
+        "video": {"poster", "src"},
+    }
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.csp_policies = []
+        self.executable_attributes = []
+        self.inline_styles = []
+        self.markup_violations = []
+        self.prompt_containers = []
+        self.script_chunks = []
+        self.style_chunks = []
+        self._prompt = None
+        self._prompt_depth = 0
+        self._script_depth = 0
+        self._style_depth = 0
+
+    def handle_starttag(self, tag, attrs):
+        self._inspect_start(tag.lower(), attrs, self_closing=False)
+
+    def handle_startendtag(self, tag, attrs):
+        self._inspect_start(tag.lower(), attrs, self_closing=True)
+
+    def handle_endtag(self, tag):
+        tag = tag.lower()
+        if tag == "script" and self._script_depth:
+            self._script_depth -= 1
+        elif tag == "style" and self._style_depth:
+            self._style_depth -= 1
+        if self._prompt_depth:
+            self._prompt_depth -= 1
+            if not self._prompt_depth:
+                self.prompt_containers.append(self._prompt)
+                self._prompt = None
+
+    def handle_data(self, data):
+        if self._script_depth:
+            self.script_chunks.append(data)
+        if self._style_depth:
+            self.style_chunks.append(data)
+        if self._prompt_depth:
+            self._prompt["text"].append(data)
+
+    def _inspect_start(self, tag, attrs, self_closing):
+        attributes = {name.lower(): (value or "") for name, value in attrs}
+        for name, value in attributes.items():
+            if name.startswith("on") or value.lstrip().lower().startswith("javascript:"):
+                self.executable_attributes.append(value)
+
+        if attributes.get("style"):
+            self.inline_styles.append(attributes["style"])
+        for name in self.RESOURCE_ATTRIBUTES.get(tag, set()):
+            if attributes.get(name, "").strip():
+                self.markup_violations.append(f"{tag}[{name}]")
+        if attributes.get("background", "").strip():
+            self.markup_violations.append(f"{tag}[background]")
+        if attributes.get("ping", "").strip():
+            self.markup_violations.append(f"{tag}[ping]")
+        if tag in {"embed", "iframe", "object"}:
+            self.markup_violations.append(f"{tag} element")
+
+        if tag == "meta":
+            http_equiv = attributes.get("http-equiv", "").strip().casefold()
+            if http_equiv == "content-security-policy":
+                self.csp_policies.append(attributes.get("content", ""))
+            elif http_equiv == "refresh":
+                self.markup_violations.append("meta refresh")
+
+        if tag == "script":
+            if attributes.get("type", "").strip().lower() == "module":
+                self.markup_violations.append("module script")
+            if not self_closing:
+                self._script_depth += 1
+        elif tag == "style":
+            if not self_closing:
+                self._style_depth += 1
+
+        prompt_id = attributes.get("id", "")
+        if self._prompt_depth and tag not in self.VOID_TAGS and not self_closing:
+            self._prompt_depth += 1
+        elif tag == "pre" and prompt_id in PROMPT_CONTAINER_IDS:
+            self._prompt = {"id": prompt_id, "text": []}
+            self._prompt_depth = 1
+
+
+def inspect_demo_html(html):
+    inspector = DemoHTMLInspector()
+    inspector.feed(html)
+    inspector.close()
+    return inspector
+
+
+def demo_csp_violations(inspector):
+    if len(inspector.csp_policies) != 1:
+        return [f"expected one CSP meta tag, found {len(inspector.csp_policies)}"]
+
+    directives = {}
+    violations = []
+    for part in inspector.csp_policies[0].split(";"):
+        tokens = part.strip().split()
+        if not tokens:
+            continue
+        name = tokens[0].casefold()
+        if name in directives:
+            violations.append(f"duplicate CSP directive {name}")
+        directives[name] = set(tokens[1:])
+
+    for name, expected_sources in REQUIRED_DEMO_CSP.items():
+        actual_sources = directives.get(name)
+        if actual_sources != expected_sources:
+            violations.append(
+                f"{name} must be {sorted(expected_sources)}, got "
+                f"{sorted(actual_sources) if actual_sources is not None else 'missing'}"
+            )
+    return violations
+
+
+def _javascript_regex_starts(source, index):
+    prefix = source[:index].rstrip()
+    if not prefix:
+        return True
+    if prefix[-1] in "([{:;,=!?&|+-*%^~<>":
+        return True
+    return bool(
+        re.search(
+            r"\b(?:case|delete|else|in|instanceof|return|throw|typeof|void|yield)\s*$",
+            prefix,
+        )
+    )
+
+
+def _javascript_views(source):
+    comment_free = []
+    executable = []
+    quote = None
+    line_comment = False
+    block_comment = False
+    index = 0
+    while index < len(source):
+        char = source[index]
+        following = source[index + 1] if index + 1 < len(source) else ""
+
+        if line_comment:
+            replacement = "\n" if char == "\n" else " "
+            comment_free.append(replacement)
+            executable.append(replacement)
+            if char == "\n":
+                line_comment = False
+            index += 1
+            continue
+        if block_comment:
+            if char == "*" and following == "/":
+                comment_free.extend((" ", " "))
+                executable.extend((" ", " "))
+                block_comment = False
+                index += 2
+            else:
+                replacement = "\n" if char == "\n" else " "
+                comment_free.append(replacement)
+                executable.append(replacement)
+                index += 1
+            continue
+        if quote:
+            comment_free.append(char)
+            executable.append("\n" if char == "\n" else " ")
+            if char == "\\" and following:
+                comment_free.append(following)
+                executable.append("\n" if following == "\n" else " ")
+                index += 2
+                continue
+            if char == quote:
+                quote = None
+            index += 1
+            continue
+        if char == "/" and following == "/":
+            comment_free.extend((" ", " "))
+            executable.extend((" ", " "))
+            line_comment = True
+            index += 2
+            continue
+        if char == "/" and following == "*":
+            comment_free.extend((" ", " "))
+            executable.extend((" ", " "))
+            block_comment = True
+            index += 2
+            continue
+        if char == "/" and _javascript_regex_starts(source, index):
+            end = index + 1
+            escaped = False
+            in_character_class = False
+            while end < len(source):
+                regex_char = source[end]
+                if escaped:
+                    escaped = False
+                elif regex_char == "\\":
+                    escaped = True
+                elif regex_char == "[":
+                    in_character_class = True
+                elif regex_char == "]":
+                    in_character_class = False
+                elif regex_char == "/" and not in_character_class:
+                    end += 1
+                    while end < len(source) and source[end].isalpha():
+                        end += 1
+                    break
+                end += 1
+            literal = source[index:end]
+            replacements = [
+                "\n" if literal_char == "\n" else " " for literal_char in literal
+            ]
+            comment_free.extend(replacements)
+            executable.extend(replacements)
+            index = end
+            continue
+        if char in "\"'`":
+            quote = char
+            comment_free.append(char)
+            executable.append(" ")
+            index += 1
+            continue
+
+        comment_free.append(char)
+        executable.append(char)
+        index += 1
+    return "".join(comment_free), "".join(executable)
+
+
+def demo_dependency_violations(inspector):
+    script = "\n".join(
+        inspector.script_chunks + inspector.executable_attributes
+    )
+    comment_free_script, executable_script = _javascript_views(script)
+    violations = list(inspector.markup_violations)
+    executable_checks = {
+        "XMLHttpRequest": r"\bXMLHttpRequest\b",
+        "dynamic import": r"\bimport\s*\(",
+        "eval()": r"\beval\s*\(",
+        "fetch()": r"\bfetch\s*\(",
+        "module export": r"(?m)^\s*export\s+(?:default|const|let|var|function|class|\{)",
+        "new Audio resource": r"\bnew\s+Audio\s*\(",
+        "new Image resource": r"\bnew\s+Image\s*\(",
+        "resource property assignment": r"\.\s*(?:poster|src|srcset)\s*=",
+        "service worker registration": (
+            r"\bnavigator\s*\.\s*serviceWorker\s*\.\s*register\s*\("
+        ),
+        "static module import": r"(?m)^\s*import\s+(?!\()",
+        "worker resource": r"\b(?:SharedWorker|Worker|importScripts)\s*\(",
+        "network beacon": r"\bnavigator\s*\.\s*sendBeacon\s*\(",
+        "network event stream": r"\bEventSource\s*\(",
+        "web socket": r"\bWebSocket\s*\(",
+    }
+    for label, pattern in executable_checks.items():
+        if re.search(pattern, executable_script):
+            violations.append(label)
+
+    if re.search(
+        r"\bcreateElement\s*\(\s*['\"]"
+        r"(?:audio|embed|iframe|img|link|object|script|source|video)"
+        r"['\"]\s*\)",
+        comment_free_script,
+        re.IGNORECASE,
+    ):
+        violations.append("dynamic resource element")
+    if re.search(
+        r"\bsetAttribute\s*\(\s*['\"](?:poster|src|srcset)['\"]",
+        comment_free_script,
+        re.IGNORECASE,
+    ):
+        violations.append("dynamic resource attribute")
+
+    css = "\n".join(inspector.style_chunks + inspector.inline_styles)
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.DOTALL)
+    if re.search(r"@import\b", css, re.IGNORECASE):
+        violations.append("CSS import")
+    if re.search(r"\burl\s*\(", css, re.IGNORECASE):
+        violations.append("CSS URL")
+    if re.search(r"(?:^|[^\w-])(?:-webkit-)?image-set\s*\(", css, re.IGNORECASE):
+        violations.append("CSS image-set")
+    return sorted(set(violations))
+
+
+def _liquid_assignments(source):
+    return dict(
+        re.findall(
+            r"{%-?\s*assign\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^%]+?)-?%}",
+            source,
+        )
+    )
+
+
+def _liquid_derives_from(variable, collection, assignments, seen=None):
+    if variable == collection:
+        return True
+    if variable not in assignments:
+        return False
+    seen = set() if seen is None else set(seen)
+    if variable in seen:
+        return False
+    seen.add(variable)
+    references = re.findall(r"\b[A-Za-z_][A-Za-z0-9_.]*\b", assignments[variable])
+    return any(
+        _liquid_derives_from(reference, collection, assignments, seen)
+        for reference in references
+    )
+
+
+def liquid_has_consumed_bounded_loop(source, collection):
+    assignments = _liquid_assignments(source)
+    loop_pattern = re.compile(
+        r"{%-?\s*for\s+(?P<item>[A-Za-z_][A-Za-z0-9_]*)\s+in\s+"
+        r"(?P<iterable>[A-Za-z_][A-Za-z0-9_.]*)(?P<options>[^%]*?)-?%}"
+        r"(?P<body>.*?){%-?\s*endfor\s*-?%}",
+        re.DOTALL,
+    )
+    for match in loop_pattern.finditer(source):
+        if not _liquid_derives_from(
+            match.group("iterable"), collection, assignments
+        ):
+            continue
+        if not re.search(r"\blimit\s*:\s*[1-9]\d*", match.group("options")):
+            continue
+        item = re.escape(match.group("item"))
+        if re.search(r"(?:{{|{%)[^}%]*\b" + item + r"\.", match.group("body")):
+            return True
+    return False
+
+
+def _liquid_expression_counts_collection(expression, collection, assignments):
+    count_sources = re.findall(
+        r"\b([A-Za-z_][A-Za-z0-9_.]*)\s*(?:\.size\b|\|\s*size\b)",
+        expression,
+    )
+    if any(
+        _liquid_derives_from(source, collection, assignments)
+        for source in count_sources
+    ):
+        return True
+
+    bare_variable = expression.strip()
+    assigned_expression = assignments.get(bare_variable, "")
+    if not re.search(r"\|\s*size\b", assigned_expression):
+        return False
+    references = re.findall(
+        r"\b[A-Za-z_][A-Za-z0-9_.]*\b", assigned_expression
+    )
+    return any(
+        _liquid_derives_from(reference, collection, assignments)
+        for reference in references
+    )
+
+
+def liquid_heading_has_dynamic_count(source, collection):
+    assignments = _liquid_assignments(source)
+    headings = re.findall(
+        r"<h[1-3]\b[^>]*>(.*?)</h[1-3]>",
+        source,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    for heading in headings:
+        if not re.search(
+            r"\b(?:build|demo|example|prompt|tutorial)s?\b",
+            heading,
+            re.IGNORECASE,
+        ):
+            continue
+        expressions = re.findall(r"{{-?\s*(.*?)\s*-?}}", heading, re.DOTALL)
+        if any(
+            _liquid_expression_counts_collection(
+                expression, collection, assignments
+            )
+            for expression in expressions
+        ):
+            return True
+    return False
+
+
 class SiteContentTests(unittest.TestCase):
     def test_expected_posts_exist(self):
         for filename in EXPECTED_POSTS:
@@ -1292,6 +1790,285 @@ class SiteContentTests(unittest.TestCase):
         for filename, expected in EXPECTED_TWIN_POSTS.items():
             self.assertTrue(filename.startswith(expected["date"]))
 
+    def test_learn_examples_have_nonempty_prompts(self):
+        records = learn_example_records()
+        self.assertGreaterEqual(
+            len(records),
+            MIN_LEARN_EXAMPLES,
+            "The Learn with Kody catalog unexpectedly lost examples",
+        )
+        missing_prompts = [
+            path.name
+            for path, front_matter in records
+            if not isinstance(front_matter.get("prompt"), str)
+            or not front_matter["prompt"].strip()
+        ]
+        self.assertEqual(
+            missing_prompts,
+            [],
+            f"Examples with missing or empty canonical prompts: {missing_prompts}",
+        )
+
+    def test_prompt_to_proof_tutorial_metadata(self):
+        records = prompt_to_proof_records()
+        records_by_order = {}
+        for order, path, front_matter in records:
+            records_by_order.setdefault(order, []).append((path, front_matter))
+
+        self.assertEqual(set(records_by_order), PROMPT_TO_PROOF_ORDERS)
+        duplicate_orders = {
+            order: [path.name for path, _ in matches]
+            for order, matches in records_by_order.items()
+            if len(matches) != 1
+        }
+        self.assertEqual(
+            duplicate_orders,
+            {},
+            f"Prompt-to-Proof tutorial orders must be unique: {duplicate_orders}",
+        )
+
+        for order in sorted(PROMPT_TO_PROOF_ORDERS):
+            path, front_matter = records_by_order[order][0]
+            with self.subTest(tutorial=path.name):
+                for field in ("category", "status", "series", "demo", "repo"):
+                    self.assertIsInstance(front_matter.get(field), str)
+                    self.assertTrue(front_matter[field].strip())
+
+                self.assertEqual(front_matter["category"], "tutorial")
+                self.assertEqual(front_matter["status"], "live")
+                series_slug = re.sub(
+                    r"[^a-z0-9]+",
+                    "-",
+                    front_matter["series"].casefold(),
+                ).strip("-")
+                self.assertEqual(series_slug, "prompt-to-proof")
+
+                self.assertIs(type(front_matter.get("order")), int)
+                self.assertIs(type(front_matter.get("lesson")), int)
+                self.assertEqual(front_matter["lesson"], order - 346)
+
+                objectives = front_matter.get("objectives")
+                steps = front_matter.get("steps")
+                self.assertIsInstance(objectives, list)
+                self.assertGreaterEqual(len(objectives), 3)
+                for objective in objectives:
+                    self.assertIsInstance(objective, str)
+                    self.assertTrue(objective.strip())
+
+                self.assertIsInstance(steps, list)
+                self.assertGreaterEqual(len(steps), 3)
+                for step in steps:
+                    self.assertIsInstance(step, dict)
+                    for field in ("title", "instruction", "check"):
+                        self.assertIsInstance(step.get(field), str)
+                        self.assertTrue(step[field].strip())
+
+                self.assertRegex(
+                    front_matter["demo"],
+                    r"^/learnwithkody/demos/[A-Za-z0-9][A-Za-z0-9._-]*\.html$",
+                )
+                self.assertRegex(
+                    front_matter["repo"],
+                    r"^https://github\.com/[^/\s]+/[^/#\s]+(?:/[^#\s]*)?$",
+                )
+
+    def test_referenced_learn_demos_exist(self):
+        local_demo_references = []
+        for path, front_matter in learn_example_records():
+            demo = front_matter.get("demo")
+            if not isinstance(demo, str) or not demo.startswith(
+                "/learnwithkody/demos/"
+            ):
+                continue
+            local_demo_references.append((path, demo))
+
+        self.assertTrue(local_demo_references)
+        for example_path, demo in local_demo_references:
+            with self.subTest(example=example_path.name, demo=demo):
+                demo_path = local_site_path(demo)
+                self.assertIsNotNone(demo_path)
+                self.assertTrue(
+                    demo_path.is_file(),
+                    f"{example_path.name} references missing local demo {demo}",
+                )
+
+    def test_prompt_to_proof_demos_use_exact_prompt_container_contract(self):
+        records = prompt_to_proof_records()
+        self.assertEqual(len(records), len(PROMPT_TO_PROOF_ORDERS))
+        for order, example_path, front_matter in records:
+            with self.subTest(order=order, tutorial=example_path.name):
+                demo_path = local_site_path(str(front_matter.get("demo", "")))
+                self.assertIsNotNone(demo_path)
+                self.assertTrue(demo_path.is_file())
+
+                prompt = front_matter.get("prompt")
+                self.assertIsInstance(prompt, str)
+                canonical_prompt = normalize_prompt_text(prompt)
+                self.assertTrue(canonical_prompt)
+
+                inspector = inspect_demo_html(demo_path.read_text(encoding="utf-8"))
+                self.assertEqual(
+                    len(inspector.prompt_containers),
+                    1,
+                    f"{demo_path.name} must have exactly one designated prompt <pre>",
+                )
+                container = inspector.prompt_containers[0]
+                self.assertIn(container["id"], PROMPT_CONTAINER_IDS)
+                embedded_prompt = normalize_prompt_text("".join(container["text"]))
+                self.assertEqual(
+                    canonical_prompt,
+                    embedded_prompt,
+                    f"{demo_path.name}'s designated prompt container must exactly "
+                    f"match {example_path.name}",
+                )
+
+    def test_prompt_to_proof_demos_have_strict_csp_and_no_dependencies(self):
+        records = prompt_to_proof_records()
+        self.assertEqual(len(records), len(PROMPT_TO_PROOF_ORDERS))
+        for order, example_path, front_matter in records:
+            with self.subTest(order=order, tutorial=example_path.name):
+                demo_path = local_site_path(str(front_matter.get("demo", "")))
+                self.assertIsNotNone(demo_path)
+                self.assertTrue(demo_path.is_file())
+                self.assertLessEqual(
+                    demo_path.stat().st_size,
+                    MAX_TUTORIAL_DEMO_BYTES,
+                    f"{demo_path.name} exceeds the 75KB single-file budget",
+                )
+                html = demo_path.read_text(encoding="utf-8")
+                inspector = inspect_demo_html(html)
+                csp_violations = demo_csp_violations(inspector)
+                self.assertEqual(
+                    csp_violations,
+                    [],
+                    f"{demo_path.name} has a weak CSP: {csp_violations}",
+                )
+                dependency_violations = demo_dependency_violations(inspector)
+                self.assertEqual(
+                    dependency_violations,
+                    [],
+                    f"{demo_path.name} uses external resources or runtime loading: "
+                    f"{dependency_violations}",
+                )
+
+    def test_demo_dependency_auditor_covers_resource_surfaces(self):
+        forbidden_samples = {
+            "external script": '<script src="/app.js"></script>',
+            "image": '<img src="pixel.png" alt="">',
+            "iframe": '<iframe src="about:blank"></iframe>',
+            "local stylesheet": '<link rel="stylesheet" href="/app.css">',
+            "style URL": "<style>.hero{background:url(local.png)}</style>",
+            "style image-set": (
+                "<style>.hero{background:image-set('local.png' 1x)}</style>"
+            ),
+            "inline style URL": '<div style="background:url(local.png)"></div>',
+            "fetch": "<script>fetch('/api')</script>",
+            "XMLHttpRequest": "<script>new XMLHttpRequest()</script>",
+            "eval": "<script>eval('1 + 1')</script>",
+            "module": '<script type="module">const ok = true</script>',
+            "resource property": (
+                "<script>const image = document.createElement('div');"
+                "image.src = '/local.png';</script>"
+            ),
+        }
+        for surface, html in forbidden_samples.items():
+            with self.subTest(surface=surface):
+                self.assertTrue(demo_dependency_violations(inspect_demo_html(html)))
+
+        comments_only = """
+          <!-- <img src="comment.png"><iframe src="comment.html"></iframe> -->
+          <style>/* .hero { background: url(comment.png); } */</style>
+          <script>
+            // fetch("/comment")
+            /* new XMLHttpRequest(); eval("comment"); */
+            const safe = true;
+          </script>
+        """
+        self.assertEqual(
+            demo_dependency_violations(inspect_demo_html(comments_only)),
+            [],
+        )
+
+    def test_blog_and_learn_navigation_and_homepage_feeds(self):
+        layout = DEFAULT_LAYOUT.read_text(encoding="utf-8")
+        blog_link = re.compile(
+            r"""<a\b(?=[^>]*\bhref\s*=\s*["']/(?:#blog)?["'])"""
+            r"""[^>]*>\s*Blog\s*</a>""",
+            re.IGNORECASE,
+        )
+        learn_link = re.compile(
+            r"""<a\b(?=[^>]*\bhref\s*=\s*["']/learnwithkody/["'])[^>]*>"""
+            r"""\s*Learn(?:\s+with\s+Kody)?\s*</a>""",
+            re.IGNORECASE,
+        )
+        self.assertRegex(layout, blog_link)
+        self.assertRegex(layout, learn_link)
+
+        home = HOME_PAGE.read_text(encoding="utf-8")
+        self.assertRegex(
+            home,
+            re.compile(
+                r"""<a\b(?=[^>]*\bhref\s*=\s*["']#blog["'])[^>]*>"""
+                r""".*?\bBlog\b.*?</a>""",
+                re.IGNORECASE | re.DOTALL,
+            ),
+        )
+        self.assertRegex(
+            home,
+            re.compile(
+                r"""<a\b(?=[^>]*\bhref\s*=\s*["'](?:#learn|/learnwithkody/)["'])"""
+                r"""[^>]*>.*?\bLearn\b.*?</a>""",
+                re.IGNORECASE | re.DOTALL,
+            ),
+        )
+        self.assertIn("site.posts", home)
+        self.assertRegex(
+            home,
+            re.compile(
+                r"{%-?\s*for\s+\w+\s+in\s+site\.posts\b[^%]*-?%}",
+                re.IGNORECASE,
+            ),
+        )
+        self.assertIn("site.examples", home)
+        self.assertTrue(
+            liquid_has_consumed_bounded_loop(home, "site.examples"),
+            "Homepage must consume a site.examples-derived assignment in a "
+            "numerically bounded card loop",
+        )
+
+    def test_learn_hub_counts_bounds_and_catalog_status_filter(self):
+        hub = LEARN_HUB_PAGE.read_text(encoding="utf-8")
+        self.assertTrue(
+            liquid_heading_has_dynamic_count(hub, "site.examples"),
+            "A rendered Learn heading must count its site.examples-derived "
+            "assignment",
+        )
+        self.assertNotRegex(hub, re.compile(r"\bFifty working demos\b", re.IGNORECASE))
+        self.assertTrue(
+            liquid_has_consumed_bounded_loop(hub, "site.examples"),
+            "Learn hub must consume a site.examples-derived assignment in a "
+            "numerically bounded card loop",
+        )
+
+        catalog = LEARN_CATALOG_PAGE.read_text(encoding="utf-8")
+        self.assertRegex(
+            catalog,
+            re.compile(
+                r"""data-filter-type\s*=\s*["']status["']""", re.IGNORECASE
+            ),
+        )
+        self.assertRegex(
+            catalog,
+            re.compile(
+                r"""data-status\s*=\s*["']{{\s*\w+\.status\s*}}["']""",
+                re.IGNORECASE,
+            ),
+        )
+        self.assertRegex(
+            catalog,
+            re.compile(r"<span[^>]*>\s*Status\s*</span>", re.IGNORECASE),
+        )
+
     def test_idea4blog_page_exists_and_has_expected_front_matter(self):
         front_matter, body = parse_front_matter(IDEA4BLOG_PAGE)
         self.assertEqual(front_matter.get("layout"), "default")
@@ -1315,7 +2092,12 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("/2026/03/09/operational-empathy/", body)
         self.assertIn("## Frame 2026-03-09 / Trust Failure and Regret", body)
         self.assertIn("/2026/03/09/trust-gradient-collapse/", body)
-        self.assertIn("/2026/03/09/the-frame-that-should-not-have-shipped/", body)
+        self.assertNotIn(WITHDRAWN_POST_ROUTE, body)
+        self.assertIn(
+            '"The Frame That Should Not Have Shipped" was intentionally withdrawn',
+            body,
+        )
+        self.assertFalse((POSTS_DIR / WITHDRAWN_POST_FILENAME).exists())
         self.assertIn("## Frame 2026-03-09 / Conflict and Scarcity", body)
         self.assertIn("/2026/03/09/adversarial-succession/", body)
         self.assertIn("/2026/03/09/the-economics-of-attention/", body)

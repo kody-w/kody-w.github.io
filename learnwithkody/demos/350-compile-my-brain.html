@@ -1,0 +1,1067 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; script-src-elem 'unsafe-inline'; script-src-attr 'none'; style-src 'unsafe-inline'; img-src 'none'; connect-src 'none'; font-src 'none'; media-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Compile My Brain — Six-Artifact Workbench</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #0d0d14;
+  --panel: #171722;
+  --panel-2: #1e1e2c;
+  --line: #3b3a52;
+  --text: #f6f2ff;
+  --muted: #bbb5ce;
+  --violet: #c5a3ff;
+  --cyan: #75e3e6;
+  --yellow: #ffd479;
+  --red: #ff9696;
+  --green: #8ff0bd;
+  --focus: #a9d2ff;
+  --shadow: 0 20px 55px rgba(0, 0, 0, .28);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 85% -8%, rgba(197, 163, 255, .14), transparent 30rem),
+    radial-gradient(circle at 0% 30%, rgba(117, 227, 230, .07), transparent 25rem),
+    var(--bg);
+  color: var(--text);
+  font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+button, input, textarea { font: inherit; color: inherit; }
+.skip-link {
+  position: fixed;
+  top: .5rem;
+  left: .5rem;
+  z-index: 20;
+  transform: translateY(-180%);
+  padding: .65rem .85rem;
+  border-radius: .45rem;
+  background: var(--text);
+  color: var(--bg);
+}
+.skip-link:focus { transform: none; }
+.shell { width: min(1120px, calc(100% - 2rem)); margin: 0 auto; }
+header { padding: 2.7rem 0 1.2rem; }
+.eyebrow {
+  margin: 0 0 .45rem;
+  color: var(--cyan);
+  font: 750 .78rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+h1 { max-width: 16ch; margin: 0; font-size: clamp(2rem, 7vw, 4.5rem); line-height: .98; letter-spacing: -.055em; }
+.lede { max-width: 72ch; margin: 1rem 0 0; color: var(--muted); font-size: 1.05rem; }
+.badges { display: flex; flex-wrap: wrap; gap: .55rem; margin-top: 1rem; }
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .32rem .62rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: .82rem;
+}
+.badge::before { content: ""; width: .5rem; height: .5rem; border-radius: 50%; background: var(--cyan); }
+.badge.manual::before { background: var(--yellow); }
+.notice {
+  margin: 1rem 0 1.2rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(255, 212, 121, .55);
+  border-left: .35rem solid var(--yellow);
+  border-radius: .8rem;
+  background: rgba(255, 212, 121, .07);
+}
+.notice strong { color: var(--yellow); }
+.panel {
+  margin: 1rem 0;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: rgba(23, 23, 34, .97);
+  box-shadow: var(--shadow);
+}
+.panel h2 { margin: 0; font-size: 1.25rem; letter-spacing: -.025em; }
+.panel-intro { max-width: 76ch; margin: .4rem 0 1rem; color: var(--muted); }
+.step-marker {
+  display: inline-grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-right: .45rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--violet);
+  color: #100a19;
+  font: 850 .84rem/1 ui-monospace, monospace;
+}
+details summary { cursor: pointer; font-weight: 760; }
+details summary::marker { color: var(--violet); }
+.prompt-box { position: relative; margin-top: 1rem; }
+pre, code, textarea.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.prompt-box pre {
+  margin: 0;
+  padding: 3.35rem 1rem 1rem;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: .7rem;
+  background: #0a0a10;
+  color: #e4deee;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: .84rem;
+}
+.copy-prompt { position: absolute; top: .55rem; right: .55rem; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; }
+.full { grid-column: 1 / -1; }
+label, legend { font-weight: 720; }
+.hint { display: block; margin-top: .24rem; color: var(--muted); font-size: .82rem; font-weight: 400; }
+input, textarea {
+  width: 100%;
+  margin-top: .35rem;
+  padding: .72rem .78rem;
+  border: 1px solid var(--line);
+  border-radius: .55rem;
+  outline: none;
+  background: #0c0c13;
+}
+textarea { min-height: 7rem; resize: vertical; line-height: 1.45; }
+#sourceText { min-height: 15rem; }
+input:focus, textarea:focus, button:focus-visible, summary:focus-visible, .summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-color: transparent;
+}
+.persist-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: .7rem;
+  align-items: start;
+  margin-top: 1rem;
+  padding: .8rem;
+  border: 1px solid var(--line);
+  border-radius: .65rem;
+  background: var(--panel-2);
+}
+.persist-row input { width: 1.15rem; height: 1.15rem; margin: .18rem 0 0; accent-color: var(--violet); }
+.persist-row small { display: block; color: var(--muted); font-weight: 400; }
+fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+.question-grid { display: grid; gap: .75rem; }
+.question-grid textarea { min-height: 5.4rem; }
+.template-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .7rem;
+  align-items: center;
+  margin: 1rem 0;
+  padding: .9rem;
+  border: 1px dashed var(--violet);
+  border-radius: .7rem;
+  background: rgba(197, 163, 255, .06);
+}
+.template-bar p { flex: 1 1 22rem; margin: 0; color: var(--muted); font-size: .88rem; }
+.artifact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.artifact {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: .8rem;
+  background: var(--panel-2);
+}
+.artifact-head { display: flex; align-items: start; gap: .6rem; }
+.artifact-number {
+  display: grid;
+  flex: 0 0 auto;
+  width: 1.65rem;
+  height: 1.65rem;
+  place-items: center;
+  border: 1px solid var(--violet);
+  border-radius: .35rem;
+  color: var(--violet);
+  font: 800 .8rem/1 ui-monospace, monospace;
+}
+.artifact h3 { margin: 0; font-size: 1.05rem; }
+.artifact .audience { margin: .15rem 0 .7rem; color: var(--muted); font-size: .8rem; }
+.artifact textarea { flex: 1 1 auto; min-height: 22rem; font-size: .84rem; tab-size: 2; }
+.artifact-actions { display: flex; flex-wrap: wrap; gap: .55rem; align-items: center; margin-top: .7rem; }
+.complete {
+  display: inline-grid;
+  grid-template-columns: auto 1fr;
+  gap: .5rem;
+  align-items: center;
+  margin-right: auto;
+}
+.complete input { width: 1.1rem; height: 1.1rem; margin: 0; accent-color: var(--cyan); }
+button {
+  min-height: 2.65rem;
+  padding: .6rem .9rem;
+  border: 1px solid var(--violet);
+  border-radius: .55rem;
+  background: var(--violet);
+  color: #100a19;
+  cursor: pointer;
+  font-weight: 800;
+}
+button:hover { filter: brightness(1.08); }
+button.secondary { background: transparent; color: var(--text); border-color: var(--line); }
+button.danger { background: transparent; color: var(--red); border-color: rgba(255, 150, 150, .65); }
+.progress-wrap { margin-top: 1rem; }
+.progress-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; }
+progress { width: 100%; height: .8rem; margin-top: .4rem; accent-color: var(--cyan); }
+.actions { display: flex; flex-wrap: wrap; gap: .65rem; margin-top: 1rem; }
+.summary { margin: .85rem 0 0; font-weight: 760; }
+.verification { margin: .8rem 0 0; padding: 0; list-style: none; }
+.verification li { margin: .35rem 0; padding: .52rem .65rem; border-radius: .45rem; background: var(--panel-2); overflow-wrap: anywhere; }
+.verification .pass { color: var(--green); }
+.verification .fail { color: var(--red); }
+.status { min-height: 1.5rem; margin: .75rem 0 0; color: var(--cyan); }
+footer { padding: 1.5rem 0 3rem; color: var(--muted); font-size: .85rem; }
+@media (max-width: 780px) {
+  .grid, .artifact-grid { grid-template-columns: 1fr; }
+  .full { grid-column: auto; }
+  .shell { width: min(100% - 1rem, 1120px); }
+  header { padding-top: 1.7rem; }
+  .panel { border-radius: .75rem; }
+  .artifact textarea { min-height: 17rem; }
+  .actions > button { flex: 1 1 10rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#workbench">Skip to workbench</a>
+
+<header class="shell">
+  <p class="eyebrow">Prompt to Proof · Lesson 4</p>
+  <h1>Compile My Brain</h1>
+  <p class="lede">Shape one source into six coherent artifacts yourself, then verify that every declared anchor survives the translation.</p>
+  <div class="badges">
+    <span class="badge">Local-only · no network</span>
+    <span class="badge manual">Manual drafting · no summarizer</span>
+  </div>
+</header>
+
+<main id="workbench" class="shell">
+  <div class="notice" role="note">
+    <strong>This page does not summarize your transcript.</strong> It never calls a model or invents entities, decisions, requirements, or answers. Templates are empty scaffolds; all meaning comes from text you enter and verify.
+  </div>
+
+  <details class="panel">
+    <summary>Canonical seed prompt (copy exactly)</summary>
+    <p class="panel-intro">Use this prompt in a separate model session if you want. Bring only claims you can validate back into this manual workbench.</p>
+    <div class="prompt-box">
+      <button class="copy-prompt secondary" id="copyPrompt" type="button">Copy prompt</button>
+      <pre id="seedPrompt">I'll talk for 20 minutes about a system I'm building. You take notes,
+ask 5 clarifying questions, then output: a system design doc, an
+OpenAPI spec, a database schema, a test plan, a risk register, and a
+Slack message I can paste to my team to explain it. All six artifacts
+must be consistent with each other — same entity names, same
+invariants, same failure modes.</pre>
+    </div>
+  </details>
+
+  <form id="brainForm" novalidate>
+    <section class="panel" aria-labelledby="source-title">
+      <h2 id="source-title"><span class="step-marker">1</span>Paste the source</h2>
+      <p class="panel-intro">Keep the raw monologue or transcript nearby as evidence. Nothing is extracted automatically.</p>
+      <label for="sourceText">Monologue or transcript
+        <span class="hint">Maximum 40,000 characters. This stays in memory unless you opt into local persistence.</span>
+        <textarea id="sourceText" maxlength="40000" required placeholder="Paste your source of truth here…"></textarea>
+      </label>
+      <label class="persist-row" for="persistDraft">
+        <input id="persistDraft" type="checkbox">
+        <span>Remember this draft on this device
+          <small>Optional and off by default. Stores the transcript, anchors, questions, and artifacts in this browser's local storage. Reset removes it.</small>
+        </span>
+      </label>
+      <p class="status" id="storageStatus" role="status" aria-live="polite">Persistence is off.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="anchors-title">
+      <h2 id="anchors-title"><span class="step-marker">2</span>Declare shared anchors</h2>
+      <p class="panel-intro">Enter canonical wording manually. Put one entity, invariant, or failure mode on each line; every line must appear in every artifact.</p>
+      <div class="grid">
+        <label class="full" for="systemName">Canonical system name
+          <span class="hint">Use the exact name all six artifacts should share.</span>
+          <input id="systemName" maxlength="200" required placeholder="Review Relay">
+        </label>
+        <label for="entities">Entity names
+          <span class="hint">One exact entity name per line.</span>
+          <textarea id="entities" maxlength="5000" required placeholder="ReviewEnvelope&#10;ApprovalDecision"></textarea>
+        </label>
+        <label for="invariants">Invariants
+          <span class="hint">One exact invariant statement per line.</span>
+          <textarea id="invariants" maxlength="7000" required placeholder="Every ReviewEnvelope has exactly one active ApprovalDecision"></textarea>
+        </label>
+        <label class="full" for="failureModes">Failure modes
+          <span class="hint">One exact failure-mode name or statement per line.</span>
+          <textarea id="failureModes" maxlength="7000" required placeholder="Duplicate approval after retry"></textarea>
+        </label>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="questions-title">
+      <h2 id="questions-title"><span class="step-marker">3</span>Resolve five clarifying questions</h2>
+      <p class="panel-intro">Write a nonempty question and a nonempty answer in every field using <strong>Question? Answer:</strong>. The workbench checks structure and placeholders, not the truth of the answer.</p>
+      <fieldset>
+        <legend class="hint">Five required question-and-answer records</legend>
+        <div class="question-grid">
+          <label for="question1">Question and answer 1
+            <textarea id="question1" maxlength="2500" placeholder="Who may approve a ReviewEnvelope? Answer: A workspace owner or delegated reviewer."></textarea>
+          </label>
+          <label for="question2">Question and answer 2
+            <textarea id="question2" maxlength="2500" placeholder="What is out of scope? Answer: Cross-workspace delegation."></textarea>
+          </label>
+          <label for="question3">Question and answer 3
+            <textarea id="question3" maxlength="2500" placeholder="What is the retry contract? Answer: The request key is idempotent for 24 hours."></textarea>
+          </label>
+          <label for="question4">Question and answer 4
+            <textarea id="question4" maxlength="2500" placeholder="How is failure observed? Answer: A durable event and an operator alert."></textarea>
+          </label>
+          <label for="question5">Question and answer 5
+            <textarea id="question5" maxlength="2500" placeholder="What data must be retained? Answer: Decisions and actor IDs for one year."></textarea>
+          </label>
+        </div>
+      </fieldset>
+    </section>
+
+    <section class="panel" aria-labelledby="artifacts-title">
+      <h2 id="artifacts-title"><span class="step-marker">4</span>Shape six artifacts</h2>
+      <p class="panel-intro">The loader fills only empty editors with headings, your exact declared anchors, and visible <code>TODO:</code> markers. It does not read or summarize the source.</p>
+      <div class="template-bar">
+        <p>Declare anchors first, then load scaffolds. Existing artifact text is never overwritten.</p>
+        <button id="loadTemplates" type="button">Load guided templates</button>
+      </div>
+
+      <div class="artifact-grid">
+        <article class="artifact">
+          <div class="artifact-head"><span class="artifact-number">01</span><div><h3>System design doc</h3><p class="audience">Audience: engineering and product reviewers</p></div></div>
+          <label for="designDoc">Design document
+            <span class="hint">Goals, non-goals, components, data flow, contract, and operations.</span>
+            <textarea class="mono" id="designDoc" maxlength="30000" spellcheck="false"></textarea>
+          </label>
+          <div class="artifact-actions">
+            <label class="complete" for="completeDesign"><input id="completeDesign" type="checkbox" data-complete><span>Mark complete</span></label>
+            <button class="secondary copy-artifact" type="button" data-copy="designDoc">Copy</button>
+          </div>
+        </article>
+
+        <article class="artifact">
+          <div class="artifact-head"><span class="artifact-number">02</span><div><h3>OpenAPI spec</h3><p class="audience">Audience: API consumers and implementers</p></div></div>
+          <label for="openapiSpec">OpenAPI document
+            <span class="hint">Paths, shapes, status codes, and shared contract notes.</span>
+            <textarea class="mono" id="openapiSpec" maxlength="30000" spellcheck="false"></textarea>
+          </label>
+          <div class="artifact-actions">
+            <label class="complete" for="completeOpenapi"><input id="completeOpenapi" type="checkbox" data-complete><span>Mark complete</span></label>
+            <button class="secondary copy-artifact" type="button" data-copy="openapiSpec">Copy</button>
+          </div>
+        </article>
+
+        <article class="artifact">
+          <div class="artifact-head"><span class="artifact-number">03</span><div><h3>Database schema</h3><p class="audience">Audience: data and backend implementers</p></div></div>
+          <label for="databaseSchema">Schema draft
+            <span class="hint">Tables, keys, constraints, indexes, and lifecycle.</span>
+            <textarea class="mono" id="databaseSchema" maxlength="30000" spellcheck="false"></textarea>
+          </label>
+          <div class="artifact-actions">
+            <label class="complete" for="completeSchema"><input id="completeSchema" type="checkbox" data-complete><span>Mark complete</span></label>
+            <button class="secondary copy-artifact" type="button" data-copy="databaseSchema">Copy</button>
+          </div>
+        </article>
+
+        <article class="artifact">
+          <div class="artifact-head"><span class="artifact-number">04</span><div><h3>Test plan</h3><p class="audience">Audience: developers and quality reviewers</p></div></div>
+          <label for="testPlan">Test plan
+            <span class="hint">Contract, happy path, boundaries, failures, and observability.</span>
+            <textarea class="mono" id="testPlan" maxlength="30000" spellcheck="false"></textarea>
+          </label>
+          <div class="artifact-actions">
+            <label class="complete" for="completeTests"><input id="completeTests" type="checkbox" data-complete><span>Mark complete</span></label>
+            <button class="secondary copy-artifact" type="button" data-copy="testPlan">Copy</button>
+          </div>
+        </article>
+
+        <article class="artifact">
+          <div class="artifact-head"><span class="artifact-number">05</span><div><h3>Risk register</h3><p class="audience">Audience: delivery, security, and operations</p></div></div>
+          <label for="riskRegister">Risk register
+            <span class="hint">Failure, trigger, impact, signal, mitigation, and owner.</span>
+            <textarea class="mono" id="riskRegister" maxlength="30000" spellcheck="false"></textarea>
+          </label>
+          <div class="artifact-actions">
+            <label class="complete" for="completeRisks"><input id="completeRisks" type="checkbox" data-complete><span>Mark complete</span></label>
+            <button class="secondary copy-artifact" type="button" data-copy="riskRegister">Copy</button>
+          </div>
+        </article>
+
+        <article class="artifact">
+          <div class="artifact-head"><span class="artifact-number">06</span><div><h3>Slack message</h3><p class="audience">Audience: the team that must understand the plan</p></div></div>
+          <label for="slackMessage">Team message
+            <span class="hint">What, why, contract, risk, decision, and review ask.</span>
+            <textarea id="slackMessage" maxlength="12000"></textarea>
+          </label>
+          <div class="artifact-actions">
+            <label class="complete" for="completeSlack"><input id="completeSlack" type="checkbox" data-complete><span>Mark complete</span></label>
+            <button class="secondary copy-artifact" type="button" data-copy="slackMessage">Copy</button>
+          </div>
+        </article>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-top">
+          <label for="completionBar">Artifact completion</label>
+          <output id="progressText" for="brainForm">0/6 marked complete · 0% anchor coverage</output>
+        </div>
+        <progress id="completionBar" max="6" value="0">0 of 6</progress>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="verify-title">
+      <h2 id="verify-title"><span class="step-marker">5</span>Verify, copy, and export</h2>
+      <p class="panel-intro">Verification uses required fields, visible completion marks, scaffold-placeholder detection, and case-insensitive boundary-aware anchor matching. It does not evaluate meaning.</p>
+      <label class="persist-row" for="includeSource">
+        <input id="includeSource" type="checkbox">
+        <span>Include the raw source in copy/export
+          <small>Off by default so a shareable artifact bundle does not silently include the transcript.</small>
+        </span>
+      </label>
+      <div class="actions">
+        <button id="verifyButton" type="button">Verify all six</button>
+        <button id="copyAll" class="secondary" type="button">Copy bundle</button>
+        <button id="downloadAll" class="secondary" type="button">Download .md</button>
+        <button id="resetButton" class="danger" type="button">Reset everything</button>
+      </div>
+      <p class="summary" id="verificationSummary" tabindex="-1" aria-live="polite">Not verified yet.</p>
+      <ul class="verification" id="verificationList" aria-label="Verification results"></ul>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+    </section>
+  </form>
+</main>
+
+<footer class="shell">
+  <p>One self-contained file. No dependencies, network requests, model calls, analytics, or generated summaries.</p>
+  <p id="regressionStatus" role="status">Built-in regression checks pending.</p>
+</footer>
+
+<script>
+(() => {
+  "use strict";
+
+  const STORAGE_KEY = "compile-my-brain-v1";
+  const form = document.getElementById("brainForm");
+  const status = document.getElementById("status");
+  const storageStatus = document.getElementById("storageStatus");
+  const persistDraft = document.getElementById("persistDraft");
+  const resultList = document.getElementById("verificationList");
+  const verificationSummary = document.getElementById("verificationSummary");
+  const completionBar = document.getElementById("completionBar");
+  const progressText = document.getElementById("progressText");
+
+  const artifactDefs = [
+    { id: "designDoc", complete: "completeDesign", title: "System design doc" },
+    { id: "openapiSpec", complete: "completeOpenapi", title: "OpenAPI spec" },
+    { id: "databaseSchema", complete: "completeSchema", title: "Database schema" },
+    { id: "testPlan", complete: "completeTests", title: "Test plan" },
+    { id: "riskRegister", complete: "completeRisks", title: "Risk register" },
+    { id: "slackMessage", complete: "completeSlack", title: "Slack message" }
+  ];
+  const questionIds = ["question1", "question2", "question3", "question4", "question5"];
+  const textIds = [
+    "sourceText", "systemName", "entities", "invariants", "failureModes",
+    ...questionIds,
+    ...artifactDefs.map((item) => item.id)
+  ];
+
+  const value = (id) => document.getElementById(id).value.trim();
+  const lines = (id) => value(id).split("\n").map((line) => line.trim()).filter(Boolean);
+  const normalize = (text) => text.toLowerCase().replace(/\s+/g, " ").trim();
+  const listOrTodo = (items, emptyLabel) => items.length ? items : [`TODO: ${emptyLabel}`];
+  const bullets = (items, emptyLabel, prefix = "- ") => listOrTodo(items, emptyLabel).map((item) => `${prefix}${item}`).join("\n");
+  const comments = (items, emptyLabel, prefix = "# - ") => listOrTodo(items, emptyLabel).map((item) => `${prefix}${item}`).join("\n");
+
+  function isWordCharacter(character) {
+    return Boolean(character && /[\p{L}\p{N}_]/u.test(character));
+  }
+
+  function containsAnchor(body, anchor) {
+    const haystack = normalize(body);
+    const needle = normalize(anchor);
+    if (!needle) return false;
+    let offset = 0;
+    while (offset <= haystack.length - needle.length) {
+      const index = haystack.indexOf(needle, offset);
+      if (index < 0) return false;
+      const leftBoundary = !isWordCharacter(needle[0])
+        || index === 0
+        || !isWordCharacter(haystack[index - 1]);
+      const end = index + needle.length;
+      const rightBoundary = !isWordCharacter(needle[needle.length - 1])
+        || end === haystack.length
+        || !isWordCharacter(haystack[end]);
+      if (leftBoundary && rightBoundary) return true;
+      offset = index + 1;
+    }
+    return false;
+  }
+
+  function hasScaffoldPlaceholder(text) {
+    return /\b(?:TODO|TBD|FIXME)[A-Za-z0-9]*\b/.test(text)
+      || /\b(?:todo|tbd|fixme)[A-Z][A-Za-z0-9]*\b/.test(text)
+      || /\b(?:todo|tbd|fixme)(?:\b|[_:-])/i.test(text)
+      || /\[\s*(?:replace|choose|describe|name|add|define|insert|write|fill)\b[^\]]*\]/i.test(text)
+      || /\{\{\s*[^}]+\s*\}\}/.test(text);
+  }
+
+  function hasQuestionAnswer(text) {
+    const source = text.trim();
+    const marker = /\banswer\s*:/i.exec(source);
+    if (!marker) return false;
+    const question = source.slice(0, marker.index).trim();
+    const answer = source.slice(marker.index + marker[0].length).trim();
+    const questionBody = question.replace(/\?\s*$/, "").trim();
+    return /[\p{L}\p{N}]/u.test(questionBody)
+      && /\?\s*$/.test(question)
+      && !hasScaffoldPlaceholder(questionBody)
+      && /[\p{L}\p{N}]/u.test(answer)
+      && !hasScaffoldPlaceholder(answer);
+  }
+
+  function anchors() {
+    return {
+      system: value("systemName"),
+      entities: lines("entities"),
+      invariants: lines("invariants"),
+      failures: lines("failureModes")
+    };
+  }
+
+  function allAnchors() {
+    const shared = anchors();
+    return [shared.system, ...shared.entities, ...shared.invariants, ...shared.failures].filter(Boolean);
+  }
+
+  function templates() {
+    const shared = anchors();
+    const system = shared.system || "TODO: declare canonical system name";
+    const entityBullets = bullets(shared.entities, "declare entity names");
+    const invariantBullets = bullets(shared.invariants, "declare invariants");
+    const failureBullets = bullets(shared.failures, "declare failure modes");
+    const entityComments = comments(shared.entities, "declare entity names");
+    const invariantComments = comments(shared.invariants, "declare invariants");
+    const failureComments = comments(shared.failures, "declare failure modes");
+    const entityInline = shared.entities.join(", ") || "TODO: declare entity names";
+    const invariantInline = shared.invariants.join(" | ") || "TODO: declare invariants";
+    const failureInline = shared.failures.join(" | ") || "TODO: declare failure modes";
+
+    return {
+      designDoc: [
+        `# System design: ${system}`,
+        "",
+        "## Source-backed goals",
+        "- TODO: state the user or system outcome",
+        "",
+        "## Non-goals",
+        "- TODO: state what this design deliberately excludes",
+        "",
+        "## Canonical entities",
+        entityBullets,
+        "",
+        "## Invariants",
+        invariantBullets,
+        "",
+        "## Components and data flow",
+        "1. TODO: name a component and its responsibility",
+        "2. TODO: trace one request or event end to end",
+        "",
+        "## Failure modes",
+        failureBullets,
+        "",
+        "## Operations and rollout",
+        "- TODO: define observability, migration, rollback, and ownership"
+      ].join("\n"),
+      openapiSpec: [
+        "openapi: \"TODO_OPENAPI_VERSION\"",
+        "info:",
+        `  title: ${system}`,
+        "  version: \"TODO_DOCUMENT_VERSION\"",
+        "# Canonical entities:",
+        entityComments,
+        "# Invariants:",
+        invariantComments,
+        "# Failure modes:",
+        failureComments,
+        "paths:",
+        "  \"TODO_PATH\":",
+        "    \"TODO_METHOD\":",
+        "      summary: \"TODO: name the operation\"",
+        "      responses:",
+        "        \"TODO_SUCCESS_STATUS\":",
+        "          description: \"TODO: define success\"",
+        "        \"TODO_FAILURE_STATUS\":",
+        "          description: \"TODO: map a declared failure mode\"",
+        "components:",
+        "  schemas:",
+        "    TODO_SCHEMA_NAME:",
+        "      type: object",
+        "      required:",
+        "        - TODO_REQUIRED_FIELD",
+        "      properties:",
+        "        TODO_PROPERTY_NAME:",
+        "          type: TODO_PROPERTY_TYPE"
+      ].join("\n"),
+      databaseSchema: [
+        `-- System: ${system}`,
+        "-- Canonical entities:",
+        comments(shared.entities, "declare entity names", "-- - "),
+        "-- Invariants:",
+        comments(shared.invariants, "declare invariants", "-- - "),
+        "-- Failure modes:",
+        comments(shared.failures, "declare failure modes", "-- - "),
+        "",
+        "-- TODO: choose the database engine or schema notation.",
+        "-- TODO: map each canonical entity to a table or collection.",
+        "-- TODO: decide identifier and key strategy from source-backed requirements.",
+        "-- TODO: define fields, types, nullability, and relationships.",
+        "-- TODO: decide whether temporal fields are required and how they are represented.",
+        "-- TODO: add constraints, indexes, lifecycle, retention, and migration notes."
+      ].join("\n"),
+      testPlan: [
+        `# Test plan: ${system}`,
+        "",
+        "## Canonical entities",
+        entityBullets,
+        "",
+        "## Invariant tests",
+        invariantBullets,
+        "- TODO: map every invariant above to a test name and oracle",
+        "",
+        "## Happy path",
+        "- TODO: define setup, action, and expected result",
+        "",
+        "## Boundary and concurrency cases",
+        "- TODO: define ordering, retry, duplication, and limit cases",
+        "",
+        "## Failure-mode tests",
+        failureBullets,
+        "- TODO: map every failure above to a safe exercise or bound",
+        "",
+        "## Observability",
+        "- TODO: name the signal that proves each outcome"
+      ].join("\n"),
+      riskRegister: [
+        `# Risk register: ${system}`,
+        "",
+        `Canonical entities: ${entityInline}`,
+        `Invariants: ${invariantInline}`,
+        `Failure modes: ${failureInline}`,
+        "",
+        "| Risk / failure | Trigger | Impact | Detection signal | Mitigation | Owner |",
+        "| --- | --- | --- | --- | --- | --- |",
+        "| TODO: use a declared failure mode | TODO | TODO | TODO | TODO | TODO |",
+        "",
+        "## Decision gates",
+        "- TODO: define the condition that blocks launch",
+        "- TODO: define the condition that triggers rollback"
+      ].join("\n"),
+      slackMessage: [
+        `*Review request: ${system}*`,
+        "",
+        "What and why",
+        "TODO: explain the source-backed change in two sentences.",
+        "",
+        `Canonical entities: ${entityInline}`,
+        `Invariants: ${invariantInline}`,
+        `Failure modes: ${failureInline}`,
+        "",
+        "Decision and review ask",
+        "TODO: name the decision, owner, deadline, and link to the full artifacts."
+      ].join("\n")
+    };
+  }
+
+  function loadTemplates() {
+    const generated = templates();
+    let loaded = 0;
+    artifactDefs.forEach((artifact) => {
+      const editor = document.getElementById(artifact.id);
+      if (!editor.value.trim()) {
+        editor.value = generated[artifact.id];
+        loaded += 1;
+      }
+    });
+    status.textContent = loaded
+      ? `${loaded} guided ${loaded === 1 ? "template" : "templates"} loaded. No source text was interpreted.`
+      : "Nothing changed because all six artifact editors already contain text.";
+    invalidateVerification();
+    updateProgress();
+    saveDraft();
+    if (loaded) document.getElementById("designDoc").focus();
+  }
+
+  function anchorCoverage() {
+    const expected = allAnchors();
+    if (!expected.length) return 0;
+    const total = expected.length * artifactDefs.length;
+    let present = 0;
+    artifactDefs.forEach((artifact) => {
+      const body = value(artifact.id);
+      expected.forEach((anchor) => {
+        if (containsAnchor(body, anchor)) present += 1;
+      });
+    });
+    return Math.round((present / total) * 100);
+  }
+
+  function updateProgress() {
+    const completed = artifactDefs.filter((artifact) => document.getElementById(artifact.complete).checked).length;
+    completionBar.value = completed;
+    completionBar.textContent = `${completed} of ${artifactDefs.length}`;
+    progressText.value = `${completed}/${artifactDefs.length} marked complete · ${anchorCoverage()}% anchor coverage`;
+    progressText.textContent = `${completed}/${artifactDefs.length} marked complete · ${anchorCoverage()}% anchor coverage`;
+  }
+
+  function invalidateVerification() {
+    if (verificationSummary.textContent !== "Not verified yet.") {
+      resultList.replaceChildren();
+      verificationSummary.textContent = "Draft changed. Verify all six artifacts again.";
+    }
+  }
+
+  function addResult(passed, label, target, failures) {
+    const item = document.createElement("li");
+    item.className = passed ? "pass" : "fail";
+    item.textContent = `${passed ? "Pass" : "Needs work"} — ${label}`;
+    resultList.appendChild(item);
+    if (!passed) failures.push(target);
+  }
+
+  function verify() {
+    resultList.replaceChildren();
+    const failures = [];
+    const shared = anchors();
+    const expected = allAnchors();
+    addResult(Boolean(value("sourceText")), "A source monologue or transcript is present.", "sourceText", failures);
+    addResult(Boolean(shared.system), "The canonical system name is declared.", "systemName", failures);
+    addResult(shared.entities.length > 0, "At least one canonical entity is declared.", "entities", failures);
+    addResult(shared.invariants.length > 0, "At least one invariant is declared.", "invariants", failures);
+    addResult(shared.failures.length > 0, "At least one failure mode is declared.", "failureModes", failures);
+    questionIds.forEach((id, index) => {
+      addResult(
+        hasQuestionAnswer(value(id)),
+        `Question ${index + 1} has nonempty question and answer text with no scaffold placeholder.`,
+        id,
+        failures
+      );
+    });
+
+    artifactDefs.forEach((artifact) => {
+      const body = value(artifact.id);
+      const finished = body.length >= 40 && !hasScaffoldPlaceholder(body);
+      const complete = document.getElementById(artifact.complete).checked;
+      const missing = expected.filter((anchor) => !containsAnchor(body, anchor));
+      addResult(finished, `${artifact.title} has substantive text and no scaffold placeholders.`, artifact.id, failures);
+      addResult(complete, `${artifact.title} is explicitly marked complete.`, artifact.complete, failures);
+      addResult(
+        expected.length > 0 && missing.length === 0,
+        missing.length
+          ? `${artifact.title} is missing exact anchors: ${missing.join(" · ")}`
+          : `${artifact.title} contains all ${expected.length} declared anchors.`,
+        artifact.id,
+        failures
+      );
+    });
+
+    verificationSummary.textContent = failures.length
+      ? `${failures.length} deterministic checks need work.`
+      : "All deterministic checks pass. Review the meaning with a human before shipping.";
+    verificationSummary.focus();
+    if (failures.length) {
+      const first = document.getElementById(failures[0]);
+      if (first) first.focus();
+    }
+  }
+
+  function buildBundle() {
+    const shared = anchors();
+    const sections = [
+      "# Compile My Brain — Artifact Bundle",
+      "",
+      "> Manually authored from a source transcript. This workbench did not summarize, infer, or generate design claims.",
+      "",
+      "## Shared anchors",
+      "",
+      `- System: ${shared.system || "Not recorded"}`,
+      "- Entities:",
+      bullets(shared.entities, "not recorded"),
+      "- Invariants:",
+      bullets(shared.invariants, "not recorded"),
+      "- Failure modes:",
+      bullets(shared.failures, "not recorded"),
+      "",
+      "## Clarifying questions and answers",
+      ""
+    ];
+
+    questionIds.forEach((id, index) => {
+      sections.push(`${index + 1}. ${value(id) || "Not recorded"}`);
+    });
+
+    if (document.getElementById("includeSource").checked) {
+      sections.push("", "## Raw source", "", value("sourceText") || "Not recorded");
+    }
+
+    artifactDefs.forEach((artifact) => {
+      sections.push("", `## ${artifact.title}`, "", value(artifact.id) || "Not recorded");
+    });
+    sections.push("");
+    return sections.join("\n");
+  }
+
+  async function copyText(text, message) {
+    try {
+      if (!navigator.clipboard || !window.isSecureContext) throw new Error("Clipboard API unavailable");
+      await navigator.clipboard.writeText(text);
+    } catch (error) {
+      const helper = document.createElement("textarea");
+      helper.value = text;
+      helper.setAttribute("readonly", "");
+      helper.style.position = "fixed";
+      helper.style.opacity = "0";
+      document.body.appendChild(helper);
+      helper.select();
+      const copied = document.execCommand("copy");
+      helper.remove();
+      if (!copied) {
+        status.textContent = "Copy is unavailable here. Select the artifact text and copy it manually.";
+        return;
+      }
+    }
+    status.textContent = message;
+  }
+
+  function downloadBundle() {
+    const blob = new Blob([buildBundle()], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "compile-my-brain-artifacts.md";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    status.textContent = "Artifact bundle downloaded.";
+  }
+
+  function snapshot() {
+    const values = {};
+    textIds.forEach((id) => { values[id] = document.getElementById(id).value; });
+    const completed = {};
+    artifactDefs.forEach((artifact) => {
+      completed[artifact.complete] = document.getElementById(artifact.complete).checked;
+    });
+    return {
+      version: 1,
+      persist: true,
+      values,
+      completed,
+      includeSource: document.getElementById("includeSource").checked
+    };
+  }
+
+  function storageTarget(override) {
+    return override || window.localStorage;
+  }
+
+  function removeStoredDraft(override) {
+    try {
+      const storage = storageTarget(override);
+      storage.removeItem(STORAGE_KEY);
+      return storage.getItem(STORAGE_KEY) === null;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function writeStoredDraft(payload, override) {
+    try {
+      const storage = storageTarget(override);
+      storage.setItem(STORAGE_KEY, payload);
+      return storage.getItem(STORAGE_KEY) === payload;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function persistSnapshot(payload, override) {
+    const saved = writeStoredDraft(payload, override);
+    return {
+      saved,
+      staleCleared: saved ? false : removeStoredDraft(override)
+    };
+  }
+
+  function saveDraft() {
+    if (!persistDraft.checked) {
+      const removed = removeStoredDraft();
+      storageStatus.textContent = removed
+        ? "Persistence is off. No saved local draft remains."
+        : "Persistence is off, but deletion of a saved local draft could not be confirmed. Clear this site's browser data.";
+      return;
+    }
+    try {
+      const result = persistSnapshot(JSON.stringify(snapshot()));
+      if (result.saved) {
+        storageStatus.textContent = "Draft save confirmed in local storage on this device.";
+        return;
+      }
+      persistDraft.checked = false;
+      storageStatus.textContent = result.staleCleared
+        ? "Saving failed. A stale local snapshot was removed; this draft remains in the tab only."
+        : "Saving failed, and stale local snapshot deletion could not be confirmed. Clear this site's browser data.";
+    } catch (error) {
+      persistDraft.checked = false;
+      const removed = removeStoredDraft();
+      storageStatus.textContent = removed
+        ? "Saving failed. A stale local snapshot was removed; this draft remains in the tab only."
+        : "Saving failed, and stale local snapshot deletion could not be confirmed. Clear this site's browser data.";
+    }
+  }
+
+  function restoreDraft() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      if (!saved || saved.version !== 1 || !saved.persist || typeof saved.values !== "object") {
+        const removed = removeStoredDraft();
+        storageStatus.textContent = removed
+          ? "An incompatible local snapshot was removed."
+          : "An incompatible local snapshot could not be removed. Clear this site's browser data.";
+        return;
+      }
+      textIds.forEach((id) => {
+        if (typeof saved.values[id] === "string") document.getElementById(id).value = saved.values[id];
+      });
+      artifactDefs.forEach((artifact) => {
+        document.getElementById(artifact.complete).checked = Boolean(saved.completed && saved.completed[artifact.complete]);
+      });
+      document.getElementById("includeSource").checked = Boolean(saved.includeSource);
+      persistDraft.checked = true;
+      storageStatus.textContent = "Local draft restored from this device.";
+      status.textContent = "Restored your opt-in local draft.";
+    } catch (error) {
+      const removed = removeStoredDraft();
+      storageStatus.textContent = removed
+        ? "An unreadable local snapshot was removed."
+        : "A local snapshot could not be read or removed. Clear this site's browser data.";
+    }
+  }
+
+  function runRegressionChecks() {
+    const clearableStorage = {
+      value: "stale",
+      getItem() { return this.value; },
+      setItem() { throw new Error("save denied"); },
+      removeItem() { this.value = null; }
+    };
+    const stubbornStorage = {
+      getItem() { return "stale"; },
+      setItem() { throw new Error("save denied"); },
+      removeItem() {}
+    };
+    const failedSave = persistSnapshot("new", clearableStorage);
+    const checks = [
+      {
+        name: "User/Superuser anchor boundaries",
+        pass: containsAnchor("The User owns this.", "User")
+          && !containsAnchor("The Superuser owns this.", "User")
+          && !containsAnchor("The UserProfile owns this.", "User")
+      },
+      {
+        name: "unanswered question rejection",
+        pass: hasQuestionAnswer("Who owns this? Answer: Platform")
+          && !hasQuestionAnswer("Who owns this? Answer:")
+          && !hasQuestionAnswer("? Answer: Platform")
+          && !hasQuestionAnswer("Who owns this? Answer: ---")
+          && !hasQuestionAnswer("TODO? Answer: Platform")
+          && !hasQuestionAnswer("Who owns this? Answer: TODO")
+      },
+      {
+        name: "TODO and scaffold variants",
+        pass: ["TODO", "todo:", "[TODO]", "TODO_FIELD", "TODOEntity", "todoField", "TBD", "FIXME", "[replace this]"]
+          .every((candidate) => hasScaffoldPlaceholder(candidate))
+          && !hasScaffoldPlaceholder("Ready for review")
+      },
+      {
+        name: "storage failure confirmation",
+        pass: !failedSave.saved
+          && failedSave.staleCleared
+          && clearableStorage.value === null
+          && !removeStoredDraft(stubbornStorage)
+      }
+    ];
+    const failed = checks.filter((check) => !check.pass);
+    if (failed.length) throw new Error(`Regression failure: ${failed.map((check) => check.name).join(", ")}`);
+    return checks.length;
+  }
+
+  form.addEventListener("input", () => {
+    invalidateVerification();
+    updateProgress();
+    saveDraft();
+  });
+  document.getElementById("loadTemplates").addEventListener("click", loadTemplates);
+  document.getElementById("verifyButton").addEventListener("click", verify);
+  document.getElementById("copyPrompt").addEventListener("click", () => {
+    copyText(document.getElementById("seedPrompt").textContent, "Canonical prompt copied.");
+  });
+  document.getElementById("copyAll").addEventListener("click", () => {
+    copyText(buildBundle(), "Artifact bundle copied.");
+  });
+  document.getElementById("downloadAll").addEventListener("click", downloadBundle);
+  document.querySelectorAll(".copy-artifact").forEach((button) => {
+    button.addEventListener("click", () => {
+      const target = button.dataset.copy;
+      const label = artifactDefs.find((artifact) => artifact.id === target).title;
+      copyText(value(target), `${label} copied.`);
+    });
+  });
+  document.getElementById("resetButton").addEventListener("click", () => {
+    const removed = removeStoredDraft();
+    form.reset();
+    artifactDefs.forEach((artifact) => { document.getElementById(artifact.id).value = ""; });
+    resultList.replaceChildren();
+    verificationSummary.textContent = "Not verified yet.";
+    storageStatus.textContent = removed
+      ? "Persistence is off. Saved local data removal was confirmed."
+      : "Persistence is off, but saved local data deletion could not be confirmed. Clear this site's browser data.";
+    status.textContent = removed
+      ? "Workbench reset and saved local data removal confirmed."
+      : "Workbench fields reset; saved local data deletion could not be confirmed.";
+    updateProgress();
+    document.getElementById("sourceText").focus();
+  });
+
+  try {
+    const count = runRegressionChecks();
+    document.getElementById("regressionStatus").textContent = `${count} built-in regression checks passed.`;
+  } catch (error) {
+    document.getElementById("regressionStatus").textContent = "Built-in regression checks failed; artifact verification is disabled.";
+    document.getElementById("verifyButton").disabled = true;
+  }
+  restoreDraft();
+  updateProgress();
+})();
+</script>
+</body>
+</html>

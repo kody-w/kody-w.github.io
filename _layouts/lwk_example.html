@@ -22,6 +22,14 @@ layout: default
     <h1>{{ page.title }}</h1>
     {% if page.tagline %}<p class="lwk-tagline">{{ page.tagline }}</p>{% endif %}
 
+    {% if page.series or page.lesson or page.duration %}
+    <div class="lwk-meta-row lwk-tutorial-meta" aria-label="Tutorial details">
+      {% if page.series %}<span class="lwk-pill lwk-series">Series: {{ page.series | escape }}</span>{% endif %}
+      {% if page.lesson %}<span class="lwk-pill lwk-lesson">Lesson {{ page.lesson | escape }}</span>{% endif %}
+      {% if page.duration %}<span class="lwk-pill lwk-duration">Duration: {{ page.duration | escape }}</span>{% endif %}
+    </div>
+    {% endif %}
+
     <div class="lwk-cta-row">
       {% if page.demo %}<a class="btn" href="{{ page.demo }}" target="_blank" rel="noopener">Try it live →</a>{% endif %}
       {% if page.repo %}<a class="btn btn-secondary" href="{{ page.repo }}" target="_blank" rel="noopener">Source on GitHub</a>{% endif %}
@@ -43,31 +51,73 @@ layout: default
   </section>
 
   <article class="post-content lwk-example-body">
+    {% if page.prerequisites or page.objectives %}
+    <div class="lwk-tutorial-overview">
+      {% if page.prerequisites %}
+      <section class="lwk-prerequisites">
+        <h2>Prerequisites</h2>
+        <ul>
+          {% for prerequisite in page.prerequisites %}
+          <li>{{ prerequisite | markdownify }}</li>
+          {% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+
+      {% if page.objectives %}
+      <section class="lwk-objectives">
+        <h2>What you’ll learn</h2>
+        <ul>
+          {% for objective in page.objectives %}
+          <li>{{ objective | markdownify }}</li>
+          {% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+    </div>
+    {% endif %}
+
     {{ content }}
+
+    {% if page.steps %}
+    <section class="lwk-tutorial-steps">
+      <h2>Step-by-step</h2>
+      <ol class="lwk-step-list">
+        {% for step in page.steps %}
+        <li class="lwk-step">
+          <h3>{{ step.title }}</h3>
+          <div class="lwk-step-instruction">
+            {{ step.instruction | markdownify }}
+          </div>
+          {% assign step_check = step.check | default: step.verification | default: step.verify %}
+          {% if step_check %}
+          <div class="lwk-step-check" role="note">
+            <strong><span aria-hidden="true">✓</span> Check</strong>
+            <div>{{ step_check | markdownify }}</div>
+          </div>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ol>
+    </section>
+    {% endif %}
   </article>
 
   {% if page.prompt %}
-  {% assign safe_prompt = page.prompt | strip | escape %}
-  {% if page.highlights %}
-    {% for term in page.highlights %}
-      {% assign safe_term = term | escape %}
-      {% capture replacement %}<mark class="lwk-prompt-key">{{ safe_term }}</mark>{% endcapture %}
-      {% assign safe_prompt = safe_prompt | replace: safe_term, replacement %}
-    {% endfor %}
-  {% endif %}
+  {% assign normalized_prompt = page.prompt | strip %}
   <section class="lwk-prompt">
-    <div class="lwk-prompt-label">
+    <h2 class="lwk-prompt-label" style="font-weight: 400;">
       <span>Prompt</span>
-    </div>
-    <pre><code>{{ safe_prompt }}</code></pre>
+    </h2>
+    <pre><code class="lwk-prompt-text"{% if page.highlights %} data-highlights="{{ page.highlights | jsonify | escape }}"{% endif %} tabindex="-1">{{ normalized_prompt | escape }}</code></pre>
     <div class="lwk-prompt-actions">
-      <button type="button" class="lwk-copy-btn" data-copy-target="lwk-prompt-raw">
-        <span class="lwk-copy-icon">⧉</span>
+      <button type="button" class="lwk-copy-btn" data-copy-prompt>
+        <span class="lwk-copy-icon" aria-hidden="true">⧉</span>
         <span class="lwk-copy-label">Copy prompt</span>
       </button>
       <p class="lwk-prompt-hint">Paste this into Claude, Cursor, or Copilot. Change one thing that matters to you.</p>
+      <span class="lwk-copy-status" role="status" aria-live="polite" aria-atomic="true"></span>
     </div>
-    <textarea id="lwk-prompt-raw" class="lwk-prompt-raw" readonly aria-hidden="true">{{ page.prompt | strip }}</textarea>
   </section>
   {% endif %}
 
@@ -78,6 +128,47 @@ layout: default
       {% for lesson in page.lessons %}<li>{{ lesson }}</li>{% endfor %}
     </ul>
   </section>
+  {% endif %}
+
+  {% assign lwk_previous_lesson = nil %}
+  {% assign lwk_next_lesson = nil %}
+  {% assign lwk_previous_matches = 0 %}
+  {% assign lwk_next_matches = 0 %}
+  {% if page.series and page.lesson %}
+    {% assign lwk_lesson_number = page.lesson | plus: 0 %}
+    {% assign lwk_lesson_text = page.lesson | append: "" %}
+    {% assign lwk_lesson_number_text = lwk_lesson_number | append: "" %}
+    {% if lwk_lesson_text == lwk_lesson_number_text %}
+      {% assign lwk_previous_number = lwk_lesson_number | minus: 1 %}
+      {% assign lwk_next_number = lwk_lesson_number | plus: 1 %}
+      {% for example in site.examples %}
+        {% if example.series == page.series and example.lesson and example.url and example.title %}
+          {% assign lwk_example_number = example.lesson | plus: 0 %}
+          {% assign lwk_example_text = example.lesson | append: "" %}
+          {% assign lwk_example_number_text = lwk_example_number | append: "" %}
+          {% if lwk_example_text == lwk_example_number_text %}
+            {% if lwk_example_number == lwk_previous_number %}
+              {% assign lwk_previous_lesson = example %}
+              {% assign lwk_previous_matches = lwk_previous_matches | plus: 1 %}
+            {% elsif lwk_example_number == lwk_next_number %}
+              {% assign lwk_next_lesson = example %}
+              {% assign lwk_next_matches = lwk_next_matches | plus: 1 %}
+            {% endif %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  {% endif %}
+
+  {% if lwk_previous_matches == 1 or lwk_next_matches == 1 %}
+  <nav class="lwk-series-nav" aria-label="{{ page.series | escape }} lesson navigation">
+    {% if lwk_previous_matches == 1 %}
+    <a class="btn btn-secondary" rel="prev" href="{{ lwk_previous_lesson.url | relative_url | escape }}"><span aria-hidden="true">←</span> Previous lesson: {{ lwk_previous_lesson.title | escape }}</a>
+    {% endif %}
+    {% if lwk_next_matches == 1 %}
+    <a class="btn btn-secondary" rel="next" href="{{ lwk_next_lesson.url | relative_url | escape }}">Next lesson: {{ lwk_next_lesson.title | escape }} <span aria-hidden="true">→</span></a>
+    {% endif %}
+  </nav>
   {% endif %}
 
   <nav class="lwk-bottom-nav">

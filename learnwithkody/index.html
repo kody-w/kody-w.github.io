@@ -2,8 +2,11 @@
 layout: default
 title: Learn with Kody
 permalink: /learnwithkody/
-description: Vibe coding, agent systems, and local-first builds — the prompts and code behind real shipped projects.
+description: Guided vibe-coding tutorials, published examples, and exact seed prompts ready to remix.
 ---
+{% assign published_examples = site.examples | where: 'status', 'live' %}
+{% assign concept_examples = site.examples | where: 'status', 'concept' %}
+{% assign guided_tutorials = site.examples | where: 'series', 'prompt-to-proof' | sort: 'lesson' %}
 <div class="lwk-page lwk-hub">
 
   <header class="lwk-hero">
@@ -15,62 +18,93 @@ description: Vibe coding, agent systems, and local-first builds — the prompts 
       infinite library, with a working search. Doom in a browser tab.
       Mirror's Edge across procedural rooftops. A WW2 dogfight with real
       stalls and G-LOC. A rapier duel where your mouse is the blade.
-      Fifty working single-file demos. Every one built from one paragraph.
-      Fork anything. Steal every prompt.
+      {{ published_examples.size }} published entries, including
+      {{ guided_tutorials.size }} guided tutorials with runnable workbenches,
+      plus {{ concept_examples.size }} concept prompts. Every entry includes
+      the exact seed prompt.
     </p>
     <div class="lwk-cta-row">
-      <a class="btn" href="/learnwithkody/examples/">Browse vibe coding examples →</a>
-      <a class="btn btn-secondary" href="https://github.com/kody-w" target="_blank" rel="noopener">All my repos</a>
+      <a class="btn" href="#start-here">Start with the guided path →</a>
+      <a class="btn btn-secondary" href="/learnwithkody/examples/">Browse the full catalog</a>
     </div>
   </header>
 
   <section class="lwk-section">
     <h2>What's a "vibe coding example" here?</h2>
     <p>
-      Each entry is a project I actually shipped — usually a single-file HTML app, a
-      GitHub-native agent, or a local-first tool — built primarily by describing what
-      I wanted to a coding model and iterating fast. Every example links to a
-      <strong>live demo</strong>, the <strong>source repo</strong>, and the
-      <strong>seed prompt</strong> that got it off the ground.
+      Every entry starts with the <strong>exact seed prompt</strong> I gave the
+      coding model. Published entries pair that prompt with the proof that exists:
+      an article, a repository, or an interactive example. Concept entries preserve
+      a prompt you can take in your own direction.
     </p>
     <p>
-      Nothing here is a toy. They're production-grade, browser-runnable, and meant to
-      be forked. The point isn't to admire the build — it's to give you a working
-      template you can re-vibe in an afternoon.
+      The point isn't to admire a finished result. Follow the guided path to learn the
+      loop in a runnable workbench, open a published example, or choose a concept and
+      make the first proof yourself.
     </p>
   </section>
 
   <section class="lwk-section lwk-features">
     <div class="lwk-feature">
       <div class="lwk-feature-icon">⚡</div>
-      <h3>Live demos</h3>
-      <p>Every example runs in your browser. No installs, no API keys, no signup.</p>
+      <h3>{{ published_examples.size }} published entries</h3>
+      <p>Open an article, a repository, or an interactive example alongside its prompt.</p>
     </div>
     <div class="lwk-feature">
       <div class="lwk-feature-icon">📋</div>
       <h3>Real prompts</h3>
-      <p>The actual seed prompt I gave the model — copy it and remix.</p>
+      <p>Every entry includes the actual seed prompt I gave the model.</p>
     </div>
     <div class="lwk-feature">
       <div class="lwk-feature-icon">🗂️</div>
-      <h3>Forkable source</h3>
-      <p>Single-file or single-repo. Fork it on GitHub and own the whole stack.</p>
+      <h3>{{ concept_examples.size }} concept prompts</h3>
+      <p>Prompts for exploring an idea before a published proof exists.</p>
     </div>
     <div class="lwk-feature">
       <div class="lwk-feature-icon">🧭</div>
-      <h3>Local-first</h3>
-      <p>State lives in your browser, your repo, or your filesystem. Never trapped.</p>
+      <h3>{{ guided_tutorials.size }} guided tutorials</h3>
+      <p>A lesson-ordered path with a runnable workbench for each tutorial.</p>
+    </div>
+  </section>
+
+  <section class="lwk-section" id="start-here">
+    <p class="lwk-kicker">Start Here</p>
+    <h2>Take a prompt all the way to proof</h2>
+    <p>
+      Follow these {{ guided_tutorials.size }} guided tutorials in order. Each lesson
+      provides a runnable workbench and advances the same practical loop: shape the
+      prompt, build, test, and ship.
+    </p>
+    <div class="lwk-examples-grid">
+      {% for ex in guided_tutorials %}
+        <a class="lwk-example-card" href="{{ ex.url }}">
+          <div class="lwk-meta-row">
+            <span class="lwk-pill lwk-status">Lesson {{ ex.lesson }} of {{ guided_tutorials.size }}</span>
+            {% if ex.duration %}<span class="lwk-pill lwk-status">{{ ex.duration }}</span>{% endif %}
+            {% if ex.difficulty %}<span class="lwk-pill lwk-difficulty lwk-{{ ex.difficulty }}">{{ ex.difficulty }}</span>{% endif %}
+          </div>
+          <h3>{{ ex.title }}</h3>
+          <p>{{ ex.tagline }}</p>
+          {% if ex.tags %}
+          <div class="lwk-tags-line">
+            {% for tag in ex.tags limit:4 %}<span class="lwk-tag">#{{ tag }}</span>{% endfor %}
+          </div>
+          {% endif %}
+          <span class="lwk-read-more">Open lesson →</span>
+        </a>
+      {% endfor %}
     </div>
   </section>
 
   <section class="lwk-section">
-    <h2>Fifty working demos</h2>
-    <p>Each of these started as a single paragraph. The model wrote the rest. Click any of them — they all run live in your browser.</p>
+    <h2>Newest published entries</h2>
+    <p>The six newest published entries, each paired with the exact seed prompt behind it.</p>
     <div class="lwk-examples-grid">
-      {% assign featured = site.examples | where: 'featured', true | sort: 'order' %}
-      {% for ex in featured %}
+      {% assign featured = published_examples | sort: 'order' | reverse %}
+      {% for ex in featured limit: 6 %}
         <a class="lwk-example-card" href="{{ ex.url }}">
           <div class="lwk-meta-row">
+            <span class="lwk-pill lwk-status">published</span>
             {% if ex.difficulty %}<span class="lwk-pill lwk-difficulty lwk-{{ ex.difficulty }}">{{ ex.difficulty }}</span>{% endif %}
             {% if ex.category %}<span class="lwk-pill lwk-category">{{ ex.category }}</span>{% endif %}
           </div>
@@ -81,21 +115,25 @@ description: Vibe coding, agent systems, and local-first builds — the prompts 
             {% for tag in ex.tags limit:4 %}<span class="lwk-tag">#{{ tag }}</span>{% endfor %}
           </div>
           {% endif %}
-          <span class="lwk-read-more">Read the build →</span>
+          {% if ex.series == 'prompt-to-proof' %}
+            <span class="lwk-read-more">Open lesson →</span>
+          {% else %}
+            <span class="lwk-read-more">Open example →</span>
+          {% endif %}
         </a>
       {% endfor %}
     </div>
     <p class="lwk-view-all">
-      <a class="btn btn-secondary" href="/learnwithkody/examples/">See all {{ site.examples.size }} examples →</a>
+      <a class="btn btn-secondary" href="/learnwithkody/examples/">See all {{ site.examples.size }} entries →</a>
     </p>
   </section>
 
   <section class="lwk-section lwk-cta-section">
     <h2>Start vibe coding today</h2>
     <p>
-      Pick an example that fires you up. Fork it. Open the prompt. Change one thing
-      that matters to you. Ship the new version with your name on it. That's the
-      whole loop.
+      Start with lesson one or pick a catalog entry that fires you up. Open the
+      prompt. Change one thing that matters to you. Ship the new version with your
+      name on it. That's the whole loop.
     </p>
     <div class="lwk-cta-row">
       <a class="btn" href="/learnwithkody/examples/">Browse the catalog →</a>

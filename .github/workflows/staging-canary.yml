@@ -34,6 +34,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Install test dependencies
+        run: python3 -m pip install --requirement tests/requirements.txt
+
+      - name: Run content quality gates
+        run: python3 -m unittest discover -s tests -p 'test_*.py'
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -41,13 +52,10 @@ jobs:
           bundler-cache: true
 
       - name: Install Jekyll
-        run: |
-          gem install jekyll bundler
-          bundle install --jobs 4 || true
+        run: gem install jekyll
 
       - name: Build Jekyll site
-        run: |
-          bundle exec jekyll build --strict_front_matter 2>&1 || jekyll build
+        run: jekyll build --strict_front_matter
         env:
           JEKYLL_ENV: staging
 

@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; script-src-elem 'unsafe-inline'; script-src-attr 'none'; style-src 'unsafe-inline'; img-src 'none'; connect-src 'none'; font-src 'none'; media-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Cargo-Cult Detector — Evidence Workbench</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #0b1014;
+  --panel: #121a20;
+  --panel-2: #172229;
+  --line: #31414b;
+  --text: #f2f5f6;
+  --muted: #a9bac3;
+  --accent: #66e2b4;
+  --accent-2: #ffd166;
+  --danger: #ff8d8d;
+  --ok: #8af0c4;
+  --focus: #9ecbff;
+  --shadow: 0 18px 50px rgba(0, 0, 0, .24);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(102, 226, 180, .09), transparent 28rem),
+    var(--bg);
+  color: var(--text);
+  font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+button, input, select, textarea { font: inherit; }
+button, input, select, textarea { color: inherit; }
+.skip-link {
+  position: fixed;
+  top: .5rem;
+  left: .5rem;
+  z-index: 10;
+  transform: translateY(-180%);
+  background: var(--text);
+  color: var(--bg);
+  padding: .65rem .85rem;
+  border-radius: .45rem;
+}
+.skip-link:focus { transform: none; }
+.shell { width: min(1080px, calc(100% - 2rem)); margin: 0 auto; }
+header { padding: 2.7rem 0 1.25rem; }
+.eyebrow {
+  margin: 0 0 .45rem;
+  color: var(--accent);
+  font: 700 .78rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+h1 { max-width: 18ch; margin: 0; font-size: clamp(2rem, 7vw, 4.4rem); line-height: .98; letter-spacing: -.055em; }
+.lede { max-width: 70ch; margin: 1rem 0 0; color: var(--muted); font-size: 1.05rem; }
+.local-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  margin-top: 1rem;
+  padding: .35rem .65rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: .82rem;
+}
+.local-badge::before { content: ""; width: .55rem; height: .55rem; border-radius: 50%; background: var(--accent); }
+.notice {
+  margin: 1rem 0 1.25rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(255, 209, 102, .5);
+  border-left: .35rem solid var(--accent-2);
+  border-radius: .75rem;
+  background: rgba(255, 209, 102, .07);
+}
+.notice strong { color: var(--accent-2); }
+.panel {
+  margin: 1rem 0;
+  padding: clamp(1rem, 3vw, 1.45rem);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: rgba(18, 26, 32, .96);
+  box-shadow: var(--shadow);
+}
+.panel h2 { margin: 0; font-size: 1.25rem; letter-spacing: -.02em; }
+.panel-intro { max-width: 72ch; margin: .4rem 0 1rem; color: var(--muted); }
+details summary { cursor: pointer; font-weight: 750; }
+details summary::marker { color: var(--accent); }
+.prompt-box { position: relative; margin-top: 1rem; }
+pre, code, textarea.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.prompt-box pre, .packet {
+  margin: 0;
+  padding: 1rem;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: .7rem;
+  background: #090d10;
+  color: #dce7eb;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: .84rem;
+}
+.prompt-box pre { padding-top: 3.35rem; }
+.copy-prompt { position: absolute; top: .55rem; right: .55rem; }
+.step-marker {
+  display: inline-grid;
+  width: 1.7rem;
+  height: 1.7rem;
+  margin-right: .45rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #07120e;
+  font: 800 .85rem/1 ui-monospace, monospace;
+}
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; }
+.full { grid-column: 1 / -1; }
+label, legend { font-weight: 720; }
+.hint { display: block; margin-top: .25rem; color: var(--muted); font-size: .82rem; font-weight: 400; }
+input, select, textarea {
+  width: 100%;
+  margin-top: .35rem;
+  padding: .7rem .75rem;
+  border: 1px solid var(--line);
+  border-radius: .55rem;
+  outline: none;
+  background: #0b1115;
+}
+textarea { min-height: 7rem; resize: vertical; line-height: 1.45; }
+#snippet { min-height: 12rem; }
+input:focus, select:focus, textarea:focus, button:focus-visible, summary:focus-visible, .packet:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-color: transparent;
+}
+fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+.check-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; margin-top: .85rem; }
+.check {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: .65rem;
+  align-items: start;
+  padding: .75rem;
+  border: 1px solid var(--line);
+  border-radius: .65rem;
+  background: var(--panel-2);
+  font-weight: 620;
+}
+.check input { width: 1.15rem; height: 1.15rem; margin: .18rem 0 0; accent-color: var(--accent); }
+.check small { display: block; margin-top: .2rem; color: var(--muted); font-weight: 400; }
+.score-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; align-items: end; }
+progress { width: 100%; height: .8rem; accent-color: var(--accent); }
+.score-number { color: var(--accent); font: 800 1.5rem/1 ui-monospace, monospace; }
+.actions { display: flex; flex-wrap: wrap; gap: .65rem; margin-top: 1rem; }
+button {
+  min-height: 2.7rem;
+  padding: .62rem .9rem;
+  border: 1px solid var(--accent);
+  border-radius: .55rem;
+  background: var(--accent);
+  color: #07120e;
+  cursor: pointer;
+  font-weight: 780;
+}
+button:hover { filter: brightness(1.08); }
+button.secondary { background: transparent; color: var(--text); border-color: var(--line); }
+button.danger { background: transparent; color: var(--danger); border-color: rgba(255, 141, 141, .65); }
+.verification { margin: 1rem 0 0; padding: 0; list-style: none; }
+.verification li { margin: .35rem 0; padding: .52rem .65rem; border-radius: .45rem; background: var(--panel-2); }
+.verification .pass { color: var(--ok); }
+.verification .fail { color: var(--danger); }
+.summary { margin: .85rem 0 0; font-weight: 750; }
+.packet { min-height: 15rem; max-height: 34rem; margin-top: 1rem; }
+.status { min-height: 1.5rem; margin: .7rem 0 0; color: var(--accent); }
+footer { padding: 1.5rem 0 3rem; color: var(--muted); font-size: .85rem; }
+@media (max-width: 720px) {
+  .grid, .check-grid, .score-grid { grid-template-columns: 1fr; }
+  .full { grid-column: auto; }
+  .shell { width: min(100% - 1rem, 1080px); }
+  header { padding-top: 1.7rem; }
+  .panel { border-radius: .75rem; }
+  button { flex: 1 1 10rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#workbench">Skip to workbench</a>
+
+<header class="shell">
+  <p class="eyebrow">Prompt to Proof · Lesson 3</p>
+  <h1>Cargo-Cult Detector</h1>
+  <p class="lede">Turn one suspicious snippet into a review packet grounded in provenance, ownership, invariants, and evidence.</p>
+  <span class="local-badge">Local-only · nothing leaves this page</span>
+</header>
+
+<main id="workbench" class="shell">
+  <div class="notice" role="note">
+    <strong>No AI detection.</strong> This workbench does not decide whether code was copied, generated, understood, correct, or dangerous. You choose the candidate and assert the evidence. The score is only the sum of checked evidence items.
+  </div>
+
+  <details class="panel">
+    <summary>Canonical seed prompt (copy exactly)</summary>
+    <p class="panel-intro">Use this prompt with a model if you want a separate exploratory pass. Treat its output as hypotheses, then prove or reject them here.</p>
+    <div class="prompt-box">
+      <button class="copy-prompt secondary" id="copyPrompt" type="button">Copy prompt</button>
+      <pre id="seedPrompt">Audit this codebase. Find every pattern that's been copy-pasted without
+anyone understanding why — the "just works" code nobody can explain.
+Rank by danger: how likely is it to fail silently when assumptions
+shift? Pick the worst one and write a 1500-word essay tracing where
+it probably came from — the Stack Overflow answer, the blog post, the
+framework idiom that drifted out of context.</pre>
+    </div>
+  </details>
+
+  <form id="reviewForm" novalidate>
+    <section class="panel" aria-labelledby="candidate-title">
+      <h2 id="candidate-title"><span class="step-marker">1</span>Choose one candidate</h2>
+      <p class="panel-intro">Keep the surface small enough for another person to inspect. Familiar-looking code is not proof of copied code.</p>
+      <div class="grid">
+        <label class="full" for="snippet">Code or configuration snippet
+          <span class="hint">Paste as plain text. Maximum 20,000 characters.</span>
+          <textarea class="mono" id="snippet" maxlength="20000" required spellcheck="false" placeholder="Paste the smallest reviewable snippet…"></textarea>
+        </label>
+        <label for="location">Location
+          <span class="hint">File, service, setting, or line range.</span>
+          <input id="location" maxlength="300" required placeholder="src/retry.ts:41–58">
+        </label>
+        <label for="priority">Human-assigned review priority
+          <span class="hint">Not calculated and not part of the evidence score.</span>
+          <select id="priority">
+            <option>Not assessed</option>
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+            <option>Urgent</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="history-title">
+      <h2 id="history-title"><span class="step-marker">2</span>Record provenance and ownership</h2>
+      <p class="panel-intro">Write “unknown” when the trail ends. A guess presented as provenance is worse than a visible gap.</p>
+      <div class="grid">
+        <label for="provenance">Known source or origin
+          <span class="hint">Commit, issue, documentation, URL, conversation, or “unknown.”</span>
+          <textarea id="provenance" maxlength="4000" required placeholder="What can you actually trace?"></textarea>
+        </label>
+        <label for="context">Introduction context
+          <span class="hint">Version, date, migration, incident, surrounding decision, or an explicit “unknown.”</span>
+          <textarea id="context" maxlength="4000" required placeholder="When and why was it introduced? Use “unknown” if the trail ends."></textarea>
+        </label>
+        <label for="owner">Current owner
+          <span class="hint">A person, role, or team who can decide what happens next.</span>
+          <input id="owner" maxlength="300" required placeholder="Payments platform team">
+        </label>
+        <label for="nextAction">Proposed next action
+          <span class="hint">Keep, test, document, replace, remove, or investigate.</span>
+          <input id="nextAction" maxlength="500" required placeholder="Reproduce under version 4.2, then review">
+        </label>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="contract-title">
+      <h2 id="contract-title"><span class="step-marker">3</span>State the contract</h2>
+      <p class="panel-intro">These are human claims for review, not conclusions produced by this page.</p>
+      <div class="grid">
+        <label for="invariants">Invariant(s)
+          <span class="hint">What behavior must remain true?</span>
+          <textarea id="invariants" maxlength="6000" required placeholder="The operation is attempted at most three times…"></textarea>
+        </label>
+        <label for="assumptions">Dependent assumption(s)
+          <span class="hint">What environment, version, ordering, or input condition is presumed?</span>
+          <textarea id="assumptions" maxlength="6000" required placeholder="The upstream call is idempotent…"></textarea>
+        </label>
+        <label for="failureMode">Silent failure if assumptions shift
+          <span class="hint">Describe an observable, falsifiable path—not a vibe.</span>
+          <textarea id="failureMode" maxlength="6000" required placeholder="A successful write is repeated after a timeout…"></textarea>
+        </label>
+        <label for="evidenceNotes">Evidence references and notes
+          <span class="hint">Commands, test names, output, links, versions, or reproduction steps.</span>
+          <textarea id="evidenceNotes" maxlength="8000" required placeholder="test_retry_idempotency — commit abc123 — output…"></textarea>
+        </label>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="evidence-title">
+      <h2 id="evidence-title"><span class="step-marker">4</span>Check only evidence you have</h2>
+      <p class="panel-intro">Every point comes from a visible checkbox. Text length, code style, and keyword matches never affect the score.</p>
+      <fieldset>
+        <legend>Explicit evidence checklist</legend>
+        <div class="check-grid">
+          <label class="check"><input type="checkbox" data-evidence data-points="15" value="A traceable provenance reference is attached"><span>A traceable provenance reference is attached<small>Commit, issue, URL, document, or an explicit “unknown” trail.</small></span></label>
+          <label class="check"><input type="checkbox" data-evidence data-points="10" value="Introduction context is confirmed"><span>Introduction context is confirmed<small>A version, date, migration, or decision is supported.</small></span></label>
+          <label class="check"><input type="checkbox" data-evidence data-points="15" value="The current owner confirmed responsibility"><span>The current owner confirmed responsibility<small>The named person or team can act on this review.</small></span></label>
+          <label class="check"><input type="checkbox" data-evidence data-points="15" value="The invariant is backed by a test or contract"><span>The invariant is backed by a test or contract<small>Point to the exact test, assertion, specification, or SLO.</small></span></label>
+          <label class="check"><input type="checkbox" data-evidence data-points="15" value="Current behavior was reproduced"><span>Current behavior was reproduced<small>A command and its observed result are recorded.</small></span></label>
+          <label class="check"><input type="checkbox" data-evidence data-points="10" value="Relevant version documentation was checked"><span>Relevant version documentation was checked<small>The evidence matches the version actually in use.</small></span></label>
+          <label class="check"><input type="checkbox" data-evidence data-points="15" value="The failure path was exercised or bounded"><span>The failure path was exercised or bounded<small>A safe experiment, fixture, or explicit boundary supports the claim.</small></span></label>
+          <label class="check"><input type="checkbox" data-evidence data-points="5" value="A removal or retention condition is agreed"><span>A removal or retention condition is agreed<small>The review has a concrete decision gate.</small></span></label>
+        </div>
+      </fieldset>
+    </section>
+
+    <section class="panel" aria-labelledby="export-title">
+      <h2 id="export-title"><span class="step-marker">5</span>Verify and export</h2>
+      <p class="panel-intro">Verification checks presence and explicit selections only. It does not judge whether your claims are true.</p>
+      <div class="score-grid">
+        <div>
+          <label for="scoreBar">Evidence coverage</label>
+          <progress id="scoreBar" max="100" value="0">0%</progress>
+          <span class="hint" id="scoreBasis">0 of 8 evidence items checked.</span>
+        </div>
+        <output class="score-number" id="scoreOutput" for="reviewForm">0/100</output>
+      </div>
+      <div class="actions">
+        <button type="button" id="verifyButton">Verify packet</button>
+        <button type="button" class="secondary" id="copyPacket">Copy packet</button>
+        <button type="button" class="secondary" id="downloadPacket">Download .md</button>
+        <button type="button" class="danger" id="resetButton">Reset</button>
+      </div>
+      <p class="summary" id="verificationSummary" tabindex="-1" aria-live="polite">Not verified yet.</p>
+      <ul class="verification" id="verificationList" aria-label="Verification results"></ul>
+      <pre class="packet" id="packetPreview" tabindex="0" aria-label="Review packet preview">Start with a candidate snippet. Your plain-text review packet will appear here.</pre>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+    </section>
+  </form>
+</main>
+
+<footer class="shell">
+  <p>Runs entirely in this document. No network requests, model calls, analytics, or hidden scoring.</p>
+  <p id="regressionStatus" role="status">Built-in regression checks pending.</p>
+</footer>
+
+<script>
+(() => {
+  "use strict";
+
+  const form = document.getElementById("reviewForm");
+  const preview = document.getElementById("packetPreview");
+  const status = document.getElementById("status");
+  const summary = document.getElementById("verificationSummary");
+  const resultList = document.getElementById("verificationList");
+  const scoreBar = document.getElementById("scoreBar");
+  const scoreOutput = document.getElementById("scoreOutput");
+  const scoreBasis = document.getElementById("scoreBasis");
+  const evidence = Array.from(document.querySelectorAll("[data-evidence]"));
+
+  const rawValue = (id) => document.getElementById(id).value;
+  const value = (id) => rawValue(id).trim();
+  const checkedEvidence = () => evidence.filter((item) => item.checked);
+  const evidenceScore = () => checkedEvidence().reduce((sum, item) => sum + Number(item.dataset.points), 0);
+  const fallback = (text) => text || "Not recorded";
+  const indent = (text) => fallback(text).split("\n").map((line) => `    ${line}`).join("\n");
+  const hasExplicitText = (text) => Boolean(text.trim());
+
+  function markdownCodeBlock(raw) {
+    if (!hasExplicitText(raw)) return "Not recorded";
+    const runs = raw.match(/`+/g) || [];
+    const longest = runs.reduce((length, run) => Math.max(length, run.length), 0);
+    const fence = "`".repeat(Math.max(3, longest + 1));
+    return `${fence}\n${raw}${raw.endsWith("\n") ? "" : "\n"}${fence}`;
+  }
+
+  function buildPacket() {
+    const checked = checkedEvidence();
+    const score = evidenceScore();
+    const checklist = evidence.map((item) => {
+      const mark = item.checked ? "x" : " ";
+      return `- [${mark}] ${item.value} (+${item.dataset.points})`;
+    }).join("\n");
+
+    return [
+      "# Cargo-Cult Review Packet",
+      "",
+      "> Manual evidence record only. This packet does not detect copying, AI generation, comprehension, correctness, or author intent.",
+      "",
+      "## Candidate",
+      "",
+      `- Location: ${fallback(value("location"))}`,
+      `- Human-assigned review priority: ${value("priority")}`,
+      "",
+      markdownCodeBlock(rawValue("snippet")),
+      "",
+      "## Provenance and ownership",
+      "",
+      `- Known source or origin: ${fallback(value("provenance"))}`,
+      `- Introduction context: ${fallback(value("context"))}`,
+      `- Current owner: ${fallback(value("owner"))}`,
+      `- Proposed next action: ${fallback(value("nextAction"))}`,
+      "",
+      "## Stated contract",
+      "",
+      "### Invariants",
+      indent(value("invariants")),
+      "",
+      "### Dependent assumptions",
+      indent(value("assumptions")),
+      "",
+      "### Silent failure if assumptions shift",
+      indent(value("failureMode")),
+      "",
+      "## Evidence references and notes",
+      "",
+      indent(value("evidenceNotes")),
+      "",
+      "## Explicit evidence checklist",
+      "",
+      checklist,
+      "",
+      `**Evidence coverage: ${score}/100 (${checked.length} of ${evidence.length} items explicitly checked).**`,
+      "",
+      "_The score is a checklist total, not a risk, quality, intent, or detection score._",
+      ""
+    ].join("\n");
+  }
+
+  function render() {
+    const checked = checkedEvidence();
+    const score = evidenceScore();
+    scoreBar.value = score;
+    scoreBar.textContent = `${score}%`;
+    scoreOutput.value = `${score}/100`;
+    scoreOutput.textContent = `${score}/100`;
+    scoreBasis.textContent = `${checked.length} of ${evidence.length} evidence items checked.`;
+    preview.textContent = buildPacket();
+  }
+
+  function invalidateVerification() {
+    if (summary.textContent !== "Not verified yet.") {
+      resultList.replaceChildren();
+      summary.textContent = "Draft changed. Verify the packet again.";
+    }
+  }
+
+  const rules = [
+    { label: "A candidate snippet is present.", target: "snippet", pass: () => Boolean(value("snippet")) },
+    { label: "A location is named.", target: "location", pass: () => Boolean(value("location")) },
+    { label: "Provenance is recorded, including “unknown” when appropriate.", target: "provenance", pass: () => Boolean(value("provenance")) },
+    { label: "Introduction context is recorded, including an explicit “unknown” when appropriate.", target: "context", pass: () => hasExplicitText(rawValue("context")) },
+    { label: "A current owner is named.", target: "owner", pass: () => Boolean(value("owner")) },
+    { label: "At least one invariant is stated.", target: "invariants", pass: () => Boolean(value("invariants")) },
+    { label: "At least one dependent assumption is stated.", target: "assumptions", pass: () => Boolean(value("assumptions")) },
+    { label: "A silent failure path is stated.", target: "failureMode", pass: () => Boolean(value("failureMode")) },
+    { label: "Evidence references or reproduction notes are present.", target: "evidenceNotes", pass: () => Boolean(value("evidenceNotes")) },
+    { label: "At least one evidence item is explicitly checked.", target: "evidence", pass: () => checkedEvidence().length > 0 },
+    { label: "A proposed next action is recorded.", target: "nextAction", pass: () => Boolean(value("nextAction")) }
+  ];
+
+  function verify() {
+    resultList.replaceChildren();
+    const results = rules.map((rule) => ({ ...rule, passed: rule.pass() }));
+    results.forEach((result) => {
+      const item = document.createElement("li");
+      item.className = result.passed ? "pass" : "fail";
+      item.textContent = `${result.passed ? "Pass" : "Needs work"} — ${result.label}`;
+      resultList.appendChild(item);
+    });
+    const failures = results.filter((result) => !result.passed);
+    summary.textContent = failures.length === 0
+      ? `Packet complete: all ${rules.length} deterministic checks pass.`
+      : `${failures.length} of ${results.length} checks need work.`;
+    summary.focus();
+    if (failures.length > 0) {
+      const first = failures[0].target === "evidence"
+        ? evidence[0]
+        : document.getElementById(failures[0].target);
+      if (first) first.focus();
+    }
+  }
+
+  async function copyText(text, successMessage) {
+    try {
+      if (!navigator.clipboard || !window.isSecureContext) throw new Error("Clipboard API unavailable");
+      await navigator.clipboard.writeText(text);
+    } catch (error) {
+      const helper = document.createElement("textarea");
+      helper.value = text;
+      helper.setAttribute("readonly", "");
+      helper.style.position = "fixed";
+      helper.style.opacity = "0";
+      document.body.appendChild(helper);
+      helper.select();
+      const copied = document.execCommand("copy");
+      helper.remove();
+      if (!copied) {
+        status.textContent = "Copy is unavailable here. Select the preview and copy it manually.";
+        preview.focus();
+        return;
+      }
+    }
+    status.textContent = successMessage;
+  }
+
+  function downloadPacket() {
+    const blob = new Blob([buildPacket()], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "cargo-cult-review-packet.md";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    status.textContent = "Review packet downloaded.";
+  }
+
+  function runRegressionChecks() {
+    const indented = "if (ready) {\n  run();\n}";
+    const packetBlock = markdownCodeBlock(indented);
+    const checks = [
+      {
+        name: "indentation-sensitive snippets",
+        pass: packetBlock.includes(indented) && packetBlock.split("\n")[2] === "  run();"
+      },
+      {
+        name: "blank introduction context",
+        pass: !hasExplicitText(" \n\t ") && hasExplicitText("unknown")
+      }
+    ];
+    const failed = checks.filter((check) => !check.pass);
+    if (failed.length) throw new Error(`Regression failure: ${failed.map((check) => check.name).join(", ")}`);
+    return checks.length;
+  }
+
+  form.addEventListener("input", () => {
+    try {
+      const count = runRegressionChecks();
+      document.getElementById("regressionStatus").textContent = `${count} built-in regression checks passed.`;
+    } catch (error) {
+      document.getElementById("regressionStatus").textContent = "Built-in regression checks failed; packet verification is disabled.";
+      document.getElementById("verifyButton").disabled = true;
+    }
+    render();
+    invalidateVerification();
+  });
+  document.getElementById("verifyButton").addEventListener("click", verify);
+  document.getElementById("copyPrompt").addEventListener("click", () => {
+    copyText(document.getElementById("seedPrompt").textContent, "Canonical prompt copied.");
+  });
+  document.getElementById("copyPacket").addEventListener("click", () => {
+    copyText(buildPacket(), "Review packet copied.");
+  });
+  document.getElementById("downloadPacket").addEventListener("click", downloadPacket);
+  document.getElementById("resetButton").addEventListener("click", () => {
+    form.reset();
+    resultList.replaceChildren();
+    summary.textContent = "Not verified yet.";
+    status.textContent = "Workbench reset.";
+    render();
+    document.getElementById("snippet").focus();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

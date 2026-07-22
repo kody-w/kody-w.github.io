@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; script-src-attr 'none'; style-src 'unsafe-inline'; style-src-attr 'none'; img-src 'none'; font-src 'none'; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Reverse-Time Incident Reconstruction Workbench</title>
+<style>
+:root{
+  --bg:#0a0b10;
+  --panel:#151820;
+  --panel-2:#1b202b;
+  --line:#353c4d;
+  --text:#f7f5f0;
+  --muted:#b5bac7;
+  --orange:#ffad66;
+  --blue:#78c8ff;
+  --green:#72dfa8;
+  --red:#ff8293;
+  --yellow:#ffe07a;
+  --shadow:0 18px 50px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+    radial-gradient(circle at 10% 0,rgba(255,173,102,.1),transparent 30rem),
+    radial-gradient(circle at 90% 10%,rgba(120,200,255,.09),transparent 28rem),
+    var(--bg);
+  background-size:100% 28px,auto,auto,auto;
+  color:var(--text);
+  font:16px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+button,textarea,input{font:inherit}
+button{
+  min-height:44px;
+  padding:.62rem .9rem;
+  border:1px solid var(--line);
+  border-radius:.7rem;
+  background:var(--panel-2);
+  color:var(--text);
+  font-weight:750;
+  cursor:pointer;
+}
+button:hover{border-color:var(--orange);background:#252c39}
+button:disabled{cursor:not-allowed;opacity:.45}
+button.primary{background:var(--orange);border-color:var(--orange);color:#1b0c02}
+button.primary:hover{background:#ffc391}
+button.danger{color:#ffc2ca}
+button:focus-visible,textarea:focus-visible,input:focus-visible,pre:focus-visible,.event:focus-visible{
+  outline:3px solid var(--yellow);
+  outline-offset:3px;
+}
+.skip{
+  position:fixed;
+  z-index:20;
+  top:1rem;
+  left:1rem;
+  transform:translateY(-220%);
+  padding:.7rem 1rem;
+  border-radius:.65rem;
+  background:var(--text);
+  color:var(--bg);
+  font-weight:850;
+}
+.skip:focus{transform:none}
+.shell{width:min(1180px,calc(100% - 2rem));margin:0 auto;padding:2rem 0 4rem}
+.hero{padding:1rem 0 1.3rem}
+.eyebrow{
+  margin:0 0 .45rem;
+  color:var(--orange);
+  font-size:.78rem;
+  font-weight:850;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+h1,h2,h3,p{margin-top:0}
+h1{max-width:900px;margin-bottom:.65rem;font-size:clamp(2rem,6vw,3.8rem);line-height:1.03;letter-spacing:-.04em}
+h2{font-size:1.22rem;letter-spacing:-.01em}
+h3{font-size:1rem}
+.lede{max-width:790px;color:var(--muted);font-size:1.05rem}
+.badges{display:flex;flex-wrap:wrap;gap:.55rem}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  min-height:30px;
+  padding:.25rem .7rem;
+  border:1px solid var(--line);
+  border-radius:999px;
+  color:var(--muted);
+  background:rgba(21,24,32,.84);
+  font-size:.82rem;
+  font-weight:750;
+}
+.badge.manual{border-color:rgba(255,173,102,.55);color:#ffd1aa}
+.panel{
+  border:1px solid var(--line);
+  border-radius:1rem;
+  background:rgba(21,24,32,.95);
+  box-shadow:var(--shadow);
+}
+.prompt-panel{padding:1.15rem;margin:1rem 0}
+.panel-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:1rem;
+  margin-bottom:.8rem;
+}
+.panel-head h2,.panel-head p{margin-bottom:0}
+.hint{color:var(--muted);font-size:.88rem}
+.seed,.packet-preview{
+  margin:0;
+  padding:1rem;
+  overflow:auto;
+  border:1px solid var(--line);
+  border-radius:.75rem;
+  background:#0b0e15;
+  color:#e5e9f2;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  font:clamp(.78rem,2vw,.88rem)/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+.prompt-actions,.actions{display:flex;align-items:center;flex-wrap:wrap;gap:.65rem;margin-top:.8rem}
+.live{min-height:1.45em;margin-bottom:0;color:var(--muted);font-size:.86rem}
+.disclosure{
+  margin:1rem 0;
+  padding:.9rem 1rem;
+  border:1px solid rgba(255,224,122,.4);
+  border-left:4px solid var(--yellow);
+  border-radius:.7rem;
+  background:rgba(255,224,122,.06);
+  color:#faeeb8;
+}
+.work-grid{display:grid;grid-template-columns:minmax(310px,.72fr) minmax(0,1.28fr);gap:1rem;align-items:start}
+.column{display:grid;gap:1rem}
+.pad{padding:1.15rem}
+label{display:block;margin:.75rem 0 .4rem;font-weight:780}
+textarea{
+  width:100%;
+  min-height:125px;
+  resize:vertical;
+  padding:.85rem;
+  border:1px solid var(--line);
+  border-radius:.75rem;
+  background:#0b0e15;
+  color:var(--text);
+  caret-color:var(--orange);
+}
+#stackTrace{min-height:220px;font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+#observationInput{min-height:150px}
+.timeline-wrap{position:relative}
+.timeline{
+  display:grid;
+  gap:.7rem;
+  margin:0;
+  padding:0;
+  list-style:none;
+  counter-reset:event;
+}
+.event{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  gap:.7rem;
+  padding:.8rem;
+  border:1px solid var(--line);
+  border-radius:.8rem;
+  background:#0e121a;
+}
+.event-number{
+  display:grid;
+  place-items:center;
+  width:2rem;
+  height:2rem;
+  border-radius:.55rem;
+  background:rgba(120,200,255,.14);
+  color:var(--blue);
+  font-size:.82rem;
+  font-weight:900;
+}
+.event-body{min-width:0}
+.event-text{margin:0 0 .65rem;white-space:pre-wrap;overflow-wrap:anywhere}
+.event-actions{display:flex;gap:.45rem;flex-wrap:wrap}
+.event-actions button{min-height:38px;padding:.42rem .65rem;font-size:.78rem}
+.empty{
+  padding:1rem;
+  border:1px dashed var(--line);
+  border-radius:.75rem;
+  color:var(--muted);
+  text-align:center;
+}
+.review{
+  display:flex;
+  gap:.65rem;
+  align-items:flex-start;
+  margin-top:1rem;
+  padding:.8rem;
+  border:1px solid var(--line);
+  border-radius:.7rem;
+  background:var(--panel-2);
+}
+.review input,.state-row input{width:1.15rem;height:1.15rem;margin-top:.18rem;accent-color:var(--orange);flex:0 0 auto}
+.review label,.state-row label{margin:0}
+.review small,.state-row small{display:block;color:var(--muted);font-weight:450}
+.notes-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+.notes-grid .wide{grid-column:1/-1}
+.notes-grid textarea{min-height:130px}
+.perspective-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem}
+.perspective-grid textarea{min-height:150px}
+.verification-layout{display:grid;grid-template-columns:minmax(250px,.65fr) minmax(0,1.35fr);gap:1rem}
+.checklist{display:grid;gap:.55rem;margin:0;padding:0;list-style:none}
+.check{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:.55rem;
+  align-items:start;
+  padding:.62rem;
+  border:1px solid var(--line);
+  border-radius:.65rem;
+  background:#0e121a;
+}
+.check .mark{
+  display:grid;
+  place-items:center;
+  width:1.35rem;
+  height:1.35rem;
+  border-radius:50%;
+  background:var(--line);
+  color:var(--bg);
+  font-size:.78rem;
+  font-weight:950;
+}
+.check b{display:block;font-size:.86rem}
+.check small{display:block;color:var(--muted);font-size:.74rem}
+.check strong{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase}
+.check.is-pass .mark{background:var(--green)}
+.check.is-pass strong{color:var(--green)}
+.check.is-fail .mark{background:var(--red);color:#fff}
+.check.is-fail strong{color:var(--red)}
+.summary{
+  margin:.8rem 0 0;
+  padding:.7rem .8rem;
+  border-left:3px solid var(--blue);
+  background:rgba(120,200,255,.07);
+  color:var(--muted);
+  font-size:.84rem;
+}
+.packet-preview{max-height:420px;min-height:260px}
+.footer-tools{margin-top:1rem}
+.state-panel{margin-top:1rem;padding:1rem 1.15rem}
+.state-row{display:flex;gap:.65rem;align-items:flex-start}
+.sr-only{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  padding:0!important;
+  margin:-1px!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;
+  border:0!important;
+}
+.copy-helper{position:fixed;opacity:0;pointer-events:none}
+@media(max-width:900px){
+  .work-grid,.verification-layout{grid-template-columns:1fr}
+  .perspective-grid{grid-template-columns:1fr}
+}
+@media(max-width:650px){
+  .shell{width:min(100% - 1rem,1180px);padding-top:1rem}
+  .panel-head{display:block}
+  .panel-head button{width:100%;margin-top:.65rem}
+  .notes-grid{grid-template-columns:1fr}
+  .notes-grid .wide{grid-column:auto}
+  .actions button{flex:1 1 45%}
+  .prompt-actions button{width:100%}
+  .event{grid-template-columns:1fr}
+  .event-number{width:100%;height:1.7rem}
+  .event-actions button{flex:1 1 42%}
+  .check{grid-template-columns:auto 1fr}
+  .check strong{grid-column:2}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#incident-input">Skip to incident evidence</a>
+<div class="shell">
+  <header class="hero">
+    <p class="eyebrow">Prompt to Proof · Lesson 2</p>
+    <h1>Reconstruct before you repair.</h1>
+    <p class="lede">Supply the evidence, order the final minute, mark every inference boundary, and export a reproducible investigation packet. The workbench formats your work; it does not analyze it.</p>
+    <div class="badges" aria-label="Workbench properties">
+      <span class="badge manual">Manual evidence lab · no AI analysis</span>
+      <span class="badge">Keyboard orderable</span>
+      <span class="badge">Local-first</span>
+      <span class="badge">Markdown export</span>
+    </div>
+  </header>
+
+  <section class="panel prompt-panel" aria-labelledby="prompt-title">
+    <div class="panel-head">
+      <div>
+        <h2 id="prompt-title">Canonical seed prompt</h2>
+        <p class="hint">Use it as an investigation brief, never as permission to invent evidence.</p>
+      </div>
+      <button type="button" id="copyPrompt">Copy seed prompt</button>
+    </div>
+    <pre class="seed" id="seedPrompt" tabindex="0">Here's a stack trace from production. Don't fix it.
+Reconstruct the last 60 seconds before it crashed — what the user was
+doing, what data was in flight, what the developer was probably
+thinking when they wrote the buggy line. Then write the postmortem
+from three perspectives: the user, the on-call engineer, and the
+original author. Each in their own voice.</pre>
+    <p class="live" id="promptStatus" role="status" aria-live="polite"></p>
+  </section>
+
+  <p class="disclosure"><strong>Method boundary:</strong> this page never infers, summarizes, diagnoses, fixes, or calls a model. Every event and note comes from you. The exported packet repeats that disclosure.</p>
+
+  <main class="work-grid" id="incident-input">
+    <div class="column">
+      <section class="panel pad" aria-labelledby="evidence-title">
+        <h2 id="evidence-title">1 · Supply evidence</h2>
+        <label for="stackTrace">Stack trace</label>
+        <textarea id="stackTrace" maxlength="50000" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="stack-help"></textarea>
+        <p class="hint" id="stack-help">Sanitize secrets and personal data first. This text is not executed or sent anywhere.</p>
+
+        <label for="observationInput">Observations · one per line</label>
+        <textarea id="observationInput" maxlength="20000" placeholder="T-42s · Client logged a shipping-country change.&#10;T-09s · Order API returned a response without tax details."></textarea>
+        <p class="hint">Prefer atomic facts. Relative times such as T-42s make ordering easier. The timeline accepts at most 200 observations; excess lines remain in this input.</p>
+        <div class="actions">
+          <button type="button" class="primary" id="addObservations">Add to timeline</button>
+          <button type="button" id="resetSample">Reset fictional sample</button>
+          <button type="button" class="danger" id="clearWorkspace">Clear workspace</button>
+        </div>
+        <p class="live" id="inputStatus" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="panel pad" aria-labelledby="boundary-title">
+        <h2 id="boundary-title">3 · Mark inference boundaries</h2>
+        <div class="notes-grid">
+          <div class="wide">
+            <label for="unknowns">Known unknowns</label>
+            <textarea id="unknowns" maxlength="12000" placeholder="What evidence is missing? What cannot be claimed yet?"></textarea>
+          </div>
+          <div>
+            <label for="dataFlight">Data in flight · evidence or hypothesis</label>
+            <textarea id="dataFlight" maxlength="12000" placeholder="Name the payloads and mark uncertain details explicitly."></textarea>
+          </div>
+          <div>
+            <label for="authorHypothesis">Probable author assumption · hypothesis</label>
+            <textarea id="authorHypothesis" maxlength="12000" placeholder="State the likely mental model and what would verify it."></textarea>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="column">
+      <section class="panel pad timeline-wrap" aria-labelledby="timeline-title">
+        <div class="panel-head">
+          <div>
+            <h2 id="timeline-title">2 · Order the final minute</h2>
+            <p class="hint">Earliest evidence first, crash last. Focus a card and press Alt + ↑ or Alt + ↓, or use its buttons.</p>
+          </div>
+          <span class="badge" id="evidenceCount" aria-live="polite">0 / 200 observations</span>
+        </div>
+        <ol class="timeline" id="timeline" aria-label="Ordered incident evidence"></ol>
+        <p class="empty" id="emptyTimeline" hidden>No observations yet. Add one line per fact from the evidence panel.</p>
+        <div class="review">
+          <input type="checkbox" id="orderReviewed">
+          <label for="orderReviewed">I reviewed every transition in this timeline
+            <small>This check clears whenever an item is added, removed, or moved.</small>
+          </label>
+        </div>
+        <p class="live" id="timelineStatus" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="panel pad" aria-labelledby="perspectives-title">
+        <h2 id="perspectives-title">4 · Record three perspectives</h2>
+        <p class="hint">Write evidence-bounded notes, not manufactured quotations or synthetic testimony.</p>
+        <div class="perspective-grid">
+          <div>
+            <label for="userNotes">User</label>
+            <textarea id="userNotes" maxlength="12000" placeholder="Observed goal, impact, and what the user could see."></textarea>
+          </div>
+          <div>
+            <label for="onCallNotes">On-call engineer</label>
+            <textarea id="onCallNotes" maxlength="12000" placeholder="Signals available, decisions made, and constraints."></textarea>
+          </div>
+          <div>
+            <label for="authorNotes">Original author</label>
+            <textarea id="authorNotes" maxlength="12000" placeholder="Verified context or carefully labeled assumptions."></textarea>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <section class="panel pad footer-tools" aria-labelledby="verify-title">
+    <div class="panel-head">
+      <div>
+        <h2 id="verify-title">5 · Verify and export</h2>
+        <p class="hint">Readiness is computed from visible, deterministic rules.</p>
+      </div>
+      <div class="actions">
+        <button type="button" id="copyPacket">Copy packet</button>
+        <button type="button" class="primary" id="downloadPacket">Download Markdown</button>
+      </div>
+    </div>
+    <div class="verification-layout">
+      <div>
+        <ul class="checklist" aria-label="Investigation packet verification">
+          <li class="check" id="checkTrace"><span class="mark" aria-hidden="true">•</span><span><b>Stack trace supplied</b><small>Rule: non-empty trace</small></span><strong>Wait</strong></li>
+          <li class="check" id="checkEvidence"><span class="mark" aria-hidden="true">•</span><span><b>Evidence depth</b><small>Rule: at least 3 observations</small></span><strong>Wait</strong></li>
+          <li class="check" id="checkOrder"><span class="mark" aria-hidden="true">•</span><span><b>Timeline order reviewed</b><small>Rule: explicit learner confirmation</small></span><strong>Wait</strong></li>
+          <li class="check" id="checkBoundaries"><span class="mark" aria-hidden="true">•</span><span><b>Inference boundaries</b><small>Rule: all 3 boundary fields completed</small></span><strong>Wait</strong></li>
+          <li class="check" id="checkPerspectives"><span class="mark" aria-hidden="true">•</span><span><b>Three perspectives</b><small>Rule: all 3 note fields completed</small></span><strong>Wait</strong></li>
+        </ul>
+        <p class="summary" id="verificationSummary" aria-live="polite">0 of 5 rules pass.</p>
+        <p class="live" id="packetStatus" role="status" aria-live="polite"></p>
+      </div>
+      <div>
+        <h3>Plain-text packet preview</h3>
+        <pre class="packet-preview" id="packetPreview" tabindex="0" aria-label="Investigation packet preview"></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel state-panel" aria-labelledby="state-title">
+    <h2 id="state-title">Optional local state</h2>
+    <div class="state-row">
+      <input type="checkbox" id="rememberState">
+      <label for="rememberState">Remember this investigation on this device
+        <small>Off by default. When enabled, only this form and timeline are stored in this browser. Uncheck to delete them.</small>
+      </label>
+    </div>
+    <p class="live" id="stateStatus" role="status" aria-live="polite">Nothing is being saved.</p>
+  </section>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const STARTER_STACK = `TypeError: Cannot read properties of undefined (reading 'total')
+    at calculateTax (checkout.js:184:27)
+    at finalizeOrder (checkout.js:241:16)
+    at async submitOrder (checkout.js:319:5)
+Request ID: fictional-demo-7f3a`;
+  const STARTER_EVIDENCE = [
+    "T-03s · User pressed “Place order”; POST /orders returned 500.",
+    "T-58s · User opened checkout from a saved cart.",
+    "T-17s · API response omitted taxBreakdown for the cross-border quote.",
+    "T-41s · Client telemetry recorded shippingCountry changing from US to CA."
+  ];
+  const MAX_EVIDENCE = 200;
+  const STORE_KEY = "lwk-prompt-to-proof-348";
+  const $ = id => document.getElementById(id);
+  const fieldIds = ["stackTrace","observationInput","unknowns","dataFlight","authorHypothesis","userNotes","onCallNotes","authorNotes"];
+  const checks = ["checkTrace","checkEvidence","checkOrder","checkBoundaries","checkPerspectives"];
+  let evidence = [];
+  let nextId = 1;
+
+  function announce(id, message) {
+    $(id).textContent = message;
+  }
+
+  function value(id) {
+    return $(id).value.trim();
+  }
+
+  function resetReview(message) {
+    if ($("orderReviewed").checked) {
+      $("orderReviewed").checked = false;
+      announce("timelineStatus", message || "Timeline changed; order review cleared.");
+    }
+  }
+
+  function setCheck(id, passed) {
+    const item = $(id);
+    item.classList.toggle("is-pass", passed);
+    item.classList.toggle("is-fail", !passed);
+    item.querySelector(".mark").textContent = passed ? "✓" : "!";
+    item.querySelector("strong").textContent = passed ? "Pass" : "Wait";
+  }
+
+  function verification() {
+    return {
+      checkTrace:value("stackTrace").length > 0,
+      checkEvidence:evidence.length >= 3,
+      checkOrder:$("orderReviewed").checked && evidence.length > 0,
+      checkBoundaries:["unknowns","dataFlight","authorHypothesis"].every(id => value(id).length > 0),
+      checkPerspectives:["userNotes","onCallNotes","authorNotes"].every(id => value(id).length > 0)
+    };
+  }
+
+  function escapeMarkdownHtml(text) {
+    return text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  function fenced(text) {
+    const runs = text.match(/`+/g) || [];
+    const longest = runs.reduce((max, run) => Math.max(max, run.length), 0);
+    const fence = "`".repeat(Math.max(3, longest + 1));
+    return fence + "text\n" + text + "\n" + fence;
+  }
+
+  function sectionText(id) {
+    const text = value(id);
+    return text ? escapeMarkdownHtml(text) : "[not supplied]";
+  }
+
+  function packetText() {
+    const status = verification();
+    const passed = checks.filter(id => status[id]).length;
+    const timeline = evidence.length
+      ? evidence.map((item, index) => (index + 1) + ". " + escapeMarkdownHtml(item.text)).join("\n")
+      : "[no observations supplied]";
+    return [
+      "# Reverse-time incident reconstruction packet",
+      "",
+      "> **Manual-only disclosure:** This packet was assembled from investigator-supplied text and ordering. The workbench performed no AI analysis, inference, diagnosis, or repair.",
+      "",
+      "## Verification snapshot",
+      "",
+      "- Deterministic rules passed: " + passed + " / " + checks.length,
+      "- Timeline order reviewed: " + ($("orderReviewed").checked ? "yes" : "no"),
+      "- Evidence items: " + evidence.length,
+      "",
+      "## Supplied stack trace",
+      "",
+      fenced($("stackTrace").value),
+      "",
+      "## Ordered evidence timeline · earliest to crash",
+      "",
+      timeline,
+      "",
+      "## Known unknowns",
+      "",
+      sectionText("unknowns"),
+      "",
+      "## Data in flight · evidence or hypothesis",
+      "",
+      sectionText("dataFlight"),
+      "",
+      "## Probable author assumption · investigator hypothesis",
+      "",
+      sectionText("authorHypothesis"),
+      "",
+      "## Perspective notes",
+      "",
+      "### User",
+      "",
+      sectionText("userNotes"),
+      "",
+      "### On-call engineer",
+      "",
+      sectionText("onCallNotes"),
+      "",
+      "### Original author",
+      "",
+      sectionText("authorNotes"),
+      "",
+      "## Method note",
+      "",
+      "Verify every transition against source evidence. Move unsupported claims to known unknowns or label them as hypotheses."
+    ].join("\n");
+  }
+
+  function update() {
+    const status = verification();
+    checks.forEach(id => setCheck(id, status[id]));
+    const passed = checks.filter(id => status[id]).length;
+    $("verificationSummary").textContent = passed + " of " + checks.length + " rules pass. " +
+      (passed === checks.length ? "Packet is ready for human review." : "Incomplete packets can still be exported with gaps marked.");
+    $("packetPreview").textContent = packetText();
+  }
+
+  function changeTimeline(mutator, focusId, focusAction, message) {
+    mutator();
+    resetReview();
+    renderTimeline(focusId, focusAction);
+    update();
+    saveState(false);
+    if (message) announce("timelineStatus", message);
+  }
+
+  function moveEvidence(id, direction) {
+    const index = evidence.findIndex(item => item.id === id);
+    const target = index + direction;
+    if (index < 0 || target < 0 || target >= evidence.length) return;
+    changeTimeline(() => {
+      const hold = evidence[index];
+      evidence[index] = evidence[target];
+      evidence[target] = hold;
+    }, id, direction < 0 ? "earlier" : "later", "Observation moved " + (direction < 0 ? "earlier." : "later."));
+  }
+
+  function removeEvidence(id) {
+    const index = evidence.findIndex(item => item.id === id);
+    if (index < 0) return;
+    const neighbor = evidence[index + 1] || evidence[index - 1];
+    changeTimeline(() => {
+      evidence.splice(index, 1);
+    }, neighbor ? neighbor.id : null, null, "Observation removed; order review cleared.");
+  }
+
+  function button(label, action, id, disabled) {
+    const control = document.createElement("button");
+    control.type = "button";
+    control.textContent = label;
+    control.dataset.action = action;
+    control.disabled = disabled;
+    control.setAttribute("aria-label", label + " for observation " + id);
+    return control;
+  }
+
+  function renderTimeline(focusId, focusAction) {
+    const list = $("timeline");
+    list.replaceChildren();
+    $("emptyTimeline").hidden = evidence.length !== 0;
+    $("evidenceCount").textContent = evidence.length + " / " + MAX_EVIDENCE + " observations";
+    let focusTarget = null;
+
+    evidence.forEach((item, index) => {
+      const row = document.createElement("li");
+      row.className = "event";
+      row.tabIndex = 0;
+      row.dataset.id = String(item.id);
+      row.setAttribute("aria-label", "Observation " + (index + 1) + " of " + evidence.length);
+
+      const number = document.createElement("span");
+      number.className = "event-number";
+      number.textContent = String(index + 1).padStart(2,"0");
+      number.setAttribute("aria-hidden","true");
+
+      const body = document.createElement("div");
+      body.className = "event-body";
+      const text = document.createElement("p");
+      text.className = "event-text";
+      text.textContent = item.text;
+      const actions = document.createElement("div");
+      actions.className = "event-actions";
+
+      const earlier = button("Move earlier", "earlier", index + 1, index === 0);
+      const later = button("Move later", "later", index + 1, index === evidence.length - 1);
+      const remove = button("Remove", "remove", index + 1, false);
+      remove.classList.add("danger");
+      earlier.addEventListener("click", () => moveEvidence(item.id, -1));
+      later.addEventListener("click", () => moveEvidence(item.id, 1));
+      remove.addEventListener("click", () => removeEvidence(item.id));
+      actions.append(earlier,later,remove);
+      body.append(text,actions);
+      row.append(number,body);
+      row.addEventListener("keydown", event => {
+        if (!event.altKey || (event.key !== "ArrowUp" && event.key !== "ArrowDown")) return;
+        event.preventDefault();
+        moveEvidence(item.id, event.key === "ArrowUp" ? -1 : 1);
+      });
+      list.appendChild(row);
+
+      if (item.id === focusId) {
+        if (focusAction === "earlier" && !earlier.disabled) focusTarget = earlier;
+        else if (focusAction === "later" && !later.disabled) focusTarget = later;
+        else focusTarget = row;
+      }
+    });
+
+    if (focusTarget) focusTarget.focus();
+  }
+
+  function addObservationLines() {
+    const lines = $("observationInput").value.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+    if (!lines.length) {
+      announce("inputStatus", "Add at least one non-empty observation line.");
+      $("observationInput").focus();
+      return;
+    }
+    const available = Math.max(0, MAX_EVIDENCE - evidence.length);
+    const accepted = lines.slice(0, available);
+    const rejected = lines.slice(available);
+    if (!accepted.length) {
+      announce("inputStatus", "The 200-observation limit is full. No lines were removed from the input.");
+      $("observationInput").focus();
+      return;
+    }
+    const firstId = nextId;
+    const message = accepted.length + (accepted.length === 1 ? " observation added." : " observations added.") +
+      (rejected.length ? " " + rejected.length + " excess " + (rejected.length === 1 ? "line remains" : "lines remain") + " in the input." : "");
+    changeTimeline(() => {
+      accepted.forEach(text => evidence.push({id:nextId++,text}));
+      $("observationInput").value = rejected.join("\n");
+    }, firstId, null, message);
+    announce("inputStatus", message);
+  }
+
+  function fallbackCopy(text) {
+    const helper = document.createElement("textarea");
+    helper.value = text;
+    helper.setAttribute("readonly","");
+    helper.className = "copy-helper";
+    document.body.appendChild(helper);
+    helper.select();
+    let copied = false;
+    try {
+      copied = document.execCommand("copy");
+    } catch (error) {
+      copied = false;
+    }
+    helper.remove();
+    return copied;
+  }
+
+  async function copyText(text, statusId, label) {
+    let copied = false;
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(text);
+        copied = true;
+      } catch (error) {
+        copied = false;
+      }
+    }
+    if (!copied) copied = fallbackCopy(text);
+    announce(statusId, copied ? label + " copied." : "Copy was blocked. Select the preview and copy it manually.");
+  }
+
+  function downloadPacket() {
+    const blob = new Blob([packetText()], {type:"text/markdown;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "reverse-time-investigation-packet.md";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    announce("packetStatus", "Downloaded reverse-time-investigation-packet.md for human review.");
+  }
+
+  function storageRead() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function storageRemove() {
+    try {
+      localStorage.removeItem(STORE_KEY);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function saveState(showStatus) {
+    if (!$("rememberState").checked) return;
+    const fields = {};
+    fieldIds.forEach(id => { fields[id] = $(id).value; });
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify({
+        version:1,
+        optedIn:true,
+        fields,
+        evidence:evidence.map(item => item.text),
+        orderReviewed:$("orderReviewed").checked
+      }));
+      if (showStatus) announce("stateStatus", "Investigation saved locally on this device.");
+    } catch (error) {
+      $("rememberState").checked = false;
+      announce("stateStatus", "Local storage is unavailable; nothing was saved.");
+    }
+  }
+
+  function setStarter() {
+    $("stackTrace").value = STARTER_STACK;
+    $("observationInput").value = "";
+    evidence = STARTER_EVIDENCE.map(text => ({id:nextId++,text}));
+    ["unknowns","dataFlight","authorHypothesis","userNotes","onCallNotes","authorNotes"].forEach(id => { $(id).value = ""; });
+    $("orderReviewed").checked = false;
+  }
+
+  function clearAll() {
+    fieldIds.forEach(id => { $(id).value = ""; });
+    $("observationInput").value = "";
+    evidence = [];
+    $("orderReviewed").checked = false;
+  }
+
+  function restore() {
+    const saved = storageRead();
+    if (!saved || saved.optedIn !== true || saved.version !== 1 || !saved.fields) {
+      setStarter();
+      return;
+    }
+    $("rememberState").checked = true;
+    fieldIds.forEach(id => {
+      $(id).value = typeof saved.fields[id] === "string" ? saved.fields[id] : "";
+    });
+    const savedEvidence = Array.isArray(saved.evidence) ? saved.evidence : [];
+    const restored = [];
+    let evidenceChanged = !Array.isArray(saved.evidence);
+    for (const text of savedEvidence) {
+      if (restored.length >= MAX_EVIDENCE) {
+        evidenceChanged = true;
+        break;
+      }
+      if (typeof text !== "string" || !text.trim()) {
+        evidenceChanged = true;
+        continue;
+      }
+      restored.push(text);
+    }
+    evidence = restored.map(text => ({id:nextId++,text}));
+    $("orderReviewed").checked = saved.orderReviewed === true && evidence.length > 0 && !evidenceChanged;
+    announce("stateStatus", evidenceChanged
+      ? "Restored " + restored.length + " of " + savedEvidence.length + " saved observations (200 maximum); timeline review was cleared because saved evidence changed."
+      : "Restored your opted-in local investigation.");
+  }
+
+  fieldIds.forEach(id => {
+    $(id).addEventListener("input", () => {
+      update();
+      saveState(false);
+    });
+  });
+  $("orderReviewed").addEventListener("change", () => {
+    update();
+    saveState(false);
+    announce("timelineStatus", $("orderReviewed").checked ? "Timeline order marked reviewed." : "Timeline order review cleared.");
+  });
+  $("rememberState").addEventListener("change", () => {
+    if ($("rememberState").checked) {
+      saveState(true);
+    } else {
+      const removed = storageRemove();
+      announce("stateStatus", removed ? "Local investigation deleted. Nothing is being saved." : "Storage could not be accessed; saving remains off.");
+    }
+  });
+  $("addObservations").addEventListener("click", addObservationLines);
+  $("copyPrompt").addEventListener("click", () => copyText($("seedPrompt").textContent, "promptStatus", "Seed prompt"));
+  $("copyPacket").addEventListener("click", () => copyText(packetText(), "packetStatus", "Investigation packet"));
+  $("downloadPacket").addEventListener("click", downloadPacket);
+  $("resetSample").addEventListener("click", () => {
+    nextId = 1;
+    setStarter();
+    renderTimeline();
+    update();
+    saveState(false);
+    announce("inputStatus", "Fictional sample restored. Timeline order needs review.");
+    $("stackTrace").focus();
+  });
+  $("clearWorkspace").addEventListener("click", () => {
+    clearAll();
+    renderTimeline();
+    update();
+    saveState(false);
+    announce("inputStatus", "Workspace cleared.");
+    $("stackTrace").focus();
+  });
+
+  restore();
+  renderTimeline();
+  update();
+})();
+</script>
+</body>
+</html>

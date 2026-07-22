@@ -11,10 +11,37 @@ layout: null
     <loc>{{ site.url }}/about/</loc>
     <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
   </url>
+  <url>
+    <loc>{{ site.url }}/learnwithkody/</loc>
+    <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
+  </url>
+  <url>
+    <loc>{{ site.url }}/learnwithkody/examples/</loc>
+    <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
+  </url>
   {% for post in site.posts %}
   <url>
     <loc>{{ site.url }}{{ post.url }}</loc>
     <lastmod>{{ post.date | date_to_xmlschema }}</lastmod>
   </url>
+  {% endfor %}
+  {% assign examples = site.examples | sort: "url" %}
+  {% for example in examples %}
+  <url>
+    <loc>{{ site.url }}{{ example.url }}</loc>
+    <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
+  </url>
+  {% endfor %}
+  {% assign demo_urls = site.examples | map: "demo" | uniq %}
+  {% for demo_url in demo_urls %}
+    {% if demo_url %}
+      {% assign demo_prefix = demo_url | slice: 0, 21 %}
+      {% if demo_prefix == "/learnwithkody/demos/" %}
+  <url>
+    <loc>{{ site.url }}{{ demo_url }}</loc>
+    <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
+  </url>
+      {% endif %}
+    {% endif %}
   {% endfor %}
 </urlset>
