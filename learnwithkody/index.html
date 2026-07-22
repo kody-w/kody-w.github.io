@@ -2,30 +2,21 @@
 layout: default
 title: Learn with Kody
 permalink: /learnwithkody/
-description: Guided vibe-coding tutorials, published examples, and exact seed prompts ready to remix.
+description: Vibe-coding examples, exact seed prompts, source, and live builds ready to explore and remix.
 ---
-{% assign published_examples = site.examples | where: 'status', 'live' %}
-{% assign concept_examples = site.examples | where: 'status', 'concept' %}
-{% assign guided_tutorials = site.examples | where: 'series', 'prompt-to-proof' | sort: 'lesson' %}
 <div class="lwk-page lwk-hub">
 
   <header class="lwk-hero">
     <p class="lwk-kicker">Learn with Kody</p>
     <h1>Vibe coding, agent systems, and local-first builds</h1>
     <p class="lwk-hero-sub">
-      Real-time ocean physics. A 50-piece improvising orchestra. A
-      Schwarzschild black hole rendered through real geodesics. Borges'
-      infinite library, with a working search. Doom in a browser tab.
-      Mirror's Edge across procedural rooftops. A WW2 dogfight with real
-      stalls and G-LOC. A rapier duel where your mouse is the blade.
-      {{ published_examples.size }} published entries, including
-      {{ guided_tutorials.size }} guided tutorials with runnable workbenches,
-      plus {{ concept_examples.size }} concept prompts. Every entry includes
-      the exact seed prompt.
+      Explore a single catalog of vibe-coded builds and concepts. Each entry
+      keeps the exact seed prompt beside its build notes and, when available,
+      links to the source and a live demo.
     </p>
     <div class="lwk-cta-row">
-      <a class="btn" href="#start-here">Start with the guided path →</a>
-      <a class="btn btn-secondary" href="/learnwithkody/examples/">Browse the full catalog</a>
+      <a class="btn" href="/learnwithkody/examples/">Browse the full catalog →</a>
+      <a class="btn btn-secondary" href="/">Read the blog</a>
     </div>
   </header>
 
@@ -38,16 +29,15 @@ description: Guided vibe-coding tutorials, published examples, and exact seed pr
       a prompt you can take in your own direction.
     </p>
     <p>
-      The point isn't to admire a finished result. Follow the guided path to learn the
-      loop in a runnable workbench, open a published example, or choose a concept and
-      make the first proof yourself.
+      The catalog is the starting point: filter it by category or difficulty,
+      open an entry, copy the prompt, and make the first proof yourself.
     </p>
   </section>
 
   <section class="lwk-section lwk-features">
     <div class="lwk-feature">
       <div class="lwk-feature-icon">⚡</div>
-      <h3>{{ published_examples.size }} published entries</h3>
+      <h3>Published builds</h3>
       <p>Open an article, a repository, or an interactive example alongside its prompt.</p>
     </div>
     <div class="lwk-feature">
@@ -57,83 +47,21 @@ description: Guided vibe-coding tutorials, published examples, and exact seed pr
     </div>
     <div class="lwk-feature">
       <div class="lwk-feature-icon">🗂️</div>
-      <h3>{{ concept_examples.size }} concept prompts</h3>
+      <h3>Concept prompts</h3>
       <p>Prompts for exploring an idea before a published proof exists.</p>
     </div>
     <div class="lwk-feature">
       <div class="lwk-feature-icon">🧭</div>
-      <h3>{{ guided_tutorials.size }} guided tutorials</h3>
-      <p>A lesson-ordered path with a runnable workbench for each tutorial.</p>
+      <h3>One catalog</h3>
+      <p>Use category and difficulty filters to find the right place to begin.</p>
     </div>
-  </section>
-
-  <section class="lwk-section" id="start-here">
-    <p class="lwk-kicker">Start Here</p>
-    <h2>Take a prompt all the way to proof</h2>
-    <p>
-      Follow these {{ guided_tutorials.size }} guided tutorials in order. Each lesson
-      provides a runnable workbench and advances the same practical loop: shape the
-      prompt, build, test, and ship.
-    </p>
-    <div class="lwk-examples-grid">
-      {% for ex in guided_tutorials %}
-        <a class="lwk-example-card" href="{{ ex.url }}">
-          <div class="lwk-meta-row">
-            <span class="lwk-pill lwk-status">Lesson {{ ex.lesson }} of {{ guided_tutorials.size }}</span>
-            {% if ex.duration %}<span class="lwk-pill lwk-status">{{ ex.duration }}</span>{% endif %}
-            {% if ex.difficulty %}<span class="lwk-pill lwk-difficulty lwk-{{ ex.difficulty }}">{{ ex.difficulty }}</span>{% endif %}
-          </div>
-          <h3>{{ ex.title }}</h3>
-          <p>{{ ex.tagline }}</p>
-          {% if ex.tags %}
-          <div class="lwk-tags-line">
-            {% for tag in ex.tags limit:4 %}<span class="lwk-tag">#{{ tag }}</span>{% endfor %}
-          </div>
-          {% endif %}
-          <span class="lwk-read-more">Open lesson →</span>
-        </a>
-      {% endfor %}
-    </div>
-  </section>
-
-  <section class="lwk-section">
-    <h2>Newest published entries</h2>
-    <p>The six newest published entries, each paired with the exact seed prompt behind it.</p>
-    <div class="lwk-examples-grid">
-      {% assign featured = published_examples | sort: 'order' | reverse %}
-      {% for ex in featured limit: 6 %}
-        <a class="lwk-example-card" href="{{ ex.url }}">
-          <div class="lwk-meta-row">
-            <span class="lwk-pill lwk-status">published</span>
-            {% if ex.difficulty %}<span class="lwk-pill lwk-difficulty lwk-{{ ex.difficulty }}">{{ ex.difficulty }}</span>{% endif %}
-            {% if ex.category %}<span class="lwk-pill lwk-category">{{ ex.category }}</span>{% endif %}
-          </div>
-          <h3>{{ ex.title }}</h3>
-          <p>{{ ex.tagline }}</p>
-          {% if ex.tags %}
-          <div class="lwk-tags-line">
-            {% for tag in ex.tags limit:4 %}<span class="lwk-tag">#{{ tag }}</span>{% endfor %}
-          </div>
-          {% endif %}
-          {% if ex.series == 'prompt-to-proof' %}
-            <span class="lwk-read-more">Open lesson →</span>
-          {% else %}
-            <span class="lwk-read-more">Open example →</span>
-          {% endif %}
-        </a>
-      {% endfor %}
-    </div>
-    <p class="lwk-view-all">
-      <a class="btn btn-secondary" href="/learnwithkody/examples/">See all {{ site.examples.size }} entries →</a>
-    </p>
   </section>
 
   <section class="lwk-section lwk-cta-section">
-    <h2>Start vibe coding today</h2>
+    <h2>Find an example to remix</h2>
     <p>
-      Start with lesson one or pick a catalog entry that fires you up. Open the
-      prompt. Change one thing that matters to you. Ship the new version with your
-      name on it. That's the whole loop.
+      Pick a catalog entry that fires you up. Open the prompt. Change one thing
+      that matters to you. Ship the new version with your name on it.
     </p>
     <div class="lwk-cta-row">
       <a class="btn" href="/learnwithkody/examples/">Browse the catalog →</a>

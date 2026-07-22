@@ -3,81 +3,28 @@ layout: default
 ---
 <main class="home">
   <header class="home-hero" aria-labelledby="home-heading">
-    <p class="home-eyebrow">Choose your stream</p>
+    <p class="home-eyebrow">Choose where to go</p>
     <h1 id="home-heading">Read the ideas. Build the systems.</h1>
     <p class="home-intro">
-      Choose the complete Blog feed for essays and field notes, or Learn with Kody
-      for hands-on tutorials with exact prompts and runnable workbenches.
+      Read the complete Blog feed, or browse the Learn with Kody catalog for
+      exact prompts, build notes, source, and live examples.
     </p>
 
-    <nav class="home-stream-switcher" aria-label="Choose a content stream">
+    <nav class="home-stream-switcher" aria-label="Choose Blog or the Learn with Kody catalog">
       <a class="home-stream home-stream-blog" href="#blog">
-        <span class="home-stream-kicker">Stream 01</span>
+        <span class="home-stream-kicker">Read</span>
         <strong>Blog</strong>
         <span>Essays, field notes, and the complete chronological feed.</span>
-        <span class="home-stream-action">Jump to Blog <span aria-hidden="true">↓</span></span>
+        <span class="home-stream-action">Browse the Blog <span aria-hidden="true">↓</span></span>
       </a>
-      <a class="home-stream home-stream-learn" href="#learn">
-        <span class="home-stream-kicker">Stream 02</span>
-        <strong>Learn with Kody</strong>
-        <span>Tutorials built around exact prompts and runnable workbenches.</span>
-        <span class="home-stream-action">See Learn tutorials <span aria-hidden="true">↓</span></span>
+      <a class="home-stream home-stream-learn" href="/learnwithkody/examples/">
+        <span class="home-stream-kicker">Build</span>
+        <strong>Learn with Kody catalog</strong>
+        <span>Vibe-coding examples with the exact prompts behind them.</span>
+        <span class="home-stream-action">Open the catalog <span aria-hidden="true">→</span></span>
       </a>
     </nav>
   </header>
-
-  <section class="home-section home-learn" id="learn" aria-labelledby="learn-heading">
-    <header class="home-section-header">
-      <div class="home-section-copy">
-        <p class="home-eyebrow">Tutorial stream</p>
-        <h2 id="learn-heading">Latest from Learn with Kody</h2>
-        <p>
-          Start with the newest published tutorials, then use the Learn hub to
-          explore more prompts, workbenches, and build notes.
-        </p>
-      </div>
-      <nav class="home-learn-actions" aria-label="Learn with Kody links">
-        <a class="home-primary-cta" href="/learnwithkody/">
-          Open the Learn hub <span aria-hidden="true">→</span>
-        </a>
-        <a class="home-secondary-cta" href="/learnwithkody/examples/">
-          Browse the catalog
-        </a>
-      </nav>
-    </header>
-
-    {% assign learn_tutorials = site.examples | where: "category", "tutorial" | where: "status", "live" | sort: "order" | reverse %}
-    {% if learn_tutorials.size > 0 %}
-      <ol class="home-tutorial-list">
-        {% for tutorial in learn_tutorials limit: 6 %}
-          <li>
-            <article class="home-tutorial-card">
-              <div class="home-tutorial-meta">
-                <span class="home-live-indicator">Live</span>
-                {% if tutorial.lesson %}<span>Lesson {{ tutorial.lesson }}</span>{% endif %}
-                {% if tutorial.duration %}<span>{{ tutorial.duration }}</span>{% endif %}
-              </div>
-              <h3>
-                <a href="{{ tutorial.url }}">{{ tutorial.title }}</a>
-              </h3>
-              {% assign tutorial_summary = tutorial.tagline | default: tutorial.description | default: tutorial.excerpt %}
-              {% if tutorial_summary %}
-                <p>{{ tutorial_summary | strip_html | truncatewords: 24 }}</p>
-              {% endif %}
-              <a class="home-card-link" href="{{ tutorial.url }}" aria-label="Open tutorial: {{ tutorial.title | escape }}">
-                Open tutorial <span aria-hidden="true">→</span>
-              </a>
-            </article>
-          </li>
-        {% endfor %}
-      </ol>
-    {% else %}
-      <p class="home-tutorial-empty">
-        New Learn tutorials will appear here as they go live. The Learn hub is
-        ready now with prompts, examples, and runnable workbenches.
-      </p>
-    {% endif %}
-  </section>
 
   <section class="home-section home-blog" id="blog" aria-labelledby="blog-heading">
     <header class="home-section-header">

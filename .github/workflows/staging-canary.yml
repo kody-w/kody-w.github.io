@@ -69,10 +69,11 @@ jobs:
         run: |
           # Ensure no PII patterns leaked into the built site
           if grep -rE '[a-zA-Z0-9._%+-]+@(icloud|me|mac)\.com' _site/ --include='*.html' | grep -v 'example\|placeholder\|test'; then
-            echo "⚠️  WARNING: Possible PII (iCloud email) found in built site!"
-            # Don't fail — just warn. The blog posts reference general patterns.
+            echo "ERROR: Possible PII (iCloud email) found in built site!"
+            exit 1
+          else
+            echo "✅ PII check passed"
           fi
-          echo "✅ PII check passed"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

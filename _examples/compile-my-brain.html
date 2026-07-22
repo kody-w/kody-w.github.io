@@ -1,43 +1,15 @@
 ---
 title: "Compile My Brain — From a 20-Minute Monologue to Six Coherent Artifacts"
 slug: compile-my-brain
-order: 350
-series: prompt-to-proof
-lesson: 4
-duration: "30 minutes"
-tagline: Manually turn one transcript into six reviewable artifacts with shared vocabulary, deterministic consistency checks, and no fabricated summary.
-category: tutorial
+order: 12
+tagline: Talk for 20 minutes about a system. Get back a design doc, OpenAPI spec, schema, test plan, risk register, and Slack message — all consistent with each other.
+category: prompt
 difficulty: intermediate
 status: live
-prerequisites:
-  - "A monologue, meeting transcript, or rough system-design note you are allowed to use"
-  - "A system name plus at least one entity, invariant, and failure mode"
-  - "Enough domain knowledge to answer five clarifying questions yourself"
-objectives:
-  - "Extract shared vocabulary without asking the workbench to invent a summary"
-  - "Shape a design doc, OpenAPI spec, schema, test plan, risk register, and Slack message"
-  - "Check exact entity, invariant, and failure-mode consistency across all six artifacts"
-  - "Copy or export the result and optionally persist the draft only in local browser storage"
-steps:
-  - title: "Paste the source"
-    instruction: "Add the raw monologue or transcript as the source of truth; the workbench stores text but does not summarize or interpret it."
-    check: "The source is present and no generated claims have been added."
-  - title: "Declare shared anchors"
-    instruction: "Manually enter the canonical system name, entity names, invariants, and failure modes that every artifact must reuse."
-    check: "Each anchor is copied from or supported by the source."
-  - title: "Answer five questions"
-    instruction: "Write five clarifying questions and answer them in the same field before drafting."
-    check: "All five entries contain both the uncertainty and its resolution."
-  - title: "Shape six artifacts"
-    instruction: "Load the guided scaffolds, replace every placeholder, and edit each artifact for its audience."
-    check: "All six completion checkboxes are deliberate and every artifact includes the shared anchors."
-  - title: "Verify and export"
-    instruction: "Run the exact-text consistency check, fix missing anchors, then copy all or download the Markdown bundle."
-    check: "Verification passes deterministically and persistence remains opt-in."
-tags: [productivity, design, documentation, consistency, local-first]
-stack: [HTML, CSS, JavaScript, LocalStorage]
+tags: [productivity, design, agents, planning]
+stack: [HTML, CSS, JavaScript, Canvas, SVG]
 demo: /learnwithkody/demos/350-compile-my-brain.html
-repo: https://github.com/kody-w/kody-w.github.io
+repo: https://github.com/kody-w/kody-w.github.io/blob/master/learnwithkody/demos/350-compile-my-brain.html
 highlights:
   - "six artifacts"
 prompt: |
@@ -54,45 +26,23 @@ lessons:
 ---
 
 <section class="lwk-section">
-  <h2>Outcome</h2>
-  <p>You will produce one exportable bundle containing a system design doc, OpenAPI spec, database schema, test plan, risk register, and team-ready Slack message. Each artifact reuses anchors you explicitly declare. This local workbench provides structure and exact-text checks; it never summarizes the transcript or fabricates a design.</p>
+  <h2>What this is</h2>
+  <p><strong>BRAINPRINT</strong> is an immediate visual thought compiler. A bundled fictional monologue streams through a waveform into a typed system graph, five ambiguities resolve in accelerated time, and six deterministic document printers fire together. Paste your own transcript to run the same visible, local rules.</p>
 </section>
 
 <section class="lwk-section">
-  <h2>Build it</h2>
-  <ol>
-    <li><strong>Keep the source visible.</strong> Paste the monologue or transcript without asking the page to interpret it.</li>
-    <li><strong>Resolve ambiguity first.</strong> Enter a canonical system name, shared entities, invariants, failure modes, and five answered clarifying questions.</li>
-    <li><strong>Load scaffolds, not answers.</strong> The guided templates contain headings and explicit placeholders only.</li>
-    <li><strong>Edit for six audiences.</strong> Shape each artifact manually, mark it complete, and preserve the same anchors everywhere.</li>
-    <li><strong>Run consistency checks.</strong> Copy or export only after every required anchor appears literally in all six artifacts.</li>
-  </ol>
+  <h2>Why this is mind-blowing</h2>
+  <p>The spectacle is not six documents appearing. It is one canonical idea surviving six translations without changing names, guarantees, failure modes, or decisions. Touch any term and its evidence lights up beside every occurrence in the design, OpenAPI, SQL, tests, risks, and team summary—then the drift radar proves they still agree.</p>
 </section>
 
 <aside class="lwk-try-embed">
   <div class="lwk-try-embed-head">
-    <span class="lwk-try-embed-label">Lesson 4 workbench — local and live</span>
+    <span class="lwk-try-embed-label">Live demo</span>
     <a href="/learnwithkody/demos/350-compile-my-brain.html" target="_blank" rel="noopener" class="lwk-try-embed-open">Open in new tab ↗</a>
   </div>
-  <iframe src="/learnwithkody/demos/350-compile-my-brain.html" title="Compile My Brain six-artifact workbench" loading="lazy" sandbox="allow-scripts allow-same-origin allow-downloads" allow="clipboard-write" referrerpolicy="no-referrer"></iframe>
+  <iframe
+    src="/learnwithkody/demos/350-compile-my-brain.html"
+    title="Compile My Brain — live demo"
+    loading="lazy"
+    sandbox="allow-scripts allow-same-origin allow-downloads"></iframe>
 </aside>
-
-<section class="lwk-section">
-  <h2>Verify it</h2>
-  <p>Load the templates, add a unique entity such as <code>ReviewEnvelope</code>, and verify. The workbench lists every artifact missing that exact anchor. Add it to all six, answer all five questions, mark each artifact complete, and verify again. Repeating the check with unchanged text produces the same result—there is no model call or hidden interpretation.</p>
-</section>
-
-<section class="lwk-section">
-  <h2>Failure modes</h2>
-  <ul>
-    <li><strong>Template completion:</strong> headings and placeholders are scaffolding, not a finished design. Verification rejects known placeholders.</li>
-    <li><strong>Vocabulary drift:</strong> renaming an entity in one artifact breaks the exact-text consistency check.</li>
-    <li><strong>Unsupported certainty:</strong> a polished schema can still be fiction if its claims do not trace back to the source or an answered question.</li>
-    <li><strong>Persistence surprise:</strong> browser storage is off by default. Enable it only on a trusted device and reset when finished.</li>
-  </ul>
-</section>
-
-<section class="lwk-section">
-  <h2>Remix</h2>
-  <p>Swap one scaffold for an architecture decision record, migration runbook, or launch checklist. Keep six—or change the count—but retain the same discipline: declared source, manually resolved questions, shared anchors, visible completion gates, and deterministic checks before export.</p>
-</section>

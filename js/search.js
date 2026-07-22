@@ -3,14 +3,14 @@
   var overlay = document.getElementById('search-overlay');
   var input = document.getElementById('search-input');
   var resultsContainer = document.getElementById('search-results');
-  var entries = [];
+  var posts = [];
 
   function openSearch() {
     overlay.classList.add('active');
     input.focus();
     input.value = '';
     resultsContainer.textContent = '';
-    if (entries.length === 0) loadIndex();
+    if (posts.length === 0) loadIndex();
   }
 
   function closeSearch() {
@@ -21,7 +21,7 @@
     fetch('/search.json')
       .then(function (r) { return r.json(); })
       .then(function (data) {
-        entries = Array.isArray(data) ? data : [];
+        posts = Array.isArray(data) ? data : [];
         if (input.value) search(input.value);
       })
       .catch(function () {
@@ -37,8 +37,7 @@
     resultsContainer.appendChild(paragraph);
   }
 
-  function searchableText(value) {
-    if (Array.isArray(value)) return value.join(' ');
+  function textValue(value) {
     return value == null ? '' : String(value);
   }
 
@@ -51,23 +50,20 @@
   function renderMatches(matches) {
     var fragment = document.createDocumentFragment();
 
-    matches.forEach(function (entry) {
+    matches.forEach(function (post) {
       var link = document.createElement('a');
       var title = document.createElement('span');
-      var metadata = [entry.type, entry.status, entry.date]
-        .map(searchableText)
-        .filter(function (value) { return value; });
 
       link.className = 'search-result';
-      link.href = safeLocalUrl(entry.url);
+      link.href = safeLocalUrl(post.url);
       title.className = 'search-result-title';
-      title.textContent = searchableText(entry.title);
+      title.textContent = textValue(post.title);
       link.appendChild(title);
 
-      if (metadata.length) {
+      if (post.date) {
         var meta = document.createElement('span');
         meta.className = 'search-result-date';
-        meta.textContent = metadata.join(' · ');
+        meta.textContent = textValue(post.date);
         link.appendChild(meta);
       }
 
@@ -81,15 +77,11 @@
   function search(query) {
     if (!query) { resultsContainer.textContent = ''; return; }
     var terms = query.toLowerCase().split(/\s+/);
-    var matches = entries.filter(function (entry) {
-      var haystack = [
-        entry.title,
-        entry.excerpt,
-        entry.type,
-        entry.status,
-        entry.category,
-        entry.tags
-      ].map(searchableText).join(' ').toLowerCase();
+    var matches = posts.filter(function (post) {
+      var haystack = [post.title, post.excerpt]
+        .map(textValue)
+        .join(' ')
+        .toLowerCase();
       return terms.every(function (t) { return haystack.indexOf(t) !== -1; });
     }).slice(0, 10);
 

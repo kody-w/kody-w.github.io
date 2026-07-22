@@ -2,11 +2,7 @@
 layout: null
 ---
 [
-{% assign example_count = site.examples | size %}
 {% for post in site.posts %}
-{"title":{{ post.title | jsonify }},"url":"{{ post.url }}","date":"{{ post.date | date: "%b %-d, %Y" }}","excerpt":{{ post.excerpt | strip_html | truncatewords: 40 | jsonify }}}{% unless forloop.last and example_count == 0 %},{% endunless %}
-{% endfor %}
-{% for example in site.examples %}
-{"title":{{ example.title | jsonify }},"url":{{ example.url | jsonify }},"type":"Learn with Kody","status":{{ example.status | capitalize | jsonify }},"excerpt":{{ example.tagline | strip_html | strip_newlines | truncatewords: 40 | jsonify }},"category":{{ example.category | jsonify }},"tags":{{ example.tags | jsonify }}}{% unless forloop.last %},{% endunless %}
+{"title":{{ post.title | jsonify }},"url":"{{ post.url }}","date":"{{ post.date | date: "%b %-d, %Y" }}","excerpt":{{ post.excerpt | strip_html | truncatewords: 40 | jsonify }}}{% unless forloop.last %},{% endunless %}
 {% endfor %}
 ]

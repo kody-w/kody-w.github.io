@@ -1,43 +1,15 @@
 ---
 title: "The Cargo-Cult Detector — Find the Code Nobody Understands"
 slug: cargo-cult-detector
-order: 349
-series: prompt-to-proof
-lesson: 3
-duration: "20 minutes"
-tagline: Audit one suspicious code or config pattern with explicit evidence, then export a review-ready packet without pretending a model can detect intent.
-category: tutorial
+order: 11
+tagline: Audit a codebase for patterns copy-pasted without comprehension. Rank by danger. Trace the worst one to its origin essay.
+category: prompt
 difficulty: intermediate
 status: live
-prerequisites:
-  - "A code or configuration snippet you are allowed to review"
-  - "Any nearby tests, documentation, issue links, or version history"
-  - "A person or team who can own the follow-up"
-objectives:
-  - "Separate a suspicious pattern from assumptions about why it exists"
-  - "Record provenance, invariants, ownership, and evidence in one review packet"
-  - "Calculate an evidence-coverage score using only explicitly checked proof"
-  - "Run deterministic completeness checks before copying or exporting the packet"
-steps:
-  - title: "Choose one candidate"
-    instruction: "Paste the smallest code or configuration snippet that preserves the behavior under review, then name its location."
-    check: "The candidate and location fields contain only the material a reviewer needs."
-  - title: "Record provenance and ownership"
-    instruction: "Write where the pattern came from, what version or date it belongs to, and who owns the decision now."
-    check: "Provenance, current owner, and introduction context are explicit rather than inferred."
-  - title: "State the contract"
-    instruction: "Describe the invariant the pattern protects, the assumption it depends on, and the silent failure you expect if that assumption shifts."
-    check: "A reviewer can challenge each statement independently."
-  - title: "Attach evidence"
-    instruction: "Add test output, documentation, history, or reproduction notes, then check only the evidence you can actually point to."
-    check: "The score changes only when an evidence checkbox is deliberately checked."
-  - title: "Verify and export"
-    instruction: "Run the deterministic completeness check, resolve every failed item, and export the Markdown review packet."
-    check: "The packet names its score basis and never claims to detect AI, copying, or author intent."
-tags: [code-review, archaeology, evidence, refactoring, local-first]
-stack: [HTML, CSS, JavaScript, Local-first]
+tags: [code-review, archaeology, agents, refactoring]
+stack: [LLM, Git History, Static Analysis]
 demo: /learnwithkody/demos/349-cargo-cult-detector.html
-repo: https://github.com/kody-w/kody-w.github.io
+repo: https://github.com/kody-w/kody-w.github.io/blob/master/learnwithkody/demos/349-cargo-cult-detector.html
 highlights:
   - "danger ranking"
 prompt: |
@@ -54,45 +26,23 @@ lessons:
 ---
 
 <section class="lwk-section">
-  <h2>Outcome</h2>
-  <p>You will leave with a Markdown review packet for one suspicious code or configuration pattern: the exact snippet, its known provenance, current owner, stated invariants, possible silent failure, attached evidence, and a transparent evidence-coverage score. The workbench does not detect AI-generated or copied code and does not infer what an author understood.</p>
+  <h2>What this is</h2>
+  <p>A cinematic excavation of a fictional repository containing five copied patterns. A real in-browser lexical analyzer strips comments, canonicalizes renamed identifiers, fingerprints token shingles, and draws the resulting clone lineage. Change each pattern's operating assumption to watch silent invariant violations, impact, and copy spread determine its danger rank. Then dig through fictional commits to the most probable origin, with every claim tied to an exact file and line range.</p>
 </section>
 
 <section class="lwk-section">
-  <h2>Build it</h2>
-  <ol>
-    <li><strong>Isolate the candidate.</strong> Paste only the smallest useful snippet and identify its file, service, or configuration surface.</li>
-    <li><strong>Write down what is known.</strong> Record provenance and ownership; use “unknown” instead of inventing an origin.</li>
-    <li><strong>Name the contract.</strong> State the invariant, dependent assumption, and silent failure in language another reviewer can falsify.</li>
-    <li><strong>Check only proof you have.</strong> The workbench awards points only for evidence checkboxes you explicitly select.</li>
-    <li><strong>Verify, copy, or download.</strong> Resolve the deterministic checklist and hand the packet to a human reviewer.</li>
-  </ol>
+  <h2>Why this is mind-blowing</h2>
+  <p>The worst fossil looks healthy right up to the moment it charges a customer twice. A retry helper born around idempotent catalog reads was copied into payment capture; when an acknowledgement arrives after the commit, it retries the successful write, records a second ledger charge, and leaves every ordinary health indicator green. The demo turns that invisible inherited assumption into a visible evidence trail, then ships the complete 1,500-word dossier beneath the spectacle.</p>
 </section>
 
 <aside class="lwk-try-embed">
   <div class="lwk-try-embed-head">
-    <span class="lwk-try-embed-label">Lesson 3 workbench — local and live</span>
+    <span class="lwk-try-embed-label">Live demo</span>
     <a href="/learnwithkody/demos/349-cargo-cult-detector.html" target="_blank" rel="noopener" class="lwk-try-embed-open">Open in new tab ↗</a>
   </div>
-  <iframe src="/learnwithkody/demos/349-cargo-cult-detector.html" title="Cargo-Cult Detector evidence workbench" loading="lazy" sandbox="allow-scripts allow-downloads" allow="clipboard-write" referrerpolicy="no-referrer"></iframe>
+  <iframe
+    src="/learnwithkody/demos/349-cargo-cult-detector.html"
+    title="The Cargo-Cult Detector — live demo"
+    loading="lazy"
+    sandbox="allow-scripts allow-same-origin"></iframe>
 </aside>
-
-<section class="lwk-section">
-  <h2>Verify it</h2>
-  <p>Paste a tiny known snippet, leave one required field blank, and choose <strong>Verify packet</strong>. The failed field is named and focused. Fill it, check one evidence item you can support, and verify again. The same inputs and checkboxes always produce the same result and score; changing prose alone never awards evidence points.</p>
-</section>
-
-<section class="lwk-section">
-  <h2>Failure modes</h2>
-  <ul>
-    <li><strong>Origin theater:</strong> a familiar-looking idiom is not proof of where this instance came from. Record “unknown” until you have a reference.</li>
-    <li><strong>Checkbox inflation:</strong> checking evidence without a link, command, test, or note creates a confident-looking packet with no audit trail.</li>
-    <li><strong>Danger by vibe:</strong> unfamiliar code is not automatically dangerous. Review the stated invariant and failure path, not the style.</li>
-    <li><strong>Ownerless action:</strong> archaeology without a current owner becomes a report nobody can safely act on.</li>
-  </ul>
-</section>
-
-<section class="lwk-section">
-  <h2>Remix</h2>
-  <p>Duplicate the packet for several candidates and rank them in review by explicit failure impact, not by an automated “cargo-cult” label. Add team-specific evidence gates—an incident link, a version matrix, or a removal experiment—while keeping every scored item visible and manually asserted.</p>
-</section>

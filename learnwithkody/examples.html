@@ -6,7 +6,6 @@ description: A growing catalog of published vibe-coding examples and exact conce
 ---
 {% assign published_examples = site.examples | where: 'status', 'live' %}
 {% assign concept_examples = site.examples | where: 'status', 'concept' %}
-{% assign guided_tutorials = site.examples | where: 'series', 'prompt-to-proof' %}
 <div class="lwk-page">
 
   <p class="lwk-breadcrumb">
@@ -18,11 +17,10 @@ description: A growing catalog of published vibe-coding examples and exact conce
   <header class="lwk-list-header">
     <h1>{{ site.examples.size }} Vibe Coding Examples</h1>
     <p class="lwk-tagline">
-      {{ published_examples.size }} published entries, including
-      {{ guided_tutorials.size }} guided tutorials with runnable workbenches,
-      and {{ concept_examples.size }} concept prompts. Every entry includes the
-      exact seed prompt; a published entry may open an article, a repository, or
-      an interactive example.
+      {{ published_examples.size }} published entries and
+      {{ concept_examples.size }} concept prompts. Every entry includes the exact
+      seed prompt; a published entry may open an article, a repository, or an
+      interactive example.
     </p>
   </header>
 
@@ -80,9 +78,7 @@ description: A growing catalog of published vibe-coding examples and exact conce
         </div>
         {% endif %}
         <div class="lwk-card-footer">
-          {% if ex.series == 'prompt-to-proof' %}
-            <span class="lwk-read-more">Open lesson →</span>
-          {% elsif ex.status == 'live' %}
+          {% if ex.status == 'live' %}
             <span class="lwk-read-more">Open example →</span>
           {% else %}
             <span class="lwk-read-more">Explore the prompt →</span>

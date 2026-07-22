@@ -1,8 +1,9 @@
+import base64
+import binascii
+import hashlib
 import json
 import re
 import unittest
-import unicodedata
-from html import unescape
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -18,9 +19,11 @@ IDEA4BLOG_PAGE = ROOT / "idea4blog.md"
 ABOUT_PAGE = ROOT / "about.md"
 DEFAULT_LAYOUT = ROOT / "_layouts" / "default.html"
 TWIN_LAYOUT = ROOT / "_layouts" / "twin_post.html"
+EXAMPLE_LAYOUT = ROOT / "_layouts" / "lwk_example.html"
 HOME_PAGE = ROOT / "index.html"
 LEARN_HUB_PAGE = ROOT / "learnwithkody" / "index.html"
 LEARN_CATALOG_PAGE = ROOT / "learnwithkody" / "examples.html"
+STAGING_WORKFLOW = ROOT / ".github" / "workflows" / "staging-canary.yml"
 CONFIG_FILE = ROOT / "_config.yml"
 README_FILE = ROOT / "README.md"
 GITIGNORE_FILE = ROOT / ".gitignore"
@@ -42,26 +45,149 @@ D365_FRAME_MACHINE_URL = f"{LOCALFIRSTTOOLS_BASE_URL}/dynamics365-frame-machine.
 D365_LOCKSTEP_URL = f"{LOCALFIRSTTOOLS_BASE_URL}/dynamics365-lockstep-twin.html"
 HN_FRAME_MACHINE_URL = f"{LOCALFIRSTTOOLS_BASE_URL}/hacker-news-simulator.html"
 MIN_LEARN_EXAMPLES = 367
-PROMPT_TO_PROOF_ORDERS = set(range(347, 353))
-MAX_TUTORIAL_DEMO_BYTES = 75 * 1024
-PROMPT_CONTAINER_IDS = {"canonicalPrompt", "seedPrompt"}
+MAX_HISTORIC_DEMO_BYTES = 160 * 1024
+HISTORIC_LIVE_FIELDS = {
+    "title",
+    "slug",
+    "order",
+    "tagline",
+    "category",
+    "difficulty",
+    "status",
+    "tags",
+    "stack",
+    "demo",
+    "repo",
+    "highlights",
+    "prompt",
+    "lessons",
+}
+COURSE_FIELDS = {
+    "series",
+    "lesson",
+    "duration",
+    "prerequisites",
+    "objectives",
+    "steps",
+}
+HISTORIC_EXAMPLES = {
+    "4kb-demoscene.html": {
+        "slug": "4kb-demoscene",
+        "order": 9,
+        "category": "challenge",
+        "demo": "/learnwithkody/demos/347-4kb-demoscene.html",
+        "prompt": (
+            "Build me a complete interactive web app — a game, tool, anything — that\n"
+            "fits in a single self-contained HTML file under 4KB. No frameworks, no\n"
+            "CDN imports, no external assets. Then build it again at 8KB and tell me\n"
+            "what each extra byte bought. Account for every line. Treat whitespace\n"
+            "as a luxury good."
+        ),
+        "prompt_sha256": (
+            "b61e9309a81b7bb3365f15d79724ce75700dec9f975e7a9a8e7c3019fba8f8bf"
+        ),
+    },
+    "reverse-time-debugger.html": {
+        "slug": "reverse-time-debugger",
+        "order": 10,
+        "category": "prompt",
+        "demo": "/learnwithkody/demos/348-reverse-time-debugger.html",
+        "prompt": (
+            "Here's a stack trace from production. Don't fix it.\n"
+            "Reconstruct the last 60 seconds before it crashed — what the user was\n"
+            "doing, what data was in flight, what the developer was probably\n"
+            "thinking when they wrote the buggy line. Then write the postmortem\n"
+            "from three perspectives: the user, the on-call engineer, and the\n"
+            "original author. Each in their own voice."
+        ),
+        "prompt_sha256": (
+            "147ed8bbdb13d267bfcd3b7e293826e38f9234b0318932d889d9c61e1192e86d"
+        ),
+    },
+    "cargo-cult-detector.html": {
+        "slug": "cargo-cult-detector",
+        "order": 11,
+        "category": "prompt",
+        "demo": "/learnwithkody/demos/349-cargo-cult-detector.html",
+        "prompt": (
+            "Audit this codebase. Find every pattern that's been copy-pasted without\n"
+            'anyone understanding why — the "just works" code nobody can explain.\n'
+            "Rank by danger: how likely is it to fail silently when assumptions\n"
+            "shift? Pick the worst one and write a 1500-word essay tracing where\n"
+            "it probably came from — the Stack Overflow answer, the blog post, the\n"
+            "framework idiom that drifted out of context."
+        ),
+        "prompt_sha256": (
+            "2bb3faea9a25844183cbca2224eaad612cda037466507fedd73151faaae087e9"
+        ),
+    },
+    "compile-my-brain.html": {
+        "slug": "compile-my-brain",
+        "order": 12,
+        "category": "prompt",
+        "demo": "/learnwithkody/demos/350-compile-my-brain.html",
+        "downloads": True,
+        "prompt": (
+            "I'll talk for 20 minutes about a system I'm building. You take notes,\n"
+            "ask 5 clarifying questions, then output: a system design doc, an\n"
+            "OpenAPI spec, a database schema, a test plan, a risk register, and a\n"
+            "Slack message I can paste to my team to explain it. All six artifacts\n"
+            "must be consistent with each other — same entity names, same\n"
+            "invariants, same failure modes."
+        ),
+        "prompt_sha256": (
+            "8e3673167165a3166e021e3f68a5928ce70ea7529c9c8d1a47e6a61034fb09ff"
+        ),
+    },
+    "adversarial-twin.html": {
+        "slug": "adversarial-twin",
+        "order": 13,
+        "category": "prompt",
+        "demo": "/learnwithkody/demos/351-adversarial-twin.html",
+        "downloads": True,
+        "prompt": (
+            "Read everything I've pushed to GitHub. Now play the role of the\n"
+            "smartest engineer who hates my style and write a code review of my\n"
+            "latest PR. Be specific about the patterns I lean on too hard. Quote\n"
+            "exact lines. Compare them to better alternatives I've also written\n"
+            "elsewhere — so the critique is calibrated to my actual ceiling, not\n"
+            'a generic "best practice." Be cruel. Be right.'
+        ),
+        "prompt_sha256": (
+            "fd065370e9ad7796eb16672bfd2ccc16a12f5cc8e74758c48c814acf87fb0420"
+        ),
+    },
+    "one-shot-empire.html": {
+        "slug": "one-shot-empire",
+        "order": 14,
+        "category": "prompt",
+        "demo": "/learnwithkody/demos/352-one-shot-empire.html",
+        "downloads": True,
+        "prompt": (
+            'Here\'s one sentence: "[idea]". Output the entire startup:\n'
+            "a domain name you've verified is available, three logo concepts in\n"
+            "SVG, the landing page HTML, the pricing page, the first fifty GitHub\n"
+            "issues prioritized, a ten-slide pitch deck in markdown, and a\n"
+            "personalized cold DM to each of my first five customers — LinkedIn\n"
+            "profiles attached. Every artifact stays in voice with the others."
+        ),
+        "prompt_sha256": (
+            "6caec2f4b015d04d23f221fcc2b12d0ca2fd43a77d45d7fee7022c1a85b27d15"
+        ),
+    },
+}
 WITHDRAWN_POST_FILENAME = "2026-03-09-the-frame-that-should-not-have-shipped.md"
 WITHDRAWN_POST_ROUTE = "/2026/03/09/the-frame-that-should-not-have-shipped/"
-REQUIRED_DEMO_CSP = {
-    "default-src": {"'none'"},
-    "style-src": {"'unsafe-inline'"},
-    "script-src": {"'unsafe-inline'"},
-    "script-src-attr": {"'none'"},
-    "img-src": {"'none'"},
-    "connect-src": {"'none'"},
-    "font-src": {"'none'"},
-    "frame-src": {"'none'"},
-    "manifest-src": {"'none'"},
-    "media-src": {"'none'"},
-    "object-src": {"'none'"},
-    "worker-src": {"'none'"},
-    "base-uri": {"'none'"},
-    "form-action": {"'none'"},
+REQUIRED_NONE_CSP_DIRECTIVES = {
+    "default-src",
+    "connect-src",
+    "font-src",
+    "manifest-src",
+    "media-src",
+    "object-src",
+    "worker-src",
+    "base-uri",
+    "form-action",
 }
 
 EXPECTED_POSTS = {
@@ -1322,15 +1448,26 @@ def learn_example_records():
     return [(path, parse_collection_front_matter(path)[0]) for path in paths]
 
 
-def prompt_to_proof_records():
+def historic_example_records():
     records = []
-    for path, front_matter in learn_example_records():
-        order = front_matter.get("order")
-        if type(order) is not int:
-            continue
-        if order in PROMPT_TO_PROOF_ORDERS:
-            records.append((order, path, front_matter))
+    for filename, expected in HISTORIC_EXAMPLES.items():
+        path = EXAMPLES_DIR / filename
+        if not path.is_file():
+            raise AssertionError(f"Missing historic example {filename}")
+        front_matter, body = parse_collection_front_matter(path)
+        records.append((path, expected, front_matter, body))
     return records
+
+
+def scalar_text_values(value):
+    if isinstance(value, dict):
+        for child in value.values():
+            yield from scalar_text_values(child)
+    elif isinstance(value, (list, tuple)):
+        for child in value:
+            yield from scalar_text_values(child)
+    elif value is not None:
+        yield str(value)
 
 
 def local_site_path(url):
@@ -1345,28 +1482,413 @@ def local_site_path(url):
     return candidate
 
 
-def normalize_prompt_text(value):
-    normalized = unicodedata.normalize("NFKC", unescape(value))
-    return " ".join(normalized.replace("\u00a0", " ").split())
+class ExampleBodyInspector(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.headings = []
+        self.live_labels = []
+        self.live_embed_count = 0
+        self.links = []
+        self.iframes = []
+        self._heading = None
+        self._live_label = None
+
+    def handle_starttag(self, tag, attrs):
+        attributes = {name.lower(): (value or "") for name, value in attrs}
+        classes = set(attributes.get("class", "").split())
+        if tag == "h2":
+            self._heading = []
+        elif tag == "span" and "lwk-try-embed-label" in classes:
+            self._live_label = []
+        elif tag == "aside" and "lwk-try-embed" in classes:
+            self.live_embed_count += 1
+        elif tag == "a":
+            self.links.append(attributes)
+        elif tag == "iframe":
+            self.iframes.append(attributes)
+
+    def handle_data(self, data):
+        if self._heading is not None:
+            self._heading.append(data)
+        if self._live_label is not None:
+            self._live_label.append(data)
+
+    def handle_endtag(self, tag):
+        if tag == "h2" and self._heading is not None:
+            self.headings.append(" ".join("".join(self._heading).split()))
+            self._heading = None
+        elif tag == "span" and self._live_label is not None:
+            self.live_labels.append(" ".join("".join(self._live_label).split()))
+            self._live_label = None
+
+
+def is_embedded_reference(value):
+    reference = value.strip().casefold()
+    return (
+        not reference
+        or reference.startswith(("#", "blob:", "data:", "about:blank"))
+    )
+
+
+def javascript_tokens(source):
+    tokens = []
+    index = 0
+    length = len(source)
+    identifier_start = re.compile(r"[A-Za-z_$]")
+    identifier_part = re.compile(r"[A-Za-z0-9_$]")
+    regex_prefixes = {
+        "(", "[", "{", ",", ";", ":", "=", "!", "?", "&&", "||",
+        "=>", "return", "case", "throw", "delete", "typeof", "void",
+    }
+
+    def regex_can_start():
+        if not tokens:
+            return True
+        kind, value = tokens[-1]
+        if kind == "identifier" and value not in regex_prefixes:
+            return False
+        if kind in {"number", "string", "regex"}:
+            return False
+        return value not in {")", "]", "}", "++", "--"}
+
+    while index < length:
+        char = source[index]
+        following = source[index + 1] if index + 1 < length else ""
+        if char.isspace():
+            index += 1
+            continue
+        if char == "/" and following == "/":
+            newline = source.find("\n", index + 2)
+            index = length if newline < 0 else newline + 1
+            continue
+        if char == "/" and following == "*":
+            closing = source.find("*/", index + 2)
+            index = length if closing < 0 else closing + 2
+            continue
+        if char in {"'", '"', "`"}:
+            quote = char
+            index += 1
+            value = []
+            while index < length:
+                char = source[index]
+                if char == "\\" and index + 1 < length:
+                    escape = source[index + 1]
+                    escapes = {
+                        "n": "\n", "r": "\r", "t": "\t", "b": "\b",
+                        "f": "\f", "v": "\v", "0": "\0",
+                    }
+                    if escape == "x" and index + 3 < length:
+                        try:
+                            value.append(chr(int(source[index + 2:index + 4], 16)))
+                            index += 4
+                            continue
+                        except ValueError:
+                            pass
+                    if escape == "u" and index + 5 < length:
+                        try:
+                            value.append(chr(int(source[index + 2:index + 6], 16)))
+                            index += 6
+                            continue
+                        except ValueError:
+                            pass
+                    value.append(escapes.get(escape, escape))
+                    index += 2
+                    continue
+                if char == quote:
+                    index += 1
+                    break
+                value.append(char)
+                index += 1
+            string_value = "".join(value)
+            tokens.append(("string", string_value))
+            if quote == "`":
+                for expression in re.findall(r"\$\{([^{}]*)\}", string_value):
+                    tokens.extend(javascript_tokens(expression))
+            continue
+        if identifier_start.match(char):
+            end = index + 1
+            while end < length and identifier_part.match(source[end]):
+                end += 1
+            tokens.append(("identifier", source[index:end]))
+            index = end
+            continue
+        if char.isdigit():
+            match = re.match(r"(?:0[xob])?[0-9A-Fa-f._]+", source[index:])
+            value = match.group(0) if match else char
+            tokens.append(("number", value))
+            index += len(value)
+            continue
+        if char == "/" and regex_can_start():
+            end = index + 1
+            escaped = False
+            character_class = False
+            while end < length:
+                regex_char = source[end]
+                if escaped:
+                    escaped = False
+                elif regex_char == "\\":
+                    escaped = True
+                elif regex_char == "[":
+                    character_class = True
+                elif regex_char == "]":
+                    character_class = False
+                elif regex_char == "/" and not character_class:
+                    end += 1
+                    while end < length and source[end].isalpha():
+                        end += 1
+                    break
+                end += 1
+            tokens.append(("regex", source[index:end]))
+            index = end
+            continue
+        operator = next(
+            (
+                candidate
+                for candidate in (
+                    "===", "!==", ">>>", "**=", "=>", "==", "!=", "<=",
+                    ">=", "&&", "||", "??", "?.", "++", "--", "**", "<<",
+                    ">>", "+=", "-=", "*=", "/=", "%=",
+                )
+                if source.startswith(candidate, index)
+            ),
+            char,
+        )
+        tokens.append(("punctuation", operator))
+        index += len(operator)
+    return tokens
+
+
+def _constant_javascript_string(tokens, index):
+    if index >= len(tokens) or tokens[index][0] != "string":
+        return None, index
+    pieces = [tokens[index][1]]
+    index += 1
+    while (
+        index + 1 < len(tokens)
+        and tokens[index][1] == "+"
+        and tokens[index + 1][0] == "string"
+    ):
+        pieces.append(tokens[index + 1][1])
+        index += 2
+    return "".join(pieces), index
+
+
+def _safe_resource_expression(tokens, index, blob_variables):
+    if index >= len(tokens):
+        return False
+    kind, value = tokens[index]
+    if kind == "string":
+        return is_embedded_reference(value)
+    if kind == "identifier" and value in blob_variables:
+        return True
+    values = [token[1] for token in tokens[index:index + 4]]
+    return values[:4] == ["URL", ".", "createObjectURL", "("]
+
+
+def javascript_dependency_violations(source):
+    tokens = javascript_tokens(source)
+    violations = []
+    blob_variables = set()
+    values = [token[1] for token in tokens]
+
+    for index in range(len(tokens) - 5):
+        if (
+            tokens[index][0] == "identifier"
+            and values[index + 1:index + 5]
+            == ["=", "URL", ".", "createObjectURL"]
+        ):
+            blob_variables.add(values[index])
+
+    forbidden_calls = {
+        "Audio": "new Audio resource",
+        "XMLHttpRequest": "XMLHttpRequest",
+        "eval": "eval()",
+        "fetch": "fetch()",
+        "Function": "Function constructor",
+        "Image": "new Image resource",
+        "SharedWorker": "worker resource",
+        "Worker": "worker resource",
+        "importScripts": "worker resource",
+        "sendBeacon": "network beacon",
+        "EventSource": "network event stream",
+        "RTCPeerConnection": "peer connection",
+        "WebSocket": "web socket",
+    }
+    for index, (kind, value) in enumerate(tokens):
+        following = values[index + 1] if index + 1 < len(values) else None
+        previous = values[index - 1] if index else None
+        if kind == "identifier" and value in forbidden_calls and following == "(":
+            violations.append(forbidden_calls[value])
+        if kind == "identifier" and value == "import" and following == "(":
+            violations.append("dynamic import")
+        elif kind == "identifier" and value == "import" and previous != ".":
+            violations.append("static module import")
+        elif kind == "identifier" and value == "export" and previous != ".":
+            violations.append("module export")
+        if (
+            value in {"setInterval", "setTimeout"}
+            and following == "("
+            and index + 2 < len(tokens)
+            and tokens[index + 2][0] == "string"
+        ):
+            violations.append("string timer")
+        if values[index:index + 4] == ["serviceWorker", ".", "register", "("]:
+            violations.append("service worker registration")
+
+    resource_properties = {
+        "action", "formAction", "href", "poster", "src", "srcset",
+    }
+    for index in range(len(tokens) - 2):
+        property_name = None
+        assignment_index = None
+        if (
+            values[index] in {".", "?."}
+            and tokens[index + 1][0] == "identifier"
+            and values[index + 2] == "="
+        ):
+            property_name = values[index + 1]
+            assignment_index = index + 3
+        elif (
+            values[index] == "["
+            and tokens[index + 1][0] == "string"
+            and index + 3 < len(tokens)
+            and values[index + 2:index + 4] == ["]", "="]
+        ):
+            property_name = values[index + 1]
+            assignment_index = index + 4
+        if (
+            property_name in resource_properties
+            and not _safe_resource_expression(tokens, assignment_index, blob_variables)
+        ):
+            violations.append(f"dynamic {property_name} resource")
+        if (
+            tokens[index][0] == "identifier"
+            and values[index] in resource_properties
+            and values[index + 1] == ":"
+            and not _safe_resource_expression(tokens, index + 2, blob_variables)
+        ):
+            violations.append(f"object {values[index]} resource")
+
+    for index, (_, value) in enumerate(tokens):
+        if value == "setAttribute" and index + 2 < len(tokens) and values[index + 1] == "(":
+            attribute, end = _constant_javascript_string(tokens, index + 2)
+            normalized_attribute = attribute.casefold() if attribute else None
+            if normalized_attribute in {
+                "action", "formaction", "href", "poster", "src", "srcset",
+            }:
+                while end < len(tokens) and values[end] != ",":
+                    end += 1
+                if (
+                    end >= len(tokens)
+                    or not _safe_resource_expression(tokens, end + 1, blob_variables)
+                ):
+                    violations.append(f"dynamic {normalized_attribute} attribute")
+        if value == "createElement" and index + 2 < len(tokens) and values[index + 1] == "(":
+            element, _ = _constant_javascript_string(tokens, index + 2)
+            if element and element.casefold() in {
+                "audio", "embed", "image", "img", "link",
+                "object", "script", "source", "video",
+            }:
+                violations.append(f"dynamic {element.casefold()} element")
+    return sorted(set(violations))
+
+
+def javascript_event_bindings(tokens):
+    events = set()
+    values = [token[1] for token in tokens]
+    known_events = {
+        "change", "click", "focusin", "focusout", "input", "keydown",
+        "keyup", "load", "pointercancel", "pointerdown", "pointermove",
+        "pointerout", "pointerover", "pointerup", "resize", "scroll",
+        "submit", "touchcancel", "touchend", "touchmove", "touchstart",
+        "visibilitychange",
+    }
+    for index, (kind, value) in enumerate(tokens):
+        if (
+            value == "addEventListener"
+            and index + 2 < len(tokens)
+            and values[index + 1] == "("
+            and tokens[index + 2][0] == "string"
+        ):
+            events.add(values[index + 2].casefold())
+        if (
+            kind == "identifier"
+            and value.startswith("on")
+            and len(value) > 2
+            and value[2:].casefold() in known_events
+            and index + 1 < len(tokens)
+            and values[index + 1] == "="
+        ):
+            events.add(value[2:].casefold())
+    return events
+
+
+def javascript_raf_binding_count(tokens):
+    count = 0
+    for index, token in enumerate(tokens[:-2]):
+        if token != ("identifier", "requestAnimationFrame"):
+            continue
+        if tokens[index + 1][1] != "(":
+            continue
+        callback = tokens[index + 2]
+        if callback[0] == "identifier" or callback[1] == "(":
+            count += 1
+    return count
+
+
+def javascript_has_invoked_iife(tokens):
+    values = [token[1] for token in tokens]
+    if len(values) < 8 or values[-4:] != [")", "(", ")", ";"]:
+        return False
+    return values[:2] in (["(", "("], ["(", "function"])
+
+
+def javascript_has_pause_state(tokens):
+    identifiers = {
+        value.casefold()
+        for kind, value in tokens
+        if kind == "identifier"
+    }
+    if any("pause" in identifier for identifier in identifiers):
+        return True
+    if any(
+        identifier.startswith("clear") and "timer" in identifier
+        for identifier in identifiers
+    ):
+        return True
+    values = [token[1] for token in tokens]
+    return any(
+        values[index:index + 4] == ["classList", ".", "toggle", "("]
+        and index + 4 < len(tokens)
+        and tokens[index + 4] == ("string", "paused")
+        for index in range(len(tokens) - 4)
+    )
+
+
+def javascript_has_blob_export(tokens):
+    values = [token[1] for token in tokens]
+    required_sequences = (
+        ["Blob", "("],
+        ["URL", ".", "createObjectURL", "("],
+        [".", "download", "="],
+        [".", "click", "("],
+        ["URL", ".", "revokeObjectURL", "("],
+    )
+    return all(
+        any(
+            values[index:index + len(sequence)] == sequence
+            for index in range(len(values) - len(sequence) + 1)
+        )
+        for sequence in required_sequences
+    )
 
 
 class DemoHTMLInspector(HTMLParser):
-    VOID_TAGS = {
-        "area",
-        "base",
-        "br",
-        "col",
-        "embed",
-        "hr",
-        "img",
-        "input",
-        "link",
-        "meta",
-        "param",
-        "source",
-        "track",
-        "wbr",
+    VOID_ELEMENTS = {
+        "area", "base", "br", "col", "embed", "hr", "img", "input",
+        "link", "meta", "param", "source", "track", "wbr",
     }
+    INTERACTIVE_ELEMENTS = {"a", "button", "input", "select", "textarea"}
     RESOURCE_ATTRIBUTES = {
         "audio": {"src"},
         "base": {"href"},
@@ -1390,16 +1912,22 @@ class DemoHTMLInspector(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)
         self.csp_policies = []
-        self.executable_attributes = []
+        self.event_attributes = []
         self.inline_styles = []
         self.markup_violations = []
-        self.prompt_containers = []
+        self.visual_ids = []
         self.script_chunks = []
         self.style_chunks = []
-        self._prompt = None
-        self._prompt_depth = 0
+        self.script_blocks = []
+        self.style_blocks = []
+        self.visible_control_ids = set()
+        self._element_stack = []
+        self._current_script = None
+        self._current_style = None
         self._script_depth = 0
         self._style_depth = 0
+        self._document_head_open = False
+        self._document_head_closed = False
 
     def handle_starttag(self, tag, attrs):
         self._inspect_start(tag.lower(), attrs, self_closing=False)
@@ -1411,43 +1939,78 @@ class DemoHTMLInspector(HTMLParser):
         tag = tag.lower()
         if tag == "script" and self._script_depth:
             self._script_depth -= 1
+            self._current_script = None
         elif tag == "style" and self._style_depth:
             self._style_depth -= 1
-        if self._prompt_depth:
-            self._prompt_depth -= 1
-            if not self._prompt_depth:
-                self.prompt_containers.append(self._prompt)
-                self._prompt = None
+            self._current_style = None
+        elif tag == "head" and self._document_head_open:
+            self._document_head_open = False
+            self._document_head_closed = True
+        for index in range(len(self._element_stack) - 1, -1, -1):
+            if self._element_stack[index][0] == tag:
+                del self._element_stack[index:]
+                break
 
     def handle_data(self, data):
         if self._script_depth:
             self.script_chunks.append(data)
+            self._current_script["chunks"].append(data)
         if self._style_depth:
             self.style_chunks.append(data)
-        if self._prompt_depth:
-            self._prompt["text"].append(data)
+            self._current_style["chunks"].append(data)
 
     def _inspect_start(self, tag, attrs, self_closing):
         attributes = {name.lower(): (value or "") for name, value in attrs}
+        parent_hidden = any(hidden for _, hidden in self._element_stack)
+        inline_style = attributes.get("style", "")
+        hidden = (
+            parent_hidden
+            or "hidden" in attributes
+            or "inert" in attributes
+            or tag == "template"
+            or bool(
+                re.search(
+                    r"(?:display\s*:\s*none|visibility\s*:\s*hidden)",
+                    inline_style,
+                    re.IGNORECASE,
+                )
+            )
+        )
+        if tag == "head" and not self._document_head_closed:
+            self._document_head_open = True
         for name, value in attributes.items():
             if name.startswith("on") or value.lstrip().lower().startswith("javascript:"):
-                self.executable_attributes.append(value)
+                self.event_attributes.append(f"{tag}[{name}]")
 
-        if attributes.get("style"):
-            self.inline_styles.append(attributes["style"])
+        if inline_style:
+            self.inline_styles.append(inline_style)
         for name in self.RESOURCE_ATTRIBUTES.get(tag, set()):
-            if attributes.get(name, "").strip():
+            value = attributes.get(name, "").strip()
+            if value and name != "srcdoc" and not is_embedded_reference(value):
                 self.markup_violations.append(f"{tag}[{name}]")
         if attributes.get("background", "").strip():
             self.markup_violations.append(f"{tag}[background]")
         if attributes.get("ping", "").strip():
             self.markup_violations.append(f"{tag}[ping]")
-        if tag in {"embed", "iframe", "object"}:
-            self.markup_violations.append(f"{tag} element")
+        if tag in {"canvas", "svg"} and not hidden:
+            designation = (
+                attributes.get("id")
+                or attributes.get("aria-label")
+                or attributes.get("role")
+            )
+            if designation:
+                self.visual_ids.append((tag, designation.strip()))
+        if (
+            tag in self.INTERACTIVE_ELEMENTS
+            and attributes.get("id")
+            and "disabled" not in attributes
+            and not hidden
+        ):
+            self.visible_control_ids.add(attributes["id"])
 
         if tag == "meta":
             http_equiv = attributes.get("http-equiv", "").strip().casefold()
-            if http_equiv == "content-security-policy":
+            if http_equiv == "content-security-policy" and self._document_head_open:
                 self.csp_policies.append(attributes.get("content", ""))
             elif http_equiv == "refresh":
                 self.markup_violations.append("meta refresh")
@@ -1457,16 +2020,23 @@ class DemoHTMLInspector(HTMLParser):
                 self.markup_violations.append("module script")
             if not self_closing:
                 self._script_depth += 1
+                self._current_script = {
+                    "attributes": attributes,
+                    "chunks": [],
+                    "hidden": hidden,
+                }
+                self.script_blocks.append(self._current_script)
         elif tag == "style":
             if not self_closing:
                 self._style_depth += 1
-
-        prompt_id = attributes.get("id", "")
-        if self._prompt_depth and tag not in self.VOID_TAGS and not self_closing:
-            self._prompt_depth += 1
-        elif tag == "pre" and prompt_id in PROMPT_CONTAINER_IDS:
-            self._prompt = {"id": prompt_id, "text": []}
-            self._prompt_depth = 1
+                self._current_style = {
+                    "attributes": attributes,
+                    "chunks": [],
+                    "hidden": hidden,
+                }
+                self.style_blocks.append(self._current_style)
+        if not self_closing and tag not in self.VOID_ELEMENTS:
+            self._element_stack.append((tag, hidden))
 
 
 def inspect_demo_html(html):
@@ -1491,271 +2061,203 @@ def demo_csp_violations(inspector):
             violations.append(f"duplicate CSP directive {name}")
         directives[name] = set(tokens[1:])
 
-    for name, expected_sources in REQUIRED_DEMO_CSP.items():
-        actual_sources = directives.get(name)
-        if actual_sources != expected_sources:
+    for name in REQUIRED_NONE_CSP_DIRECTIVES:
+        if directives.get(name) != {"'none'"}:
             violations.append(
-                f"{name} must be {sorted(expected_sources)}, got "
-                f"{sorted(actual_sources) if actual_sources is not None else 'missing'}"
+                f"{name} must be [\"'none'\"], got "
+                f"{sorted(directives[name]) if name in directives else 'missing'}"
             )
+
+    hash_source = re.compile(
+        r"'(?P<algorithm>sha256|sha384|sha512)-"
+        r"(?P<digest>[A-Za-z0-9+/]+={0,2})'"
+    )
+    nonce_source = re.compile(r"'nonce-(?P<nonce>[A-Za-z0-9+/_-]{16,}={0,2})'")
+    for name in ("script-src", "style-src"):
+        sources = directives.get(name)
+        if not sources or any(
+            source != "'unsafe-inline'"
+            and not hash_source.fullmatch(source)
+            and not nonce_source.fullmatch(source)
+            for source in sources
+        ):
+            violations.append(
+                f"{name} must contain only inline code, hashes, or nonces, got "
+                f"{sorted(sources) if sources is not None else 'missing'}"
+            )
+
+    if directives.get("script-src-attr") != {"'none'"}:
+        violations.append("script-src-attr must be [\"'none'\"]")
+    if (
+        "style-src-attr" in directives
+        and directives["style-src-attr"] != {"'none'"}
+    ):
+        violations.append("style-src-attr must be [\"'none'\"] when present")
+
+    embedded_sources = {
+        "img-src": {"data:", "blob:"},
+        "frame-src": {"data:", "blob:"},
+    }
+    for name, allowed in embedded_sources.items():
+        sources = directives.get(name)
+        if sources != {"'none'"} and (not sources or not sources <= allowed):
+            violations.append(
+                f"{name} must block loads or allow embedded URLs only, got "
+                f"{sorted(sources) if sources is not None else 'missing'}"
+            )
+    if "child-src" in directives:
+        sources = directives["child-src"]
+        if sources != {"'none'"} and (not sources or not sources <= {"data:", "blob:"}):
+            violations.append(
+                "child-src must block loads or allow embedded URLs only, got "
+                f"{sorted(sources)}"
+            )
+
+    for name, blocks in (
+        ("script-src", inspector.script_blocks),
+        ("style-src", inspector.style_blocks),
+    ):
+        sources = directives.get(name, set())
+        hashes = {
+            source
+            for source in sources
+            if hash_source.fullmatch(source)
+        }
+        nonces = {
+            source
+            for source in sources
+            if nonce_source.fullmatch(source)
+        }
+        if not hashes and not nonces:
+            continue
+        actual_hashes = {}
+        actual_nonces = set()
+        for block in blocks:
+            if block["hidden"]:
+                continue
+            content = "".join(block["chunks"])
+            block_hashes = set()
+            for algorithm in ("sha256", "sha384", "sha512"):
+                digest = base64.b64encode(
+                    hashlib.new(algorithm, content.encode("utf-8")).digest()
+                ).decode("ascii")
+                block_hashes.add(f"'{algorithm}-{digest}'")
+            actual_hashes[id(block)] = block_hashes
+            nonce = block["attributes"].get("nonce")
+            if nonce:
+                actual_nonces.add(f"'nonce-{nonce}'")
+            if not (block_hashes & hashes or f"'nonce-{nonce}'" in nonces):
+                violations.append(
+                    f"{name} does not authorize an inline {name.removesuffix('-src')} block"
+                )
+        for source in hashes:
+            match = hash_source.fullmatch(source)
+            try:
+                decoded = base64.b64decode(
+                    match.group("digest"),
+                    validate=True,
+                )
+            except (binascii.Error, ValueError, TypeError):
+                decoded = b""
+            expected_length = {
+                "sha256": 32,
+                "sha384": 48,
+                "sha512": 64,
+            }[match.group("algorithm")]
+            if len(decoded) != expected_length:
+                violations.append(f"{name} contains malformed hash {source}")
+            if not any(source in values for values in actual_hashes.values()):
+                violations.append(f"{name} hash does not match an inline block")
+        for source in nonces:
+            if source not in actual_nonces:
+                violations.append(f"{name} nonce does not match an inline block")
     return violations
 
 
-def _javascript_regex_starts(source, index):
-    prefix = source[:index].rstrip()
-    if not prefix:
-        return True
-    if prefix[-1] in "([{:;,=!?&|+-*%^~<>":
-        return True
-    return bool(
-        re.search(
-            r"\b(?:case|delete|else|in|instanceof|return|throw|typeof|void|yield)\s*$",
-            prefix,
-        )
-    )
-
-
-def _javascript_views(source):
-    comment_free = []
-    executable = []
-    quote = None
-    line_comment = False
-    block_comment = False
+def css_code_view(source):
+    view = list(source)
     index = 0
+    quote = None
     while index < len(source):
         char = source[index]
         following = source[index + 1] if index + 1 < len(source) else ""
-
-        if line_comment:
-            replacement = "\n" if char == "\n" else " "
-            comment_free.append(replacement)
-            executable.append(replacement)
-            if char == "\n":
-                line_comment = False
-            index += 1
-            continue
-        if block_comment:
-            if char == "*" and following == "/":
-                comment_free.extend((" ", " "))
-                executable.extend((" ", " "))
-                block_comment = False
-                index += 2
-            else:
-                replacement = "\n" if char == "\n" else " "
-                comment_free.append(replacement)
-                executable.append(replacement)
-                index += 1
-            continue
         if quote:
-            comment_free.append(char)
-            executable.append("\n" if char == "\n" else " ")
-            if char == "\\" and following:
-                comment_free.append(following)
-                executable.append("\n" if following == "\n" else " ")
+            if char == "\\" and index + 1 < len(source):
+                view[index] = view[index + 1] = " "
                 index += 2
                 continue
+            view[index] = "\n" if char == "\n" else " "
             if char == quote:
                 quote = None
             index += 1
             continue
-        if char == "/" and following == "/":
-            comment_free.extend((" ", " "))
-            executable.extend((" ", " "))
-            line_comment = True
-            index += 2
-            continue
-        if char == "/" and following == "*":
-            comment_free.extend((" ", " "))
-            executable.extend((" ", " "))
-            block_comment = True
-            index += 2
-            continue
-        if char == "/" and _javascript_regex_starts(source, index):
-            end = index + 1
-            escaped = False
-            in_character_class = False
-            while end < len(source):
-                regex_char = source[end]
-                if escaped:
-                    escaped = False
-                elif regex_char == "\\":
-                    escaped = True
-                elif regex_char == "[":
-                    in_character_class = True
-                elif regex_char == "]":
-                    in_character_class = False
-                elif regex_char == "/" and not in_character_class:
-                    end += 1
-                    while end < len(source) and source[end].isalpha():
-                        end += 1
-                    break
-                end += 1
-            literal = source[index:end]
-            replacements = [
-                "\n" if literal_char == "\n" else " " for literal_char in literal
-            ]
-            comment_free.extend(replacements)
-            executable.extend(replacements)
-            index = end
-            continue
-        if char in "\"'`":
+        if char in {"'", '"'}:
             quote = char
-            comment_free.append(char)
-            executable.append(" ")
+            view[index] = " "
             index += 1
             continue
-
-        comment_free.append(char)
-        executable.append(char)
+        if char == "/" and following == "*":
+            closing = source.find("*/", index + 2)
+            end = len(source) if closing < 0 else closing + 2
+            for position in range(index, end):
+                view[position] = "\n" if source[position] == "\n" else " "
+            index = end
+            continue
         index += 1
-    return "".join(comment_free), "".join(executable)
+    return "".join(view)
 
 
 def demo_dependency_violations(inspector):
-    script = "\n".join(
-        inspector.script_chunks + inspector.executable_attributes
-    )
-    comment_free_script, executable_script = _javascript_views(script)
-    violations = list(inspector.markup_violations)
-    executable_checks = {
-        "XMLHttpRequest": r"\bXMLHttpRequest\b",
-        "dynamic import": r"\bimport\s*\(",
-        "eval()": r"\beval\s*\(",
-        "fetch()": r"\bfetch\s*\(",
-        "module export": r"(?m)^\s*export\s+(?:default|const|let|var|function|class|\{)",
-        "new Audio resource": r"\bnew\s+Audio\s*\(",
-        "new Image resource": r"\bnew\s+Image\s*\(",
-        "resource property assignment": r"\.\s*(?:poster|src|srcset)\s*=",
-        "service worker registration": (
-            r"\bnavigator\s*\.\s*serviceWorker\s*\.\s*register\s*\("
-        ),
-        "static module import": r"(?m)^\s*import\s+(?!\()",
-        "worker resource": r"\b(?:SharedWorker|Worker|importScripts)\s*\(",
-        "network beacon": r"\bnavigator\s*\.\s*sendBeacon\s*\(",
-        "network event stream": r"\bEventSource\s*\(",
-        "web socket": r"\bWebSocket\s*\(",
-    }
-    for label, pattern in executable_checks.items():
-        if re.search(pattern, executable_script):
-            violations.append(label)
-
-    if re.search(
-        r"\bcreateElement\s*\(\s*['\"]"
-        r"(?:audio|embed|iframe|img|link|object|script|source|video)"
-        r"['\"]\s*\)",
-        comment_free_script,
-        re.IGNORECASE,
-    ):
-        violations.append("dynamic resource element")
-    if re.search(
-        r"\bsetAttribute\s*\(\s*['\"](?:poster|src|srcset)['\"]",
-        comment_free_script,
-        re.IGNORECASE,
-    ):
-        violations.append("dynamic resource attribute")
+    script = "\n".join(inspector.script_chunks)
+    violations = list(inspector.markup_violations + inspector.event_attributes)
+    violations.extend(javascript_dependency_violations(script))
 
     css = "\n".join(inspector.style_chunks + inspector.inline_styles)
-    css = re.sub(r"/\*.*?\*/", "", css, flags=re.DOTALL)
-    if re.search(r"@import\b", css, re.IGNORECASE):
+    css_view = css_code_view(css)
+    if re.search(r"@import\b", css_view, re.IGNORECASE):
         violations.append("CSS import")
-    if re.search(r"\burl\s*\(", css, re.IGNORECASE):
-        violations.append("CSS URL")
-    if re.search(r"(?:^|[^\w-])(?:-webkit-)?image-set\s*\(", css, re.IGNORECASE):
+    for match in re.finditer(r"\burl\s*\(", css_view, re.IGNORECASE):
+        closing = css.find(")", match.end())
+        reference = css[match.end():closing if closing >= 0 else len(css)]
+        reference = reference.strip().strip("\"'")
+        if not is_embedded_reference(reference):
+            violations.append("external CSS URL")
+    if re.search(
+        r"(?:^|[^\w-])(?:-webkit-)?image-set\s*\(",
+        css_view,
+        re.IGNORECASE,
+    ):
         violations.append("CSS image-set")
     return sorted(set(violations))
 
 
-def _liquid_assignments(source):
-    return dict(
+def liquid_loops_over_collection(source, collection):
+    assignments = dict(
         re.findall(
             r"{%-?\s*assign\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^%]+?)-?%}",
             source,
         )
     )
-
-
-def _liquid_derives_from(variable, collection, assignments, seen=None):
-    if variable == collection:
-        return True
-    if variable not in assignments:
-        return False
-    seen = set() if seen is None else set(seen)
-    if variable in seen:
-        return False
-    seen.add(variable)
-    references = re.findall(r"\b[A-Za-z_][A-Za-z0-9_.]*\b", assignments[variable])
-    return any(
-        _liquid_derives_from(reference, collection, assignments, seen)
-        for reference in references
-    )
-
-
-def liquid_has_consumed_bounded_loop(source, collection):
-    assignments = _liquid_assignments(source)
-    loop_pattern = re.compile(
-        r"{%-?\s*for\s+(?P<item>[A-Za-z_][A-Za-z0-9_]*)\s+in\s+"
-        r"(?P<iterable>[A-Za-z_][A-Za-z0-9_.]*)(?P<options>[^%]*?)-?%}"
-        r"(?P<body>.*?){%-?\s*endfor\s*-?%}",
-        re.DOTALL,
-    )
-    for match in loop_pattern.finditer(source):
-        if not _liquid_derives_from(
-            match.group("iterable"), collection, assignments
-        ):
-            continue
-        if not re.search(r"\blimit\s*:\s*[1-9]\d*", match.group("options")):
-            continue
-        item = re.escape(match.group("item"))
-        if re.search(r"(?:{{|{%)[^}%]*\b" + item + r"\.", match.group("body")):
-            return True
-    return False
-
-
-def _liquid_expression_counts_collection(expression, collection, assignments):
-    count_sources = re.findall(
-        r"\b([A-Za-z_][A-Za-z0-9_.]*)\s*(?:\.size\b|\|\s*size\b)",
-        expression,
-    )
-    if any(
-        _liquid_derives_from(source, collection, assignments)
-        for source in count_sources
-    ):
-        return True
-
-    bare_variable = expression.strip()
-    assigned_expression = assignments.get(bare_variable, "")
-    if not re.search(r"\|\s*size\b", assigned_expression):
-        return False
-    references = re.findall(
-        r"\b[A-Za-z_][A-Za-z0-9_.]*\b", assigned_expression
-    )
-    return any(
-        _liquid_derives_from(reference, collection, assignments)
-        for reference in references
-    )
-
-
-def liquid_heading_has_dynamic_count(source, collection):
-    assignments = _liquid_assignments(source)
-    headings = re.findall(
-        r"<h[1-3]\b[^>]*>(.*?)</h[1-3]>",
-        source,
-        flags=re.IGNORECASE | re.DOTALL,
-    )
-    for heading in headings:
-        if not re.search(
-            r"\b(?:build|demo|example|prompt|tutorial)s?\b",
-            heading,
-            re.IGNORECASE,
-        ):
-            continue
-        expressions = re.findall(r"{{-?\s*(.*?)\s*-?}}", heading, re.DOTALL)
-        if any(
-            _liquid_expression_counts_collection(
-                expression, collection, assignments
+    derived = {collection}
+    changed = True
+    while changed:
+        changed = False
+        for variable, expression in assignments.items():
+            references = set(
+                re.findall(r"\b[A-Za-z_][A-Za-z0-9_.]*\b", expression)
             )
-            for expression in expressions
-        ):
+            if variable not in derived and references & derived:
+                derived.add(variable)
+                changed = True
+
+    for expression in re.findall(
+        r"{%-?\s*for\s+[A-Za-z_][A-Za-z0-9_]*\s+in\s+([^%]+?)-?%}",
+        source,
+    ):
+        references = set(
+            re.findall(r"\b[A-Za-z_][A-Za-z0-9_.]*\b", expression)
+        )
+        if references & derived:
             return True
     return False
 
@@ -1809,68 +2311,145 @@ class SiteContentTests(unittest.TestCase):
             f"Examples with missing or empty canonical prompts: {missing_prompts}",
         )
 
-    def test_prompt_to_proof_tutorial_metadata(self):
-        records = prompt_to_proof_records()
-        records_by_order = {}
-        for order, path, front_matter in records:
-            records_by_order.setdefault(order, []).append((path, front_matter))
+    def test_historic_prompt_fixtures_are_immutable(self):
+        for filename, expected in HISTORIC_EXAMPLES.items():
+            with self.subTest(example=filename):
+                digest = hashlib.sha256(expected["prompt"].encode("utf-8")).hexdigest()
+                self.assertEqual(digest, expected["prompt_sha256"])
 
-        self.assertEqual(set(records_by_order), PROMPT_TO_PROOF_ORDERS)
-        duplicate_orders = {
-            order: [path.name for path, _ in matches]
-            for order, matches in records_by_order.items()
-            if len(matches) != 1
-        }
-        self.assertEqual(
-            duplicate_orders,
-            {},
-            f"Prompt-to-Proof tutorial orders must be unique: {duplicate_orders}",
-        )
+    def test_historic_examples_keep_the_live_formula(self):
+        for path, expected, front_matter, body in historic_example_records():
+            with self.subTest(example=path.name):
+                expected_fields = set(HISTORIC_LIVE_FIELDS)
+                if "featured" in front_matter:
+                    expected_fields.add("featured")
+                self.assertEqual(set(front_matter), expected_fields)
+                self.assertTrue(COURSE_FIELDS.isdisjoint(front_matter))
 
-        for order in sorted(PROMPT_TO_PROOF_ORDERS):
-            path, front_matter = records_by_order[order][0]
-            with self.subTest(tutorial=path.name):
-                for field in ("category", "status", "series", "demo", "repo"):
-                    self.assertIsInstance(front_matter.get(field), str)
+                for field in (
+                    "title",
+                    "slug",
+                    "tagline",
+                    "category",
+                    "difficulty",
+                    "status",
+                    "demo",
+                    "repo",
+                    "prompt",
+                ):
+                    self.assertIsInstance(front_matter[field], str)
                     self.assertTrue(front_matter[field].strip())
+                for field in ("tags", "stack", "highlights"):
+                    self.assertIsInstance(front_matter[field], list)
+                    self.assertTrue(front_matter[field])
+                    self.assertTrue(
+                        all(isinstance(value, str) and value.strip()
+                            for value in front_matter[field])
+                    )
 
-                self.assertEqual(front_matter["category"], "tutorial")
+                self.assertEqual(front_matter["slug"], expected["slug"])
+                self.assertIs(type(front_matter["order"]), int)
+                self.assertEqual(front_matter["order"], expected["order"])
+                self.assertEqual(front_matter["category"], expected["category"])
                 self.assertEqual(front_matter["status"], "live")
-                series_slug = re.sub(
-                    r"[^a-z0-9]+",
-                    "-",
-                    front_matter["series"].casefold(),
-                ).strip("-")
-                self.assertEqual(series_slug, "prompt-to-proof")
+                if "featured" in front_matter:
+                    self.assertIs(type(front_matter["featured"]), bool)
 
-                self.assertIs(type(front_matter.get("order")), int)
-                self.assertIs(type(front_matter.get("lesson")), int)
-                self.assertEqual(front_matter["lesson"], order - 346)
-
-                objectives = front_matter.get("objectives")
-                steps = front_matter.get("steps")
-                self.assertIsInstance(objectives, list)
-                self.assertGreaterEqual(len(objectives), 3)
-                for objective in objectives:
-                    self.assertIsInstance(objective, str)
-                    self.assertTrue(objective.strip())
-
-                self.assertIsInstance(steps, list)
-                self.assertGreaterEqual(len(steps), 3)
-                for step in steps:
-                    self.assertIsInstance(step, dict)
-                    for field in ("title", "instruction", "check"):
-                        self.assertIsInstance(step.get(field), str)
-                        self.assertTrue(step[field].strip())
-
-                self.assertRegex(
-                    front_matter["demo"],
-                    r"^/learnwithkody/demos/[A-Za-z0-9][A-Za-z0-9._-]*\.html$",
+                lessons = front_matter["lessons"]
+                self.assertIsInstance(lessons, list)
+                self.assertEqual(len(lessons), 3)
+                self.assertTrue(
+                    all(isinstance(lesson, str) and lesson.strip()
+                        for lesson in lessons)
                 )
-                self.assertRegex(
-                    front_matter["repo"],
-                    r"^https://github\.com/[^/\s]+/[^/#\s]+(?:/[^#\s]*)?$",
+
+                actual_prompt = front_matter["prompt"]
+                self.assertEqual(actual_prompt.removesuffix("\n"), expected["prompt"])
+                self.assertEqual(actual_prompt.count("\n") - expected["prompt"].count("\n"), 1)
+
+                self.assertEqual(front_matter["demo"], expected["demo"])
+                expected_repo = (
+                    "https://github.com/kody-w/kody-w.github.io/blob/master"
+                    f"{expected['demo']}"
                 )
+                self.assertEqual(front_matter["repo"], expected_repo)
+                demo_path = local_site_path(front_matter["demo"])
+                self.assertIsNotNone(demo_path)
+                self.assertTrue(demo_path.is_file())
+
+                inspector = ExampleBodyInspector()
+                inspector.feed(body)
+                inspector.close()
+                self.assertEqual(
+                    inspector.headings,
+                    ["What this is", "Why this is mind-blowing"],
+                )
+                self.assertEqual(inspector.live_embed_count, 1)
+                self.assertEqual(inspector.live_labels, ["Live demo"])
+
+                live_links = [
+                    attributes
+                    for attributes in inspector.links
+                    if attributes.get("href") == expected["demo"]
+                    and "lwk-try-embed-open"
+                    in attributes.get("class", "").split()
+                ]
+                self.assertEqual(len(live_links), 1)
+                self.assertEqual(live_links[0].get("target"), "_blank")
+                self.assertIn("noopener", live_links[0].get("rel", "").split())
+
+                self.assertEqual(len(inspector.iframes), 1)
+                iframe = inspector.iframes[0]
+                self.assertEqual(iframe.get("src"), expected["demo"])
+                iframe_title = iframe.get("title", "")
+                self.assertTrue(
+                    iframe_title.endswith(" — live demo"),
+                    f"{path.name} iframe needs the standard live-demo title",
+                )
+                self.assertIn(front_matter["title"].split(" — ", 1)[0], iframe_title)
+                self.assertEqual(iframe.get("loading"), "lazy")
+                sandbox = set(iframe.get("sandbox", "").split())
+                expected_sandbox = {"allow-scripts", "allow-same-origin"}
+                if expected.get("downloads"):
+                    expected_sandbox.add("allow-downloads")
+                self.assertEqual(sandbox, expected_sandbox)
+                self.assertNotIn("allow", iframe)
+
+    def test_examples_and_renderers_have_no_course_identity(self):
+        course_examples = []
+        for path, front_matter in learn_example_records():
+            if (
+                COURSE_FIELDS & set(front_matter)
+                or front_matter.get("category") == "tutorial"
+                or front_matter.get("series") == "prompt-to-proof"
+            ):
+                course_examples.append(path.name)
+        self.assertEqual(course_examples, [])
+
+        content_marker = re.compile(
+            r"prompt[- ]to[- ]proof|"
+            r"\b(?:course|curriculum|duration|guided|lessons?|objectives?|"
+            r"prerequisites?|series|steps?|tutorials?|workbenches?)\b",
+            re.IGNORECASE,
+        )
+        for path, _, front_matter, body in historic_example_records():
+            with self.subTest(content=path.name):
+                searchable = "\n".join(
+                    [*scalar_text_values(front_matter), body]
+                )
+                self.assertNotRegex(searchable, content_marker)
+
+        marker = re.compile(
+            r"prompt-to-proof|\btutorials?\b|guided_tutorial|"
+            r"home-tutorial|lwk-tutorial|"
+            r"lwk-series-nav|lwk_(?:previous|next)_lesson|"
+            r"\b(?:page|ex|example|tutorial)\."
+            r"(?:series|lesson|duration|prerequisites|objectives|steps)\b",
+            re.IGNORECASE,
+        )
+        for path in (HOME_PAGE, LEARN_HUB_PAGE, LEARN_CATALOG_PAGE, EXAMPLE_LAYOUT):
+            with self.subTest(renderer=path.relative_to(ROOT)):
+                self.assertNotRegex(path.read_text(encoding="utf-8"), marker)
 
     def test_referenced_learn_demos_exist(self):
         local_demo_references = []
@@ -1892,48 +2471,93 @@ class SiteContentTests(unittest.TestCase):
                     f"{example_path.name} references missing local demo {demo}",
                 )
 
-    def test_prompt_to_proof_demos_use_exact_prompt_container_contract(self):
-        records = prompt_to_proof_records()
-        self.assertEqual(len(records), len(PROMPT_TO_PROOF_ORDERS))
-        for order, example_path, front_matter in records:
-            with self.subTest(order=order, tutorial=example_path.name):
-                demo_path = local_site_path(str(front_matter.get("demo", "")))
-                self.assertIsNotNone(demo_path)
-                self.assertTrue(demo_path.is_file())
+    def test_dependency_scanner_ignores_prose_and_covers_dynamic_sinks(self):
+        safe_script = r"""
+          const prose = "fetch('/not-real'); image.src = '/also-not-real.png'";
+          // new Worker("/comment-only.js");
+          /* node.setAttribute("src", "/comment-only.png"); */
+          const matcher = /fetch\s*\(/;
+          const url = URL.createObjectURL(new Blob(["local"]));
+          download.href = url;
+          preview.srcdoc = "<p>embedded preview</p>";
+        """
+        safe = inspect_demo_html(f"<script>{safe_script}</script>")
+        self.assertEqual(demo_dependency_violations(safe), [])
 
-                prompt = front_matter.get("prompt")
-                self.assertIsInstance(prompt, str)
-                canonical_prompt = normalize_prompt_text(prompt)
-                self.assertTrue(canonical_prompt)
+        forbidden = {
+            "network call": "fetch(endpoint)",
+            "dynamic property": "image.src = computed",
+            "computed property": 'video["poster"] = computed',
+            "attribute sink": 'node.setAttribute("src", computed)',
+            "resource element": 'document.createElement("script")',
+            "string timer": 'setTimeout("run()", 10)',
+        }
+        for label, script in forbidden.items():
+            with self.subTest(label=label):
+                inspector = inspect_demo_html(f"<script>{script}</script>")
+                self.assertTrue(demo_dependency_violations(inspector))
 
-                inspector = inspect_demo_html(demo_path.read_text(encoding="utf-8"))
-                self.assertEqual(
-                    len(inspector.prompt_containers),
-                    1,
-                    f"{demo_path.name} must have exactly one designated prompt <pre>",
-                )
-                container = inspector.prompt_containers[0]
-                self.assertIn(container["id"], PROMPT_CONTAINER_IDS)
-                embedded_prompt = normalize_prompt_text("".join(container["text"]))
-                self.assertEqual(
-                    canonical_prompt,
-                    embedded_prompt,
-                    f"{demo_path.name}'s designated prompt container must exactly "
-                    f"match {example_path.name}",
-                )
+    def test_csp_hashes_and_nonces_authorize_real_inline_blocks(self):
+        script = "const boot = true;"
+        digest = base64.b64encode(hashlib.sha256(script.encode()).digest()).decode()
+        common = (
+            "default-src 'none'; connect-src 'none'; font-src 'none'; "
+            "manifest-src 'none'; media-src 'none'; object-src 'none'; "
+            "worker-src 'none'; base-uri 'none'; form-action 'none'; "
+            "img-src 'none'; frame-src 'none'; script-src-attr 'none'; "
+            "style-src 'unsafe-inline';"
+        )
 
-    def test_prompt_to_proof_demos_have_strict_csp_and_no_dependencies(self):
-        records = prompt_to_proof_records()
-        self.assertEqual(len(records), len(PROMPT_TO_PROOF_ORDERS))
-        for order, example_path, front_matter in records:
-            with self.subTest(order=order, tutorial=example_path.name):
-                demo_path = local_site_path(str(front_matter.get("demo", "")))
+        hash_policy = f"{common} script-src 'sha256-{digest}'"
+        hashed = inspect_demo_html(
+            "<html><head>"
+            f'<meta http-equiv="Content-Security-Policy" content="{hash_policy}">'
+            "</head><body>"
+            f"<script>{script}</script>"
+            "</body></html>"
+        )
+        self.assertEqual(demo_csp_violations(hashed), [])
+
+        stale_hash = base64.b64encode(hashlib.sha256(b"other").digest()).decode()
+        stale = inspect_demo_html(
+            "<html><head>"
+            f'<meta http-equiv="Content-Security-Policy" '
+            f'content="{common} script-src \'sha256-{stale_hash}\'">'
+            "</head><body>"
+            f"<script>{script}</script>"
+            "</body></html>"
+        )
+        self.assertTrue(demo_csp_violations(stale))
+
+        nonce = "c3RhdGljLXRlc3Qtbm9uY2U="
+        nonce_policy = f"{common} script-src 'nonce-{nonce}'"
+        nonced = inspect_demo_html(
+            "<html><head>"
+            f'<meta http-equiv="Content-Security-Policy" content="{nonce_policy}">'
+            "</head><body>"
+            f'<script nonce="{nonce}">{script}</script>'
+            "</body></html>"
+        )
+        self.assertEqual(demo_csp_violations(nonced), [])
+        wrong_nonce = inspect_demo_html(
+            "<html><head>"
+            f'<meta http-equiv="Content-Security-Policy" content="{nonce_policy}">'
+            "</head><body>"
+            f'<script nonce="d3Jvbmctbm9uY2UtdmFsdWU=">{script}</script>'
+            "</body></html>"
+        )
+        self.assertTrue(demo_csp_violations(wrong_nonce))
+
+    def test_historic_demos_are_self_contained_animated_and_accessible(self):
+        for example_path, expected, front_matter, _ in historic_example_records():
+            with self.subTest(example=example_path.name):
+                demo_path = local_site_path(front_matter["demo"])
                 self.assertIsNotNone(demo_path)
                 self.assertTrue(demo_path.is_file())
                 self.assertLessEqual(
                     demo_path.stat().st_size,
-                    MAX_TUTORIAL_DEMO_BYTES,
-                    f"{demo_path.name} exceeds the 75KB single-file budget",
+                    MAX_HISTORIC_DEMO_BYTES,
+                    f"{demo_path.name} exceeds the 160KB single-file budget",
                 )
                 html = demo_path.read_text(encoding="utf-8")
                 inspector = inspect_demo_html(html)
@@ -1950,46 +2574,87 @@ class SiteContentTests(unittest.TestCase):
                     f"{demo_path.name} uses external resources or runtime loading: "
                     f"{dependency_violations}",
                 )
+                self.assertTrue(
+                    inspector.visual_ids,
+                    f"{demo_path.name} needs a visible designated canvas or SVG",
+                )
+                script = "\n".join(
+                    "".join(block["chunks"])
+                    for block in inspector.script_blocks
+                    if not block["hidden"]
+                )
+                tokens = javascript_tokens(script)
+                self.assertEqual(
+                    javascript_has_blob_export(tokens),
+                    bool(expected.get("downloads")),
+                    f"{demo_path.name} download sandbox must match a Blob export",
+                )
+                self.assertTrue(
+                    javascript_has_invoked_iife(tokens),
+                    f"{demo_path.name} must boot through an invoked IIFE",
+                )
+                self.assertGreater(
+                    javascript_raf_binding_count(tokens),
+                    0,
+                    f"{demo_path.name} must bind an executable RAF callback",
+                )
+                events = javascript_event_bindings(tokens)
+                self.assertIn("visibilitychange", events)
+                token_values = [token[1] for token in tokens]
+                self.assertTrue(
+                    any(
+                        token_values[index:index + 3]
+                        == ["document", ".", "hidden"]
+                        for index in range(len(token_values) - 2)
+                    ),
+                    f"{demo_path.name} must react to actual document visibility",
+                )
+                self.assertIn("keydown", events)
+                self.assertTrue(
+                    events
+                    & {
+                        "change", "click", "input", "pointerdown", "pointermove",
+                        "pointerup", "touchend", "touchmove", "touchstart",
+                    },
+                    f"{demo_path.name} needs a bound interaction event",
+                )
+                self.assertTrue(inspector.visible_control_ids)
+                strings = {
+                    value
+                    for kind, value in tokens
+                    if kind == "string"
+                }
+                referenced_controls = {
+                    control_id
+                    for control_id in inspector.visible_control_ids
+                    if control_id in strings
+                    or any(f"#{control_id}" in value for value in strings)
+                }
+                self.assertTrue(
+                    referenced_controls,
+                    f"{demo_path.name} must bind a visible control, not hidden fixtures",
+                )
+                touch_events = {
+                    "pointerdown", "pointermove", "pointerup",
+                    "touchend", "touchmove", "touchstart",
+                }
+                self.assertTrue(
+                    events & touch_events
+                    or ("click" in events and referenced_controls),
+                    f"{demo_path.name} needs touch or native click semantics",
+                )
+                self.assertTrue(
+                    javascript_has_pause_state(tokens),
+                    f"{demo_path.name} must mutate executable pause state",
+                )
+                css = "\n".join(inspector.style_chunks + inspector.inline_styles)
+                self.assertRegex(
+                    css_code_view(css),
+                    r"(?i)@media\s*\(\s*prefers-reduced-motion\s*:\s*reduce\s*\)",
+                    f"{demo_path.name} must implement reduced-motion behavior",
+                )
 
-    def test_demo_dependency_auditor_covers_resource_surfaces(self):
-        forbidden_samples = {
-            "external script": '<script src="/app.js"></script>',
-            "image": '<img src="pixel.png" alt="">',
-            "iframe": '<iframe src="about:blank"></iframe>',
-            "local stylesheet": '<link rel="stylesheet" href="/app.css">',
-            "style URL": "<style>.hero{background:url(local.png)}</style>",
-            "style image-set": (
-                "<style>.hero{background:image-set('local.png' 1x)}</style>"
-            ),
-            "inline style URL": '<div style="background:url(local.png)"></div>',
-            "fetch": "<script>fetch('/api')</script>",
-            "XMLHttpRequest": "<script>new XMLHttpRequest()</script>",
-            "eval": "<script>eval('1 + 1')</script>",
-            "module": '<script type="module">const ok = true</script>',
-            "resource property": (
-                "<script>const image = document.createElement('div');"
-                "image.src = '/local.png';</script>"
-            ),
-        }
-        for surface, html in forbidden_samples.items():
-            with self.subTest(surface=surface):
-                self.assertTrue(demo_dependency_violations(inspect_demo_html(html)))
-
-        comments_only = """
-          <!-- <img src="comment.png"><iframe src="comment.html"></iframe> -->
-          <style>/* .hero { background: url(comment.png); } */</style>
-          <script>
-            // fetch("/comment")
-            /* new XMLHttpRequest(); eval("comment"); */
-            const safe = true;
-          </script>
-        """
-        self.assertEqual(
-            demo_dependency_violations(inspect_demo_html(comments_only)),
-            [],
-        )
-
-    def test_blog_and_learn_navigation_and_homepage_feeds(self):
+    def test_blog_and_learn_navigation_and_homepage_feed(self):
         layout = DEFAULT_LAYOUT.read_text(encoding="utf-8")
         blog_link = re.compile(
             r"""<a\b(?=[^>]*\bhref\s*=\s*["']/(?:#blog)?["'])"""
@@ -2016,7 +2681,8 @@ class SiteContentTests(unittest.TestCase):
         self.assertRegex(
             home,
             re.compile(
-                r"""<a\b(?=[^>]*\bhref\s*=\s*["'](?:#learn|/learnwithkody/)["'])"""
+                r"""<a\b(?=[^>]*\bhref\s*=\s*["']"""
+                r"""/learnwithkody/(?:examples/)?["'])"""
                 r"""[^>]*>.*?\bLearn\b.*?</a>""",
                 re.IGNORECASE | re.DOTALL,
             ),
@@ -2029,28 +2695,65 @@ class SiteContentTests(unittest.TestCase):
                 re.IGNORECASE,
             ),
         )
-        self.assertIn("site.examples", home)
-        self.assertTrue(
-            liquid_has_consumed_bounded_loop(home, "site.examples"),
-            "Homepage must consume a site.examples-derived assignment in a "
-            "numerically bounded card loop",
-        )
+        self.assertNotIn("site.examples", home)
+        self.assertNotIn("lwk-example-card", home)
 
-    def test_learn_hub_counts_bounds_and_catalog_status_filter(self):
+    def test_full_catalog_is_the_only_examples_loop(self):
         hub = LEARN_HUB_PAGE.read_text(encoding="utf-8")
-        self.assertTrue(
-            liquid_heading_has_dynamic_count(hub, "site.examples"),
-            "A rendered Learn heading must count its site.examples-derived "
-            "assignment",
+        self.assertNotIn("lwk-example-card", hub)
+        self.assertFalse(liquid_loops_over_collection(hub, "site.examples"))
+
+        templates = (
+            set(ROOT.glob("*.html"))
+            | set((ROOT / "_layouts").glob("*.html"))
+            | set((ROOT / "learnwithkody").glob("*.html"))
         )
-        self.assertNotRegex(hub, re.compile(r"\bFifty working demos\b", re.IGNORECASE))
-        self.assertTrue(
-            liquid_has_consumed_bounded_loop(hub, "site.examples"),
-            "Learn hub must consume a site.examples-derived assignment in a "
-            "numerically bounded card loop",
+        loop_owners = sorted(
+            str(path.relative_to(ROOT))
+            for path in templates
+            if liquid_loops_over_collection(
+                path.read_text(encoding="utf-8"),
+                "site.examples",
+            )
         )
+        self.assertEqual(loop_owners, ["learnwithkody/examples.html"])
 
         catalog = LEARN_CATALOG_PAGE.read_text(encoding="utf-8")
+        sorted_assignment = re.search(
+            r"{%-?\s*assign\s+sorted\s*=\s*(?P<expression>[^%]+?)-?%}",
+            catalog,
+        )
+        self.assertIsNotNone(sorted_assignment)
+        expression = " ".join(sorted_assignment.group("expression").split())
+        self.assertRegex(
+            expression,
+            r"""^site\.examples\s*\|\s*sort:\s*["']order["']$""",
+        )
+        self.assertNotRegex(
+            expression,
+            r"\b(?:where|limit|offset|slice|first|last)\b",
+        )
+        catalog_loop = re.search(
+            r"{%-?\s*for\s+ex\s+in\s+sorted(?P<options>[^%]*?)-?%}"
+            r"\s*<a\b[^>]*\blwk-example-card\b",
+            catalog,
+            re.DOTALL,
+        )
+        self.assertIsNotNone(catalog_loop)
+        self.assertNotRegex(
+            catalog_loop.group("options"),
+            r"\b(?:limit|offset)\s*:",
+        )
+        self.assertNotRegex(catalog, r"{%-?\s*(?:break|continue)\s*-?%}")
+        self.assertRegex(
+            catalog,
+            re.compile(
+                r"<h1\b[^>]*>\s*{{\s*site\.examples\.size\s*}}"
+                r"\s+Vibe Coding Examples\s*</h1>",
+                re.IGNORECASE,
+            ),
+        )
+        self.assertIn("lwk-example-card", catalog)
         self.assertRegex(
             catalog,
             re.compile(
@@ -2068,6 +2771,27 @@ class SiteContentTests(unittest.TestCase):
             catalog,
             re.compile(r"<span[^>]*>\s*Status\s*</span>", re.IGNORECASE),
         )
+
+    def test_staging_pii_scan_is_a_blocking_gate(self):
+        workflow = STAGING_WORKFLOW.read_text(encoding="utf-8")
+        match = re.search(
+            r"- name: Check for PII leaks \(safety gate\)(?P<step>.*?)"
+            r"\n\s+- name: Upload artifact",
+            workflow,
+            re.DOTALL,
+        )
+        self.assertIsNotNone(match)
+        step = match.group("step")
+        self.assertRegex(
+            step,
+            re.compile(
+                r"\bif\b.*?\bthen\b.*?\bexit\s+1\b.*?\belse\b"
+                r".*?PII check passed.*?\bfi\b",
+                re.DOTALL,
+            ),
+        )
+        self.assertEqual(step.count("PII check passed"), 1)
+        self.assertNotIn("WARNING", step)
 
     def test_idea4blog_page_exists_and_has_expected_front_matter(self):
         front_matter, body = parse_front_matter(IDEA4BLOG_PAGE)
