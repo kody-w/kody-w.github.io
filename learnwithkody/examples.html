@@ -24,6 +24,44 @@ description: A growing catalog of published vibe-coding examples and exact conce
     </p>
   </header>
 
+  <style>
+    .lwk-ch{display:flex;gap:22px;align-items:center;flex-wrap:wrap;margin:26px 0 8px;padding:20px 22px;
+      border:1px solid rgba(120,140,170,.28);border-radius:16px;
+      background:linear-gradient(135deg,rgba(90,180,255,.08),rgba(110,225,160,.06))}
+    .lwk-ch-thumb{flex:0 0 268px;max-width:100%;border-radius:11px;display:block;border:1px solid rgba(120,140,170,.25)}
+    .lwk-ch-body{flex:1 1 320px;min-width:0}
+    .lwk-ch-kicker{font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.16em;
+      text-transform:uppercase;opacity:.72;display:block;margin-bottom:8px}
+    .lwk-ch-body h2{margin:0 0 7px;font-size:1.16rem;line-height:1.32}
+    .lwk-ch-body p{margin:0 0 14px;opacity:.82;font-size:.94rem;line-height:1.55}
+    .lwk-ch-acts{display:flex;gap:10px;flex-wrap:wrap}
+    .lwk-ch-acts a{display:inline-block;padding:10px 16px;border-radius:9px;text-decoration:none;
+      font-weight:600;font-size:.9rem;border:1px solid rgba(120,140,170,.34)}
+    .lwk-ch-acts a.is-primary{background:#5ee0a0;color:#05130c;border-color:transparent}
+    @media(max-width:640px){.lwk-ch{gap:16px}.lwk-ch-thumb{flex-basis:100%;}}
+  </style>
+
+  <aside class="lwk-ch" aria-labelledby="lwk-ch-h">
+    <img class="lwk-ch-thumb" width="268" height="151" loading="lazy" decoding="async"
+         src="/learnwithkody/rappvision/thumbs/walkthrough-apex.jpg"
+         alt="Title card reading Follow along: Apex Driving Simulator, from the Learn with Kody walkthrough">
+    <div class="lwk-ch-body">
+      <span class="lwk-ch-kicker">New &middot; Learn with Kody on RAPP Vision</span>
+      <h2 id="lwk-ch-h">Walkthrough videos that take one example end to end</h2>
+      <p>
+        Episode 1 builds the <strong>Apex Driving Simulator</strong> from the exact seed prompt
+        below &mdash; then does the part everyone skips and proves it. The agent reported success;
+        measuring all 1600 centreline points found a 7.28&deg; kink against a 0.378&deg; median that
+        was causing three unrelated-looking bugs. Pause anywhere and follow along.
+      </p>
+      <div class="lwk-ch-acts">
+        <a class="is-primary" href="https://kody-w.github.io/rapp-vision/#/watch/lwk-walkthrough-apex">Watch episode 1 &middot; 2:40</a>
+        <a href="https://kody-w.github.io/rapp-vision/#/channel/learnwithkody">Subscribe to the channel</a>
+        <a href="https://kody-w.github.io/rapp-vision/#/watch/lwk-apex-live">Drive it live &mdash; no video file</a>
+      </div>
+    </div>
+  </aside>
+
   <section class="lwk-filters" id="lwk-filters" aria-label="Filter examples">
     <div class="lwk-filter-group" role="group" aria-labelledby="lwk-filter-status-label">
       <span class="lwk-filter-label" id="lwk-filter-status-label">Status</span>

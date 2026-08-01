@@ -60,6 +60,17 @@ lessons:
 ---
 <!-- APEX_DRIVING_SIM v1 -->
 <section class="lwk-section">
+  <h2>Follow along on video</h2>
+  <p>There is a walkthrough for this example on the <strong>Learn with Kody</strong> channel. It takes the build end to end in eight numbered steps &mdash; the exact seed prompt below, what the agent actually returned, the moment the obvious fix failed, the measurement that found the real cause, and the re-run that proved it. Pause at any step and do the same thing.</p>
+  <p>
+    <a href="https://kody-w.github.io/rapp-vision/#/watch/lwk-walkthrough-apex">Watch the walkthrough (2:40)</a> &middot;
+    <a href="https://kody-w.github.io/rapp-vision/#/watch/lwk-apex-live">Drive it live, with no video file</a> &middot;
+    <a href="https://kody-w.github.io/rapp-vision/#/channel/learnwithkody">Subscribe to Learn with Kody</a>
+  </p>
+  <p>The channel is published on <a href="https://github.com/kody-w/rapp-vision">RAPP Vision</a>, a local-first video platform served entirely as static files from this account. The second link is not a video at all: it is a few KB of JSON that loads the real simulator and replays a recorded script on a clock, so you can pause it and take the wheel.</p>
+</section>
+
+<section class="lwk-section">
   <h2>What this is</h2>
   <p>A single self-contained HTML file that is a full racing simulator. No build step, no npm, no asset pipeline — three.js from a CDN and everything else generated procedurally at load: the asphalt, the grass, the kerbing, the trees, the sky.</p>
   <p>The physics is the point. Each tyre runs a Pacejka-style combined-slip model with a relaxation-length transient, so grip builds and decays over distance travelled rather than snapping instantaneously. Weight transfers longitudinally under braking and laterally through corners, changing the normal load on each corner and therefore the available grip. A 6-speed gearbox with real ratios sits behind a torque curve. ABS, traction control and stability control are individually toggleable and each one measurably changes your lap time. Telemetry traces throttle, brake, steering and slip along the bottom of the screen, and a ghost of your best lap runs alongside you.</p>
