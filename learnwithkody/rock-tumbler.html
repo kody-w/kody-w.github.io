@@ -42,6 +42,10 @@ description: Ten ambitious browser apps built by fanning out sub-agents. Nine re
     padding:18px;margin-top:26px;font-size:clamp(15px,3.6vw,18px);line-height:1.6}
   .kicker b{color:var(--ok)}
   a{color:#58a6ff}
+  .shortrow{display:grid;grid-template-columns:1fr 210px;gap:20px;align-items:center;
+    margin:30px 0;padding:18px;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .shortrow video{width:210px;border-radius:10px;background:#000;display:block}
+  @media (max-width:620px){.shortrow{grid-template-columns:1fr}.shortrow video{width:100%;max-width:210px}}
   footer{margin-top:34px;color:var(--dim);font-size:13px;border-top:1px solid var(--line);padding-top:16px}
 </style>
 </head>
@@ -52,17 +56,32 @@ description: Ten ambitious browser apps built by fanning out sub-agents. Nine re
   Every agent ran its own checks. Every agent reported success. Nine were still broken.</p>
 
   <video controls playsinline preload="metadata"
-         poster="/learnwithkody/media/rock-tumbler-poster.jpg">
-    <source src="/learnwithkody/media/rock-tumbler-catchup.mp4" type="video/mp4">
-    <source src="/learnwithkody/media/rock-tumbler-catchup.webm" type="video/webm">
+         poster="/learnwithkody/media/rock-tumbler-showcase-poster.jpg">
+    <source src="/learnwithkody/media/rock-tumbler-showcase.mp4" type="video/mp4; codecs=&quot;avc1.4D401F, mp4a.40.2&quot;">
+    <source src="/learnwithkody/media/rock-tumbler-showcase.webm" type="video/webm; codecs=&quot;vp9, opus&quot;">
     Your browser can't play this video —
-    <a href="/learnwithkody/media/rock-tumbler-catchup.mp4">download it instead</a>.
+    <a href="/learnwithkody/media/rock-tumbler-showcase.mp4">download it instead</a>.
   </video>
 
   <div class="stats">
     <div class="stat"><b>10</b><span>apps shipped</span></div>
     <div class="stat"><b>0</b><span>runtime errors</span></div>
     <div class="stat"><b>14</b><span>bugs found by measuring</span></div>
+  </div>
+
+  <div class="shortrow">
+    <div>
+      <h2 style="margin-top:0">Vertical cut &mdash; 32s</h2>
+      <p style="color:var(--dim);font-size:14px;margin:0">
+        The same story built for Shorts, Reels and TikTok. Hook in the first
+        two seconds, six defects, one punchline.
+      </p>
+    </div>
+    <video controls playsinline preload="none"
+           poster="/learnwithkody/media/rock-tumbler-short-poster.jpg">
+      <source src="/learnwithkody/media/rock-tumbler-short.mp4" type="video/mp4; codecs=&quot;avc1.4D401F, mp4a.40.2&quot;">
+      <source src="/learnwithkody/media/rock-tumbler-short.webm" type="video/webm; codecs=&quot;vp9, opus&quot;">
+    </video>
   </div>
 
   <h2>What the critic found</h2>
