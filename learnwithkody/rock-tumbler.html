@@ -1,0 +1,96 @@
+---
+layout: null
+permalink: /learnwithkody/rock-tumbler/
+title: The Rock Tumbler
+description: Ten ambitious browser apps built by fanning out sub-agents. Nine reported success while broken. Every defect was found by measuring, not looking.
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>The Rock Tumbler — build session catch-up</title>
+<meta name="description" content="Ten ambitious browser apps built by fanning out sub-agents. Nine reported success while broken. Every defect was found by measuring, not looking.">
+<meta property="og:title" content="The Rock Tumbler — build session catch-up">
+<meta property="og:description" content="Ten apps. Nine reported success while broken. Every defect found by measuring, not looking.">
+<meta property="og:type" content="video.other">
+<meta property="og:image" content="https://kody-w.github.io/learnwithkody/media/rock-tumbler-poster.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{--bg:#0d1117;--fg:#e6edf3;--dim:#8b949e;--ok:#7ee787;--bad:#ff7b72;--line:#30363d;--card:#161b22}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--fg);
+    font:16px/1.6 ui-monospace,'SF Mono',Menlo,monospace;
+    -webkit-text-size-adjust:100%;padding-bottom:env(safe-area-inset-bottom)}
+  .wrap{max-width:900px;margin:0 auto;padding:28px 18px 64px}
+  h1{font-size:clamp(26px,6vw,42px);margin:0 0 8px;letter-spacing:-.5px;line-height:1.15}
+  .sub{color:var(--dim);margin:0 0 22px;font-size:clamp(14px,3.4vw,17px)}
+  video{width:100%;border-radius:14px;background:#000;display:block;border:1px solid var(--line)}
+  .stats{display:flex;flex-wrap:wrap;gap:14px;margin:22px 0}
+  .stat{flex:1 1 140px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .stat b{display:block;font-size:30px;color:var(--ok);line-height:1.1}
+  .stat span{font-size:12px;color:var(--dim)}
+  h2{font-size:19px;margin:30px 0 12px;color:var(--fg)}
+  ul{list-style:none;padding:0;margin:0}
+  li{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--bad);
+     border-radius:10px;padding:12px 14px;margin-bottom:9px}
+  li .n{font-weight:700;font-size:15px;display:block;margin-bottom:3px}
+  li .b{color:var(--bad);font-size:13.5px;display:block}
+  li .f{color:var(--ok);font-size:13.5px;display:block;margin-top:3px}
+  li.win{border-left-color:var(--ok)}
+  .kicker{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:18px;margin-top:26px;font-size:clamp(15px,3.6vw,18px);line-height:1.6}
+  .kicker b{color:var(--ok)}
+  a{color:#58a6ff}
+  footer{margin-top:34px;color:var(--dim);font-size:13px;border-top:1px solid var(--line);padding-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>The Rock Tumbler</h1>
+  <p class="sub">Ten ambitious browser apps, built by fanning out sub-agents.<br>
+  Every agent ran its own checks. Every agent reported success. Nine were still broken.</p>
+
+  <video controls playsinline preload="metadata"
+         poster="/learnwithkody/media/rock-tumbler-poster.jpg">
+    <source src="/learnwithkody/media/rock-tumbler-catchup.mp4" type="video/mp4">
+    <source src="/learnwithkody/media/rock-tumbler-catchup.webm" type="video/webm">
+    Your browser can't play this video —
+    <a href="/learnwithkody/media/rock-tumbler-catchup.mp4">download it instead</a>.
+  </video>
+
+  <div class="stats">
+    <div class="stat"><b>10</b><span>apps shipped</span></div>
+    <div class="stat"><b>0</b><span>runtime errors</span></div>
+    <div class="stat"><b>14</b><span>bugs found by measuring</span></div>
+  </div>
+
+  <h2>What the critic found</h2>
+  <ul>
+    <li><span class="n">Apex Driving Simulator</span><span class="b">Track spline had a 7.28° kink at its seam</span><span class="f">7.28° max vs 0.378° median → 2.12°. One defect, three unrelated-looking bugs.</span></li>
+    <li><span class="n">Browser DAW Studio</span><span class="b">Exported silent WAVs</span><span class="f">OfflineAudioContext dropped the worklet message → RMS 0.0419</span></li>
+    <li><span class="n">webOS Desktop</span><span class="b">Whole UI teleported to x = −1138</span><span class="f">3200px child in a 1600px viewport scrolled the document → x = 0</span></li>
+    <li class="win"><span class="n">WebGPU Path Tracer</span><span class="b">Passed first try — the only one</span><span class="f">White furnace test: 0.49% energy error, zero correction loops</span></li>
+    <li><span class="n">NES Emulator Studio</span><span class="b">Ran at 2× speed on 120Hz displays</span><span class="f">rAF-count pacing → wall clock: 1200 → 599 frames/10s</span></li>
+    <li><span class="n">Open World Explorer</span><span class="b">Grass was taller than the player</span><span class="f">44–152% of player height → 11–23%</span></li>
+    <li><span class="n">HyperSheet</span><span class="b">Text clipped instead of overflowing</span><span class="f">200+ functions, 11/11 in-browser checks</span></li>
+    <li><span class="n">Vector Design Studio</span><span class="b">Twelve layers all named “r”</span><span class="f">Content-based auto-naming → “Refund”, “Umbrella”, “$2,100”</span></li>
+    <li><span class="n">Fluid &amp; Destruction Sandbox</span><span class="b">Dead on arrival — shader would not compile</span><span class="f">sampler3D has no default precision in GLSL ES 3.00 → 6/6 scenes render</span></li>
+    <li class="win"><span class="n">Self-Writing Game Engine</span><span class="b">Caught its own unwinnable level</span><span class="f">Candidate 2 unwinnable → regenerated → 85% bot / 0% naive</span></li>
+  </ul>
+
+  <div class="kicker">
+    Nine of these were graded on <em>“make it AAA quality.”</em> All nine reported success while broken,
+    because a subjective bar can always be argued into. One was graded on
+    <em>“furnace error under 1%”</em> — it shipped correct, first try, at 0.49%.<br><br>
+    <b>If you can name the measurement, put it in the prompt, not in the review.</b>
+  </div>
+
+  <footer>
+    All ten are live at <a href="/learnwithkody/examples/">Vibe Coding Examples</a> (orders 336–345).
+    The critic loop ships as a hatchable twin:
+    <a href="https://kody-w.github.io/rapp-egg-hub/">rock-tumbler on the egg hub</a>.
+  </footer>
+</div>
+</body>
+</html>
