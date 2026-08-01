@@ -39,6 +39,11 @@ description: A growing catalog of published vibe-coding examples and exact conce
       font-weight:600;font-size:.9rem;border:1px solid rgba(120,140,170,.34)}
     .lwk-ch-acts a.is-primary{background:#5ee0a0;color:#05130c;border-color:transparent}
     @media(max-width:640px){.lwk-ch{gap:16px}.lwk-ch-thumb{flex-basis:100%;}}
+    /* Pre-existing: an unbreakable run in a card title (314px box, 340px of
+       content) widened the grid and gave the whole page 46px of horizontal
+       scroll at 390px. Let long titles break. */
+    .lwk-example-card{min-width:0}
+    .lwk-example-card h3{overflow-wrap:anywhere}
   </style>
 
   <aside class="lwk-ch" aria-labelledby="lwk-ch-h">
