@@ -1,0 +1,42 @@
+{
+  "schema": "rapp-os-boot/1.0",
+  "_": "The boot record. Firmware fetches exactly this file and nothing else is assumed.",
+  "os": {
+    "name": "RAPP OS",
+    "version": "1.0",
+    "codename": "Doghouse",
+    "arch": "static-web"
+  },
+  "kernel": "/OS/system32/kernel.json",
+  "init": "/OS/system32/init.json",
+  "post": [
+    { "id": "storage", "label": "storage",  "require": "indexeddb", "fatal": true,
+      "why": "GOD is the writable layer. Without a local store there is nowhere to write." },
+    { "id": "network", "label": "network",  "require": "fetch", "fatal": true,
+      "why": "DOG is fetched over HTTP. Without fetch there is no root filesystem." },
+    { "id": "crypto",  "label": "crypto",   "require": "subtlecrypto", "fatal": false,
+      "why": "Used to derive this device's stable machine id. Falls back to a random id." },
+    { "id": "workers", "label": "workers",  "require": "worker", "fatal": false,
+      "why": "Not required to boot. Reported so you know what this machine can do." },
+    { "id": "display", "label": "display",  "require": "viewport", "fatal": true,
+      "why": "There has to be somewhere to draw the console." }
+  ],
+  "mounts": [
+    { "at": "/",       "layer": "DOG", "mode": "ro",
+      "device": "https://kody-w.github.io/",
+      "index": "/OS/api/dogfs.json",
+      "_": "The global public filesystem. Same for every device on earth, served as static data." },
+    { "at": "/god",    "layer": "GOD", "mode": "rw",
+      "device": "idb://rapp-os/god",
+      "_": "This device, and only this device. Never leaves the machine." },
+    { "at": "/system32", "layer": "DOG", "mode": "ro",
+      "device": "https://kody-w.github.io/OS/system32/",
+      "_": "Real files at a real path. curl it yourself." }
+  ],
+  "devices": [
+    { "dev": "/dev/dog",  "kind": "block", "mode": "ro", "backing": "raw.githubusercontent.com" },
+    { "dev": "/dev/god",  "kind": "block", "mode": "rw", "backing": "IndexedDB" },
+    { "dev": "/dev/api",  "kind": "char",  "mode": "ro", "backing": "/api/*.json" },
+    { "dev": "/dev/null", "kind": "char",  "mode": "rw", "backing": "void" }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "schema": "rapp-os-kernel/1.0",
+  "name": "rapp-kernel",
+  "version": "1.0",
+  "build": "static-web",
+  "_": "A kernel here is a contract, not a binary: it says what a filesystem layer must implement and how the union resolves. The client at /OS/index.html is one implementation. Write another and it will boot the same machine.",
+  "vfs": {
+    "union": ["GOD", "DOG"],
+    "_order": "First hit wins. GOD is searched before DOG, so a local edit shadows the global file without ever modifying it.",
+    "ops": {
+      "stat":   "(path) -> {path, layer, kind, size?, mtime?} | null",
+      "read":   "(path) -> string | Blob",
+      "list":   "(path) -> [name]",
+      "write":  "(path, data) -> void   // always lands in GOD",
+      "unlink": "(path) -> void         // on a DOG path, writes a whiteout in GOD",
+      "resolve":"(path) -> absolute URL for DOG, or IDB key for GOD"
+    },
+    "whiteout": {
+      "_": "You cannot delete from a read-only global layer, and pretending otherwise is a lie. Deleting a DOG path records a tombstone in GOD; the union then reports the path as absent on THIS device only. Anyone else still sees the file. Remove the tombstone and it comes back.",
+      "key": "\u0000wh:<path>"
+    }
+  },
+  "layers": {
+    "DOG": {
+      "name": "Distributed Object Graph",
+      "scope": "global",
+      "mode": "ro",
+      "identity": "the same on every device on earth",
+      "backing": "GitHub Pages + raw.githubusercontent.com",
+      "durability": "as durable as the public repo; versioned in git",
+      "_": "The OS is driven from here. Boot the same URL on a phone in Osaka and a laptop in Lisbon and you get the same system32, the same api, the same tree."
+    },
+    "GOD": {
+      "name": "Grounded Object Device",
+      "scope": "this device",
+      "mode": "rw",
+      "identity": "unique per browser profile",
+      "backing": "IndexedDB",
+      "durability": "survives reload and reboot; dies with the profile",
+      "_": "Everything you change lives here. It is not synced, not uploaded, not backed up by anyone but you - export it from the shell with `export`."
+    }
+  },
+  "syscalls": [
+    "open", "read", "write", "close", "stat", "list", "unlink",
+    "mount", "umount", "uname", "getpid", "gettime", "reboot"
+  ]
+}

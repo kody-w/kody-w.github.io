@@ -1,0 +1,18 @@
+RAPP OS 1.0 "Doghouse"
+
+You are looking at a real file. It is not embedded in the page and it is not
+faked by the shell. It is served from:
+
+    https://kody-w.github.io/OS/system32/etc/motd
+
+curl it from your terminal right now and you will get these exact bytes. That
+is the whole idea of the DOG layer: the global filesystem is addressed by real
+URLs, so anything that speaks HTTP can read it -- this shell, your terminal,
+another agent, a script you write in ten years.
+
+The GOD layer is the opposite. It lives in IndexedDB on the single device you
+are sitting at, it is writable, and nobody else can reach it, including me.
+
+    ls /god          what is yours
+    ls /OS/system32  what is everyone's
+    stat <path>      which layer a path actually came from

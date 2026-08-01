@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RAPP OS — boot</title>
+<meta name="description" content="A static local-first operating system. Its global filesystem is a public GitHub Pages tree, read-only and identical on every device; its writable layer lives only on the machine you are sitting at.">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23000'/%3E%3Ctext y='12' x='2' font-size='11' fill='%2340e070' font-family='monospace'%3E%26gt;%3C/text%3E%3C/svg%3E">
+<!-- os, filesystem, terminal, local-first, static-api, interface -->
+<style>
+:root{
+  --bg:#05070a; --ink:#c8d6c8; --dim:#5d7361; --acc:#40e070; --warn:#ffcc55;
+  --bad:#ff5f56; --info:#5fb3ff; --line:#16241a;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 var(--mono);
+  overflow:hidden;-webkit-font-smoothing:antialiased}
+#crt{position:fixed;inset:0;pointer-events:none;z-index:9;
+  background:repeating-linear-gradient(180deg,rgba(0,0,0,0) 0 2px,rgba(0,0,0,.22) 2px 4px);
+  mix-blend-mode:multiply;opacity:.5}
+#glow{position:fixed;inset:0;pointer-events:none;z-index:8;
+  background:radial-gradient(ellipse at 50% 42%,rgba(64,224,112,.07),transparent 68%)}
+#screen{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
+  padding:18px 20px 96px;white-space:pre-wrap;word-break:break-word}
+#screen::-webkit-scrollbar{width:9px}
+#screen::-webkit-scrollbar-thumb{background:#1d3324;border-radius:6px}
+.l{display:block;min-height:1.55em}
+.tag{color:var(--dim)}
+.ok{color:var(--acc)} .no{color:var(--bad)} .wn{color:var(--warn)} .in{color:var(--info)}
+.hi{color:#eaffea} .d{color:var(--dim)}
+.dirn{color:var(--info)} .exe{color:var(--acc)}
+a{color:var(--info)}
+#bar{position:fixed;left:0;right:0;bottom:0;z-index:10;background:#04060a;
+  border-top:1px solid var(--line);padding:11px 20px;display:flex;gap:9px;align-items:baseline}
+#ps1{color:var(--acc);white-space:nowrap}
+#in{flex:1;background:transparent;border:0;outline:0;color:var(--ink);
+  font:inherit;caret-color:var(--acc);min-width:0}
+#sb{position:fixed;top:0;left:0;right:0;z-index:10;background:#04060a;
+  border-bottom:1px solid var(--line);padding:6px 20px;display:flex;gap:18px;
+  font-size:12px;color:var(--dim);flex-wrap:wrap}
+#sb b{color:var(--ink);font-weight:600}
+#screen{padding-top:44px}
+.cur{background:var(--acc);color:#04060a}
+@keyframes bl{50%{opacity:0}}
+.blink{animation:bl 1.05s steps(2) infinite}
+.hint{color:var(--dim);font-size:12px}
+@media(max-width:600px){body{font-size:12.5px}#screen{padding:44px 12px 92px}#bar{padding:9px 12px}}
+</style>
+</head>
+<body>
+<div id="sb" role="status" aria-live="off">
+  <span>RAPP OS <b id="sb-v">—</b></span>
+  <span>DOG <b id="sb-dog">unmounted</b></span>
+  <span>GOD <b id="sb-god">unmounted</b></span>
+  <span>host <b id="sb-host">—</b></span>
+  <span>up <b id="sb-up">0s</b></span>
+</div>
+<main id="screen" tabindex="0" aria-label="console"></main>
+<form id="bar" autocomplete="off">
+  <label id="ps1" for="in">&nbsp;</label>
+  <input id="in" name="in" autocapitalize="off" autocorrect="off" spellcheck="false"
+         aria-label="command" disabled>
+</form>
+<div id="glow"></div><div id="crt"></div>
+
+<script>
+"use strict";
+const SCR = document.getElementById("screen");
+const IN  = document.getElementById("in");
+const PS1 = document.getElementById("ps1");
+const T0  = performance.now();
+const DMESG = [];
+
+const esc = s => String(s == null ? "" : s)
+  .replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const ms = n => (n < 1 ? n.toFixed(2) : Math.round(n)) + "ms";
+const bytes = n => n < 1024 ? n + " B"
+  : n < 1048576 ? (n / 1024).toFixed(1) + " KB"
+  : n < 1073741824 ? (n / 1048576).toFixed(1) + " MB"
+  : (n / 1073741824).toFixed(2) + " GB";
+
+function out(html, cls) {
+  const d = document.createElement("span");
+  d.className = "l" + (cls ? " " + cls : "");
+  d.innerHTML = html;
+  SCR.appendChild(d);
+  SCR.scrollTop = SCR.scrollHeight;
+  return d;
+}
+function log(tag, html, cls) {
+  DMESG.push({ t: performance.now() - T0, tag, text: html.replace(/<[^>]+>/g, "") });
+  return out(`<span class="tag">[${tag.padEnd(5)}]</span> ${html}`, cls);
+}
+
+/* =====================================================================
+   GOD — this device, and only this device. IndexedDB, read-write.
+   ===================================================================== */
+const GOD = (() => {
+  const DB = "rapp-os", STORE = "god";
+  let db = null;
+  const open = () => new Promise((res, rej) => {
+    const r = indexedDB.open(DB, 1);
+    r.onupgradeneeded = () => { if (!r.result.objectStoreNames.contains(STORE)) r.result.createObjectStore(STORE); };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+  const tx = (mode, fn) => new Promise(async (res, rej) => {
+    if (!db) db = await open();
+    const t = db.transaction(STORE, mode), s = t.objectStore(STORE);
+    const rq = fn(s);
+    rq.onsuccess = () => res(rq.result);
+    rq.onerror = () => rej(rq.error);
+  });
+  return {
+    init: async () => { db = await open(); },
+    get:  p => tx("readonly",  s => s.get(p)),
+    put:  (p, v) => tx("readwrite", s => s.put(v, p)),
+    del:  p => tx("readwrite", s => s.delete(p)),
+    keys: () => tx("readonly",  s => s.getAllKeys()),
+    all:  () => tx("readonly",  s => s.getAll()),
+    clear:() => tx("readwrite", s => s.clear())
+  };
+})();
+
+/* =====================================================================
+   VFS — the union. GOD is searched first, so a local edit shadows a
+   global file without ever modifying it. You cannot delete from a
+   read-only global layer, and pretending otherwise would be a lie, so
+   `rm` on a DOG path writes a tombstone that hides it on THIS device.
+   ===================================================================== */
+const WH = "\u0000wh:";
+const VFS = {
+  origin: location.origin + "/",
+  dog: { nodes: [], dirs: new Map(), mounted: false, at: 0, took: 0 },
+  god: { mounted: false, id: "", count: 0 },
+
+  norm(p) {
+    if (!p) return "/";
+    if (p[0] !== "/") p = (STATE.cwd === "/" ? "/" : STATE.cwd + "/") + p;
+    const parts = [];
+    for (const s of p.split("/")) {
+      if (!s || s === ".") continue;
+      if (s === "..") parts.pop(); else parts.push(s);
+    }
+    return "/" + parts.join("/");
+  },
+
+  index(nodes) {
+    const dirs = this.dog.dirs;
+    dirs.clear();
+    const touch = d => { if (!dirs.has(d)) dirs.set(d, new Map()); return dirs.get(d); };
+    touch("/");
+    for (const n of nodes) {
+      const p = n.p.startsWith("/") ? n.p : "/" + n.p;
+      const segs = p.split("/").filter(Boolean);
+      let cur = "";
+      for (let i = 0; i < segs.length; i++) {
+        const parent = cur === "" ? "/" : cur;
+        const isLeaf = i === segs.length - 1 && !p.endsWith("/");
+        cur = (cur === "" ? "" : cur) + "/" + segs[i];
+        touch(parent).set(segs[i], isLeaf ? { kind: "f", n } : { kind: "d" });
+        if (!isLeaf) touch(cur);
+      }
+    }
+    return dirs.size;
+  },
+
+  async whiteouted(p) { return (await GOD.get(WH + p)) !== undefined; },
+
+  async stat(p) {
+    p = this.norm(p);
+    const g = await GOD.get(p);
+    if (g !== undefined) return { path: p, layer: "GOD", kind: "f", size: (g.data || "").length, mtime: g.mtime };
+    if (await this.whiteouted(p)) return null;
+    if (this.dog.dirs.has(p)) return { path: p, layer: "DOG", kind: "d" };
+    const parent = p.replace(/\/[^/]*$/, "") || "/";
+    const name = p.split("/").pop();
+    const e = this.dog.dirs.get(parent);
+    if (e && e.has(name)) {
+      const it = e.get(name);
+      return { path: p, layer: "DOG", kind: it.kind === "d" ? "d" : "f", meta: it.n };
+    }
+    /* The index is a directory listing, not the authority. On DOG the authority
+       is HTTP: if the origin serves the path, the file exists, whatever the
+       index says. So on a miss, ask the wire before declaring absence. */
+    try {
+      const r = await fetch(p, { method: "HEAD", cache: "no-cache" });
+      if (r.ok) return { path: p, layer: "DOG", kind: "f", unindexed: true,
+                         size: +(r.headers.get("content-length") || 0) || undefined };
+    } catch (err) {}
+    return null;
+  },
+
+  async list(p) {
+    p = this.norm(p);
+    const seen = new Map();
+    const dir = this.dog.dirs.get(p);
+    if (dir) for (const [name, it] of dir) seen.set(name, { name, kind: it.kind, layer: "DOG", meta: it.n });
+    for (const k of await GOD.keys()) {
+      if (typeof k !== "string" || k.startsWith(WH)) continue;
+      const parent = k.replace(/\/[^/]*$/, "") || "/";
+      if (parent === p) seen.set(k.split("/").pop(), { name: k.split("/").pop(), kind: "f", layer: "GOD" });
+      else if (k.startsWith(p === "/" ? "/" : p + "/")) {
+        const rest = k.slice(p === "/" ? 1 : p.length + 1);
+        const head = rest.split("/")[0];
+        if (rest.includes("/") && !seen.has(head)) seen.set(head, { name: head, kind: "d", layer: "GOD" });
+      }
+    }
+    for (const k of await GOD.keys())
+      if (typeof k === "string" && k.startsWith(WH)) {
+        const hidden = k.slice(WH.length);
+        if ((hidden.replace(/\/[^/]*$/, "") || "/") === p) seen.delete(hidden.split("/").pop());
+      }
+    if (!seen.size && !dir) return null;
+    return [...seen.values()].sort((a, b) =>
+      (a.kind === b.kind ? a.name.localeCompare(b.name) : a.kind === "d" ? -1 : 1));
+  },
+
+  async read(p) {
+    p = this.norm(p);
+    const g = await GOD.get(p);
+    if (g !== undefined) return { data: g.data, layer: "GOD", ms: 0 };
+    if (await this.whiteouted(p)) throw new Error(p + ": no such file (whiteout in GOD)");
+    if (this.dog.dirs.has(p)) throw new Error(p + ": is a directory");
+    /* Go straight to the wire. A GET here is both the existence check and the
+       read, so an unindexed-but-served path costs one request, not three. */
+    const t = performance.now();
+    const r = await fetch(p, { cache: "no-cache" });
+    if (r.status === 404) throw new Error(p + ": no such file or directory");
+    if (!r.ok) throw new Error(p + ": HTTP " + r.status + " from DOG");
+    const data = await r.text();
+    return { data, layer: "DOG", ms: performance.now() - t, status: r.status,
+             type: r.headers.get("content-type") || "" };
+  },
+
+  async write(p, data) {
+    p = this.norm(p);
+    await GOD.del(WH + p);
+    await GOD.put(p, { data: String(data), mtime: Date.now() });
+    await refreshGod();
+    return p;
+  },
+
+  async unlink(p) {
+    p = this.norm(p);
+    const g = await GOD.get(p);
+    if (g !== undefined) { await GOD.del(p); await refreshGod(); return "GOD"; }
+    const st = await this.stat(p);
+    if (!st) throw new Error(p + ": no such file or directory");
+    await GOD.put(WH + p, { mtime: Date.now() });
+    await refreshGod();
+    return "whiteout";
+  }
+};
+
+const STATE = { cwd: "/", boot: null, host: "", user: "operator", hist: [], hi: 0 };
+
+/* Count GOD by asking GOD. A remembered count drifted the moment anything wrote
+   through GOD.put directly - df reported 1 file while fsck counted 2. */
+async function refreshGod() {
+  const keys = await GOD.keys();
+  VFS.god.count = keys.filter(k => !String(k).startsWith(WH)).length;
+  VFS.god.whiteouts = keys.length - VFS.god.count;
+  const el = document.getElementById("sb-god");
+  if (el) el.textContent = VFS.god.count + " files rw";
+  return VFS.god.count;
+}
+
+/* =====================================================================
+   Firmware. Every line below is a real measurement of this machine.
+   ===================================================================== */
+async function post(spec) {
+  const pad = s => s.padEnd(12, ".");
+  let fatalFail = false;
+  for (const c of spec) {
+    const t = performance.now();
+    let ok = false, detail = "";
+    try {
+      if (c.require === "indexeddb") {
+        ok = !!window.indexedDB;
+        if (ok) { await GOD.init(); }
+        if (ok && navigator.storage && navigator.storage.estimate) {
+          const e = await navigator.storage.estimate();
+          detail = `IndexedDB, ${bytes(e.usage || 0)} used of ${bytes(e.quota || 0)}`;
+        } else detail = "IndexedDB";
+      } else if (c.require === "fetch") {
+        ok = typeof fetch === "function";
+        detail = ok ? `fetch, ${location.protocol.replace(":", "").toUpperCase()} to ${location.host}` : "";
+      } else if (c.require === "subtlecrypto") {
+        ok = !!(window.crypto && crypto.subtle); detail = ok ? "SubtleCrypto" : "unavailable";
+      } else if (c.require === "worker") {
+        ok = typeof Worker === "function";
+        detail = `${navigator.hardwareConcurrency || "?"} logical cores`;
+      } else if (c.require === "viewport") {
+        ok = innerWidth > 0;
+        detail = `${innerWidth}x${innerHeight} @ ${devicePixelRatio || 1}x`;
+      }
+    } catch (e) { ok = false; detail = e.message; }
+    const el = ms(performance.now() - t);
+    log("POST", `${pad(c.label)} <span class="${ok ? "ok" : c.fatal ? "no" : "wn"}">${ok ? "OK" : c.fatal ? "FAIL" : "SKIP"}</span>` +
+        `  <span class="d">${esc(detail)}</span> <span class="d">${el}</span>`);
+    if (!ok && c.fatal) fatalFail = true;
+    await sleep(55);
+  }
+  return !fatalFail;
+}
+
+async function machineId() {
+  const seed = [navigator.userAgent, navigator.language, screen.width + "x" + screen.height,
+                new Date().getTimezoneOffset(), navigator.hardwareConcurrency || 0].join("|");
+  try {
+    const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(seed));
+    return [...new Uint8Array(b)].slice(0, 6).map(x => x.toString(16).padStart(2, "0")).join("");
+  } catch (e) {
+    return Math.random().toString(16).slice(2, 14);
+  }
+}
+
+async function boot() {
+  out(`<span class="d">RAPP OS firmware \u00b7 static-web \u00b7 ${esc(location.origin)}</span>`);
+  out(`<span class="d">Press any key during POST to interrupt. Type \`help\` when the prompt appears.</span>`);
+  out("");
+  log("BIOS", `power on self test`);
+
+  const bt = performance.now();
+  let bootDoc;
+  try {
+    const r = await fetch("/OS/boot/boot.json", { cache: "no-cache" });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    bootDoc = await r.json();
+    log("BIOS", `boot device  <span class="ok">/OS/boot/boot.json</span> <span class="d">${ms(performance.now() - bt)}</span>`);
+  } catch (e) {
+    log("BIOS", `boot device  <span class="no">NOT FOUND</span> <span class="d">${esc(e.message)}</span>`);
+    log("PANIC", `<span class="no">no bootable device. halted.</span>`);
+    return;
+  }
+  STATE.boot = bootDoc;
+  document.getElementById("sb-v").textContent = bootDoc.os.version + " " + bootDoc.os.codename;
+  out("");
+
+  if (!await post(bootDoc.post)) {
+    log("PANIC", `<span class="no">a fatal POST check failed. halted.</span>`); return;
+  }
+  out("");
+
+  const kt = performance.now();
+  const kern = await (await fetch(bootDoc.kernel, { cache: "no-cache" })).json();
+  log("KRNL", `${esc(kern.name)} ${esc(kern.version)} <span class="d">${ms(performance.now() - kt)}</span>`);
+  log("KRNL", `vfs union <span class="in">${kern.vfs.union.join(" \u2192 ")}</span> <span class="d">first hit wins</span>`);
+  await sleep(70);
+
+  // ---- DOG: the global filesystem. Identical on every device on earth.
+  const dt = performance.now();
+  try {
+    const r = await fetch("/OS/api/dogfs.json", { cache: "no-cache" });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const fs = await r.json();
+    VFS.dog.nodes = fs.nodes || [];
+    const dirs = VFS.index(VFS.dog.nodes);
+    VFS.dog.mounted = true;
+    VFS.dog.took = performance.now() - dt;
+    VFS.dog.at = fs.generated_at || "";
+    log("MOUNT", `<span class="in">DOG</span> ro  ${esc(fs.origin || location.origin)}  ` +
+        `<span class="ok">${VFS.dog.nodes.length}</span> nodes, ${dirs} dirs <span class="d">${ms(VFS.dog.took)}</span>`);
+    document.getElementById("sb-dog").textContent = VFS.dog.nodes.length + " nodes ro";
+  } catch (e) {
+    log("MOUNT", `<span class="in">DOG</span> <span class="no">FAILED</span> <span class="d">${esc(e.message)}</span>`);
+    log("PANIC", `<span class="no">root filesystem unavailable. halted.</span>`); return;
+  }
+  await sleep(70);
+
+  // ---- GOD: this device only.
+  const gt = performance.now();
+  VFS.god.id = await machineId();
+  await refreshGod();
+  const wh = VFS.god.whiteouts;
+  VFS.god.mounted = true;
+  STATE.host = "rapp-" + VFS.god.id.slice(0, 6);
+  log("MOUNT", `<span class="ok">GOD</span> rw  idb://rapp-os/god  device <span class="hi">${VFS.god.id}</span>  ` +
+      `<span class="ok">${VFS.god.count}</span> files${wh ? ", " + wh + " whiteout" + (wh > 1 ? "s" : "") : ""} <span class="d">${ms(performance.now() - gt)}</span>`);
+  document.getElementById("sb-god").textContent = VFS.god.count + " files rw";
+  document.getElementById("sb-host").textContent = STATE.host;
+  await sleep(70);
+
+  // ---- init
+  let motd = null;
+  try {
+    const init = await (await fetch(bootDoc.init, { cache: "no-cache" })).json();
+    log("INIT", `${esc(init.name || "init")} <span class="d">${(init.services || []).length} services</span>`);
+    for (const s of init.services || []) {
+      log("INIT", `  ${esc(s.name).padEnd(14, " ")} <span class="ok">started</span> <span class="d">${esc(s.desc || "")}</span>`);
+      await sleep(38);
+    }
+    motd = init.motd;
+  } catch (e) {
+    log("INIT", `<span class="wn">init not found, dropping to shell</span>`);
+  }
+
+  const first = !(await GOD.get("/god/.booted"));
+  if (first) {
+    await VFS.write("/god/README.txt",
+      "This file lives on this device only.\n\n" +
+      "It is in the GOD layer: IndexedDB, in this browser profile, on this machine.\n" +
+      "Nobody else can see it. It was not uploaded anywhere. If you clear site data\n" +
+      "it is gone, so run `export` if you care about it.\n\n" +
+      "Everything else you can see - /learnwithkody, /OS/system32, every post and\n" +
+      "example - is the DOG layer: one public, read-only tree served as static files,\n" +
+      "identical for every person who boots this URL.\n");
+    await GOD.put("/god/.booted", { data: String(Date.now()), mtime: Date.now() });
+    await refreshGod();
+    log("INIT", `first boot on this device \u2014 wrote <span class="in">/god/README.txt</span>`);
+  }
+
+  out("");
+  out(`<span class="ok">${esc(STATE.boot.os.name)} ${esc(STATE.boot.os.version)} \u201c${esc(STATE.boot.os.codename)}\u201d</span>  <span class="d">boot complete in ${ms(performance.now() - T0)}</span>`);
+  if (motd) out(`<span class="d">${esc(motd)}</span>`);
+  out(`<span class="hint">DOG is global and read-only. GOD is yours and writable. Try: <span class="in">ls /</span> \u00b7 <span class="in">cat /OS/system32/etc/motd</span> \u00b7 <span class="in">echo hi &gt; /god/notes.txt</span> \u00b7 <span class="in">help</span></span>`);
+  out("");
+
+  IN.disabled = false; prompt_(); IN.focus();
+  setInterval(() => {
+    const s = Math.floor((performance.now() - T0) / 1000);
+    document.getElementById("sb-up").textContent =
+      s < 60 ? s + "s" : Math.floor(s / 60) + "m" + (s % 60) + "s";
+  }, 1000);
+}
+
+function prompt_() { PS1.textContent = `${STATE.user}@${STATE.host}:${STATE.cwd}$`; }
+
+/* =====================================================================
+   Shell
+   ===================================================================== */
+const CMD = {};
+const help = [];
+function cmd(name, usage, desc, fn) { CMD[name] = fn; help.push([usage, desc]); }
+
+cmd("help", "help", "this list", async () => {
+  out(`<span class="hi">RAPP OS shell</span>`);
+  for (const [u, d] of help) out(`  <span class="in">${esc(u.padEnd(26))}</span><span class="d">${esc(d)}</span>`);
+});
+
+cmd("ls", "ls [path]", "list a directory across both layers", async a => {
+  const p = VFS.norm(a[0] || ".");
+  const items = await VFS.list(p);
+  if (!items) { const st = await VFS.stat(p); if (st) return out(esc(p)); throw new Error(p + ": no such file or directory"); }
+  if (!items.length) return out(`<span class="d">(empty)</span>`);
+  const w = Math.max(...items.map(i => i.name.length)) + 2;
+  let line = "", per = Math.max(1, Math.floor((SCR.clientWidth / 8.4) / w));
+  items.forEach((i, n) => {
+    const cls = i.kind === "d" ? "dirn" : i.layer === "GOD" ? "ok" : "";
+    const nm = i.name + (i.kind === "d" ? "/" : "");
+    line += `<span class="${cls}">${esc(nm.padEnd(w))}</span>`;
+    if ((n + 1) % per === 0) { out(line); line = ""; }
+  });
+  if (line) out(line);
+  out(`<span class="d">${items.length} entries \u00b7 <span class="dirn">dir</span> \u00b7 <span class="ok">GOD (local)</span> \u00b7 DOG (global)</span>`);
+});
+
+cmd("cd", "cd <path>", "change directory", async a => {
+  const p = VFS.norm(a[0] || "/");
+  const st = await VFS.stat(p);
+  const isDir = (st && st.kind === "d") || VFS.dog.dirs.has(p) || p === "/" || p === "/god";
+  if (!isDir) throw new Error(p + ": not a directory");
+  STATE.cwd = p; prompt_();
+});
+
+cmd("pwd", "pwd", "print working directory", async () => out(STATE.cwd));
+
+cmd("cat", "cat <path>", "read a file (fetches from DOG, or reads GOD)", async a => {
+  if (!a[0]) throw new Error("usage: cat <path>");
+  const r = await VFS.read(a[0]);
+  const body = r.data.length > 20000 ? r.data.slice(0, 20000) + "\n\u2026 (truncated)" : r.data;
+  out(esc(body));
+  out(`<span class="d">\u2500 ${r.layer} \u00b7 ${bytes(r.data.length)}${r.ms ? " \u00b7 " + ms(r.ms) + " over the wire" : " \u00b7 local"}</span>`);
+});
+
+cmd("stat", "stat <path>", "where does this path actually live", async a => {
+  const st = await VFS.stat(a[0] || ".");
+  if (!st) throw new Error((a[0] || ".") + ": no such file or directory");
+  out(`  path   ${esc(st.path)}`);
+  out(`  layer  <span class="${st.layer === "GOD" ? "ok" : "in"}">${st.layer}</span> <span class="d">${st.layer === "GOD" ? "this device only, writable" : "global, read-only, same for everyone"}</span>`);
+  out(`  kind   ${st.kind === "d" ? "directory" : "file"}`);
+  if (st.size != null) out(`  size   ${bytes(st.size)}`);
+  if (st.mtime) out(`  mtime  ${new Date(st.mtime).toISOString()}`);
+  if (st.meta && st.meta.t) out(`  title  ${esc(st.meta.t)}`);
+  if (st.meta && st.meta.k) out(`  class  ${esc(st.meta.k)}`);
+  if (st.unindexed) out(`  index  <span class="wn">not in /OS/api/dogfs.json</span> <span class="d">served anyway — on DOG the wire is the authority, the index is only a listing</span>`);
+  if (st.layer === "DOG") out(`  url    <a href="${esc(st.path)}" target="_blank" rel="noopener">${esc(location.origin + st.path)}</a>`);
+});
+
+cmd("tree", "tree [path] [depth]", "walk the global tree", async a => {
+  const root = VFS.norm(a[0] || "."), max = Math.min(parseInt(a[1] || "2", 10) || 2, 5);
+  let n = 0;
+  const walk = async (p, d, pre) => {
+    if (d > max || n > 400) return;
+    const items = await VFS.list(p) || [];
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i], last = i === items.length - 1;
+      const cls = it.kind === "d" ? "dirn" : it.layer === "GOD" ? "ok" : "";
+      out(`<span class="d">${esc(pre + (last ? "\u2514\u2500 " : "\u251c\u2500 "))}</span><span class="${cls}">${esc(it.name + (it.kind === "d" ? "/" : ""))}</span>`);
+      n++;
+      if (it.kind === "d") await walk(p === "/" ? "/" + it.name : p + "/" + it.name, d + 1, pre + (last ? "   " : "\u2502  "));
+    }
+  };
+  out(`<span class="dirn">${esc(root)}</span>`);
+  await walk(root, 1, "");
+  out(`<span class="d">${n} entries, depth ${max}${n > 400 ? " (capped)" : ""}</span>`);
+});
+
+cmd("find", "find <text>", "search the global filesystem index", async a => {
+  const q = (a.join(" ") || "").toLowerCase();
+  if (!q) throw new Error("usage: find <text>");
+  const hits = VFS.dog.nodes.filter(n =>
+    n.p.toLowerCase().includes(q) || (n.t || "").toLowerCase().includes(q)).slice(0, 60);
+  hits.forEach(h => out(`<span class="d">${esc((h.k || "").padEnd(8))}</span>${esc(h.p)}` +
+    (h.t ? ` <span class="d">\u2014 ${esc(h.t.slice(0, 62))}</span>` : "")));
+  out(`<span class="d">${hits.length} shown of ${VFS.dog.nodes.filter(n => n.p.toLowerCase().includes(q) || (n.t || "").toLowerCase().includes(q)).length} matches in ${VFS.dog.nodes.length} nodes</span>`);
+});
+
+cmd("echo", "echo <text> [> path]", "print, or write into GOD", async (a, raw) => {
+  const m = raw.match(/^echo\s+([\s\S]*?)\s*>\s*(\S+)\s*$/);
+  if (m) {
+    const p = await VFS.write(m[2], m[1].replace(/^["']|["']$/g, "") + "\n");
+    return out(`<span class="ok">wrote</span> ${esc(p)} <span class="d">\u2192 GOD (this device only)</span>`);
+  }
+  out(esc(a.join(" ")));
+});
+
+cmd("write", "write <path>", "write a here-doc into GOD (end with a single .)", async a => {
+  if (!a[0]) throw new Error("usage: write <path>");
+  const p = VFS.norm(a[0]); const lines = [];
+  out(`<span class="d">reading until a line containing only \u201c.\u201d</span>`);
+  STATE.reader = async line => {
+    if (line === ".") {
+      STATE.reader = null;
+      await VFS.write(p, lines.join("\n") + "\n");
+        out(`<span class="ok">wrote</span> ${esc(p)} <span class="d">${lines.length} lines \u2192 GOD</span>`);
+      prompt_();
+    } else { lines.push(line); }
+  };
+  PS1.textContent = ">";
+});
+
+cmd("cp", "cp <src> <dst>", "copy anything into GOD (pull a global file local)", async a => {
+  if (a.length < 2) throw new Error("usage: cp <src> <dst>");
+  const r = await VFS.read(a[0]);
+  const p = await VFS.write(a[1], r.data);
+  document.getElementById("sb-god").textContent = VFS.god.count + " files rw";
+  out(`<span class="ok">copied</span> ${esc(VFS.norm(a[0]))} <span class="d">(${r.layer})</span> \u2192 ${esc(p)} <span class="d">(GOD, ${bytes(r.data.length)})</span>`);
+});
+
+cmd("rm", "rm <path>", "delete from GOD, or hide a global file on this device", async a => {
+  if (!a[0]) throw new Error("usage: rm <path>");
+  const how = await VFS.unlink(a[0]);
+  document.getElementById("sb-god").textContent = VFS.god.count + " files rw";
+  if (how === "GOD") out(`<span class="ok">removed</span> ${esc(VFS.norm(a[0]))} <span class="d">from GOD</span>`);
+  else out(`<span class="wn">whiteout</span> ${esc(VFS.norm(a[0]))} <span class="d">\u2014 DOG is read-only, so this only hides it on this device. Everyone else still sees it. \`unrm\` to restore.</span>`);
+});
+
+cmd("unrm", "unrm <path>", "remove a whiteout", async a => {
+  const p = VFS.norm(a[0] || "");
+  await GOD.del(WH + p);
+  out(`<span class="ok">restored</span> ${esc(p)}`);
+});
+
+cmd("mount", "mount", "show the mount table", async () => {
+  for (const m of STATE.boot.mounts) {
+    const live = m.layer === "DOG" ? VFS.dog.mounted : VFS.god.mounted;
+    out(`<span class="${m.layer === "GOD" ? "ok" : "in"}">${m.layer}</span> on <span class="hi">${esc(m.at)}</span> ` +
+        `type ${esc(m.device)} <span class="d">(${m.mode}${live ? "" : ", NOT MOUNTED"})</span>`);
+    out(`     <span class="d">${esc(m._ || "")}</span>`);
+  }
+});
+
+cmd("df", "df", "layer usage", async () => {
+  let quota = 0, usage = 0;
+  try { const e = await navigator.storage.estimate(); quota = e.quota || 0; usage = e.usage || 0; } catch (e) {}
+  out(`<span class="d">Layer  Scope        Mode  Entries   Used        Available</span>`);
+  out(`<span class="in">DOG</span>    global       ro    ${String(VFS.dog.nodes.length).padEnd(9)} ${"\u2014".padEnd(11)} ${"\u2014"}`);
+  out(`<span class="ok">GOD</span>    this device  rw    ${String(VFS.god.count).padEnd(9)} ${bytes(usage).padEnd(11)} ${bytes(Math.max(0, quota - usage))}`);
+  out(`<span class="d">DOG has no quota here because you are not storing it \u2014 it is fetched on demand from ${esc(location.host)}.</span>`);
+});
+
+cmd("uname", "uname [-a]", "system identity", async a => {
+  const b = STATE.boot.os;
+  if (a[0] === "-a")
+    out(`${b.name} ${STATE.host} ${b.version} ${b.codename} ${b.arch} DOG/${VFS.dog.nodes.length} GOD/${VFS.god.count} ${esc(navigator.userAgent.slice(0, 60))}`);
+  else out(`${b.name} ${b.version}`);
+});
+
+cmd("whoami", "whoami", "current user", async () => out(STATE.user));
+cmd("hostname", "hostname", "this machine", async () =>
+  out(`${STATE.host} <span class="d">derived from this device's fingerprint; different on every machine</span>`));
+cmd("id", "id", "device identity", async () => {
+  out(`user=${STATE.user} host=${STATE.host}`);
+  out(`device=<span class="hi">${VFS.god.id}</span> <span class="d">SHA-256 of UA, language, screen, timezone and core count</span>`);
+  out(`origin=${esc(location.origin)} <span class="d">the DOG this machine booted from</span>`);
+});
+cmd("date", "date", "clock", async () => out(new Date().toString()));
+cmd("uptime", "uptime", "since boot", async () =>
+  out(`up ${((performance.now() - T0) / 1000).toFixed(1)}s, boot took ${ms(VFS.dog.took)} to mount DOG`));
+
+cmd("dmesg", "dmesg", "the boot log, with real timings", async () => {
+  DMESG.forEach(d => out(`<span class="d">[${(d.t / 1000).toFixed(3).padStart(8)}]</span> ${esc(d.tag.padEnd(5))} ${esc(d.text)}`));
+});
+
+cmd("ps", "ps", "what is running", async () => {
+  out(`<span class="d">  PID  LAYER  COMMAND</span>`);
+  out(`    1  \u2014      init`);
+  out(`    2  DOG    vfs/dogd  <span class="d">${VFS.dog.nodes.length} nodes indexed</span>`);
+  out(`    3  GOD    vfs/godd  <span class="d">idb://rapp-os/god</span>`);
+  out(`    4  \u2014      sh`);
+});
+
+cmd("curl", "curl <path>", "hit the DOG over HTTP and show what came back", async a => {
+  if (!a[0]) throw new Error("usage: curl <path>");
+  const p = VFS.norm(a[0]); const t = performance.now();
+  const r = await fetch(p, { cache: "no-cache" });
+  const body = await r.text(); const el = performance.now() - t;
+  out(`<span class="${r.ok ? "ok" : "no"}">HTTP ${r.status}</span> ${esc(r.headers.get("content-type") || "")} <span class="d">${bytes(body.length)} in ${ms(el)}</span>`);
+  out(esc(body.slice(0, 1400)) + (body.length > 1400 ? "\n\u2026" : ""));
+});
+
+cmd("open", "open <path>", "open a global path in a new tab", async a => {
+  const p = VFS.norm(a[0] || "/");
+  window.open(p, "_blank", "noopener");
+  out(`<span class="d">opened ${esc(location.origin + p)}</span>`);
+});
+
+cmd("export", "export", "download the whole GOD layer as JSON", async () => {
+  const keys = await GOD.keys(), vals = await GOD.all();
+  const dump = { schema: "rapp-os-god/1.0", device: VFS.god.id, exported: new Date().toISOString(),
+                 entries: keys.map((k, i) => ({ k, v: vals[i] })) };
+  const blob = new Blob([JSON.stringify(dump, null, 1)], { type: "application/json" });
+  const url = URL.createObjectURL(blob), a = document.createElement("a");
+  a.href = url; a.download = `god-${VFS.god.id}.json`; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  out(`<span class="ok">exported</span> ${keys.length} entries <span class="d">\u2014 this is your whole device layer. Nothing was uploaded.</span>`);
+});
+
+cmd("import", "import", "restore a GOD export into this device", async () => {
+  const inp = document.createElement("input"); inp.type = "file"; inp.accept = "application/json";
+  inp.onchange = async () => {
+    try {
+      const d = JSON.parse(await inp.files[0].text());
+      for (const e of d.entries || []) await GOD.put(e.k, e.v);
+      VFS.god.count = (await GOD.keys()).filter(k => !String(k).startsWith(WH)).length;
+        out(`<span class="ok">imported</span> ${(d.entries || []).length} entries from device ${esc(d.device || "?")}`);
+    } catch (e) { out(`<span class="no">import failed: ${esc(e.message)}</span>`); }
+    prompt_();
+  };
+  inp.click();
+  out(`<span class="d">choose a god-*.json export\u2026</span>`);
+});
+
+cmd("fsck", "fsck", "check both layers", async () => {
+  let bad = 0;
+  const sample = VFS.dog.nodes.filter(n => n.k === "file").slice(0, 6);
+  out(`<span class="d">checking DOG by actually fetching ${sample.length} nodes\u2026</span>`);
+  for (const n of sample) {
+    const p = n.p.startsWith("/") ? n.p : "/" + n.p;
+    try {
+      const r = await fetch(p, { method: "HEAD", cache: "no-cache" });
+      out(`  ${r.ok ? '<span class="ok">ok  </span>' : '<span class="no">FAIL</span>'} ${esc(p)} <span class="d">HTTP ${r.status}</span>`);
+      if (!r.ok) bad++;
+    } catch (e) { out(`  <span class="no">FAIL</span> ${esc(p)}`); bad++; }
+  }
+  await refreshGod();
+  out(`<span class="d">GOD: ${VFS.god.count} files, ${VFS.god.whiteouts} whiteouts</span>`);
+  out(bad ? `<span class="no">${bad} DOG node(s) unreachable</span>` : `<span class="ok">clean</span>`);
+});
+
+cmd("clear", "clear", "clear the screen", async () => { SCR.innerHTML = ""; });
+cmd("reboot", "reboot", "reboot this machine", async () => {
+  out(`<span class="wn">rebooting\u2026</span>`); await sleep(450); location.reload();
+});
+cmd("wipe", "wipe --yes", "destroy this device's GOD layer", async a => {
+  if (a[0] !== "--yes") throw new Error("this erases everything local. re-run: wipe --yes");
+  await GOD.clear(); await refreshGod();
+  out(`<span class="wn">GOD wiped. DOG is untouched \u2014 it is not yours to wipe.</span>`);
+});
+
+async function run(raw) {
+  const line = raw.trim();
+  if (!line) return;
+  const parts = line.split(/\s+/), name = parts[0], args = parts.slice(1);
+  const fn = CMD[name];
+  if (!fn) { out(`<span class="no">${esc(name)}: command not found</span> <span class="d">try \`help\`</span>`); return; }
+  try { await fn(args, line); }
+  catch (e) { out(`<span class="no">${esc(name)}: ${esc(e.message)}</span>`); }
+}
+
+document.getElementById("bar").addEventListener("submit", async e => {
+  e.preventDefault();
+  const v = IN.value; IN.value = "";
+  if (STATE.reader) { out(`<span class="d">&gt;</span> ${esc(v)}`); return STATE.reader(v); }
+  out(`<span class="ok">${esc(PS1.textContent)}</span> ${esc(v)}`);
+  if (v.trim()) { STATE.hist.push(v); STATE.hi = STATE.hist.length; }
+  IN.disabled = true;
+  await run(v);
+  IN.disabled = false; IN.focus();
+  SCR.scrollTop = SCR.scrollHeight;
+});
+
+IN.addEventListener("keydown", e => {
+  if (e.key === "ArrowUp")   { if (STATE.hi > 0) { STATE.hi--; IN.value = STATE.hist[STATE.hi] || ""; } e.preventDefault(); }
+  if (e.key === "ArrowDown") { if (STATE.hi < STATE.hist.length - 1) { STATE.hi++; IN.value = STATE.hist[STATE.hi]; } else { STATE.hi = STATE.hist.length; IN.value = ""; } e.preventDefault(); }
+  if (e.key === "Tab") {
+    e.preventDefault();
+    const t = IN.value.split(/\s+/).pop();
+    const hits = Object.keys(CMD).filter(c => c.startsWith(IN.value));
+    if (hits.length === 1) IN.value = hits[0] + " ";
+    else if (hits.length > 1) out(`<span class="d">${hits.join("  ")}</span>`);
+  }
+  if (e.key === "l" && e.ctrlKey) { e.preventDefault(); SCR.innerHTML = ""; }
+});
+
+addEventListener("click", () => { if (!IN.disabled) IN.focus(); });
+boot();
+</script>
+</body>
+</html>

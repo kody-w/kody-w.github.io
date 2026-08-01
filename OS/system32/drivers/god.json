@@ -1,0 +1,16 @@
+{
+  "schema": "rapp-os-driver/1.0",
+  "name": "godd",
+  "layer": "GOD",
+  "expands": "Grounded Object Device",
+  "mode": "rw",
+  "backing": { "kind": "indexeddb", "db": "rapp-os", "store": "god" },
+  "properties": {
+    "local": "One browser profile on one machine. Not synced. Not uploaded.",
+    "writable": "Every write in the OS lands here, including edits to global files.",
+    "shadowing": "A GOD path hides the DOG path of the same name, without altering it.",
+    "whiteout": "Deleting a DOG path writes a tombstone. It hides the file on this device only.",
+    "portable": "`export` gives you the whole layer as JSON. `import` puts it on another device."
+  },
+  "device-id": "SHA-256 over user agent, language, screen size, timezone offset and core count, truncated to 48 bits. Stable for this machine, and it never leaves it."
+}

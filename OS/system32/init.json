@@ -1,0 +1,12 @@
+{
+  "schema": "rapp-os-init/1.0",
+  "name": "init",
+  "motd": "DOG is the world. GOD is your desk. Neither pretends to be the other.",
+  "services": [
+    { "name": "dogd",   "desc": "indexes the global read-only tree from /OS/api/dogfs.json" },
+    { "name": "godd",   "desc": "opens this device's IndexedDB layer" },
+    { "name": "unionfs","desc": "resolves GOD before DOG, first hit wins" },
+    { "name": "apid",   "desc": "serves the static API under /OS/api and /api" },
+    { "name": "sh",     "desc": "the shell you are typing into" }
+  ]
+}

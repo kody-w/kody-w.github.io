@@ -1,0 +1,21 @@
+{
+  "schema": "rapp-os-driver/1.0",
+  "name": "dogd",
+  "layer": "DOG",
+  "expands": "Distributed Object Graph",
+  "mode": "ro",
+  "backing": {
+    "kind": "static-http",
+    "origin": "https://kody-w.github.io/",
+    "raw": "https://raw.githubusercontent.com/kody-w/<repo>/main/<path>",
+    "index": "/OS/api/dogfs.json"
+  },
+  "properties": {
+    "global": "Every device that boots this URL mounts the identical filesystem.",
+    "addressable": "Every node has a real URL. `open /learnwithkody/examples/` goes somewhere.",
+    "versioned": "It is a git tree. Every change to the filesystem has an author and a diff.",
+    "no-server": "There is no API server. The API is files.",
+    "read-only": "Not a policy, a fact: a browser cannot write to someone else's Pages site."
+  },
+  "why-read-only-matters": "A global writable layer would need accounts, auth, quotas, moderation and a server. Making the global layer read-only is what lets the whole OS be static. Writes are a local concern, so they go to a local device."
+}
