@@ -5,10 +5,16 @@
  "handle": "@kody-w",
  "avatar": "https://avatars.githubusercontent.com/u/6146755?v=4",
  "about": "Walkthroughs for the Vibe Coding Examples. Every episode takes one example end to end: the exact seed prompt, what the agent actually returned, the measurement that caught what was wrong, and the fix. Follow along, pause anywhere, run it yourself.",
- "links": {
-  "examples": "https://kody-w.github.io/learnwithkody/examples/",
-  "home": "https://kody-w.github.io/learnwithkody/"
- },
+ "links": [
+  {
+   "label": "Vibe Coding Examples",
+   "url": "https://kody-w.github.io/learnwithkody/examples/"
+  },
+  {
+   "label": "Learn with Kody",
+   "url": "https://kody-w.github.io/learnwithkody/"
+  }
+ ],
  "_hosting": "This channel lives inside the kody-w.github.io repo. GitHub Pages serves every repo of a user from one origin, so it plays in the RAPP Vision player at /rapp-vision while being published, versioned and owned right here next to the examples it documents.",
  "videos": [
   {
@@ -16,32 +22,72 @@
    "title": "Follow along: build a Gran Turismo-grade racing sim in one HTML file",
    "published": "2026-08-01",
    "duration": 160,
-   "tags": ["walkthrough", "threejs", "vehicle-physics", "adversarial-critic", "measurement"],
+   "tags": [
+    "walkthrough",
+    "threejs",
+    "vehicle-physics",
+    "adversarial-critic",
+    "measurement"
+   ],
    "description": "Episode 1. We build the Apex Driving Simulator from the exact seed prompt on the examples page, then do the part everyone skips: prove it. The agent reported success. A fan of dark streaks on the pit apron looked like broken skid marks, so it cleared the skid buffer, and the fan stayed. That is the moment to stop looking and start measuring. Walking all 1600 centreline points found a 7.28-degree heading change against a 0.378-degree median, all six worst values sitting together at the loop-closure seam. One discontinuity, three unrelated-looking bugs. Fixed by arc-length resampling with centred finite-difference tangents: 7.28 degrees down to 2.12, segments even at 0.650 m, barrier penetration 0.0000 m.",
    "example": "https://kody-w.github.io/learnwithkody/examples/apex-driving-simulator/",
    "demo": "https://kody-w.github.io/learnwithkody/demos/318-apex-driving-simulator.html",
-   "poster": "thumbs/walkthrough-apex.jpg",
    "sources": [
-    { "src": "media/walkthrough-apex.webm", "type": "video/webm" },
-    { "src": "media/walkthrough-apex.mp4", "type": "video/mp4" }
+    {
+     "src": "media/walkthrough-apex.webm",
+     "type": "video/webm"
+    },
+    {
+     "src": "media/walkthrough-apex.mp4",
+     "type": "video/mp4"
+    }
    ],
    "chapters": [
-    { "t": 0,   "label": "1 - What you are going to build" },
-    { "t": 18,  "label": "2 - Copy this prompt" },
-    { "t": 44,  "label": "3 - What comes back" },
-    { "t": 64,  "label": "4 - Do not trust the report" },
-    { "t": 83,  "label": "5 - Measure the thing itself" },
-    { "t": 106, "label": "6 - One cause, three symptoms" },
-    { "t": 132, "label": "7 - The fix, and the proof" },
-    { "t": 155, "label": "8 - Your turn" }
-   ]
+    {
+     "t": 0,
+     "label": "1 - What you are going to build"
+    },
+    {
+     "t": 18,
+     "label": "2 - Copy this prompt"
+    },
+    {
+     "t": 44,
+     "label": "3 - What comes back"
+    },
+    {
+     "t": 64,
+     "label": "4 - Do not trust the report"
+    },
+    {
+     "t": 83,
+     "label": "5 - Measure the thing itself"
+    },
+    {
+     "t": 106,
+     "label": "6 - One cause, three symptoms"
+    },
+    {
+     "t": 132,
+     "label": "7 - The fix, and the proof"
+    },
+    {
+     "t": 155,
+     "label": "8 - Your turn"
+    }
+   ],
+   "thumb": "thumbs/walkthrough-apex.jpg"
   },
   {
    "id": "lwk-apex-live",
    "title": "LIVE: drive the finished sim yourself - no video file",
    "published": "2026-08-01",
    "duration": 30,
-   "tags": ["live", "remixable", "threejs"],
+   "tags": [
+    "live",
+    "remixable",
+    "threejs"
+   ],
    "description": "The same simulator, as a live replay instead of a recording. There is no video here. The player loads the real application and replays a recorded script on a clock, so you can pause at any point and take the wheel. A few KB of JSON doing the job of 26 MB of video. This is Tier 2 of rapp-remix: what the app does now, not what it did once.",
    "example": "https://kody-w.github.io/learnwithkody/examples/apex-driving-simulator/",
    "_note": "Addressed by id, not label: #btnCam renames itself Chase/Cockpit/Hood as it cycles. Action times are measured from the moment #startBtn becomes clickable, not from scene start, so the same script drives the same lap on a fast laptop or a slow phone. The throttle burst is short on purpose: this sim integrates physics per frame, and an identical longer pull reached 11.7 m/s on one run and 24.7 on the next.",
@@ -52,7 +98,9 @@
       "t": 0,
       "dur": 30,
       "app": "../../../localFirstTools/apex-driving-simulator.html",
-      "ready": { "selector": "#startBtn" },
+      "ready": {
+       "selector": "#startBtn"
+      },
       "lower": {
        "title": "Apex Driving Simulator",
        "bench": "live, not recorded",
@@ -60,17 +108,46 @@
        "fix": "7.28 max vs 0.378 median -> fixed to 2.12"
       },
       "actions": [
-       { "at": 0.2,  "do": "click",   "selector": "#startBtn" },
-       { "at": 1.2,  "do": "keydown", "code": "KeyW" },
-       { "at": 3.4,  "do": "keyup",   "code": "KeyW" },
-       { "at": 5.0,  "do": "click",   "selector": "#btnCam" },
-       { "at": 9.0,  "do": "click",   "selector": "#btnCam" },
-       { "at": 12.0, "do": "keydown", "code": "KeyS" },
-       { "at": 14.5, "do": "keyup",   "code": "KeyS" }
+       {
+        "at": 0.2,
+        "do": "click",
+        "selector": "#startBtn"
+       },
+       {
+        "at": 1.2,
+        "do": "keydown",
+        "code": "KeyW"
+       },
+       {
+        "at": 3.4,
+        "do": "keyup",
+        "code": "KeyW"
+       },
+       {
+        "at": 5.0,
+        "do": "click",
+        "selector": "#btnCam"
+       },
+       {
+        "at": 9.0,
+        "do": "click",
+        "selector": "#btnCam"
+       },
+       {
+        "at": 12.0,
+        "do": "keydown",
+        "code": "KeyS"
+       },
+       {
+        "at": 14.5,
+        "do": "keyup",
+        "code": "KeyS"
+       }
       ]
      }
     ]
-   }
+   },
+   "thumb": "thumbs/apex-live.jpg"
   }
  ]
 }
