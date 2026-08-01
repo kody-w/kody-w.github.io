@@ -76,7 +76,10 @@
      "label": "8 - Your turn"
     }
    ],
-   "thumb": "thumbs/walkthrough-apex.jpg"
+   "thumb": "thumbs/walkthrough-apex.jpg",
+   "width": 1920,
+   "height": 1080,
+   "orientation": "landscape"
   },
   {
    "id": "lwk-apex-live",
@@ -147,7 +150,10 @@
      }
     ]
    },
-   "thumb": "thumbs/apex-live.jpg"
+   "thumb": "thumbs/apex-live.jpg",
+   "width": 1280,
+   "height": 800,
+   "orientation": "landscape"
   }
  ]
 }
