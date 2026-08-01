@@ -62,30 +62,23 @@ lessons:
   - "Why 'it looks photorealistic' is not a correctness claim for a renderer, and how to replace subjective review with a ground-truth invariant that the renderer cannot fake"
   - "How to structure a WebGPU compute path tracer with progressive accumulation so Russian roulette termination stays unbiased via correct survival-probability division"
 ---
-
 <!-- WEBGPU_PATH_TRACER v1 -->
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>A physically-based path tracer that runs as a WebGPU compute shader inside a single HTML file. A Disney-style principled BSDF handles metal, roughness, transmission and index of refraction. Multiple importance sampling combines BSDF sampling with direct light sampling. A BVH keeps ray traversal sub-linear in scene complexity. Russian roulette terminates paths without introducing bias. Samples accumulate progressively, so the image refines the longer you leave it. There is a real aperture for depth of field, and an ACES filmic tonemapper on the output.</p>
+  <p>Every other application in this batch needed an adversarial critic agent to catch it lying about its own quality. This one didn't — because rendering has something the others don't: a ground-truth invariant that physics hands you for free.</p>
+</section>
 
-## What this is
-
-A physically-based path tracer that runs as a WebGPU compute shader inside a single HTML file. A Disney-style principled BSDF handles metal, roughness, transmission and index of refraction. Multiple importance sampling combines BSDF sampling with direct light sampling. A BVH keeps ray traversal sub-linear in scene complexity. Russian roulette terminates paths without introducing bias. Samples accumulate progressively, so the image refines the longer you leave it. There is a real aperture for depth of field, and an ACES filmic tonemapper on the output.
-
-Every other application in this batch needed an adversarial critic agent to catch it lying about its own quality. This one didn't — because rendering has something the others don't: a ground-truth invariant that physics hands you for free.
-
-## Why this is mind-blowing
-
-The **furnace test** is the most elegant correctness check in graphics, and it is the reason this demo needed no correction loop at all.
-
-Put the camera inside a sphere. Make the sphere emit uniform radiance *L* in all directions. Make its surface perfectly white — albedo exactly 1.0, absorbing nothing. Now ask what a correct renderer must produce.
-
-Every pixel must return exactly *L*. Not approximately. Exactly. A perfectly white surface reflects all incoming energy and adds none of its own, so no matter how many times a ray bounces around inside that sphere, the radiance arriving at the camera is unchanged. The scene is a furnace at thermal equilibrium.
-
-Which makes it merciless. If your BSDF isn't correctly normalised, energy leaks and the frame comes out grey. If your multiple-importance-sampling power heuristic weights are wrong, the frame comes out grey or blown out. If your cosine-weighted hemisphere sampling has the wrong PDF, same. If your Russian roulette forgets to divide by the survival probability, you lose energy in exact proportion to your termination rate. Every one of those bugs produces a beautiful, plausible, completely wrong image under normal scene conditions — and every one of them is instantly visible in the furnace.
-
-This renderer passed at **0.49% energy error over 2098 accumulated samples**.
-
-That one number validates the entire light transport chain simultaneously. Then the usual visual checks confirmed the qualitative behaviour: Cornell box colour bleed with the red and green walls tinting the white ceiling, glass showing genuine total internal reflection at grazing angles, and caustics focusing through a transmissive sphere onto the floor.
-
-The broader lesson is about knowing which kind of verification a problem deserves. For the driving simulator, the DAW and the desktop OS, correctness was a matter of judgement, so an adversarial agent measuring pixels and geometry was the right tool. For a path tracer, judgement is actively misleading — "it looks photorealistic" is not a correctness claim, and a renderer that quietly loses 8% of its energy still looks great. When a ground-truth invariant exists, use it, and stop asking anyone's opinion.
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>The <strong>furnace test</strong> is the most elegant correctness check in graphics, and it is the reason this demo needed no correction loop at all.</p>
+  <p>Put the camera inside a sphere. Make the sphere emit uniform radiance <em>L</em> in all directions. Make its surface perfectly white — albedo exactly 1.0, absorbing nothing. Now ask what a correct renderer must produce.</p>
+  <p>Every pixel must return exactly <em>L</em>. Not approximately. Exactly. A perfectly white surface reflects all incoming energy and adds none of its own, so no matter how many times a ray bounces around inside that sphere, the radiance arriving at the camera is unchanged. The scene is a furnace at thermal equilibrium.</p>
+  <p>Which makes it merciless. If your BSDF isn't correctly normalised, energy leaks and the frame comes out grey. If your multiple-importance-sampling power heuristic weights are wrong, the frame comes out grey or blown out. If your cosine-weighted hemisphere sampling has the wrong PDF, same. If your Russian roulette forgets to divide by the survival probability, you lose energy in exact proportion to your termination rate. Every one of those bugs produces a beautiful, plausible, completely wrong image under normal scene conditions — and every one of them is instantly visible in the furnace.</p>
+  <p>This renderer passed at <strong>0.49% energy error over 2098 accumulated samples</strong>.</p>
+  <p>That one number validates the entire light transport chain simultaneously. Then the usual visual checks confirmed the qualitative behaviour: Cornell box colour bleed with the red and green walls tinting the white ceiling, glass showing genuine total internal reflection at grazing angles, and caustics focusing through a transmissive sphere onto the floor.</p>
+  <p>The broader lesson is about knowing which kind of verification a problem deserves. For the driving simulator, the DAW and the desktop OS, correctness was a matter of judgement, so an adversarial agent measuring pixels and geometry was the right tool. For a path tracer, judgement is actively misleading — "it looks photorealistic" is not a correctness claim, and a renderer that quietly loses 8% of its energy still looks great. When a ground-truth invariant exists, use it, and stop asking anyone's opinion.</p>
+</section>
 
 <aside class="lwk-try-embed">
   <iframe

@@ -58,32 +58,24 @@ lessons:
   - "How to find a spline discontinuity by walking the centreline and comparing per-point heading change against the median — a 19x outlier at the loop-closure seam explained three unrelated-looking visual bugs at once"
   - "How to stabilise a tyre model at v->0 where the slip ratio (omega*R - v)/|v| goes singular, using a relaxation-length transient plus a low-speed force fade instead of clamping"
 ---
-
 <!-- APEX_DRIVING_SIM v1 -->
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>A single self-contained HTML file that is a full racing simulator. No build step, no npm, no asset pipeline — three.js from a CDN and everything else generated procedurally at load: the asphalt, the grass, the kerbing, the trees, the sky.</p>
+  <p>The physics is the point. Each tyre runs a Pacejka-style combined-slip model with a relaxation-length transient, so grip builds and decays over distance travelled rather than snapping instantaneously. Weight transfers longitudinally under braking and laterally through corners, changing the normal load on each corner and therefore the available grip. A 6-speed gearbox with real ratios sits behind a torque curve. ABS, traction control and stability control are individually toggleable and each one measurably changes your lap time. Telemetry traces throttle, brake, steering and slip along the bottom of the screen, and a ghost of your best lap runs alongside you.</p>
+  <p>But the reason this demo exists is the loop that built it. A builder sub-agent wrote the simulator. A completely separate critic agent — running its own headless Chromium over http, not file:// — then tried to destroy it, and was forbidden from accepting any claim that wasn't a number it measured itself.</p>
+  <p>That critic found things no static check could. It sampled the road surface and got RGB [128,130,135] at 0.054 saturation against grass at [48,82,41] and 0.499 — proving the tarmac reads as neutral tarmac. It drove head-on into a barrier at 161 mph and asserted maximum penetration of 0.0000 m. It computed a 12-bit colour histogram of the viewport from outside the page to prove the chase camera never clips inside scenery, driving the worst dominant-colour frame fraction from 0.50 down to 0.111.</p>
+</section>
 
-## What this is
-
-A single self-contained HTML file that is a full racing simulator. No build step, no npm, no asset pipeline — three.js from a CDN and everything else generated procedurally at load: the asphalt, the grass, the kerbing, the trees, the sky.
-
-The physics is the point. Each tyre runs a Pacejka-style combined-slip model with a relaxation-length transient, so grip builds and decays over distance travelled rather than snapping instantaneously. Weight transfers longitudinally under braking and laterally through corners, changing the normal load on each corner and therefore the available grip. A 6-speed gearbox with real ratios sits behind a torque curve. ABS, traction control and stability control are individually toggleable and each one measurably changes your lap time. Telemetry traces throttle, brake, steering and slip along the bottom of the screen, and a ghost of your best lap runs alongside you.
-
-But the reason this demo exists is the loop that built it. A builder sub-agent wrote the simulator. A completely separate critic agent — running its own headless Chromium over http, not file:// — then tried to destroy it, and was forbidden from accepting any claim that wasn't a number it measured itself.
-
-That critic found things no static check could. It sampled the road surface and got RGB [128,130,135] at 0.054 saturation against grass at [48,82,41] and 0.499 — proving the tarmac reads as neutral tarmac. It drove head-on into a barrier at 161 mph and asserted maximum penetration of 0.0000 m. It computed a 12-bit colour histogram of the viewport from outside the page to prove the chase camera never clips inside scenery, driving the worst dominant-colour frame fraction from 0.50 down to 0.111.
-
-## Why this is mind-blowing
-
-The best bug in this build was one that looked like a texture problem and was actually a geometry problem.
-
-By the start/finish line, the asphalt showed a fan of about fifteen dark radial streaks. It read unmistakably as broken skid-mark decals. The builder agent agreed, cleared the skid buffer, reported `skidActive() === 0`, and declared it fixed. The fan was still there.
-
-So the critic stopped looking at pixels and walked the track's 1600 centreline points directly. Median per-point heading change: 0.378 degrees. Maximum: **7.28 degrees** — nineteen times the median — and the six worst values were at indices 1594, 1595, 1596, 1597, 1598 and 0. That is the seam where the loop closes. At the same place, segment length collapsed to 0.194 m against a 0.743 m median.
-
-The spline was not C1-continuous where it closed on itself, and it was being sampled by curve parameter rather than arc length, so points bunched into a cusp at the seam. That one defect produced three symptoms that looked completely unrelated: the asphalt texture's transverse seams compressed into a radiating fan (the "skid marks"); the road ribbon's inner edge offset exceeded the local radius of curvature and folded back over itself, leaving a jagged triangular notch in the grass boundary; and Reset spawned the car at index 0, inside the sharpest 40-degree bend on the circuit, which is why holding the throttle with no steering pinned you against a barrier in three seconds.
-
-Fixed by reshaping the closure control points, resampling by arc length with `arcLengthDivisions` of 6000, and deriving tangents from centred finite differences on the periodic positions. After: max per-point turn **2.12 degrees**, segments **0.648 / 0.649 / 0.650 m**, and the worst curvature relocated to index 727 — an actual corner. Holding throttle from Reset now stays on track through 63.7 mph.
-
-Three bugs, one root cause, found by refusing to look at the screenshot and reading the numbers instead.
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>The best bug in this build was one that looked like a texture problem and was actually a geometry problem.</p>
+  <p>By the start/finish line, the asphalt showed a fan of about fifteen dark radial streaks. It read unmistakably as broken skid-mark decals. The builder agent agreed, cleared the skid buffer, reported <code>skidActive() === 0</code>, and declared it fixed. The fan was still there.</p>
+  <p>So the critic stopped looking at pixels and walked the track's 1600 centreline points directly. Median per-point heading change: 0.378 degrees. Maximum: <strong>7.28 degrees</strong> — nineteen times the median — and the six worst values were at indices 1594, 1595, 1596, 1597, 1598 and 0. That is the seam where the loop closes. At the same place, segment length collapsed to 0.194 m against a 0.743 m median.</p>
+  <p>The spline was not C1-continuous where it closed on itself, and it was being sampled by curve parameter rather than arc length, so points bunched into a cusp at the seam. That one defect produced three symptoms that looked completely unrelated: the asphalt texture's transverse seams compressed into a radiating fan (the "skid marks"); the road ribbon's inner edge offset exceeded the local radius of curvature and folded back over itself, leaving a jagged triangular notch in the grass boundary; and Reset spawned the car at index 0, inside the sharpest 40-degree bend on the circuit, which is why holding the throttle with no steering pinned you against a barrier in three seconds.</p>
+  <p>Fixed by reshaping the closure control points, resampling by arc length with <code>arcLengthDivisions</code> of 6000, and deriving tangents from centred finite differences on the periodic positions. After: max per-point turn <strong>2.12 degrees</strong>, segments <strong>0.648 / 0.649 / 0.650 m</strong>, and the worst curvature relocated to index 727 — an actual corner. Holding throttle from Reset now stays on track through 63.7 mph.</p>
+  <p>Three bugs, one root cause, found by refusing to look at the screenshot and reading the numbers instead.</p>
+</section>
 
 <aside class="lwk-try-embed">
   <iframe

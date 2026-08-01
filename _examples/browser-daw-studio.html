@@ -58,32 +58,24 @@ lessons:
   - "How to verify an audio export the way a critic should — parse the RIFF/WAVE container, then compute RMS and peak on the decoded samples, so 'export complete' can never mean 'exported silence'"
   - "How to structure a browser DAW so every voice runs in an AudioWorklet on the audio thread while the arrange view, piano roll and automation stay on the main thread with zero glitching"
 ---
-
 <!-- BROWSER_DAW_STUDIO v1 -->
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>A complete digital audio workstation in one HTML file. Multi-track arrange view where clips drag, trim and loop. A piano-roll MIDI editor with velocity. Polyphonic subtractive synthesis — oscillators, filters, ADSR envelopes — running as AudioWorklet processors on the audio thread, not the deprecated ScriptProcessorNode. A sampler. Per-track effect chains with EQ, compressor, delay, reverb and distortion. A mixer with sends and returns. Automation lanes that actually write parameter curves.</p>
+  <p>And it exports. Bounce the whole arrangement to a WAV file, or export each track as a separate stem.</p>
+  <p>That export is where the interesting part of this build happened.</p>
+</section>
 
-## What this is
-
-A complete digital audio workstation in one HTML file. Multi-track arrange view where clips drag, trim and loop. A piano-roll MIDI editor with velocity. Polyphonic subtractive synthesis — oscillators, filters, ADSR envelopes — running as AudioWorklet processors on the audio thread, not the deprecated ScriptProcessorNode. A sampler. Per-track effect chains with EQ, compressor, delay, reverb and distortion. A mixer with sends and returns. Automation lanes that actually write parameter curves.
-
-And it exports. Bounce the whole arrangement to a WAV file, or export each track as a separate stem.
-
-That export is where the interesting part of this build happened.
-
-## Why this is mind-blowing
-
-The DAW sounded perfect during live playback. Every synth voice, every effect, every automation curve. Then a critic sub-agent bounced a mix in a real headless browser, captured the resulting blob, and decoded it.
-
-**Digital silence.** RMS 0.0000. Peak 0.0000. Every synth track rendered as nothing.
-
-The root cause is a genuinely nasty piece of Web Audio behaviour: `OfflineAudioContext` silently drops AudioWorklet `port.postMessage` calls made immediately before `startRendering()`. The patch data — oscillator type, filter cutoff, envelope times — is posted to each worklet processor over its message port, and in an offline context that message never arrives. Every voice then renders with an uninitialised patch, which is to say, nothing at all.
-
-Nothing in a static analysis pass can see this. `node --check` parses fine. A jsdom harness has no audio graph. A unit test that mocks the AudioContext passes trivially. The only way to catch it is to actually render a file and look at the samples — which is exactly what the critic was required to do, because it was forbidden from trusting the DAW's own "export complete" message.
-
-The obvious fix is to sleep before rendering. That is a race: it passes on an idle laptop and fails on a loaded CI box, which is the worst possible kind of "fixed". The real fix is `flushWorklets()` — post a ping to every worklet node, await a pong back from each one on its message port, and only then call `startRendering()`. No timing assumption, deterministic on any machine.
-
-Verified afterwards at the byte level, independently: RIFF/WAVE container, PCM, 2 channels, 48000 Hz, 16-bit, 18.7 seconds, **RMS 0.0419, peak 0.9446**.
-
-The lesson generalises well beyond audio. A build agent that reports "export works" has usually verified that the export *function ran*. A critic that opens the file and measures the amplitude is verifying something entirely different — and only one of those two things is what the user cares about.
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>The DAW sounded perfect during live playback. Every synth voice, every effect, every automation curve. Then a critic sub-agent bounced a mix in a real headless browser, captured the resulting blob, and decoded it.</p>
+  <p><strong>Digital silence.</strong> RMS 0.0000. Peak 0.0000. Every synth track rendered as nothing.</p>
+  <p>The root cause is a genuinely nasty piece of Web Audio behaviour: <code>OfflineAudioContext</code> silently drops AudioWorklet <code>port.postMessage</code> calls made immediately before <code>startRendering()</code>. The patch data — oscillator type, filter cutoff, envelope times — is posted to each worklet processor over its message port, and in an offline context that message never arrives. Every voice then renders with an uninitialised patch, which is to say, nothing at all.</p>
+  <p>Nothing in a static analysis pass can see this. <code>node --check</code> parses fine. A jsdom harness has no audio graph. A unit test that mocks the AudioContext passes trivially. The only way to catch it is to actually render a file and look at the samples — which is exactly what the critic was required to do, because it was forbidden from trusting the DAW's own "export complete" message.</p>
+  <p>The obvious fix is to sleep before rendering. That is a race: it passes on an idle laptop and fails on a loaded CI box, which is the worst possible kind of "fixed". The real fix is <code>flushWorklets()</code> — post a ping to every worklet node, await a pong back from each one on its message port, and only then call <code>startRendering()</code>. No timing assumption, deterministic on any machine.</p>
+  <p>Verified afterwards at the byte level, independently: RIFF/WAVE container, PCM, 2 channels, 48000 Hz, 16-bit, 18.7 seconds, <strong>RMS 0.0419, peak 0.9446</strong>.</p>
+  <p>The lesson generalises well beyond audio. A build agent that reports "export works" has usually verified that the export <em>function ran</em>. A critic that opens the file and measures the amplitude is verifying something entirely different — and only one of those two things is what the user cares about.</p>
+</section>
 
 <aside class="lwk-try-embed">
   <iframe

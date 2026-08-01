@@ -58,35 +58,25 @@ lessons:
   - "How to prove a generated game is good with a control arm: 85% completion for a competent agent against 0% for a random-input baseline, where the GAP is the evidence and either number alone proves nothing"
   - "Why playability cannot be verified by reading code — a game can be syntactically perfect, render correctly and still be mathematically impossible, so the only real test is to play it headlessly before showing anyone"
 ---
-
 <!-- SELF_WRITING_GAME_ENGINE v1 -->
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>An engine that writes games. You describe what you want in plain English, and it synthesises the actual thing — entities, components, systems, physics, win and loss conditions, rendering — and hands you something you can play. All in one HTML file.</p>
+  <p>That description undersells the only part that really matters, which is that <strong>it refuses to show you a game it has not proven is winnable.</strong></p>
+</section>
 
-## What this is
-
-An engine that writes games. You describe what you want in plain English, and it synthesises the actual thing — entities, components, systems, physics, win and loss conditions, rendering — and hands you something you can play. All in one HTML file.
-
-That description undersells the only part that really matters, which is that **it refuses to show you a game it has not proven is winnable.**
-
-## Why this is mind-blowing
-
-The moment worth watching is when the engine throws its own work away.
-
-Candidate 2 was fully generated. Entities, systems, physics, render loop, win condition — a complete, syntactically valid, renderable game. It was then handed to the built-in verifier, played headlessly by a scripted agent, judged **UNWINNABLE**, and discarded. It was never displayed. Candidate 3 was regenerated from the identical prompt and passed.
-
-Almost every generative tool emits its first plausible output and stops there, because plausibility is the only thing it can measure. This one has an opinion about whether the artefact it just produced is actually any good, and — more importantly — the authority to bin it and start over.
-
-The verification design is the part I would steal. It reports **two** numbers, not one:
-
-- a scripted competent agent completes the game **85%** of the time
-- a random-input baseline completes it **0%** of the time
-
-Either number in isolation proves nothing at all. High skilled-completion with high random-completion means the game effectively plays itself and there is no game there. Low random-completion paired with low skilled-completion means you have generated something impossible. It is the **gap** that carries the evidence: the game is winnable through skill, and it is not winnable by accident.
-
-That is a control arm, and it is the difference between a test and a demonstration.
-
-The reason all of this is necessary is that playability is simply not visible in source code. A generated game can be perfectly formed, render beautifully, have a coherent win condition, and be mathematically impossible to complete — a platform placed one pixel beyond the maximum jump arc, a key spawned inside a wall, a timer shorter than the fastest possible route. No amount of reading finds those. No linter, no type checker, no review.
-
-The only way to know whether a game can be beaten is for something to actually go and beat it. So that is what happens, every time, before you ever see it.
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>The moment worth watching is when the engine throws its own work away.</p>
+  <p>Candidate 2 was fully generated. Entities, systems, physics, render loop, win condition — a complete, syntactically valid, renderable game. It was then handed to the built-in verifier, played headlessly by a scripted agent, judged <strong>UNWINNABLE</strong>, and discarded. It was never displayed. Candidate 3 was regenerated from the identical prompt and passed.</p>
+  <p>Almost every generative tool emits its first plausible output and stops there, because plausibility is the only thing it can measure. This one has an opinion about whether the artefact it just produced is actually any good, and — more importantly — the authority to bin it and start over.</p>
+  <p>The verification design is the part I would steal. It reports <strong>two</strong> numbers, not one:</p>
+  <p>- a scripted competent agent completes the game <strong>85%</strong> of the time - a random-input baseline completes it <strong>0%</strong> of the time</p>
+  <p>Either number in isolation proves nothing at all. High skilled-completion with high random-completion means the game effectively plays itself and there is no game there. Low random-completion paired with low skilled-completion means you have generated something impossible. It is the <strong>gap</strong> that carries the evidence: the game is winnable through skill, and it is not winnable by accident.</p>
+  <p>That is a control arm, and it is the difference between a test and a demonstration.</p>
+  <p>The reason all of this is necessary is that playability is simply not visible in source code. A generated game can be perfectly formed, render beautifully, have a coherent win condition, and be mathematically impossible to complete — a platform placed one pixel beyond the maximum jump arc, a key spawned inside a wall, a timer shorter than the fastest possible route. No amount of reading finds those. No linter, no type checker, no review.</p>
+  <p>The only way to know whether a game can be beaten is for something to actually go and beat it. So that is what happens, every time, before you ever see it.</p>
+</section>
 
 <aside class="lwk-try-embed">
   <iframe

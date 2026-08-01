@@ -62,28 +62,22 @@ lessons:
   - "Why a single review pass ships either the pancake or the spikes: correcting flat terrain overshot into cones, and only re-critiquing after each fix converged on ridge exponent 1.65 with terracing and flat valley floors"
   - "How to build emergent puzzles from composed physics — fire propagation feeding a thermal updraft feeding paraglider lift — so shrines are solved by system interaction rather than scripted triggers"
 ---
-
 <!-- OPEN_WORLD_EXPLORER v1 -->
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>An open world in a single HTML file. The terrain is procedurally generated with ridged noise, hydraulic-style erosion and terracing, so valleys have floors and ridgelines have shoulders. You can climb essentially anything, governed by a stamina economy that makes route selection a real decision. You have a paraglider.</p>
+  <p>The part worth caring about is that the systems compose. Fire spreads through connected vegetation. Burning vegetation produces a thermal updraft. That updraft gives your paraglider lift. None of those three things knows about the puzzle design — but together they solve shrines. There is a day/night cycle, weather, and temperature that feeds back into the stamina model.</p>
+</section>
 
-## What this is
-
-An open world in a single HTML file. The terrain is procedurally generated with ridged noise, hydraulic-style erosion and terracing, so valleys have floors and ridgelines have shoulders. You can climb essentially anything, governed by a stamina economy that makes route selection a real decision. You have a paraglider.
-
-The part worth caring about is that the systems compose. Fire spreads through connected vegetation. Burning vegetation produces a thermal updraft. That updraft gives your paraglider lift. None of those three things knows about the puzzle design — but together they solve shrines. There is a day/night cycle, weather, and temperature that feeds back into the stamina model.
-
-## Why this is mind-blowing
-
-The best catch in this build is almost funny: **the grass was taller than the player.**
-
-Every screenshot looked lush. A dense green field reads as "good grass" instantly, and every reviewer — human or agent — nodded past it. So the critic stopped looking and measured blade height against the player capsule instead.
-
-Grass was rendering at **44% to 152% of player height**. The character was wading through a field of waist-high to overhead green slabs, and it looked fine, because "lush" and "correct" are different properties and only one of them is visible at a glance. Retuned to **11-23%**, which is what grass actually looks like from eye level.
-
-Then the terrain fix broke the terrain, which is exactly why you loop rather than review. The initial pass corrected the world for being too flat — and overcorrected it into spiky cones. Technically more dramatic. Visually ridiculous. A second critique retuned the ridge exponent from 2.0 to 1.65 and added terracing and flat valley floors. A single review pass would have confidently shipped either the pancake or the spikes. Only a loop that re-critiques *after* every fix converges on the version in between.
-
-And the systems chain genuinely chains. Verified end to end in a real browser, not asserted: set fire to vegetation, watch it propagate through connected plants, watch the burn generate a thermal, and then ride it — the HUD reading **"Glide — THERMAL +13.6m/s"** mid-ascent. A shrine was then solved by that same mechanic with the log confirming **"Shrine solved! Fire climbed the trellis."**
-
-Nothing scripted that. The fire system doesn't know what a shrine is. The thermal doesn't know what a paraglider is. They just each behave correctly and the puzzle falls out of the overlap — which is the entire trick Breath of the Wild is built on, and the only part of it worth copying.
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>The best catch in this build is almost funny: <strong>the grass was taller than the player.</strong></p>
+  <p>Every screenshot looked lush. A dense green field reads as "good grass" instantly, and every reviewer — human or agent — nodded past it. So the critic stopped looking and measured blade height against the player capsule instead.</p>
+  <p>Grass was rendering at <strong>44% to 152% of player height</strong>. The character was wading through a field of waist-high to overhead green slabs, and it looked fine, because "lush" and "correct" are different properties and only one of them is visible at a glance. Retuned to <strong>11-23%</strong>, which is what grass actually looks like from eye level.</p>
+  <p>Then the terrain fix broke the terrain, which is exactly why you loop rather than review. The initial pass corrected the world for being too flat — and overcorrected it into spiky cones. Technically more dramatic. Visually ridiculous. A second critique retuned the ridge exponent from 2.0 to 1.65 and added terracing and flat valley floors. A single review pass would have confidently shipped either the pancake or the spikes. Only a loop that re-critiques <em>after</em> every fix converges on the version in between.</p>
+  <p>And the systems chain genuinely chains. Verified end to end in a real browser, not asserted: set fire to vegetation, watch it propagate through connected plants, watch the burn generate a thermal, and then ride it — the HUD reading <strong>"Glide — THERMAL +13.6m/s"</strong> mid-ascent. A shrine was then solved by that same mechanic with the log confirming <strong>"Shrine solved! Fire climbed the trellis."</strong></p>
+  <p>Nothing scripted that. The fire system doesn't know what a shrine is. The thermal doesn't know what a paraglider is. They just each behave correctly and the puzzle falls out of the overlap — which is the entire trick Breath of the Wild is built on, and the only part of it worth copying.</p>
+</section>
 
 <aside class="lwk-try-embed">
   <iframe

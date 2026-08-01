@@ -57,30 +57,23 @@ lessons:
   - "How to critique so the next pass over-delivers: naming two concrete reproducible symptoms produced a fix plus two additional self-found defects (a quickSort crash and a missing XLSX importer)"
   - "How to build a spreadsheet formula engine on a dependency graph with topological recalculation, so array formulas and spill ranges stay correct without re-evaluating the whole sheet"
 ---
-
 <!-- HYPERSHEET v1 -->
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>A spreadsheet in a single HTML file, aimed squarely at Excel. The formula engine is built on a real dependency graph with topological recalculation rather than a re-evaluate-everything loop, so a change to one cell updates exactly the cells that depend on it, in the right order. There are over 200 functions, array formulas with spill ranges, and circular reference detection. Pivot tables, charts, conditional formatting, sorting and filtering. Multiple sheets with cross-sheet references. Undo/redo, freeze panes, and XLSX import and export. The grid renders to canvas so it stays responsive at large row counts.</p>
+  <p>The engine was the easy part. The bugs were somewhere else entirely.</p>
+</section>
 
-## What this is
-
-A spreadsheet in a single HTML file, aimed squarely at Excel. The formula engine is built on a real dependency graph with topological recalculation rather than a re-evaluate-everything loop, so a change to one cell updates exactly the cells that depend on it, in the right order. There are over 200 functions, array formulas with spill ranges, and circular reference detection. Pivot tables, charts, conditional formatting, sorting and filtering. Multiple sheets with cross-sheet references. Undo/redo, freeze panes, and XLSX import and export. The grid renders to canvas so it stays responsive at large row counts.
-
-The engine was the easy part. The bugs were somewhere else entirely.
-
-## Why this is mind-blowing
-
-The formula engine came out genuinely strong on the first pass. What was broken was everything a person does without thinking about it.
-
-Type a long label into A1 while B1 is empty. In Excel — and in every spreadsheet since roughly 1985 — that text spills across into B1, C1, and onward until it hits a cell with content. In this build it clipped hard at the cell boundary.
-
-Nobody writes that in a spec. There is no line item called "text should overflow into adjacent empty cells". It is forty years of accumulated muscle memory that every user has and no requirements document contains, which makes it exactly the class of defect an agent building from a feature list will produce with total confidence.
-
-The second one was similar in flavour: inserting a chart placed it **directly on top of the range it was charting**, hiding the numbers it existed to visualise. Individually trivial. Together, they are the difference between a spreadsheet and a demo of a spreadsheet.
-
-Neither was findable by reading the source. Both took about ten seconds to find by driving the application the way a person would.
-
-The part I did not expect was what happened after the handoff. Sent back with those two concrete, reproducible symptoms, the builder agent ran eleven in-browser checks of its own, fixed both — and then found two more defects nobody had asked about: a crash in `quickSort`, and a missing XLSX importer.
-
-That pattern held across this whole batch. A vague critique ("the UX feels off") produces a defensive reply. A critique that names a specific reproducible symptom seems to recalibrate the agent's own standard, and the next pass consistently over-delivers on what was actually requested.
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>The formula engine came out genuinely strong on the first pass. What was broken was everything a person does without thinking about it.</p>
+  <p>Type a long label into A1 while B1 is empty. In Excel — and in every spreadsheet since roughly 1985 — that text spills across into B1, C1, and onward until it hits a cell with content. In this build it clipped hard at the cell boundary.</p>
+  <p>Nobody writes that in a spec. There is no line item called "text should overflow into adjacent empty cells". It is forty years of accumulated muscle memory that every user has and no requirements document contains, which makes it exactly the class of defect an agent building from a feature list will produce with total confidence.</p>
+  <p>The second one was similar in flavour: inserting a chart placed it <strong>directly on top of the range it was charting</strong>, hiding the numbers it existed to visualise. Individually trivial. Together, they are the difference between a spreadsheet and a demo of a spreadsheet.</p>
+  <p>Neither was findable by reading the source. Both took about ten seconds to find by driving the application the way a person would.</p>
+  <p>The part I did not expect was what happened after the handoff. Sent back with those two concrete, reproducible symptoms, the builder agent ran eleven in-browser checks of its own, fixed both — and then found two more defects nobody had asked about: a crash in <code>quickSort</code>, and a missing XLSX importer.</p>
+  <p>That pattern held across this whole batch. A vague critique ("the UX feels off") produces a defensive reply. A critique that names a specific reproducible symptom seems to recalibrate the agent's own standard, and the next pass consistently over-delivers on what was actually requested.</p>
+</section>
 
 <aside class="lwk-try-embed">
   <iframe

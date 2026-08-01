@@ -59,32 +59,24 @@ lessons:
   - "How to override an agent that says 'cannot reproduce' — stop arguing from screenshots and dump getBoundingClientRect and getComputedStyle at each interaction step until the geometry names the culprit"
   - "Why real `ls` emits one entry per line when stdout is not a TTY, and why a toy shell that always prints space-separated silently breaks every pipeline built on top of it"
 ---
-
 <!-- WEBOS_DESKTOP v1 -->
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>A desktop operating system that is one HTML file. Windows drag, resize, minimise and maximise with a real z-order and focus stack. The dock magnifies on hover. The menu bar changes per application. There is Mission Control, there are virtual desktops, there is a Spotlight-style launcher with fuzzy search. A file manager sits on top of OPFS — the browser's real origin-private file system — so files genuinely persist. There is a text editor, a terminal, a notification centre, and window snapping.</p>
+  <p>Because it uses OPFS, workers and module scripts, it has to be served over <code>http://</code>. Open it from <code>file://</code> and half of it silently fails — which is itself one of the more useful things this build taught.</p>
+</section>
 
-## What this is
-
-A desktop operating system that is one HTML file. Windows drag, resize, minimise and maximise with a real z-order and focus stack. The dock magnifies on hover. The menu bar changes per application. There is Mission Control, there are virtual desktops, there is a Spotlight-style launcher with fuzzy search. A file manager sits on top of OPFS — the browser's real origin-private file system — so files genuinely persist. There is a text editor, a terminal, a notification centre, and window snapping.
-
-Because it uses OPFS, workers and module scripts, it has to be served over `http://`. Open it from `file://` and half of it silently fails — which is itself one of the more useful things this build taught.
-
-## Why this is mind-blowing
-
-This is the build where an agent told me the bug did not exist, and the geometry told me it did.
-
-A critic screenshot showed the desktop clipped to roughly 460 pixels wide with a black void filling everything to the right. The builder sub-agent loaded the same file, saw a perfectly normal desktop, and reported that it could not reproduce the issue.
-
-Rather than trade screenshots, the critic wrote a probe that dumped `getBoundingClientRect` and `getComputedStyle` for the desktop root at every step of the interaction sequence. The result was unambiguous: after a specific click, the desktop root sat at **x = -1138** with `transform: none`.
-
-That combination is the whole diagnosis. A uniform offset with no transform applied is not a layout collapse and not a CSS bug — it is a **scroll**. The document itself had scrolled sideways by 1138 pixels.
-
-From there the cause fell out quickly: `#win-spaces-row` was 3200 pixels wide inside a 1600 pixel viewport and was not clipped, which quietly made the entire document horizontally scrollable. Clicking a control then triggered the browser's native `scrollIntoView` on focus, which dragged the whole UI permanently off-screen. The fix was `overflow: hidden` plus a scroll-reset listener — and deleting a set of dead `#spaces` / `.space` rules that had been sitting there unnoticed. Verified afterwards at x = 0 in every state.
-
-The terminal produced the other favourite bug. `ls` correctly listed two `.txt` files. But `ls | grep txt | wc -l` returned **1**.
-
-The shell was printing every entry space-separated on a single line. `grep` matched that one line, `wc -l` counted one line, and the answer was wrong — while `ls` on its own looked completely correct. Real `ls` emits one entry per line when stdout is not a TTY, and that behaviour is precisely why Unix pipelines compose at all. The terminal now models TTY-versus-piped stdout properly: `ls | grep txt | wc -l` gives 2, `ls | wc -l` gives 6, `grep -c` gives 2.
-
-Both bugs share a shape. Each one looked fine through the front door and was only visible to something willing to measure instead of look.
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>This is the build where an agent told me the bug did not exist, and the geometry told me it did.</p>
+  <p>A critic screenshot showed the desktop clipped to roughly 460 pixels wide with a black void filling everything to the right. The builder sub-agent loaded the same file, saw a perfectly normal desktop, and reported that it could not reproduce the issue.</p>
+  <p>Rather than trade screenshots, the critic wrote a probe that dumped <code>getBoundingClientRect</code> and <code>getComputedStyle</code> for the desktop root at every step of the interaction sequence. The result was unambiguous: after a specific click, the desktop root sat at <strong>x = -1138</strong> with <code>transform: none</code>.</p>
+  <p>That combination is the whole diagnosis. A uniform offset with no transform applied is not a layout collapse and not a CSS bug — it is a <strong>scroll</strong>. The document itself had scrolled sideways by 1138 pixels.</p>
+  <p>From there the cause fell out quickly: <code>#win-spaces-row</code> was 3200 pixels wide inside a 1600 pixel viewport and was not clipped, which quietly made the entire document horizontally scrollable. Clicking a control then triggered the browser's native <code>scrollIntoView</code> on focus, which dragged the whole UI permanently off-screen. The fix was <code>overflow: hidden</code> plus a scroll-reset listener — and deleting a set of dead <code>#spaces</code> / <code>.space</code> rules that had been sitting there unnoticed. Verified afterwards at x = 0 in every state.</p>
+  <p>The terminal produced the other favourite bug. <code>ls</code> correctly listed two <code>.txt</code> files. But <code>ls | grep txt | wc -l</code> returned <strong>1</strong>.</p>
+  <p>The shell was printing every entry space-separated on a single line. <code>grep</code> matched that one line, <code>wc -l</code> counted one line, and the answer was wrong — while <code>ls</code> on its own looked completely correct. Real <code>ls</code> emits one entry per line when stdout is not a TTY, and that behaviour is precisely why Unix pipelines compose at all. The terminal now models TTY-versus-piped stdout properly: <code>ls | grep txt | wc -l</code> gives 2, <code>ls | wc -l</code> gives 6, <code>grep -c</code> gives 2.</p>
+  <p>Both bugs share a shape. Each one looked fine through the front door and was only visible to something willing to measure instead of look.</p>
+</section>
 
 <aside class="lwk-try-embed">
   <iframe

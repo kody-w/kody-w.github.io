@@ -57,30 +57,23 @@ lessons:
   - "How to catch defects on paths the builder never exercises — a refresh rate they don't own, and a self-test tab they wrote but never clicked — by systematically opening every surface the app ships"
   - "How a stale constant in a test harness (rom.length === 40976 against a 24592-byte ROM) makes correct code report as broken, and why you check the assertion before you 'fix' the implementation"
 ---
-
 <!-- NES_EMULATOR_STUDIO v1 -->
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>A NES emulator in one HTML file, aimed at Mesen's accuracy bar. The 6502 core is cycle-accurate and implements the unofficial opcodes that real games actually rely on. The PPU is scanline-accurate with correct sprite-zero hit and sprite overflow. The APU renders all five channels — two pulses, triangle, noise and DMC — through an AudioWorklet. There is mapper support, save states, rewind, and a genuine debugger: disassembly, breakpoints, a hex editor, PPU pattern and nametable viewers, and CPU tracing.</p>
+  <p>Both of the interesting bugs in this build lived somewhere the builder agent structurally could not see.</p>
+</section>
 
-## What this is
-
-A NES emulator in one HTML file, aimed at Mesen's accuracy bar. The 6502 core is cycle-accurate and implements the unofficial opcodes that real games actually rely on. The PPU is scanline-accurate with correct sprite-zero hit and sprite overflow. The APU renders all five channels — two pulses, triangle, noise and DMC — through an AudioWorklet. There is mapper support, save states, rewind, and a genuine debugger: disassembly, breakpoints, a hex editor, PPU pattern and nametable viewers, and CPU tracing.
-
-Both of the interesting bugs in this build lived somewhere the builder agent structurally could not see.
-
-## Why this is mind-blowing
-
-The first bug announced itself in a place nobody thinks to look: **the FPS counter said 120.**
-
-The main loop advanced exactly one emulated frame per `requestAnimationFrame` callback. On a 60Hz monitor that happens to be correct, which is why it survived every round of review. On a 120Hz display — which is what the critic's headless Chromium reported — the emulator ran at literally **double speed**, with all the music pitched an octave high.
-
-There is nothing wrong-looking about the code. `requestAnimationFrame` is the correct way to schedule rendering; it is simply the wrong thing to derive *simulation time* from. The NES runs at 60.0988 Hz, which is not any display's refresh rate, so the fix is a wall-clock accumulator that emits however many emulated frames the elapsed real time calls for, plus a `resetPacing()` guard so a stalled tab doesn't come back and try to catch up on 400 frames at once. Measured at 120Hz afterwards: **1200 frames per 10 seconds dropped to 599.**
-
-The second bug was better, because the emulator had already found it and nobody had listened.
-
-It ships with a built-in **Self-Test** tab — 26 checks covering CPU flags, addressing modes, PPU timing and APU output. The critic clicked it, because a systematic pass clicks everything. It reported **4 FAILED / 26**.
-
-The emulator was fine. The *test harness* was wrong: the render checks asserted `rom.length === 40976` against a test ROM that is actually 24592 bytes. A stale constant, failing honestly, in a panel that had been written and then never opened. Now 26/26 with zero failures.
-
-Both defects share the same shape, and it is the strongest argument I know for an adversarial verification pass. Neither one is reachable by re-reading the source. One required hardware the builder didn't have; the other required clicking a tab the builder had written but never used. No amount of careful code review finds either. Something has to actually go and open the doors.
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>The first bug announced itself in a place nobody thinks to look: <strong>the FPS counter said 120.</strong></p>
+  <p>The main loop advanced exactly one emulated frame per <code>requestAnimationFrame</code> callback. On a 60Hz monitor that happens to be correct, which is why it survived every round of review. On a 120Hz display — which is what the critic's headless Chromium reported — the emulator ran at literally <strong>double speed</strong>, with all the music pitched an octave high.</p>
+  <p>There is nothing wrong-looking about the code. <code>requestAnimationFrame</code> is the correct way to schedule rendering; it is simply the wrong thing to derive <em>simulation time</em> from. The NES runs at 60.0988 Hz, which is not any display's refresh rate, so the fix is a wall-clock accumulator that emits however many emulated frames the elapsed real time calls for, plus a <code>resetPacing()</code> guard so a stalled tab doesn't come back and try to catch up on 400 frames at once. Measured at 120Hz afterwards: <strong>1200 frames per 10 seconds dropped to 599.</strong></p>
+  <p>The second bug was better, because the emulator had already found it and nobody had listened.</p>
+  <p>It ships with a built-in <strong>Self-Test</strong> tab — 26 checks covering CPU flags, addressing modes, PPU timing and APU output. The critic clicked it, because a systematic pass clicks everything. It reported <strong>4 FAILED / 26</strong>.</p>
+  <p>The emulator was fine. The <em>test harness</em> was wrong: the render checks asserted <code>rom.length === 40976</code> against a test ROM that is actually 24592 bytes. A stale constant, failing honestly, in a panel that had been written and then never opened. Now 26/26 with zero failures.</p>
+  <p>Both defects share the same shape, and it is the strongest argument I know for an adversarial verification pass. Neither one is reachable by re-reading the source. One required hardware the builder didn't have; the other required clicking a tab the builder had written but never used. No amount of careful code review finds either. Something has to actually go and open the doors.</p>
+</section>
 
 <aside class="lwk-try-embed">
   <iframe

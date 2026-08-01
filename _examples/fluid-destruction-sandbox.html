@@ -59,32 +59,24 @@ lessons:
   - "Why 'which scenes has anyone actually run?' is one of the highest-yield questions in a review — five of six scenes had never been executed and contained two serious solver bugs"
   - "How to spot an unbounded impulse in a physics solver by printing particle positions and asserting they stay finite, rather than waiting to see divergence to 1e34 on screen"
 ---
-
 <!-- FLUID_DESTRUCTION_SANDBOX v1 -->
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>A destruction and fluid physics playground in a single HTML file. Voxel structures carry real structural integrity — cut a support and the load path recomputes, and whatever was resting on it falls. Smoke and fire run on a GPU 3D grid. There is SPH-style fluid that pools and splashes, cloth, and soft bodies. Explosions couple into all of it at once: a shockwave through the voxels, displacement in the smoke, waves across the fluid, tearing in the cloth.</p>
+  <p>It arrived completely non-functional.</p>
+</section>
 
-## What this is
-
-A destruction and fluid physics playground in a single HTML file. Voxel structures carry real structural integrity — cut a support and the load path recomputes, and whatever was resting on it falls. Smoke and fire run on a GPU 3D grid. There is SPH-style fluid that pools and splashes, cloth, and soft bodies. Explosions couple into all of it at once: a shockwave through the voxels, displacement in the smoke, waves across the fluid, tearing in the cloth.
-
-It arrived completely non-functional.
-
-## Why this is mind-blowing
-
-The first time I opened it, I got a black screen and exactly one line in the console:
-
-> `Shader compile: 'sampler3D': No precision specified`
-
-That is the entire application, taken down by a missing declaration.
-
-In GLSL ES 3.00, `sampler2D` has a default precision qualifier, so you can declare one and never think about it. `sampler3D` **does not**. If you use a 3D texture sampler — which any GPU fluid solver on a volumetric grid must — you have to write `precision highp sampler3D;` yourself or the shader will not compile.
-
-The file was well-formed. It was well-structured. `node --check` was perfectly happy with it. Every static analysis pass you could run said the code was fine, and it was fine, and it also did absolutely nothing. This is the single clearest example in the whole batch of why an agent's self-verification cannot substitute for actually opening the thing in a browser with a real GPU attached. One line fixed it.
-
-Once it rendered, the more interesting question turned out not to be about the code at all. It was: **which scenes has anybody actually run?**
-
-The answer was one out of six. Five scenes had been written, shipped, and never once executed by anyone — human or agent. Running them immediately surfaced two serious solver bugs. Explosion particle positions were diverging to **1e34**, an unbounded impulse integrating without any clamp. And rigid bodies were tunnelling straight through the floor, because the contact normal was flipped — so the solver was pushing penetrating bodies *further into* the surface instead of out of it.
-
-Neither is exotic. Both are the kind of thing you find in the first ten seconds of playing with a scene. They survived because nobody had ever clicked those buttons, and "it loads" had been quietly accepted as "it works".
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>The first time I opened it, I got a black screen and exactly one line in the console:</p>
+  <p>> <code>Shader compile: 'sampler3D': No precision specified</code></p>
+  <p>That is the entire application, taken down by a missing declaration.</p>
+  <p>In GLSL ES 3.00, <code>sampler2D</code> has a default precision qualifier, so you can declare one and never think about it. <code>sampler3D</code> <strong>does not</strong>. If you use a 3D texture sampler — which any GPU fluid solver on a volumetric grid must — you have to write <code>precision highp sampler3D;</code> yourself or the shader will not compile.</p>
+  <p>The file was well-formed. It was well-structured. <code>node --check</code> was perfectly happy with it. Every static analysis pass you could run said the code was fine, and it was fine, and it also did absolutely nothing. This is the single clearest example in the whole batch of why an agent's self-verification cannot substitute for actually opening the thing in a browser with a real GPU attached. One line fixed it.</p>
+  <p>Once it rendered, the more interesting question turned out not to be about the code at all. It was: <strong>which scenes has anybody actually run?</strong></p>
+  <p>The answer was one out of six. Five scenes had been written, shipped, and never once executed by anyone — human or agent. Running them immediately surfaced two serious solver bugs. Explosion particle positions were diverging to <strong>1e34</strong>, an unbounded impulse integrating without any clamp. And rigid bodies were tunnelling straight through the floor, because the contact normal was flipped — so the solver was pushing penetrating bodies <em>further into</em> the surface instead of out of it.</p>
+  <p>Neither is exotic. Both are the kind of thing you find in the first ten seconds of playing with a scene. They survived because nobody had ever clicked those buttons, and "it loads" had been quietly accepted as "it works".</p>
+</section>
 
 <aside class="lwk-try-embed">
   <iframe

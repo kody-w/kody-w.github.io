@@ -59,26 +59,21 @@ lessons:
   - "How content-based auto-naming works in real design tools (a text layer takes its name from its content on first commit) and why its absence is invisible in code review but obvious on first open"
   - "How deleting a hovered object leaves a stale app.hover reference that crashes on the next pointer move, and why delete paths need to clear every cached selection/hover handle"
 ---
-
 <!-- VECTOR_DESIGN_STUDIO v1 -->
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>A vector design tool in one HTML file, aimed at Figma. A pen tool with genuine bezier node editing — add, delete, convert between corner and smooth, drag handles independently. Real boolean path operations (union, subtract, intersect, exclude) that work on actual curves rather than only on axis-aligned rectangles. Auto-layout with constraints. Components with instance overrides. An infinite canvas with smooth pan and zoom. A layers panel, SVG and PNG export, and live multiplayer over BroadcastChannel with visible cursors across tabs.</p>
+  <p>The engine was fine. The first thing you see was not.</p>
+</section>
 
-## What this is
-
-A vector design tool in one HTML file, aimed at Figma. A pen tool with genuine bezier node editing — add, delete, convert between corner and smooth, drag handles independently. Real boolean path operations (union, subtract, intersect, exclude) that work on actual curves rather than only on axis-aligned rectangles. Auto-layout with constraints. Components with instance overrides. An infinite canvas with smooth pan and zoom. A layers panel, SVG and PNG export, and live multiplayer over BroadcastChannel with visible cursors across tabs.
-
-The engine was fine. The first thing you see was not.
-
-## Why this is mind-blowing
-
-Open the app and look at the layers panel: **about twelve text layers, every one of them named `r`.**
-
-A wall of identical single-character entries where the layer names should be. It looks like the tool is broken at a fundamental level. It isn't — the bezier engine, the boolean ops and the multiplayer all worked correctly the whole time. But it is the first thing a user sees, and it makes everything underneath it look untrustworthy.
-
-Two causes had stacked on top of each other. First, a literal hardcoded `name:'r'` sitting inside the loop that builds the demo document — presumably a placeholder typed once and never revisited. Second, and more interesting, the text tool had **no content-based auto-naming at all**. In Figma, the moment you commit text, the layer takes its name from what you typed. That behaviour is so ambient that nobody writes it down as a requirement, so nobody implements it. Layers now read "Refund", "Umbrella", "$2,100", "Acme Inc".
-
-The wider point is that **seed content is part of the product**. It gets written in thirty seconds while building something else, it never gets reviewed because it isn't "real" code, and it is the very first thing every single user encounters. A design tool that opens to a document that looks broken has already lost the argument before anyone draws a line.
-
-There was a second finding on the rebound. Sent back to fix the naming, the builder agent also discovered that deleting a hovered object left `app.hover` pointing at an object that no longer existed — so the next pointer move threw. That is a classic lifecycle bug: the delete path cleared the selection but not every cached handle pointing at the same object. Fixed, and verified alongside 34 out of 34 in-browser checks covering the boolean operations, SVG export and the multiplayer session.
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>Open the app and look at the layers panel: <strong>about twelve text layers, every one of them named <code>r</code>.</strong></p>
+  <p>A wall of identical single-character entries where the layer names should be. It looks like the tool is broken at a fundamental level. It isn't — the bezier engine, the boolean ops and the multiplayer all worked correctly the whole time. But it is the first thing a user sees, and it makes everything underneath it look untrustworthy.</p>
+  <p>Two causes had stacked on top of each other. First, a literal hardcoded <code>name:'r'</code> sitting inside the loop that builds the demo document — presumably a placeholder typed once and never revisited. Second, and more interesting, the text tool had <strong>no content-based auto-naming at all</strong>. In Figma, the moment you commit text, the layer takes its name from what you typed. That behaviour is so ambient that nobody writes it down as a requirement, so nobody implements it. Layers now read "Refund", "Umbrella", "$2,100", "Acme Inc".</p>
+  <p>The wider point is that <strong>seed content is part of the product</strong>. It gets written in thirty seconds while building something else, it never gets reviewed because it isn't "real" code, and it is the very first thing every single user encounters. A design tool that opens to a document that looks broken has already lost the argument before anyone draws a line.</p>
+  <p>There was a second finding on the rebound. Sent back to fix the naming, the builder agent also discovered that deleting a hovered object left <code>app.hover</code> pointing at an object that no longer existed — so the next pointer move threw. That is a classic lifecycle bug: the delete path cleared the selection but not every cached handle pointing at the same object. Fixed, and verified alongside 34 out of 34 in-browser checks covering the boolean operations, SVG export and the multiplayer session.</p>
+</section>
 
 <aside class="lwk-try-embed">
   <iframe
