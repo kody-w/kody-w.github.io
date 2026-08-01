@@ -1,0 +1,96 @@
+---
+title: "Fluid Destruction Sandbox — a Teardown-grade physics playground in one HTML file that was dead on arrival, because sampler3D has no default precision in GLSL ES"
+slug: fluid-destruction-sandbox
+order: 344
+featured: true
+tagline: "A single-file destruction and fluid sandbox benchmarked against Teardown: voxel structures with real structural integrity propagation, GPU smoke and fire on a 3D grid, SPH-style fluid, cloth, soft bodies, and explosions that couple to all of them. It arrived completely dead — a black screen and one shader error: \"'sampler3D': No precision specified\". Unlike sampler2D, sampler3D has no default precision in GLSL ES 3.00, so a single missing declaration line took the whole app down. One line fixed it. The critic then found explosion positions diverging to 1e34 and rigid bodies falling through the floor from a flipped contact normal."
+category: simulator
+difficulty: advanced
+status: live
+tags:
+  - webgl
+  - fluid-simulation
+  - destruction
+  - voxel-physics
+  - single-file
+stack:
+  - "WebGL2 GPU fluid on a 3D texture grid (GLSL ES 3.00)"
+  - "Voxel structural-integrity propagation + fracture"
+  - "SPH-style fluid, cloth and soft-body solvers"
+  - "playwright-core headless Chromium critic harness (out-of-band)"
+demo: /learnwithkody/demos/326-fluid-destruction-sandbox.html
+repo: https://github.com/kody-w/localFirstTools/blob/main/fluid-destruction-sandbox.html
+highlights:
+  - "DEAD ON ARRIVAL FROM ONE MISSING LINE. The app shipped as a black screen with a single console error: \"Shader compile: 'sampler3D': No precision specified\". In GLSL ES 3.00, `sampler2D` has a default precision but `sampler3D` does not — you must declare `precision highp sampler3D;` yourself. Every static check passed. `node --check` was happy. The file was well-formed, well-structured and completely non-functional, and the only way to know was to open it in a browser with a GPU."
+  - "EXPLOSION POSITIONS DIVERGING TO 1e34. Once it rendered, the critic noted that five of the six scenes had never actually been executed by anyone. Running them surfaced explosion particle positions blowing up to 1e34 — an unbounded impulse integrating without clamping — and rigid bodies tunnelling straight through the floor because the contact normal was flipped, so the solver pushed penetrating bodies further in rather than out."
+  - "'IT LOADS' IS NOT 'IT WORKS'. The most valuable question in this build was not about the code at all: which scenes has anybody actually run? Five of six had never been opened. Two serious solver bugs were sitting in them, invisible to review, waiting for the first user to click a button nobody had clicked."
+prompt: |
+  I want you to build a destruction and fluid physics sandbox at the level of
+  Teardown, with fluid at the level of Houdini. It should be utterly perfect,
+  visually beautiful, with every single thing done at AAA quality — from the
+  structural integrity solver to the GPU fluid to the coupling between them to
+  anything you could think of.
+
+  Voxel structures with real structural integrity — cut a support and the load
+  path recomputes and the thing above it actually falls. GPU-accelerated smoke
+  and fire on a 3D grid. SPH-style fluid that pools, flows and splashes.
+  Cloth. Soft bodies. Explosions that couple to ALL of it: shockwave through
+  the voxels, displacement in the smoke, waves in the fluid, tearing in the
+  cloth.
+
+  Fan out sub-agents and have sub-agents tackle each one individually so that
+  the sandbox is utterly perfect. You should /loop on each item and have a
+  separate sub-agent check it VISUALLY in a real browser with a real GPU. That
+  separate sub-agent should be a really harsh critic.
+
+  The critic must actually open it in a browser and confirm it renders — a
+  shader that fails to compile produces a black screen and passes every static
+  check ever written. Then it must run EVERY scene, not just the default one.
+  Ask which scenes have actually been executed by a human or an agent; any
+  scene nobody has run is a scene with unknown bugs in it. Watch for numerical
+  divergence — print particle positions and confirm they are finite.
+
+  Don't stop until each sub-agent is utterly wowed when compared with actual
+  Teardown. It should literally compare them side by side blind and say which
+  one looks better. ONE self-contained HTML file. /loop until it's utterly
+  perfect. Fan out sub-agents and ultracode.
+lessons:
+  - "In GLSL ES 3.00, sampler3D has NO default precision (unlike sampler2D) — you must declare `precision highp sampler3D;` or the shader fails to compile and the app is a black screen that passes every static check"
+  - "Why 'which scenes has anyone actually run?' is one of the highest-yield questions in a review — five of six scenes had never been executed and contained two serious solver bugs"
+  - "How to spot an unbounded impulse in a physics solver by printing particle positions and asserting they stay finite, rather than waiting to see divergence to 1e34 on screen"
+---
+
+<!-- FLUID_DESTRUCTION_SANDBOX v1 -->
+
+## What this is
+
+A destruction and fluid physics playground in a single HTML file. Voxel structures carry real structural integrity — cut a support and the load path recomputes, and whatever was resting on it falls. Smoke and fire run on a GPU 3D grid. There is SPH-style fluid that pools and splashes, cloth, and soft bodies. Explosions couple into all of it at once: a shockwave through the voxels, displacement in the smoke, waves across the fluid, tearing in the cloth.
+
+It arrived completely non-functional.
+
+## Why this is mind-blowing
+
+The first time I opened it, I got a black screen and exactly one line in the console:
+
+> `Shader compile: 'sampler3D': No precision specified`
+
+That is the entire application, taken down by a missing declaration.
+
+In GLSL ES 3.00, `sampler2D` has a default precision qualifier, so you can declare one and never think about it. `sampler3D` **does not**. If you use a 3D texture sampler — which any GPU fluid solver on a volumetric grid must — you have to write `precision highp sampler3D;` yourself or the shader will not compile.
+
+The file was well-formed. It was well-structured. `node --check` was perfectly happy with it. Every static analysis pass you could run said the code was fine, and it was fine, and it also did absolutely nothing. This is the single clearest example in the whole batch of why an agent's self-verification cannot substitute for actually opening the thing in a browser with a real GPU attached. One line fixed it.
+
+Once it rendered, the more interesting question turned out not to be about the code at all. It was: **which scenes has anybody actually run?**
+
+The answer was one out of six. Five scenes had been written, shipped, and never once executed by anyone — human or agent. Running them immediately surfaced two serious solver bugs. Explosion particle positions were diverging to **1e34**, an unbounded impulse integrating without any clamp. And rigid bodies were tunnelling straight through the floor, because the contact normal was flipped — so the solver was pushing penetrating bodies *further into* the surface instead of out of it.
+
+Neither is exotic. Both are the kind of thing you find in the first ten seconds of playing with a scene. They survived because nobody had ever clicked those buttons, and "it loads" had been quietly accepted as "it works".
+
+<aside class="lwk-try-embed">
+  <iframe
+    src="/learnwithkody/demos/326-fluid-destruction-sandbox.html"
+    title="Fluid Destruction Sandbox — single-file GPU fluid and destruction playground"
+    loading="lazy"
+    style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;background:#000;"
+  ></iframe>
+</aside>

@@ -1,0 +1,90 @@
+---
+title: "Vector Design Studio — a Figma-grade design tool in one HTML file, where twelve layers were all named 'r' because of a single hardcoded string in the demo builder"
+slug: vector-design-studio
+order: 343
+featured: true
+tagline: "A single-file vector design tool benchmarked against Figma: a bezier pen with full node editing, real boolean operations, auto-layout with constraints, components with instance overrides, a live multiplayer canvas over BroadcastChannel, an infinite pan-zoom viewport, and SVG/PNG export. Then the critic opened the layers panel and found about twelve text layers all named 'r' — traced to a literal hardcoded name:'r' inside the demo-document builder loop, plus the total absence of content-based auto-naming. Layers now read 'Refund', 'Umbrella', '$2,100', 'Acme Inc'. The builder then found and fixed a stale hover-reference crash on delete, and passed 34/34 in-browser checks."
+category: tool
+difficulty: advanced
+status: live
+tags:
+  - vector-editor
+  - bezier
+  - boolean-ops
+  - multiplayer
+  - single-file
+stack:
+  - "Canvas renderer with infinite pan/zoom viewport"
+  - "Bezier pen + node editing, real boolean path operations"
+  - "Components with instance overrides + auto-layout constraints"
+  - "BroadcastChannel multiplayer with live cursors"
+demo: /learnwithkody/demos/325-vector-design-studio.html
+repo: https://github.com/kody-w/localFirstTools/blob/main/vector-design-studio.html
+highlights:
+  - "TWELVE LAYERS ALL NAMED 'r'. The layers panel was a wall of identical single-character entries. Two separate causes stacked: a literal hardcoded `name:'r'` inside the demo-document builder loop, and no content-based auto-naming anywhere in the text tool. Figma names a text layer after its content the moment you type; this named everything 'r' forever. Now reads 'Refund', 'Umbrella', '$2,100', 'Acme Inc'."
+  - "THE DEMO CONTENT IS PART OF THE PRODUCT. A design tool that opens to a broken-looking document has failed before the user draws anything, no matter how good the bezier engine underneath is. This bug lived entirely in seed data — the kind of thing that gets written in thirty seconds, never reviewed, and is the first thing every user sees."
+  - "A STALE REFERENCE CRASH FOUND ON THE REBOUND. Sent back to fix the naming, the builder also found that deleting a hovered object left `app.hover` pointing at a freed object, so the next pointer move threw. Fixed and verified alongside 34/34 in-browser checks covering boolean ops, SVG export and the multiplayer session."
+prompt: |
+  I want you to build a vector design tool at the level of Figma. It should be
+  utterly perfect, visually beautiful, with every single thing done at
+  production quality — from the bezier engine to the boolean operations to the
+  multiplayer to anything you could think of.
+
+  A real pen tool with full bezier node editing — add, delete, convert
+  corner/smooth, drag handles independently. Actual boolean path operations:
+  union, subtract, intersect, exclude, on real curves and not just rectangles.
+  Auto-layout with constraints. Components with instance overrides. An
+  infinite canvas with smooth pan and zoom. A proper layers panel. SVG and PNG
+  export. And live multiplayer — two tabs open, cursors visible, edits
+  syncing.
+
+  Fan out sub-agents and have sub-agents tackle each one individually so that
+  the tool is utterly perfect. You should /loop on each item and have a
+  separate sub-agent check it in a real browser. That separate sub-agent
+  should be a really harsh critic.
+
+  The critic must open the app the way a first-time user does and judge what
+  it actually sees — including the demo document it ships with and the layers
+  panel. Seed content is part of the product. If the tool opens to something
+  that looks broken, it has failed before anyone draws a single line, no
+  matter how good the engine is. Then exercise the real paths: run the boolean
+  ops, export SVG, open a second tab and confirm multiplayer syncs.
+
+  Don't stop until each sub-agent is utterly wowed with the quality when
+  compared with actual Figma. It should literally compare them side by side
+  blind and say which one is better. ONE self-contained HTML file. /loop
+  until it's utterly perfect. Fan out sub-agents and ultracode.
+lessons:
+  - "Why seed and demo content is part of the product surface — a design tool that opens to a layers panel full of items named 'r' has failed before the user draws anything, however good the engine is"
+  - "How content-based auto-naming works in real design tools (a text layer takes its name from its content on first commit) and why its absence is invisible in code review but obvious on first open"
+  - "How deleting a hovered object leaves a stale app.hover reference that crashes on the next pointer move, and why delete paths need to clear every cached selection/hover handle"
+---
+
+<!-- VECTOR_DESIGN_STUDIO v1 -->
+
+## What this is
+
+A vector design tool in one HTML file, aimed at Figma. A pen tool with genuine bezier node editing — add, delete, convert between corner and smooth, drag handles independently. Real boolean path operations (union, subtract, intersect, exclude) that work on actual curves rather than only on axis-aligned rectangles. Auto-layout with constraints. Components with instance overrides. An infinite canvas with smooth pan and zoom. A layers panel, SVG and PNG export, and live multiplayer over BroadcastChannel with visible cursors across tabs.
+
+The engine was fine. The first thing you see was not.
+
+## Why this is mind-blowing
+
+Open the app and look at the layers panel: **about twelve text layers, every one of them named `r`.**
+
+A wall of identical single-character entries where the layer names should be. It looks like the tool is broken at a fundamental level. It isn't — the bezier engine, the boolean ops and the multiplayer all worked correctly the whole time. But it is the first thing a user sees, and it makes everything underneath it look untrustworthy.
+
+Two causes had stacked on top of each other. First, a literal hardcoded `name:'r'` sitting inside the loop that builds the demo document — presumably a placeholder typed once and never revisited. Second, and more interesting, the text tool had **no content-based auto-naming at all**. In Figma, the moment you commit text, the layer takes its name from what you typed. That behaviour is so ambient that nobody writes it down as a requirement, so nobody implements it. Layers now read "Refund", "Umbrella", "$2,100", "Acme Inc".
+
+The wider point is that **seed content is part of the product**. It gets written in thirty seconds while building something else, it never gets reviewed because it isn't "real" code, and it is the very first thing every single user encounters. A design tool that opens to a document that looks broken has already lost the argument before anyone draws a line.
+
+There was a second finding on the rebound. Sent back to fix the naming, the builder agent also discovered that deleting a hovered object left `app.hover` pointing at an object that no longer existed — so the next pointer move threw. That is a classic lifecycle bug: the delete path cleared the selection but not every cached handle pointing at the same object. Fixed, and verified alongside 34 out of 34 in-browser checks covering the boolean operations, SVG export and the multiplayer session.
+
+<aside class="lwk-try-embed">
+  <iframe
+    src="/learnwithkody/demos/325-vector-design-studio.html"
+    title="Vector Design Studio — single-file Figma-grade vector editor"
+    loading="lazy"
+    style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;background:#000;"
+  ></iframe>
+</aside>

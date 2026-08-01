@@ -1,0 +1,96 @@
+---
+title: "WebOS Desktop — a macOS-grade windowing OS in one HTML file, where the whole desktop silently teleported to x = -1138 and an agent insisted the bug did not exist"
+slug: webos-desktop
+order: 338
+featured: true
+tagline: "A single-file desktop operating system benchmarked against macOS: draggable and resizable windows with real z-order, a dock with magnification, a menu bar, Mission Control, virtual desktops, a Spotlight-style launcher, a file manager backed by OPFS, a text editor, a terminal with a working pipeline, and notifications. Then a critic agent screenshotted it and found the entire desktop clipped into a black void — and the builder agent replied that it could not reproduce the bug. Hard geometry measurements proved the desktop sat at x = -1138 with transform: none, meaning the document itself had scrolled: a 3200px child in a 1600px viewport plus a scrollIntoView on focus."
+category: tool
+difficulty: advanced
+status: live
+tags:
+  - desktop-os
+  - opfs
+  - window-manager
+  - adversarial-critic
+  - single-file
+stack:
+  - "Vanilla DOM window manager with real z-order + focus stack"
+  - "OPFS-backed file system (requires http://, fails on file://)"
+  - "Terminal with TTY-vs-pipe stdout semantics"
+  - "playwright-core headless Chromium critic harness (out-of-band)"
+demo: /learnwithkody/demos/320-webos-desktop.html
+repo: https://github.com/kody-w/localFirstTools/blob/main/webos-desktop.html
+highlights:
+  - "THE AGENT SAID IT COULDN'T REPRODUCE. THE GEOMETRY SAID OTHERWISE. A screenshot showed the desktop clipped to about 460px with a black void filling the rest. The builder agent ran it, saw a normal desktop, and reported no repro. So the critic wrote a probe that dumped getBoundingClientRect and getComputedStyle at every interaction step, and found the desktop root at x = -1138 with `transform: none`. A uniform offset with no transform is not a layout bug — it is a scroll. The document itself had scrolled sideways."
+  - "ROOT CAUSE: A 3200px CHILD IN A 1600px VIEWPORT. `#win-spaces-row` was 3200px wide and unclipped, which quietly made the whole document horizontally scrollable. Clicking a control then fired the browser's native scrollIntoView on focus, dragging the entire UI permanently off-screen. Fixed with overflow:hidden plus a scroll-reset listener, and by deleting the dead #spaces/.space rules that nobody had noticed were still there."
+  - "THE TERMINAL DIDN'T KNOW WHAT A PIPE WAS. `ls` listed two .txt files, but `ls | grep txt | wc -l` returned 1. The shell printed all entries space-separated on a single line, so downstream `wc -l` counted one line. Real `ls` emits one entry per line when stdout is not a TTY — that is precisely why Unix pipelines work. The terminal now models TTY-vs-piped stdout: ls|grep txt|wc -l -> 2, ls|wc -l -> 6, grep -c -> 2."
+prompt: |
+  I want you to build a desktop operating system in the browser at the level
+  of macOS. It should be utterly perfect, visually beautiful, with every single
+  thing done at Apple quality — from the window compositing to the dock
+  magnification to the animations to anything you could think of.
+
+  Draggable, resizable windows with real z-order and a focus stack. A dock
+  with magnification on hover. A menu bar that changes per app. Mission
+  Control. Virtual desktops. A Spotlight-style launcher with fuzzy search. A
+  file manager backed by a real file system. A text editor. A terminal with a
+  working shell — and I mean working: pipes, redirection, globbing. System
+  notifications. Window snapping.
+
+  Fan out sub-agents and have sub-agents tackle each one individually so that
+  the OS is utterly perfect. You should /loop on each item and have a separate
+  sub-agent check it VISUALLY in a real browser at a real viewport size. That
+  separate sub-agent should be a really harsh critic, and if it doesn't feel
+  like macOS, it should keep going.
+
+  The critic must not accept "works on my machine". If it sees something wrong
+  in a screenshot, it must prove what is wrong by measuring the DOM — dump
+  getBoundingClientRect and getComputedStyle for the elements involved and
+  show the numbers. And it must actually exercise the terminal: run a real
+  pipeline like `ls | grep txt | wc -l` and check the count is right, not just
+  that something printed.
+
+  Don't stop until each sub-agent is utterly wowed with the quality when
+  compared with actual macOS. It should literally compare them side by side
+  blind and say which one looks better. ONE self-contained HTML file. /loop
+  until it's utterly perfect. Fan out sub-agents and ultracode.
+lessons:
+  - "How to tell a scroll from a layout bug: a uniform offset with `transform: none` means the document scrolled, and an oversized unclipped child plus the browser's native scrollIntoView on focus is usually why"
+  - "How to override an agent that says 'cannot reproduce' — stop arguing from screenshots and dump getBoundingClientRect and getComputedStyle at each interaction step until the geometry names the culprit"
+  - "Why real `ls` emits one entry per line when stdout is not a TTY, and why a toy shell that always prints space-separated silently breaks every pipeline built on top of it"
+---
+
+<!-- WEBOS_DESKTOP v1 -->
+
+## What this is
+
+A desktop operating system that is one HTML file. Windows drag, resize, minimise and maximise with a real z-order and focus stack. The dock magnifies on hover. The menu bar changes per application. There is Mission Control, there are virtual desktops, there is a Spotlight-style launcher with fuzzy search. A file manager sits on top of OPFS — the browser's real origin-private file system — so files genuinely persist. There is a text editor, a terminal, a notification centre, and window snapping.
+
+Because it uses OPFS, workers and module scripts, it has to be served over `http://`. Open it from `file://` and half of it silently fails — which is itself one of the more useful things this build taught.
+
+## Why this is mind-blowing
+
+This is the build where an agent told me the bug did not exist, and the geometry told me it did.
+
+A critic screenshot showed the desktop clipped to roughly 460 pixels wide with a black void filling everything to the right. The builder sub-agent loaded the same file, saw a perfectly normal desktop, and reported that it could not reproduce the issue.
+
+Rather than trade screenshots, the critic wrote a probe that dumped `getBoundingClientRect` and `getComputedStyle` for the desktop root at every step of the interaction sequence. The result was unambiguous: after a specific click, the desktop root sat at **x = -1138** with `transform: none`.
+
+That combination is the whole diagnosis. A uniform offset with no transform applied is not a layout collapse and not a CSS bug — it is a **scroll**. The document itself had scrolled sideways by 1138 pixels.
+
+From there the cause fell out quickly: `#win-spaces-row` was 3200 pixels wide inside a 1600 pixel viewport and was not clipped, which quietly made the entire document horizontally scrollable. Clicking a control then triggered the browser's native `scrollIntoView` on focus, which dragged the whole UI permanently off-screen. The fix was `overflow: hidden` plus a scroll-reset listener — and deleting a set of dead `#spaces` / `.space` rules that had been sitting there unnoticed. Verified afterwards at x = 0 in every state.
+
+The terminal produced the other favourite bug. `ls` correctly listed two `.txt` files. But `ls | grep txt | wc -l` returned **1**.
+
+The shell was printing every entry space-separated on a single line. `grep` matched that one line, `wc -l` counted one line, and the answer was wrong — while `ls` on its own looked completely correct. Real `ls` emits one entry per line when stdout is not a TTY, and that behaviour is precisely why Unix pipelines compose at all. The terminal now models TTY-versus-piped stdout properly: `ls | grep txt | wc -l` gives 2, `ls | wc -l` gives 6, `grep -c` gives 2.
+
+Both bugs share a shape. Each one looked fine through the front door and was only visible to something willing to measure instead of look.
+
+<aside class="lwk-try-embed">
+  <iframe
+    src="/learnwithkody/demos/320-webos-desktop.html"
+    title="WebOS Desktop — single-file browser desktop operating system"
+    loading="lazy"
+    style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;background:#000;"
+  ></iframe>
+</aside>

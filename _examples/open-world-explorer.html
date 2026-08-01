@@ -1,0 +1,95 @@
+---
+title: "Open World Explorer — a Breath of the Wild-grade sandbox in one HTML file, where the grass grew to 152% of the player's height and nobody noticed until it was measured"
+slug: open-world-explorer
+order: 341
+featured: true
+tagline: "A single-file open world benchmarked against Breath of the Wild: procedurally generated terrain with erosion, a climb-anything traversal system, a paraglider that rides real thermals, fire that propagates through vegetation and generates the updraft you glide on, physics-driven emergent puzzle shrines, day/night and weather, and a stamina economy that ties it together. The critic measured the grass against the player capsule and found blades rendering at 44 to 152 percent of player height — a field of waist-to-overhead slabs. Fixed to 11-23%. Then the terrain overcorrected into spiky cones and had to be retuned again."
+category: game
+difficulty: advanced
+status: live
+tags:
+  - threejs
+  - open-world
+  - emergent-systems
+  - procedural-terrain
+  - single-file
+stack:
+  - "three.js (CDN, single file)"
+  - "Procedural terrain: ridged noise + erosion + terracing"
+  - "Fire propagation -> thermal updraft -> paraglider lift chain"
+  - "playwright-core headless Chromium critic harness (out-of-band)"
+demo: /learnwithkody/demos/323-open-world-explorer.html
+repo: https://github.com/kody-w/localFirstTools/blob/main/open-world-explorer.html
+highlights:
+  - "THE GRASS WAS TALLER THAN THE PLAYER. Screenshots looked lush and nobody flagged it, because a dense green field reads as 'good grass' at a glance. The critic measured blade height against the player capsule instead and got 44% to 152% of player height — a field of waist-high to overhead slabs the character was wading through. Retuned to 11-23%, which is what grass actually looks like from eye level. It is a good example of a defect that is invisible to judgement and obvious to a ruler."
+  - "THE FIX BROKE SOMETHING ELSE, WHICH IS WHY YOU LOOP. After the terrain was corrected for being too flat it overcorrected into spiky cones — technically 'more dramatic', visually absurd. Retuned again: ridge exponent 2.0 -> 1.65, added terracing and flat valley floors. A single-pass review would have shipped either the pancake or the spikes; only a loop that re-critiques after every fix lands in between."
+  - "THE SYSTEMS CHAIN ACTUALLY CHAINS. Verified end to end in a real browser: set fire to vegetation, the fire propagates through connected plants, the burn generates a thermal updraft, and the paraglider rides it — the HUD reading 'Glide — THERMAL +13.6m/s' mid-ascent. A shrine was then solved by the same mechanic, with the log confirming 'Shrine solved! Fire climbed the trellis.' That is emergent puzzle-solving from composed physics rather than scripted triggers."
+prompt: |
+  I want you to build an open world exploration game at the level of The
+  Legend of Zelda: Breath of the Wild. It should be utterly perfect, visually
+  beautiful, with every single thing done at AAA quality — from the terrain
+  generation to the traversal to the systemic interactions to anything you
+  could think of.
+
+  Procedurally generated terrain with real erosion, not just noise. Climb
+  anything, with a stamina economy that makes route choice matter. A
+  paraglider. And most importantly: SYSTEMS THAT COMPOSE. Fire should spread
+  through vegetation. Burning vegetation should create a thermal updraft. That
+  updraft should give you lift on the paraglider. Puzzles should be solvable
+  by combining those systems in ways I never explicitly scripted.
+
+  Day/night cycle, weather, temperature. Shrines that are physics puzzles.
+
+  Fan out sub-agents and have sub-agents tackle each one individually so that
+  the world is utterly perfect. You should /loop on each item and have a
+  separate sub-agent check it VISUALLY in a real browser. That separate
+  sub-agent should be a really harsh critic, and if it doesn't look and feel
+  triple A, it should keep going.
+
+  Do not let the critic judge scale by eye. Make it MEASURE things against the
+  player character — how tall is the grass relative to the player capsule, how
+  steep is the terrain, how far is the draw distance. "Looks lush" is not an
+  acceptable report. And make it actually play the systems chain end to end:
+  light a fire, confirm it propagates, confirm the thermal forms, confirm the
+  paraglider gains altitude, and quote the numbers off the HUD.
+
+  Don't stop until each sub-agent is utterly wowed when compared with actual
+  Breath of the Wild. It should literally compare them side by side blind and
+  say which one looks better. ThreeJS, ONE self-contained HTML file. /loop
+  until it's utterly perfect. Fan out sub-agents and ultracode.
+lessons:
+  - "How to catch scale bugs that are invisible to judgement — measure world objects as a ratio of player height rather than asking whether a screenshot 'looks right', which is how grass at 152% of player height ships unnoticed"
+  - "Why a single review pass ships either the pancake or the spikes: correcting flat terrain overshot into cones, and only re-critiquing after each fix converged on ridge exponent 1.65 with terracing and flat valley floors"
+  - "How to build emergent puzzles from composed physics — fire propagation feeding a thermal updraft feeding paraglider lift — so shrines are solved by system interaction rather than scripted triggers"
+---
+
+<!-- OPEN_WORLD_EXPLORER v1 -->
+
+## What this is
+
+An open world in a single HTML file. The terrain is procedurally generated with ridged noise, hydraulic-style erosion and terracing, so valleys have floors and ridgelines have shoulders. You can climb essentially anything, governed by a stamina economy that makes route selection a real decision. You have a paraglider.
+
+The part worth caring about is that the systems compose. Fire spreads through connected vegetation. Burning vegetation produces a thermal updraft. That updraft gives your paraglider lift. None of those three things knows about the puzzle design — but together they solve shrines. There is a day/night cycle, weather, and temperature that feeds back into the stamina model.
+
+## Why this is mind-blowing
+
+The best catch in this build is almost funny: **the grass was taller than the player.**
+
+Every screenshot looked lush. A dense green field reads as "good grass" instantly, and every reviewer — human or agent — nodded past it. So the critic stopped looking and measured blade height against the player capsule instead.
+
+Grass was rendering at **44% to 152% of player height**. The character was wading through a field of waist-high to overhead green slabs, and it looked fine, because "lush" and "correct" are different properties and only one of them is visible at a glance. Retuned to **11-23%**, which is what grass actually looks like from eye level.
+
+Then the terrain fix broke the terrain, which is exactly why you loop rather than review. The initial pass corrected the world for being too flat — and overcorrected it into spiky cones. Technically more dramatic. Visually ridiculous. A second critique retuned the ridge exponent from 2.0 to 1.65 and added terracing and flat valley floors. A single review pass would have confidently shipped either the pancake or the spikes. Only a loop that re-critiques *after* every fix converges on the version in between.
+
+And the systems chain genuinely chains. Verified end to end in a real browser, not asserted: set fire to vegetation, watch it propagate through connected plants, watch the burn generate a thermal, and then ride it — the HUD reading **"Glide — THERMAL +13.6m/s"** mid-ascent. A shrine was then solved by that same mechanic with the log confirming **"Shrine solved! Fire climbed the trellis."**
+
+Nothing scripted that. The fire system doesn't know what a shrine is. The thermal doesn't know what a paraglider is. They just each behave correctly and the puzzle falls out of the overlap — which is the entire trick Breath of the Wild is built on, and the only part of it worth copying.
+
+<aside class="lwk-try-embed">
+  <iframe
+    src="/learnwithkody/demos/323-open-world-explorer.html"
+    title="Open World Explorer — single-file three.js systemic open world"
+    loading="lazy"
+    style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;background:#000;"
+  ></iframe>
+</aside>

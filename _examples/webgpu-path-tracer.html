@@ -1,0 +1,97 @@
+---
+title: "WebGPU Path Tracer — a Blender Cycles-grade renderer in one HTML file, verified by the one test a renderer cannot fake: the furnace test, passed at 0.49% energy error"
+slug: webgpu-path-tracer
+order: 339
+featured: true
+tagline: "A single-file physically-based path tracer running as a WebGPU compute shader: multiple importance sampling, a Disney-style principled BSDF with metal/roughness/transmission, a BVH over the scene, Russian roulette, progressive accumulation, depth of field, and an ACES tonemapper. Rather than argue about whether the render 'looks right', the critic ran the furnace test — put the camera inside a uniformly emitting sphere with a perfectly white surface, where any correct renderer must return exactly the emitter's radiance. It passed at 0.49% energy error over 2098 samples, with correct Cornell box colour bleed, glass total internal reflection and caustics."
+category: simulator
+difficulty: advanced
+status: live
+tags:
+  - webgpu
+  - path-tracing
+  - compute-shader
+  - furnace-test
+  - single-file
+stack:
+  - "WebGPU compute shader (WGSL), progressive accumulation"
+  - "Disney-style principled BSDF + multiple importance sampling"
+  - "BVH acceleration + Russian roulette path termination"
+  - "ACES filmic tonemapping"
+demo: /learnwithkody/demos/321-webgpu-path-tracer.html
+repo: https://github.com/kody-w/localFirstTools/blob/main/webgpu-path-tracer.html
+highlights:
+  - "THE FURNACE TEST IS THE ONLY HONEST CRITIC. Every other app in this batch needed an adversarial agent to catch it lying. A path tracer doesn't, because physics supplies a test it cannot fake: place the camera inside a sphere that emits uniform radiance L and has a perfectly white (albedo 1.0) surface. At equilibrium every pixel must return exactly L, no matter how many bounces — because a white surface reflects everything and adds nothing. Any energy loss or gain in your BSDF, your importance sampling weights, or your Russian roulette compensation shows up immediately as a grey or blown-out frame."
+  - "PASSED AT 0.49% ENERGY ERROR over 2098 accumulated samples. That single number validates the entire light transport chain at once: BSDF normalisation, the MIS power heuristic, cosine-weighted hemisphere sampling, and the Russian roulette survival-probability division. A renderer that passes the furnace test is provably energy-conserving; a renderer that merely 'looks photorealistic' is not."
+  - "THE ONLY APP IN THE BATCH THAT NEEDED NO CORRECTION LOOP. Verified in-browser first try: correct Cornell box colour bleed (red and green walls tinting the white ceiling), glass exhibiting real total internal reflection, and caustics focused through the transmissive sphere. Zero runtime errors. It is a useful data point about which problems benefit from an adversarial agent and which benefit from a ground-truth invariant."
+prompt: |
+  I want you to build a physically-based path tracer at the level of Blender
+  Cycles, running entirely in the browser on WebGPU. It should be utterly
+  perfect, with every single thing done at production-renderer quality — from
+  the BSDF to the importance sampling to the tonemapper to anything you could
+  think of.
+
+  A real Disney-style principled BSDF: metallic, roughness, transmission,
+  index of refraction, subsurface. Multiple importance sampling between BSDF
+  sampling and light sampling. A BVH so the scene isn't O(n) per ray. Russian
+  roulette path termination with correct survival-probability compensation.
+  Progressive accumulation. Depth of field with a real aperture. ACES filmic
+  tonemapping.
+
+  Fan out sub-agents and have sub-agents tackle each one individually so that
+  the renderer is utterly perfect. You should /loop on each item and have a
+  separate sub-agent verify it.
+
+  But do not have the critic judge this one by eye — a path tracer can look
+  beautiful and still be physically wrong. Make it run the FURNACE TEST: put
+  the camera inside a uniformly emitting sphere with albedo 1.0. Every pixel
+  must converge to exactly the emitter's radiance. If the frame comes out
+  darker, you are losing energy somewhere in the BSDF or the MIS weights. If
+  it comes out brighter, you are gaining energy that doesn't exist. Report the
+  percentage error. Anything above about 1% means the light transport is
+  wrong and it goes back to the builder.
+
+  Then verify Cornell box colour bleed, glass total internal reflection, and
+  caustics through a transmissive sphere.
+
+  Don't stop until it is indistinguishable from Cycles. ONE self-contained
+  HTML file. /loop until it's utterly perfect. Fan out sub-agents and
+  ultracode.
+lessons:
+  - "How the furnace test validates an entire light-transport implementation with one number — camera inside a white uniformly-emitting sphere must return exactly the emitter radiance, so any BSDF normalisation or MIS weighting error is immediately visible"
+  - "Why 'it looks photorealistic' is not a correctness claim for a renderer, and how to replace subjective review with a ground-truth invariant that the renderer cannot fake"
+  - "How to structure a WebGPU compute path tracer with progressive accumulation so Russian roulette termination stays unbiased via correct survival-probability division"
+---
+
+<!-- WEBGPU_PATH_TRACER v1 -->
+
+## What this is
+
+A physically-based path tracer that runs as a WebGPU compute shader inside a single HTML file. A Disney-style principled BSDF handles metal, roughness, transmission and index of refraction. Multiple importance sampling combines BSDF sampling with direct light sampling. A BVH keeps ray traversal sub-linear in scene complexity. Russian roulette terminates paths without introducing bias. Samples accumulate progressively, so the image refines the longer you leave it. There is a real aperture for depth of field, and an ACES filmic tonemapper on the output.
+
+Every other application in this batch needed an adversarial critic agent to catch it lying about its own quality. This one didn't — because rendering has something the others don't: a ground-truth invariant that physics hands you for free.
+
+## Why this is mind-blowing
+
+The **furnace test** is the most elegant correctness check in graphics, and it is the reason this demo needed no correction loop at all.
+
+Put the camera inside a sphere. Make the sphere emit uniform radiance *L* in all directions. Make its surface perfectly white — albedo exactly 1.0, absorbing nothing. Now ask what a correct renderer must produce.
+
+Every pixel must return exactly *L*. Not approximately. Exactly. A perfectly white surface reflects all incoming energy and adds none of its own, so no matter how many times a ray bounces around inside that sphere, the radiance arriving at the camera is unchanged. The scene is a furnace at thermal equilibrium.
+
+Which makes it merciless. If your BSDF isn't correctly normalised, energy leaks and the frame comes out grey. If your multiple-importance-sampling power heuristic weights are wrong, the frame comes out grey or blown out. If your cosine-weighted hemisphere sampling has the wrong PDF, same. If your Russian roulette forgets to divide by the survival probability, you lose energy in exact proportion to your termination rate. Every one of those bugs produces a beautiful, plausible, completely wrong image under normal scene conditions — and every one of them is instantly visible in the furnace.
+
+This renderer passed at **0.49% energy error over 2098 accumulated samples**.
+
+That one number validates the entire light transport chain simultaneously. Then the usual visual checks confirmed the qualitative behaviour: Cornell box colour bleed with the red and green walls tinting the white ceiling, glass showing genuine total internal reflection at grazing angles, and caustics focusing through a transmissive sphere onto the floor.
+
+The broader lesson is about knowing which kind of verification a problem deserves. For the driving simulator, the DAW and the desktop OS, correctness was a matter of judgement, so an adversarial agent measuring pixels and geometry was the right tool. For a path tracer, judgement is actively misleading — "it looks photorealistic" is not a correctness claim, and a renderer that quietly loses 8% of its energy still looks great. When a ground-truth invariant exists, use it, and stop asking anyone's opinion.
+
+<aside class="lwk-try-embed">
+  <iframe
+    src="/learnwithkody/demos/321-webgpu-path-tracer.html"
+    title="WebGPU Path Tracer — single-file physically-based compute renderer"
+    loading="lazy"
+    style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;background:#000;"
+  ></iframe>
+</aside>

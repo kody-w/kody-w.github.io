@@ -1,0 +1,95 @@
+---
+title: "Apex Driving Simulator — a Gran Turismo-grade racing sim in one HTML file, where a harsh critic sub-agent measured the track spline until the asphalt stopped lying"
+slug: apex-driving-simulator
+order: 336
+featured: true
+tagline: "A single-file three.js racing simulator built by fanning out sub-agents against a Gran Turismo 7 benchmark — Pacejka-style tyre slip with relaxation-length transients, ABS/TC/ESC, a 6-speed box with real gear ratios, procedural asphalt, kerbing, telemetry traces and a ghost lap. Then a separate critic agent tore it apart in a real headless browser: it sampled the road's RGB (128,130,135 at 0.054 saturation) to prove the tarmac was neutral grey and not green, hammered the barriers at 161 mph to prove 0.0000 m penetration, and measured the centreline spline point-by-point to find a 7.28-degree kink at the loop closure that was silently causing three separate visual bugs."
+category: simulator
+difficulty: advanced
+status: live
+tags:
+  - threejs
+  - vehicle-physics
+  - adversarial-critic
+  - webgl
+  - single-file
+stack:
+  - "three.js r0.160 (CDN, single file)"
+  - "Pacejka-style combined-slip tyre model + relaxation-length transient"
+  - "Procedural canvas asphalt/grass/kerb textures, no external assets"
+  - "playwright-core headless Chromium critic harness (out-of-band)"
+demo: /learnwithkody/demos/318-apex-driving-simulator.html
+repo: https://github.com/kody-w/localFirstTools/blob/main/apex-driving-simulator.html
+highlights:
+  - "THE ADVERSARIAL LOOP IS THE PRODUCT. A builder sub-agent wrote the sim; a separate critic ran it in real headless Chromium and refused to accept prose. Every claim had to be a number. The critic sampled road pixels (RGB 128,130,135, saturation 0.054) against grass (48,82,41, saturation 0.499) to prove the asphalt was actually neutral tarmac. It drove head-on into a barrier at 161 mph and asserted 0.0000 m penetration. It computed a 12-bit colour histogram of every frame from outside the page to prove the chase camera never ends up inside geometry (worst dominant-colour fraction 0.111, down from 0.50)."
+  - "THE BEST BUG WAS INVISIBLE UNTIL MEASURED. The apron by the start/finish line showed a fan of ~15 dark radial streaks that looked exactly like broken skid-mark decals. The builder 'fixed' it by clearing the skid buffer — the fan remained. The critic then walked the track's 1600 centreline points directly and found max per-point heading change of 7.28 degrees against a 0.378-degree median, with all six worst values at indices 1594-1599 and 0: the loop-closure seam. The spline was not C1-continuous where it closed, and segment length collapsed to 0.194 m against a 0.743 m median."
+  - "ONE ROOT CAUSE, THREE SYMPTOMS. That single kink explained the radial 'skid' fan (asphalt seams compressing at the cusp), the jagged triangular notch in the road/grass boundary (edge offset exceeding the local radius of curvature and folding back on itself), AND why pressing Reset then holding throttle pinned the car against a barrier in three seconds (Reset spawned inside a 40-degree bend). Fixed by arc-length resampling with centred finite-difference tangents: max turn 7.28 -> 2.12 degrees, segments 0.648/0.649/0.650 m."
+prompt: |
+  I want you to build a driving simulator at the level of Gran Turismo 7 and
+  Assetto Corsa. It should be utterly perfect, visually beautiful, with every
+  single thing done at AAA quality — from the tyre model to the asphalt
+  textures to the suspension geometry to anything you could think of.
+
+  Real Pacejka-style combined slip. Weight transfer under braking and
+  cornering. A proper 6-speed gearbox with real ratios and a torque curve.
+  ABS, traction control and stability control that each measurably change lap
+  time. Telemetry traces for throttle, brake, steering and slip. A ghost lap.
+
+  Fan out sub-agents and have sub-agents tackle each one individually so that
+  the sim is utterly perfect. You should /loop on each item and have a
+  separate sub-agent check it VISUALLY in a real browser to ensure it looks
+  and behaves triple A. That separate sub-agent should be a really harsh
+  critic, and if it doesn't look triple A, it should keep going.
+
+  The critic is not allowed to accept prose. Every claim must be a number it
+  measured itself: sample the road pixels and prove the tarmac is neutral grey
+  and not green. Drive into a barrier at speed and prove the penetration depth
+  is zero. Measure the centreline spline point by point and prove there is no
+  discontinuity. If the critic cannot produce the number, the fix is rejected
+  and goes back to the builder.
+
+  Don't stop until each sub-agent is utterly wowed with the quality when
+  compared with the actual Gran Turismo. It should literally compare them side
+  by side blind and say which one looks better. Do this in ThreeJS as ONE
+  self-contained HTML file. /loop until it's utterly perfect. Fan out
+  sub-agents and ultracode.
+lessons:
+  - "How to make a sub-agent critic useful by banning prose: require a measured number for every claim, so 'it's fixed' becomes 'penetration is 0.0000 m at 161 mph' and unverifiable success reports stop being accepted"
+  - "How to find a spline discontinuity by walking the centreline and comparing per-point heading change against the median — a 19x outlier at the loop-closure seam explained three unrelated-looking visual bugs at once"
+  - "How to stabilise a tyre model at v->0 where the slip ratio (omega*R - v)/|v| goes singular, using a relaxation-length transient plus a low-speed force fade instead of clamping"
+---
+
+<!-- APEX_DRIVING_SIM v1 -->
+
+## What this is
+
+A single self-contained HTML file that is a full racing simulator. No build step, no npm, no asset pipeline — three.js from a CDN and everything else generated procedurally at load: the asphalt, the grass, the kerbing, the trees, the sky.
+
+The physics is the point. Each tyre runs a Pacejka-style combined-slip model with a relaxation-length transient, so grip builds and decays over distance travelled rather than snapping instantaneously. Weight transfers longitudinally under braking and laterally through corners, changing the normal load on each corner and therefore the available grip. A 6-speed gearbox with real ratios sits behind a torque curve. ABS, traction control and stability control are individually toggleable and each one measurably changes your lap time. Telemetry traces throttle, brake, steering and slip along the bottom of the screen, and a ghost of your best lap runs alongside you.
+
+But the reason this demo exists is the loop that built it. A builder sub-agent wrote the simulator. A completely separate critic agent — running its own headless Chromium over http, not file:// — then tried to destroy it, and was forbidden from accepting any claim that wasn't a number it measured itself.
+
+That critic found things no static check could. It sampled the road surface and got RGB [128,130,135] at 0.054 saturation against grass at [48,82,41] and 0.499 — proving the tarmac reads as neutral tarmac. It drove head-on into a barrier at 161 mph and asserted maximum penetration of 0.0000 m. It computed a 12-bit colour histogram of the viewport from outside the page to prove the chase camera never clips inside scenery, driving the worst dominant-colour frame fraction from 0.50 down to 0.111.
+
+## Why this is mind-blowing
+
+The best bug in this build was one that looked like a texture problem and was actually a geometry problem.
+
+By the start/finish line, the asphalt showed a fan of about fifteen dark radial streaks. It read unmistakably as broken skid-mark decals. The builder agent agreed, cleared the skid buffer, reported `skidActive() === 0`, and declared it fixed. The fan was still there.
+
+So the critic stopped looking at pixels and walked the track's 1600 centreline points directly. Median per-point heading change: 0.378 degrees. Maximum: **7.28 degrees** — nineteen times the median — and the six worst values were at indices 1594, 1595, 1596, 1597, 1598 and 0. That is the seam where the loop closes. At the same place, segment length collapsed to 0.194 m against a 0.743 m median.
+
+The spline was not C1-continuous where it closed on itself, and it was being sampled by curve parameter rather than arc length, so points bunched into a cusp at the seam. That one defect produced three symptoms that looked completely unrelated: the asphalt texture's transverse seams compressed into a radiating fan (the "skid marks"); the road ribbon's inner edge offset exceeded the local radius of curvature and folded back over itself, leaving a jagged triangular notch in the grass boundary; and Reset spawned the car at index 0, inside the sharpest 40-degree bend on the circuit, which is why holding the throttle with no steering pinned you against a barrier in three seconds.
+
+Fixed by reshaping the closure control points, resampling by arc length with `arcLengthDivisions` of 6000, and deriving tangents from centred finite differences on the periodic positions. After: max per-point turn **2.12 degrees**, segments **0.648 / 0.649 / 0.650 m**, and the worst curvature relocated to index 727 — an actual corner. Holding throttle from Reset now stays on track through 63.7 mph.
+
+Three bugs, one root cause, found by refusing to look at the screenshot and reading the numbers instead.
+
+<aside class="lwk-try-embed">
+  <iframe
+    src="/learnwithkody/demos/318-apex-driving-simulator.html"
+    title="Apex Driving Simulator — single-file three.js racing sim"
+    loading="lazy"
+    style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;background:#000;"
+  ></iframe>
+</aside>

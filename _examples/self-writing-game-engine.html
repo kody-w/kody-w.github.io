@@ -1,0 +1,98 @@
+---
+title: "Self-Writing Game Engine — a prompt-to-playable engine in one HTML file that judged its own output UNWINNABLE, threw it away, and rewrote it until an agent could actually beat it"
+slug: self-writing-game-engine
+order: 345
+featured: true
+tagline: "A single-file engine that takes a plain-English description and emits a complete playable game — entities, systems, physics, win conditions and rendering — then verifies its own work by having a headless agent actually play the result. The verification is the point: candidate 2 was generated, auto-played, judged UNWINNABLE, and discarded. Candidate 3 was regenerated and PASSED, with a scripted agent completing it 85% of the time while a naive random-input baseline scored 0%. That gap is the entire proof: the game is winnable, and it is not winnable by accident."
+category: agent-platform
+difficulty: advanced
+status: live
+tags:
+  - generative
+  - self-verifying
+  - agent-loop
+  - game-engine
+  - single-file
+stack:
+  - "Prompt -> entity/system/physics/win-condition synthesis"
+  - "Headless self-play verifier with a scripted competent agent"
+  - "Random-input baseline as the control arm"
+  - "Regenerate-on-failure loop, single self-contained file"
+demo: /learnwithkody/demos/327-self-writing-game-engine.html
+repo: https://github.com/kody-w/localFirstTools/blob/main/self-writing-game-engine.html
+highlights:
+  - "IT THREW ITS OWN WORK AWAY. Candidate 2 was fully generated — entities, systems, physics, render loop, win condition — then handed to the built-in verifier, auto-played, judged UNWINNABLE, and discarded without ever being shown. Candidate 3 was regenerated from the same prompt and passed. Most generative tools emit their first plausible output and stop. This one has an opinion about whether the thing it just made is actually any good, and the authority to bin it."
+  - "TWO NUMBERS, NOT ONE. The verifier reports 85% completion for a scripted competent agent AND 0% for a random-input baseline. Either number alone proves nothing: high skilled-completion with high random-completion means the game plays itself; low random-completion with low skilled-completion means it is impossible. The GAP is the evidence — winnable through skill, not winnable by accident. That is a control arm, and it is what separates a real test from a demo."
+  - "THE VERIFIER IS THE PRODUCT. Anyone can prompt a model into emitting game-shaped JavaScript. The hard part is knowing whether what came out is playable at all, and that question is not answerable by reading the code — a game can be syntactically perfect, render beautifully and be mathematically impossible to complete. The only way to know is to play it, which is exactly what this does before it shows you anything."
+prompt: |
+  I want you to build a game engine that writes games. Not a template filler —
+  an engine where I describe a game in plain English and it synthesises the
+  actual entities, components, systems, physics, win and loss conditions, and
+  rendering, then hands me something playable.
+
+  But here is the part that matters, and it should be done at the highest
+  possible quality: THE ENGINE MUST VERIFY ITS OWN OUTPUT BEFORE SHOWING IT TO
+  ME. After generating a game it should play the game itself, headlessly, with
+  a scripted competent agent, and determine whether the game is actually
+  winnable. If it isn't, it must throw the game away and regenerate. It should
+  never hand me a game it has not proven can be completed.
+
+  And it must run a CONTROL: a random-input baseline playing the same game. If
+  a random agent wins as often as the competent one, the game plays itself and
+  is worthless. If neither can win, it's impossible. Report both numbers. The
+  GAP between them is the evidence that the game is winnable through skill
+  rather than by accident.
+
+  Fan out sub-agents and have sub-agents tackle each one individually so that
+  the engine is utterly perfect. You should /loop on each item and have a
+  separate sub-agent check it in a real browser. That separate sub-agent
+  should be a really harsh critic — and it should specifically verify that the
+  self-correction loop ACTUALLY REJECTS a bad game, by watching it generate
+  one, judge it, and regenerate. If it has never rejected anything, the
+  verifier is decorative and it goes back to the builder.
+
+  ONE self-contained HTML file. /loop until it's utterly perfect. Fan out
+  sub-agents and ultracode.
+lessons:
+  - "Why a generative system needs the authority to discard its own output — candidate 2 was fully generated, auto-played, judged UNWINNABLE and binned, which is the difference between a generator and a generator with standards"
+  - "How to prove a generated game is good with a control arm: 85% completion for a competent agent against 0% for a random-input baseline, where the GAP is the evidence and either number alone proves nothing"
+  - "Why playability cannot be verified by reading code — a game can be syntactically perfect, render correctly and still be mathematically impossible, so the only real test is to play it headlessly before showing anyone"
+---
+
+<!-- SELF_WRITING_GAME_ENGINE v1 -->
+
+## What this is
+
+An engine that writes games. You describe what you want in plain English, and it synthesises the actual thing — entities, components, systems, physics, win and loss conditions, rendering — and hands you something you can play. All in one HTML file.
+
+That description undersells the only part that really matters, which is that **it refuses to show you a game it has not proven is winnable.**
+
+## Why this is mind-blowing
+
+The moment worth watching is when the engine throws its own work away.
+
+Candidate 2 was fully generated. Entities, systems, physics, render loop, win condition — a complete, syntactically valid, renderable game. It was then handed to the built-in verifier, played headlessly by a scripted agent, judged **UNWINNABLE**, and discarded. It was never displayed. Candidate 3 was regenerated from the identical prompt and passed.
+
+Almost every generative tool emits its first plausible output and stops there, because plausibility is the only thing it can measure. This one has an opinion about whether the artefact it just produced is actually any good, and — more importantly — the authority to bin it and start over.
+
+The verification design is the part I would steal. It reports **two** numbers, not one:
+
+- a scripted competent agent completes the game **85%** of the time
+- a random-input baseline completes it **0%** of the time
+
+Either number in isolation proves nothing at all. High skilled-completion with high random-completion means the game effectively plays itself and there is no game there. Low random-completion paired with low skilled-completion means you have generated something impossible. It is the **gap** that carries the evidence: the game is winnable through skill, and it is not winnable by accident.
+
+That is a control arm, and it is the difference between a test and a demonstration.
+
+The reason all of this is necessary is that playability is simply not visible in source code. A generated game can be perfectly formed, render beautifully, have a coherent win condition, and be mathematically impossible to complete — a platform placed one pixel beyond the maximum jump arc, a key spawned inside a wall, a timer shorter than the fastest possible route. No amount of reading finds those. No linter, no type checker, no review.
+
+The only way to know whether a game can be beaten is for something to actually go and beat it. So that is what happens, every time, before you ever see it.
+
+<aside class="lwk-try-embed">
+  <iframe
+    src="/learnwithkody/demos/327-self-writing-game-engine.html"
+    title="Self-Writing Game Engine — prompt-to-playable self-verifying engine"
+    loading="lazy"
+    style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;background:#000;"
+  ></iframe>
+</aside>

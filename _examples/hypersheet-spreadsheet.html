@@ -1,0 +1,92 @@
+---
+title: "Hypersheet — an Excel-grade spreadsheet in one HTML file, where text refused to spill into empty cells and a chart was drawn on top of its own data"
+slug: hypersheet-spreadsheet
+order: 342
+featured: true
+tagline: "A single-file spreadsheet benchmarked against Excel: a real dependency-graph formula engine with 200+ functions, array formulas and spill ranges, circular reference detection, pivot tables, charts, conditional formatting, sorting and filtering, multi-sheet workbooks with cross-sheet references, undo/redo, and XLSX import/export. Then the critic found two things every Excel user would notice within ten seconds — long text clipped at the cell boundary instead of overflowing into adjacent empty cells, and an inserted chart placed directly over the range it was charting. Both fixed, then the builder's own follow-up pass found a quickSort crash and a missing XLSX importer."
+category: tool
+difficulty: advanced
+status: live
+tags:
+  - spreadsheet
+  - formula-engine
+  - dependency-graph
+  - xlsx
+  - single-file
+stack:
+  - "Dependency-graph formula engine with topological recalculation"
+  - "200+ functions incl. array formulas + spill ranges"
+  - "Canvas grid renderer for large sheets"
+  - "XLSX import/export, multi-sheet with cross-sheet refs"
+demo: /learnwithkody/demos/324-hypersheet-spreadsheet.html
+repo: https://github.com/kody-w/localFirstTools/blob/main/hypersheet-spreadsheet.html
+highlights:
+  - "THE BUGS WERE IN THE MUSCLE MEMORY, NOT THE ENGINE. The formula engine was genuinely strong — dependency-graph recalculation, array formulas with spill ranges, circular reference detection, 200+ functions. What was broken was the stuff every Excel user does without thinking: type a long label into A1 with B1 empty and it clipped at the cell border instead of spilling across. Excel has behaved that way since 1985. Nobody specs it because nobody thinks about it, and that is exactly why an agent building from a feature list will miss it."
+  - "A CHART DRAWN ON TOP OF ITS OWN DATA. Inserting a chart placed it directly over the range being charted, hiding the numbers it was visualising. Individually trivial; collectively the difference between a spreadsheet and a demo of a spreadsheet. Both defects were caught by driving the app like a user rather than by reading the source."
+  - "THE LOOP KEPT PAYING AFTER THE HANDOFF. Sent back with those two findings, the builder ran 11 in-browser checks of its own, fixed both, and then found two more defects nobody had reported: a crash in quickSort and a missing XLSX importer. A critique that names concrete, reproducible symptoms tends to make the next pass more thorough than the one that was asked for."
+prompt: |
+  I want you to build a spreadsheet at the level of Microsoft Excel. It should
+  be utterly perfect, with every single thing done at production quality —
+  from the formula engine to the rendering to the file format support to
+  anything you could think of.
+
+  A real formula engine: a dependency graph with topological recalculation, not
+  a naive re-evaluate-everything loop. 200+ functions. Array formulas with
+  spill ranges. Circular reference detection. Pivot tables. Charts.
+  Conditional formatting. Sort and filter. Multiple sheets with cross-sheet
+  references. Undo/redo. Freeze panes. XLSX import and export. It should stay
+  responsive at 100,000 rows.
+
+  Fan out sub-agents and have sub-agents tackle each one individually so that
+  the spreadsheet is utterly perfect. You should /loop on each item and have a
+  separate sub-agent check it in a real browser. That separate sub-agent
+  should be a really harsh critic.
+
+  The critic must DRIVE IT LIKE AN EXCEL USER, not read the feature list. Type
+  a long label into a cell whose neighbour is empty and check it spills.
+  Insert a chart and check it isn't covering the data it charts. Sort a column
+  and check nothing crashes. Import a real .xlsx. The bugs that matter here
+  are the ones in muscle memory, and they will not show up in a spec.
+
+  Don't stop until each sub-agent is utterly wowed with the quality when
+  compared with actual Excel. It should literally compare them side by side
+  blind and say which one is better. ONE self-contained HTML file. /loop
+  until it's utterly perfect. Fan out sub-agents and ultracode.
+lessons:
+  - "Why an agent building from a feature list misses the behaviours nobody specs — text spilling into adjacent empty cells is 40 years of Excel muscle memory and appears in no requirements document"
+  - "How to critique so the next pass over-delivers: naming two concrete reproducible symptoms produced a fix plus two additional self-found defects (a quickSort crash and a missing XLSX importer)"
+  - "How to build a spreadsheet formula engine on a dependency graph with topological recalculation, so array formulas and spill ranges stay correct without re-evaluating the whole sheet"
+---
+
+<!-- HYPERSHEET v1 -->
+
+## What this is
+
+A spreadsheet in a single HTML file, aimed squarely at Excel. The formula engine is built on a real dependency graph with topological recalculation rather than a re-evaluate-everything loop, so a change to one cell updates exactly the cells that depend on it, in the right order. There are over 200 functions, array formulas with spill ranges, and circular reference detection. Pivot tables, charts, conditional formatting, sorting and filtering. Multiple sheets with cross-sheet references. Undo/redo, freeze panes, and XLSX import and export. The grid renders to canvas so it stays responsive at large row counts.
+
+The engine was the easy part. The bugs were somewhere else entirely.
+
+## Why this is mind-blowing
+
+The formula engine came out genuinely strong on the first pass. What was broken was everything a person does without thinking about it.
+
+Type a long label into A1 while B1 is empty. In Excel — and in every spreadsheet since roughly 1985 — that text spills across into B1, C1, and onward until it hits a cell with content. In this build it clipped hard at the cell boundary.
+
+Nobody writes that in a spec. There is no line item called "text should overflow into adjacent empty cells". It is forty years of accumulated muscle memory that every user has and no requirements document contains, which makes it exactly the class of defect an agent building from a feature list will produce with total confidence.
+
+The second one was similar in flavour: inserting a chart placed it **directly on top of the range it was charting**, hiding the numbers it existed to visualise. Individually trivial. Together, they are the difference between a spreadsheet and a demo of a spreadsheet.
+
+Neither was findable by reading the source. Both took about ten seconds to find by driving the application the way a person would.
+
+The part I did not expect was what happened after the handoff. Sent back with those two concrete, reproducible symptoms, the builder agent ran eleven in-browser checks of its own, fixed both — and then found two more defects nobody had asked about: a crash in `quickSort`, and a missing XLSX importer.
+
+That pattern held across this whole batch. A vague critique ("the UX feels off") produces a defensive reply. A critique that names a specific reproducible symptom seems to recalibrate the agent's own standard, and the next pass consistently over-delivers on what was actually requested.
+
+<aside class="lwk-try-embed">
+  <iframe
+    src="/learnwithkody/demos/324-hypersheet-spreadsheet.html"
+    title="Hypersheet — single-file Excel-grade spreadsheet"
+    loading="lazy"
+    style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;background:#000;"
+  ></iframe>
+</aside>

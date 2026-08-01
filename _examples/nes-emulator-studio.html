@@ -1,0 +1,92 @@
+---
+title: "NES Emulator Studio — a Mesen-grade cycle-accurate emulator in one HTML file, running at exactly double speed on every 120Hz display until someone checked the wall clock"
+slug: nes-emulator-studio
+order: 340
+featured: true
+tagline: "A single-file NES emulator benchmarked against Mesen: a cycle-accurate 6502 core with unofficial opcodes, a scanline-accurate PPU with sprite-zero hit and sprite overflow, a full APU with all five channels rendered through an AudioWorklet, mapper support, save states, rewind, and a built-in debugger with disassembly, hex editor, PPU viewer and CPU tracing. Then the critic noticed the FPS counter said 120, read the main loop, and found frames were paced one per requestAnimationFrame tick instead of by wall clock — so the entire emulator ran at double speed on any high-refresh display. It also ran the emulator's own built-in self-test tab, which nobody had ever opened, and found it reporting 4 FAILED out of 26."
+category: tool
+difficulty: advanced
+status: live
+tags:
+  - emulator
+  - 6502
+  - audioworklet
+  - cycle-accurate
+  - single-file
+stack:
+  - "Cycle-accurate 6502 CPU incl. unofficial opcodes"
+  - "Scanline-accurate PPU with sprite-zero hit + sprite overflow"
+  - "5-channel APU rendered via AudioWorklet"
+  - "Wall-clock frame pacing at 60.0988 Hz with an accumulator"
+demo: /learnwithkody/demos/322-nes-emulator-studio.html
+repo: https://github.com/kody-w/localFirstTools/blob/main/nes-emulator-studio.html
+highlights:
+  - "THE FPS COUNTER SAID 120 AND THAT WAS THE BUG. The emulator advanced exactly one emulated frame per requestAnimationFrame callback. On a 60Hz monitor that is correct by accident. On a 120Hz display — which is what the critic's headless Chromium reported — every game ran at literally double speed, with music pitched an octave high. Nothing about the code looks wrong; it only misbehaves on hardware the builder didn't have. Fixed with a wall-clock accumulator targeting the NES's real 60.0988 Hz plus a resetPacing() guard against spiral-of-death after a tab stall. Measured at 120Hz: 1200 frames per 10s -> 599."
+  - "IT SHIPPED WITH A SELF-TEST TAB THAT NOBODY EVER OPENED. The emulator has a built-in Self-Test panel — 26 checks covering CPU flags, addressing modes, PPU timing and APU output. The critic clicked it. It reported 4 FAILED / 26. The failures were in the render checks, which asserted `rom.length === 40976` against a test ROM that is actually 24592 bytes. The emulator was fine; its own test harness had a stale constant. Now 26/26, 0 failures."
+  - "A GOOD CRITIC OPENS THE DOORS NOBODY OPENS. Both defects lived on paths the builder never exercised: a refresh rate it didn't have, and a diagnostic tab it wrote but never clicked. Neither is reachable by reading the source. This is the strongest argument for an adversarial pass that systematically touches every surface rather than re-reading the code."
+prompt: |
+  I want you to build a NES emulator at the level of Mesen. It should be
+  utterly perfect, with every single thing done at cycle-accurate quality —
+  from the 6502 core to the PPU to the APU to anything you could think of.
+
+  A cycle-accurate 6502 including the unofficial opcodes. A scanline-accurate
+  PPU with correct sprite-zero hit and sprite overflow behaviour. A full APU:
+  two pulse channels, triangle, noise and DMC, rendered through an AudioWorklet
+  rather than the deprecated ScriptProcessor. Mapper support. Save states.
+  Rewind. And a real debugger — disassembly, breakpoints, a hex editor, a PPU
+  pattern/nametable viewer, and CPU tracing.
+
+  Fan out sub-agents and have sub-agents tackle each one individually so that
+  the emulator is utterly perfect. You should /loop on each item and have a
+  separate sub-agent check it in a real browser. That separate sub-agent
+  should be a really harsh critic.
+
+  The critic must test the paths the builder would never test. Check the frame
+  pacing on a HIGH REFRESH RATE display, not just 60Hz — an emulator that
+  paces off requestAnimationFrame ticks instead of the wall clock will run at
+  double speed on a 120Hz monitor and the builder will never notice. Count
+  actual frames over ten seconds and prove the number. And open every panel
+  and tab the emulator ships with, including its own self-test, and report
+  what they say.
+
+  Don't stop until it is indistinguishable from Mesen in accuracy. ONE
+  self-contained HTML file. /loop until it's utterly perfect. Fan out
+  sub-agents and ultracode.
+lessons:
+  - "Why pacing emulation off requestAnimationFrame tick count instead of the wall clock silently doubles emulation speed on 120Hz displays, and how an accumulator targeting 60.0988 Hz plus a resetPacing() guard fixes it without a spiral of death"
+  - "How to catch defects on paths the builder never exercises — a refresh rate they don't own, and a self-test tab they wrote but never clicked — by systematically opening every surface the app ships"
+  - "How a stale constant in a test harness (rom.length === 40976 against a 24592-byte ROM) makes correct code report as broken, and why you check the assertion before you 'fix' the implementation"
+---
+
+<!-- NES_EMULATOR_STUDIO v1 -->
+
+## What this is
+
+A NES emulator in one HTML file, aimed at Mesen's accuracy bar. The 6502 core is cycle-accurate and implements the unofficial opcodes that real games actually rely on. The PPU is scanline-accurate with correct sprite-zero hit and sprite overflow. The APU renders all five channels — two pulses, triangle, noise and DMC — through an AudioWorklet. There is mapper support, save states, rewind, and a genuine debugger: disassembly, breakpoints, a hex editor, PPU pattern and nametable viewers, and CPU tracing.
+
+Both of the interesting bugs in this build lived somewhere the builder agent structurally could not see.
+
+## Why this is mind-blowing
+
+The first bug announced itself in a place nobody thinks to look: **the FPS counter said 120.**
+
+The main loop advanced exactly one emulated frame per `requestAnimationFrame` callback. On a 60Hz monitor that happens to be correct, which is why it survived every round of review. On a 120Hz display — which is what the critic's headless Chromium reported — the emulator ran at literally **double speed**, with all the music pitched an octave high.
+
+There is nothing wrong-looking about the code. `requestAnimationFrame` is the correct way to schedule rendering; it is simply the wrong thing to derive *simulation time* from. The NES runs at 60.0988 Hz, which is not any display's refresh rate, so the fix is a wall-clock accumulator that emits however many emulated frames the elapsed real time calls for, plus a `resetPacing()` guard so a stalled tab doesn't come back and try to catch up on 400 frames at once. Measured at 120Hz afterwards: **1200 frames per 10 seconds dropped to 599.**
+
+The second bug was better, because the emulator had already found it and nobody had listened.
+
+It ships with a built-in **Self-Test** tab — 26 checks covering CPU flags, addressing modes, PPU timing and APU output. The critic clicked it, because a systematic pass clicks everything. It reported **4 FAILED / 26**.
+
+The emulator was fine. The *test harness* was wrong: the render checks asserted `rom.length === 40976` against a test ROM that is actually 24592 bytes. A stale constant, failing honestly, in a panel that had been written and then never opened. Now 26/26 with zero failures.
+
+Both defects share the same shape, and it is the strongest argument I know for an adversarial verification pass. Neither one is reachable by re-reading the source. One required hardware the builder didn't have; the other required clicking a tab the builder had written but never used. No amount of careful code review finds either. Something has to actually go and open the doors.
+
+<aside class="lwk-try-embed">
+  <iframe
+    src="/learnwithkody/demos/322-nes-emulator-studio.html"
+    title="NES Emulator Studio — single-file cycle-accurate NES emulator"
+    loading="lazy"
+    style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;background:#000;"
+  ></iframe>
+</aside>

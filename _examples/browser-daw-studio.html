@@ -1,0 +1,95 @@
+---
+title: "Browser DAW Studio — an Ableton-grade digital audio workstation in one HTML file, where the critic caught OfflineAudioContext silently swallowing every synth note on bounce"
+slug: browser-daw-studio
+order: 337
+featured: true
+tagline: "A single-file digital audio workstation benchmarked against Ableton Live: multi-track arrange view, a piano-roll MIDI editor, polyphonic subtractive synths running in AudioWorklets, a sampler, per-track effect chains (EQ, compressor, delay, reverb, distortion), a mixer with sends, automation lanes, and real WAV bounce plus stem export. Then a harsh critic agent bounced a mix in a real browser and found the exported WAV was digital silence — because OfflineAudioContext drops AudioWorklet port.postMessage sent immediately before startRendering(). Fixed with a ping/pong flush handshake and verified byte-level: PCM 2ch 48kHz 16-bit, RMS 0.0419, peak 0.9446."
+category: tool
+difficulty: advanced
+status: live
+tags:
+  - webaudio
+  - audioworklet
+  - daw
+  - adversarial-critic
+  - single-file
+stack:
+  - "Web Audio API + AudioWorklet (no ScriptProcessor)"
+  - "OfflineAudioContext bounce with a ping/pong worklet flush handshake"
+  - "Canvas piano-roll + arrange view, zero UI framework"
+  - "playwright-core headless Chromium critic harness (out-of-band)"
+demo: /learnwithkody/demos/319-browser-daw-studio.html
+repo: https://github.com/kody-w/localFirstTools/blob/main/browser-daw-studio.html
+highlights:
+  - "THE BUG THAT ONLY A REAL BROWSER FINDS. Every synth track bounced to digital silence while sounding perfect during live playback. Root cause: OfflineAudioContext silently drops AudioWorklet `port.postMessage` posted immediately before `startRendering()` — the message never reaches the processor, so every voice renders with an uninitialised patch. No linter, no jsdom, no `node --check` can see this. It only appears when you actually export a file and look at the samples."
+  - "THE FIX IS A HANDSHAKE, NOT A SLEEP. The naive fix is `await new Promise(r => setTimeout(r, 50))` before rendering, which is a race that passes on a fast machine and fails on a loaded one. The real fix is `flushWorklets()`: post a ping to every worklet node, await a pong from each on the message port, and only then call `startRendering()`. Deterministic, no timing assumption."
+  - "VERIFIED AT THE BYTE LEVEL. The critic did not trust the DAW's own 'export complete' toast. It captured the downloaded blob and parsed the container: RIFF/WAVE, PCM, 2 channels, 48000 Hz, 16-bit, 18.7 seconds — then computed RMS 0.0419 and peak 0.9446 across the decoded samples. Before the fix those numbers were 0.0000 and 0.0000."
+prompt: |
+  I want you to build a digital audio workstation at the level of Ableton
+  Live. It should be utterly perfect, with every single thing done at
+  professional quality — from the synthesis engine to the piano roll to the
+  mixer to anything you could think of.
+
+  Multi-track arrange view with clips you can drag, trim and loop. A piano
+  roll MIDI editor with velocity. Polyphonic subtractive synths with real
+  filter envelopes running in AudioWorklets, not ScriptProcessor. A sampler.
+  Per-track effect chains: EQ, compressor, delay, reverb, distortion. A mixer
+  with sends and returns. Automation lanes. And real export — bounce the whole
+  mix to WAV, and export stems per track.
+
+  Fan out sub-agents and have sub-agents tackle each one individually so that
+  the DAW is utterly perfect. You should /loop on each item and have a
+  separate sub-agent check it in a real browser to ensure it sounds and looks
+  professional. That separate sub-agent should be a really harsh critic, and
+  if it isn't up to Ableton's standard, it should keep going.
+
+  The critic must actually export a file and decode it. It is not allowed to
+  trust an "export complete" message. It has to parse the WAV container, check
+  the sample rate and bit depth, and compute RMS and peak amplitude to prove
+  the file is not silence. If it can't prove the audio is really there, the
+  export is broken and it goes back to the builder.
+
+  Don't stop until each sub-agent is utterly wowed with the quality when
+  compared with the actual Ableton Live. It should literally compare them side
+  by side blind and say which one is better. ONE self-contained HTML file.
+  /loop until it's utterly perfect. Fan out sub-agents and ultracode.
+lessons:
+  - "How OfflineAudioContext silently drops AudioWorklet port.postMessage sent just before startRendering(), and why the correct fix is a ping/pong flush handshake rather than an arbitrary setTimeout race"
+  - "How to verify an audio export the way a critic should — parse the RIFF/WAVE container, then compute RMS and peak on the decoded samples, so 'export complete' can never mean 'exported silence'"
+  - "How to structure a browser DAW so every voice runs in an AudioWorklet on the audio thread while the arrange view, piano roll and automation stay on the main thread with zero glitching"
+---
+
+<!-- BROWSER_DAW_STUDIO v1 -->
+
+## What this is
+
+A complete digital audio workstation in one HTML file. Multi-track arrange view where clips drag, trim and loop. A piano-roll MIDI editor with velocity. Polyphonic subtractive synthesis — oscillators, filters, ADSR envelopes — running as AudioWorklet processors on the audio thread, not the deprecated ScriptProcessorNode. A sampler. Per-track effect chains with EQ, compressor, delay, reverb and distortion. A mixer with sends and returns. Automation lanes that actually write parameter curves.
+
+And it exports. Bounce the whole arrangement to a WAV file, or export each track as a separate stem.
+
+That export is where the interesting part of this build happened.
+
+## Why this is mind-blowing
+
+The DAW sounded perfect during live playback. Every synth voice, every effect, every automation curve. Then a critic sub-agent bounced a mix in a real headless browser, captured the resulting blob, and decoded it.
+
+**Digital silence.** RMS 0.0000. Peak 0.0000. Every synth track rendered as nothing.
+
+The root cause is a genuinely nasty piece of Web Audio behaviour: `OfflineAudioContext` silently drops AudioWorklet `port.postMessage` calls made immediately before `startRendering()`. The patch data — oscillator type, filter cutoff, envelope times — is posted to each worklet processor over its message port, and in an offline context that message never arrives. Every voice then renders with an uninitialised patch, which is to say, nothing at all.
+
+Nothing in a static analysis pass can see this. `node --check` parses fine. A jsdom harness has no audio graph. A unit test that mocks the AudioContext passes trivially. The only way to catch it is to actually render a file and look at the samples — which is exactly what the critic was required to do, because it was forbidden from trusting the DAW's own "export complete" message.
+
+The obvious fix is to sleep before rendering. That is a race: it passes on an idle laptop and fails on a loaded CI box, which is the worst possible kind of "fixed". The real fix is `flushWorklets()` — post a ping to every worklet node, await a pong back from each one on its message port, and only then call `startRendering()`. No timing assumption, deterministic on any machine.
+
+Verified afterwards at the byte level, independently: RIFF/WAVE container, PCM, 2 channels, 48000 Hz, 16-bit, 18.7 seconds, **RMS 0.0419, peak 0.9446**.
+
+The lesson generalises well beyond audio. A build agent that reports "export works" has usually verified that the export *function ran*. A critic that opens the file and measures the amplitude is verifying something entirely different — and only one of those two things is what the user cares about.
+
+<aside class="lwk-try-embed">
+  <iframe
+    src="/learnwithkody/demos/319-browser-daw-studio.html"
+    title="Browser DAW Studio — single-file Web Audio digital audio workstation"
+    loading="lazy"
+    style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;background:#000;"
+  ></iframe>
+</aside>
