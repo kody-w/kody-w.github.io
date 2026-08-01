@@ -44,6 +44,10 @@ description: A growing catalog of published vibe-coding examples and exact conce
        scroll at 390px. Let long titles break. */
     .lwk-example-card{min-width:0}
     .lwk-example-card h3{overflow-wrap:anywhere}
+    /* The grid's minmax() column floor is wider than a 360px phone's content
+       box (330px), so the track overflowed by 46px no matter how the text
+       wrapped. Collapse to one column where there is no room for two. */
+    @media(max-width:640px){.lwk-examples-grid{grid-template-columns:1fr}}
   </style>
 
   <aside class="lwk-ch" aria-labelledby="lwk-ch-h">
