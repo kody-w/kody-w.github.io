@@ -46,22 +46,19 @@ lessons:
   - "How to land a 100-year future-mirror as a mid-cycle twist that frames a sepia-1924 founding wedding as the opening note of a century-long musical leitmotif"
   - "How to render a sepia-golden village green with flower arch + bakery ribbon-cutting + 260 named villagers in three.js r0.160 IIFE strict under 200KB"
 ---
-
 <!-- ROUND23_CENTURY v1 -->
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>A 3D recreation of Decade 1 of 12 of the BRIMSWORTH CENTURY arc. THIS IS THE OPENING DEMO OF ROUND 23. Sepia-golden 1924 morning on the village green where, 100 years later, his great-granddaughter Lily will marry Tomas Field on this same green. 36 director cameras cycle through village-green-archway, sepia-walk-in, ribbon-cutting, bakery-founding-7s, 100-year-future-mirror, recurring-bramble-7s, recurring-pemberton-7s, drama-ladder rungs, plus 31 more. 266+ named entities including 6 named ancestors (Henry Senior Senior 24 + Mabel Vellum-original 22 + Mr Pemberton I 44 + Reverend Hollis + Mrs Vellum-the-elder + Mr Vellum-the-elder) plus 260 procedural villagers across 16 surnames × 30 given names = 480 named permutations available.</p>
+  <p>The story is a 3-act emergent narrative. VILLAGE GATHERS (0-180s): the village green dressed with bunting; the founders gather under the flower arch. VOWS BEGIN (180-300s): Reverend Hollis officiates; Mr. Pemberton I cuts the bakery ribbon; the village erupts. THE 100-YEAR FUTURE (300-420s): mid-cycle twist at 5min — chyron writes "100 years from now her great-granddaughter Lily will walk this same aisle"; the 1924 ragtime piano + tuba leitmotif plays the FIRST 4 notes of a C-E-G-C phrase that will evolve through 11 more decades; brimsworth_century_v1.year:1924 is written.</p>
+  <p>The village <em>remembers AND broadcasts</em>. localStorage saves <code>century_1924_v1</code> AND BOOTSTRAPS the canonical <code>brimsworth_century_v1</code> { year:1924, decade:1, generation:'founding', family_tree_alive:[6 ancestors], events:['Founding Wedding 1924','Mr Pemberton I cuts bakery ribbon','100-year future-mirror to R21+R22'] } — every R23 demo reads/increments this. PiP CROSSCUT rotates sepia walk-in / bakery ribbon / photo portrait / live 1924.</p>
+  <p>You don't play it. You watch a great-grandfather cut a bakery ribbon that, 100 years later, his great-granddaughter will run on Saturdays.</p>
+</section>
 
-## What this is
-
-A 3D recreation of Decade 1 of 12 of the BRIMSWORTH CENTURY arc. THIS IS THE OPENING DEMO OF ROUND 23. Sepia-golden 1924 morning on the village green where, 100 years later, his great-granddaughter Lily will marry Tomas Field on this same green. 36 director cameras cycle through village-green-archway, sepia-walk-in, ribbon-cutting, bakery-founding-7s, 100-year-future-mirror, recurring-bramble-7s, recurring-pemberton-7s, drama-ladder rungs, plus 31 more. 266+ named entities including 6 named ancestors (Henry Senior Senior 24 + Mabel Vellum-original 22 + Mr Pemberton I 44 + Reverend Hollis + Mrs Vellum-the-elder + Mr Vellum-the-elder) plus 260 procedural villagers across 16 surnames × 30 given names = 480 named permutations available.
-
-The story is a 3-act emergent narrative. VILLAGE GATHERS (0-180s): the village green dressed with bunting; the founders gather under the flower arch. VOWS BEGIN (180-300s): Reverend Hollis officiates; Mr. Pemberton I cuts the bakery ribbon; the village erupts. THE 100-YEAR FUTURE (300-420s): mid-cycle twist at 5min — chyron writes "100 years from now her great-granddaughter Lily will walk this same aisle"; the 1924 ragtime piano + tuba leitmotif plays the FIRST 4 notes of a C-E-G-C phrase that will evolve through 11 more decades; brimsworth_century_v1.year:1924 is written.
-
-The village *remembers AND broadcasts*. localStorage saves `century_1924_v1` AND BOOTSTRAPS the canonical `brimsworth_century_v1` { year:1924, decade:1, generation:'founding', family_tree_alive:[6 ancestors], events:['Founding Wedding 1924','Mr Pemberton I cuts bakery ribbon','100-year future-mirror to R21+R22'] } — every R23 demo reads/increments this. PiP CROSSCUT rotates sepia walk-in / bakery ribbon / photo portrait / live 1924.
-
-You don't play it. You watch a great-grandfather cut a bakery ribbon that, 100 years later, his great-granddaughter will run on Saturdays.
-
-## Why this is mind-blowing
-
-The chyron is the secret weapon: "1924 · Mabel walks the aisle · 100 years from now her great-granddaughter Lily walks this same aisle · brimsworth_century_v1.year:1924 written". That single line stitches a 100-year arc into a sepia 1924 morning — Henry Senior Senior on the recurring-bramble-7s camera, Mabel on the sepia-walk-in camera, Mr. Pemberton I on the ribbon-cutting camera. The brimsworth_century_v1 BOOTSTRAP is the structural genius: this single localStorage write seeds an 11-demo state machine where Year 1924 becomes Year 1934 becomes Year 1944... and every future R23 demo's chyron reads `brimsworth_century_v1.year` to render the year-stamp. This is not a story about a founding wedding — this is a founding wedding that is the foundation of a 110-year five-generation simulation. ALL FICTIONAL.
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>The chyron is the secret weapon: "1924 · Mabel walks the aisle · 100 years from now her great-granddaughter Lily walks this same aisle · brimsworth_century_v1.year:1924 written". That single line stitches a 100-year arc into a sepia 1924 morning — Henry Senior Senior on the recurring-bramble-7s camera, Mabel on the sepia-walk-in camera, Mr. Pemberton I on the ribbon-cutting camera. The brimsworth_century_v1 BOOTSTRAP is the structural genius: this single localStorage write seeds an 11-demo state machine where Year 1924 becomes Year 1934 becomes Year 1944... and every future R23 demo's chyron reads <code>brimsworth_century_v1.year</code> to render the year-stamp. This is not a story about a founding wedding — this is a founding wedding that is the foundation of a 110-year five-generation simulation. ALL FICTIONAL.</p>
+</section>
 
 <aside class="lwk-try-embed">
   <iframe

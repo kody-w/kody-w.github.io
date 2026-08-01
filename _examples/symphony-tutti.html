@@ -47,22 +47,19 @@ lessons:
   - "How to broadcast a master tempo (BPM + measure-position) across 12 browser tabs via BroadcastChannel using lowest-uuid election + phase-lock so all tabs play in synchronized harmony"
   - "How to render an 11-instrument audio-PIP waveform strip from other open R27 tabs and stage a 540s TUTTI moment where 12 instruments climax on the same final cadence chord"
 ---
-
 <!-- ROUND27_SYMPHONY v1 -->
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>A 3D recreation of Movement XII (Finale Tutti) of the BRIMSWORTH SYMPHONY arc. full orchestra TUTTI (all 11 instruments simultaneously (master tab)) playing the C-E-G-C wedding leitmotif (the same 4-note motif that has run through R21-R26) via Web Audio API synthesis. The 3D scene is R26 drone-POV master shot.</p>
+  <p>The symphony <em>synchronizes via tempo</em>. BroadcastChannel('brimsworth_symphony') broadcasts a master clock — <code>{ bpm, measure_position, master_t }</code> — subscriber tabs negotiate a master via lowest-uuid election and phase-lock their tempo. Open 12 R27 tabs side-by-side and you have a 12-piece chamber orchestra performing the BRIMSWORTH SYMPHONY in real-time tempo-synchronized harmony. A faint 11-instrument audio-PIP waveform strip shows what each other open R27 tab is currently playing.</p>
+  <p>THE 540s TUTTI MOMENT is the climax. At exactly t=540s every R27 tab plays its instrument's part of the SAME final cadence chord. 12 open tabs = full orchestra TUTTI. localStorage appends <code>brimsworth_symphony_v1</code> <code>{ movement_id, instrument, master_bpm_at_join, tutti_at }</code> — the ledger gradually fills with all 12 movements.</p>
+  <p>You don't play it. You watch a 3D scene of R26 drone-POV master shot while full orchestra TUTTI plays the C-E-G-C leitmotif, and at 9 minutes in, eleven other instruments (if other tabs are open) join you in a sustained tutti chord. WARM, REVERENT, ORCHESTRAL, ALL FICTIONAL.</p>
+</section>
 
-## What this is
-
-A 3D recreation of Movement XII (Finale Tutti) of the BRIMSWORTH SYMPHONY arc. full orchestra TUTTI (all 11 instruments simultaneously (master tab)) playing the C-E-G-C wedding leitmotif (the same 4-note motif that has run through R21-R26) via Web Audio API synthesis. The 3D scene is R26 drone-POV master shot.
-
-The symphony *synchronizes via tempo*. BroadcastChannel('brimsworth_symphony') broadcasts a master clock — `{ bpm, measure_position, master_t }` — subscriber tabs negotiate a master via lowest-uuid election and phase-lock their tempo. Open 12 R27 tabs side-by-side and you have a 12-piece chamber orchestra performing the BRIMSWORTH SYMPHONY in real-time tempo-synchronized harmony. A faint 11-instrument audio-PIP waveform strip shows what each other open R27 tab is currently playing.
-
-THE 540s TUTTI MOMENT is the climax. At exactly t=540s every R27 tab plays its instrument's part of the SAME final cadence chord. 12 open tabs = full orchestra TUTTI. localStorage appends `brimsworth_symphony_v1` `{ movement_id, instrument, master_bpm_at_join, tutti_at }` — the ledger gradually fills with all 12 movements.
-
-You don't play it. You watch a 3D scene of R26 drone-POV master shot while full orchestra TUTTI plays the C-E-G-C leitmotif, and at 9 minutes in, eleven other instruments (if other tabs are open) join you in a sustained tutti chord. WARM, REVERENT, ORCHESTRAL, ALL FICTIONAL.
-
-## Why this is mind-blowing
-
-R26 was a 12-camera VISUAL broadcast. R27 is a 12-instrument AUDIO broadcast. Open 12 R27 tabs in a 4×3 grid → you have a real-time chamber orchestra in your browser. BroadcastChannel + Web Audio API + lowest-uuid master election + phase-lock + tutti-at-540s = unprecedented multi-tab orchestral synchronization. ALL FICTIONAL.
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>R26 was a 12-camera VISUAL broadcast. R27 is a 12-instrument AUDIO broadcast. Open 12 R27 tabs in a 4×3 grid → you have a real-time chamber orchestra in your browser. BroadcastChannel + Web Audio API + lowest-uuid master election + phase-lock + tutti-at-540s = unprecedented multi-tab orchestral synchronization. ALL FICTIONAL.</p>
+</section>
 
 <aside class="lwk-try-embed">
   <iframe

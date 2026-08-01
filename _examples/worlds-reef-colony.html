@@ -50,24 +50,20 @@ lessons:
   - "How to schedule 500+ named citizens through commute → work → meal → home → sleep routines across 6 named city zones with 30+ director cameras following individual lives"
   - "How to demote the R21/R24 wedding to a background HUD-calendar event and let the *city* become the protagonist while still appending the canonical brimsworth_worlds_v1 ledger and BroadcastChannel city-event sync across tabs"
 ---
-
 <!-- ROUND25_WORLDS v1 -->
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>A 3D recreation of City 7 of 12 of the BRIMSWORTH WORLDS arc — an undersea dome city where 500+ named divers and gardeners drift through coral streets. The R21 wedding cast is no longer the centre; the <em>city</em> is. 500+ named citizens cycle through 6 zones (residential, commercial, civic, industrial, leisure, transport) on individual daily routines while the camera director system rotates 30+ cameras through different lives across a 12-hour compressed day.</p>
+  <p>A 12-hour compressed day-cycle compresses 600s of real-time into 12 in-world hours (50s = 1 hour). The sun arcs from dawn through golden noon, dusk-pink, and night-deep blue; sky-color and ambient-light gradients track the arc. Three weather windows roll across the day (morning mist → afternoon clear → evening light-rain). 500+ named citizens each have a daily routine: commute → work → meal → home → sleep, scheduled across 6 city zones (residential, commercial, civic, industrial, leisure, transport hub). 30+ director cameras follow different citizens through their day.</p>
+  <p>The R21 wedding becomes a <em>background event</em> in the city's daily calendar — at hour 14:00 in-world, a small chyron note marks "Bramble × Field wedding nearby" while citizens go about their day. The multiverse-portal cat-meet event still triggers at t=300s — but here, Bytes-from-prior-universe walks into the CITY, not the wedding. A city-events HUD calendar lists scheduled happenings (market, parade, concert, ceremony, evening-lantern-walk) for the day.</p>
+  <p>The world <em>remembers + broadcasts</em>. localStorage appends to the canonical <code>brimsworth_worlds_v1</code> ledger — <code>{ city_id, citizen_count, sunrise_t, sunset_t, events_logged }</code> — and cross-reads <code>brimsworth_multiverse_v1</code> + <code>brimsworth_century_v1</code> + <code>brimsworth_lifetime_v1</code> + <code>recurring_cast_v1</code>. BroadcastChannel('brimsworth_worlds') emits each major city event as <code>{ type:"city-event", city, event }</code> and renders a faint twin-city ticker for any other open tab.</p>
+  <p>You don't play it. You watch a Reef Colony live an entire day in 10 minutes — 500 named citizens commuting through 6 zones, a 12-hour sun arc, and a wedding playing as background news. calm-aquatic, gentle-wonder.</p>
+</section>
 
-## What this is
-
-A 3D recreation of City 7 of 12 of the BRIMSWORTH WORLDS arc — an undersea dome city where 500+ named divers and gardeners drift through coral streets. The R21 wedding cast is no longer the centre; the *city* is. 500+ named citizens cycle through 6 zones (residential, commercial, civic, industrial, leisure, transport) on individual daily routines while the camera director system rotates 30+ cameras through different lives across a 12-hour compressed day.
-
-A 12-hour compressed day-cycle compresses 600s of real-time into 12 in-world hours (50s = 1 hour). The sun arcs from dawn through golden noon, dusk-pink, and night-deep blue; sky-color and ambient-light gradients track the arc. Three weather windows roll across the day (morning mist → afternoon clear → evening light-rain). 500+ named citizens each have a daily routine: commute → work → meal → home → sleep, scheduled across 6 city zones (residential, commercial, civic, industrial, leisure, transport hub). 30+ director cameras follow different citizens through their day.
-
-The R21 wedding becomes a *background event* in the city's daily calendar — at hour 14:00 in-world, a small chyron note marks "Bramble × Field wedding nearby" while citizens go about their day. The multiverse-portal cat-meet event still triggers at t=300s — but here, Bytes-from-prior-universe walks into the CITY, not the wedding. A city-events HUD calendar lists scheduled happenings (market, parade, concert, ceremony, evening-lantern-walk) for the day.
-
-The world *remembers + broadcasts*. localStorage appends to the canonical `brimsworth_worlds_v1` ledger — `{ city_id, citizen_count, sunrise_t, sunset_t, events_logged }` — and cross-reads `brimsworth_multiverse_v1` + `brimsworth_century_v1` + `brimsworth_lifetime_v1` + `recurring_cast_v1`. BroadcastChannel('brimsworth_worlds') emits each major city event as `{ type:"city-event", city, event }` and renders a faint twin-city ticker for any other open tab.
-
-You don't play it. You watch a Reef Colony live an entire day in 10 minutes — 500 named citizens commuting through 6 zones, a 12-hour sun arc, and a wedding playing as background news. calm-aquatic, gentle-wonder.
-
-## Why this is mind-blowing
-
-A Reef Colony that *runs as a city*: 500 named citizens with named daily routines, a 12-hour day-cycle compressed to 600s, 6 city zones, a city-events HUD calendar, a R21 wedding that has become *background news* in this world's daily life, the multiverse-portal cat-meet pulled into a CITY scene, and `brimsworth_worlds_v1` + BroadcastChannel sync that lets twin tabs render each other's events as ticker. R25 is the round where the wedding becomes background and the *world* becomes the protagonist. ALL FICTIONAL.
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>A Reef Colony that <em>runs as a city</em>: 500 named citizens with named daily routines, a 12-hour day-cycle compressed to 600s, 6 city zones, a city-events HUD calendar, a R21 wedding that has become <em>background news</em> in this world's daily life, the multiverse-portal cat-meet pulled into a CITY scene, and <code>brimsworth_worlds_v1</code> + BroadcastChannel sync that lets twin tabs render each other's events as ticker. R25 is the round where the wedding becomes background and the <em>world</em> becomes the protagonist. ALL FICTIONAL.</p>
+</section>
 
 <aside class="lwk-try-embed">
   <iframe
