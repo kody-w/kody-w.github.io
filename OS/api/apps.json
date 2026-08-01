@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "apps": [
+    {
+      "id": "files",
+      "name": "Files",
+      "icon": "▦",
+      "does": "Browse the read-only DOG mount from api/fs.json and preview public leaves.",
+      "entry": "#/files"
+    },
+    {
+      "id": "examples",
+      "name": "Examples",
+      "icon": "✱",
+      "does": "Search and filter the real examples.json catalog, then open live public URLs.",
+      "entry": "#/examples"
+    },
+    {
+      "id": "terminal",
+      "name": "Terminal",
+      "icon": "⌁",
+      "does": "Read-only shell commands over the mounted public volume: ls, cat, mount, help, clear, about.",
+      "entry": "#/terminal"
+    },
+    {
+      "id": "system32",
+      "name": "system32",
+      "icon": "⌬",
+      "does": "System internals: static API endpoints, mount table, and build information.",
+      "entry": "#/system32",
+      "pathEntry": "system32/"
+    }
+  ]
+}

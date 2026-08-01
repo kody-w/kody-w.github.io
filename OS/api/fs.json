@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "volume": {
+    "id": "dog-public-site",
+    "name": "kody-w.github.io public DOG volume",
+    "baseUrl": "https://kody-w.github.io/",
+    "readOnly": true,
+    "privacy": "public-by-construction",
+    "description": "A read-only mount of verified public bytes from kody-w.github.io. This OS does not write, store private data, or claim privacy protection."
+  },
+  "mounts": [
+    {
+      "path": "dog:/",
+      "name": "DOG root",
+      "kind": "directory",
+      "description": "Verified public files and directories from kody-w.github.io.",
+      "children": [
+        {
+          "path": "dog:/api",
+          "name": "api",
+          "kind": "directory",
+          "description": "Public static APIs.",
+          "children": [
+            {
+              "path": "dog:/api/examples.json",
+              "name": "examples.json",
+              "kind": "json",
+              "url": "https://kody-w.github.io/api/examples.json",
+              "description": "Real examples API with site metadata, count, and examples[]."
+            }
+          ]
+        },
+        {
+          "path": "dog:/llms.txt",
+          "name": "llms.txt",
+          "kind": "text",
+          "url": "https://kody-w.github.io/llms.txt",
+          "description": "Public LLM-facing site summary."
+        },
+        {
+          "path": "dog:/llms-full.txt",
+          "name": "llms-full.txt",
+          "kind": "text",
+          "url": "https://kody-w.github.io/llms-full.txt",
+          "description": "Full public LLM-facing site context."
+        },
+        {
+          "path": "dog:/feed.xml",
+          "name": "feed.xml",
+          "kind": "xml",
+          "url": "https://kody-w.github.io/feed.xml",
+          "description": "Public site feed."
+        },
+        {
+          "path": "dog:/learnwithkody",
+          "name": "learnwithkody",
+          "kind": "directory",
+          "url": "https://kody-w.github.io/learnwithkody/",
+          "description": "Verified Learn with Kody directory.",
+          "children": [
+            {
+              "path": "dog:/learnwithkody/index.html",
+              "name": "index.html",
+              "kind": "html",
+              "url": "https://kody-w.github.io/learnwithkody/index.html",
+              "description": "Learn with Kody index page."
+            },
+            {
+              "path": "dog:/learnwithkody/examples",
+              "name": "examples",
+              "kind": "directory",
+              "url": "https://kody-w.github.io/learnwithkody/examples/",
+              "description": "Verified examples directory.",
+              "children": [
+                {
+                  "path": "dog:/learnwithkody/examples/the-loop",
+                  "name": "the-loop",
+                  "kind": "html",
+                  "url": "https://kody-w.github.io/learnwithkody/examples/the-loop/",
+                  "description": "A verified example page from the public examples API."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "verifiedAt": "2026-08-01T19:05:26-04:00"
+}

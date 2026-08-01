@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kody DOG OS / system32</title>
+  <meta name="description" content="System internals for the static read-only Kody DOG OS.">
+  <link rel="stylesheet" href="../styles.css">
+<link rel="icon" href="../favicon.png">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="eyebrow">system internals</div>
+        <h1>system32</h1>
+      </div>
+      <div class="status"><a href="../">Return to OS</a></div>
+    </header>
+    <section class="desktop" style="grid-template-columns:1fr">
+      <section class="window">
+        <div class="window-head">
+          <div><div class="eyebrow">static api driven</div><h2>Mount table and build info</h2></div>
+          <p class="small">This direct path exists so <span class="mono">OS/system32/</span> works on GitHub Pages.</p>
+        </div>
+        <div id="system32-root" class="stack"><div class="panel">Loading api/fs.json and api/apps.json…</div></div>
+      </section>
+    </section>
+  </main>
+  <script type="module">
+    const root = document.querySelector('#system32-root');
+    const el = (tag, props = {}, ...kids) => { const n = document.createElement(tag); Object.entries(props).forEach(([k,v]) => k === 'class' ? n.className = v : n.setAttribute(k,v)); kids.flat().forEach(k => n.append(k?.nodeType ? k : document.createTextNode(String(k ?? '')))); return n; };
+    const load = async url => { const r = await fetch(url, { cache: 'no-store' }); if (!r.ok) throw new Error(`${url} returned ${r.status}`); return r.json(); };
+    const flatten = node => [node, ...(node.children || []).flatMap(flatten)];
+    try {
+      const [fs, apps] = await Promise.all([load('../api/fs.json'), load('../api/apps.json')]);
+      const mounted = flatten(fs.mounts[0]).filter(n => n.url);
+      root.replaceChildren(
+        el('div', { class: 'panel' }, el('h3', {}, 'Build info'), el('p', {}, 'Pure static, local-first client. Read-only. Public bytes only.'), el('p', { class: 'mono' }, `verifiedAt=${fs.verifiedAt}`), el('p', { class: 'mono' }, `apps=${apps.apps.length}`)),
+        el('div', {}, el('div', { class: 'eyebrow' }, 'local api endpoints'), el('div', { class: 'grid' }, ['../api/fs.json','../api/apps.json'].map(u => el('article', { class: 'card' }, el('h3', { class: 'mono' }, u), el('a', { class: 'primary-link', href: u }, 'Open'))))),
+        el('div', {}, el('div', { class: 'eyebrow' }, 'mounted public URLs'), el('div', { class: 'grid' }, mounted.map(m => el('article', { class: 'card' }, el('h3', { class: 'mono' }, m.path), el('p', {}, m.description || ''), el('a', { href: m.url, target: '_blank', rel: 'noreferrer' }, m.url)))) )
+      );
+    } catch (err) { root.replaceChildren(el('div', { class: 'panel error' }, `Could not load internals: ${err.message}`)); }
+  </script>
+</body>
+</html>

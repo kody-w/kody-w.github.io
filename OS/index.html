@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kody DOG OS</title>
+  <meta name="description" content="A pure static, read-only desktop shell over the public kody-w.github.io DOG volume.">
+  <link rel="stylesheet" href="styles.css">
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="eyebrow">public bytes only</div>
+        <h1>Kody DOG OS</h1>
+      </div>
+      <div class="status" id="boot-status">booting static api…</div>
+    </header>
+    <section class="desktop" aria-label="Desktop shell">
+      <aside class="dock" aria-label="Installed apps">
+        <div class="eyebrow">apps from api/apps.json</div>
+        <p class="small">This OS is read-only. It mounts public site bytes; it does not write, store private data, or protect secrets.</p>
+        <nav class="dock-list" id="dock-list"></nav>
+      </aside>
+      <section class="window" id="window" aria-live="polite">
+        <p>Loading…</p>
+      </section>
+    </section>
+    <footer class="footer">Served from a subpath with relative internal links. Direct internals route: <a href="system32/">system32/</a>.</footer>
+  </main>
+  <script type="module" src="client.js"></script>
+</body>
+</html>
