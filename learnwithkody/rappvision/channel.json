@@ -18,6 +18,33 @@
  "_hosting": "This channel lives inside the kody-w.github.io repo. GitHub Pages serves every repo of a user from one origin, so it plays in the RAPP Vision player at /rapp-vision while being published, versioned and owned right here next to the examples it documents.",
  "videos": [
   {
+   "id": "lwk-buzzsaw-voxel",
+   "title": "Six times the test was wrong: a buzzsaw pass over one 9,749-line file",
+   "published": "2026-08-02",
+   "duration": 47,
+   "tags": [
+    "buzzsaw",
+    "adversarial-critic",
+    "measurement",
+    "threejs",
+    "verification"
+   ],
+   "description": "Episode 2. Eight agents on one self-contained HTML file: six builders owning disjoint regions, two read-only critics whose only job was to be unimpressed. They found 21 real defects — including a blocker, already in git HEAD, where every button in the desktop toolbar hit-tested to the \"Click to play\" overlay: clicking the gear granted pointer lock instead of opening Settings, and three panels had no keyboard fallback at all. It is invisible in the source and invisible in a screenshot. They also proved the day/night clock advanced by the clamped physics step, so the world ran at 36-66% of real time while every instrument built on that same clock agreed everything was fine — now 96-105%. But the best finding is not a bug: the ambient occlusion was real, correct, wired up, and completely invisible, because ~1.9 irradiance with no tone mapping clips the very highlight it was meant to darken. The builder measured the attribute and never measured the pixel. And six times the reported failure was the test being wrong, not the code — three of those were the coordinator’s own.",
+   "example": "https://kody-w.github.io/learnwithkody/examples/voxel-world/",
+   "demo": "https://kody-w.github.io/learnwithkody/demos/353-voxel-world.html",
+   "thumb": "thumbs/voxel-world-catchup.jpg",
+   "sources": [
+    {
+     "src": "media/voxel-world-catchup.webm",
+     "type": "video/webm"
+    },
+    {
+     "src": "media/voxel-world-catchup.mp4",
+     "type": "video/mp4"
+    }
+   ]
+  },
+  {
    "id": "lwk-walkthrough-apex",
    "title": "Follow along: build a Gran Turismo-grade racing sim in one HTML file",
    "published": "2026-08-01",
@@ -127,17 +154,17 @@
         "code": "KeyW"
        },
        {
-        "at": 5.0,
+        "at": 5,
         "do": "click",
         "selector": "#btnCam"
        },
        {
-        "at": 9.0,
+        "at": 9,
         "do": "click",
         "selector": "#btnCam"
        },
        {
-        "at": 12.0,
+        "at": 12,
         "do": "keydown",
         "code": "KeyS"
        },

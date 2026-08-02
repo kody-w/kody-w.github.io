@@ -1,0 +1,105 @@
+---
+title: "Voxel World — the desktop UI was completely unclickable, in a file that had already shipped, and nothing looked wrong"
+slug: voxel-world
+order: 347
+featured: true
+tagline: "A single-file Minecraft-style voxel sandbox put through an adversarial pass: six builder agents on disjoint regions of one file, and two read-only critics whose only job was to be unimpressed. They found 21 real defects, including a blocker where every button in the desktop toolbar hit-tested to an invisible overlay — clicking the gear granted pointer lock instead of opening Settings, and three panels had no keyboard fallback at all. The buttons rendered at full opacity the whole time. It was already in git HEAD. Then the critics found six more failures that turned out to be the tests being wrong, including the single most important check, which had silently skipped every run because it called a method that does not exist."
+category: game
+difficulty: advanced
+status: live
+tags:
+  - threejs
+  - voxel
+  - adversarial-critic
+  - measurement
+  - single-file
+stack:
+  - "Three.js r160 via importmap, cached as a hash-verified Blob in IndexedDB"
+  - "Fixed-timestep physics with a wall-clock-referenced day/night cycle"
+  - "Sparse edit-diff saves (~15 bytes/edit) with quota eviction and undo"
+  - "In-app self-test: 83 assertions, proven able to fail by mutation testing"
+demo: /learnwithkody/demos/353-voxel-world.html
+repo: https://github.com/kody-w/localFirstTools/blob/main/voxel-world.html
+highlights:
+  - "THE ENTIRE DESKTOP TOOLBAR WAS UNCLICKABLE AND NOTHING LOOKED WRONG. The 'Click to play' overlay is position:fixed, inset:0, z-index 40. The top bar is z-index 35. All five buttons hit-tested to the overlay. Clicking the gear gave you pointer lock instead of Settings; pressing Escape brought the overlay back so the next click was swallowed again. F3 and H had keyboard fallbacks. Settings, the terminal and the multiplayer panel had none — the only way in was fourteen presses of Tab and then Enter. The buttons render at full opacity above a 55% tint the whole time, so it is invisible in a screenshot and invisible in the source. It only appears if you put a cursor on a button and click it."
+  - "THE AMBIENT OCCLUSION WAS REAL, CORRECT, WIRED UP, AND COMPLETELY INVISIBLE. A builder implemented per-vertex AO properly and verified its own work: 66.3% of quads carried per-vertex colour variation, vertexColors was set. It reported AO as a win. The blind critic scored it 2/10 — corners rendered perfectly flat. Sun 1.1 plus hemisphere 0.8 is about 1.9 irradiance, and with no tone mapping the highlights clip, so multiplying albedo by 0.7 barely moves a pixel already clamped at white. The data was in the buffer and never reached the screen. The builder measured the attribute; it never measured the pixel."
+  - "THE WORLD RAN AT 36-66% OF REAL TIME AND EVERY INSTRUMENT AGREED IT WAS FINE. The day/night clock advanced by the clamped physics step. Clamping is correct for physics — it prevents tunneling and a spiral of death — but nothing ever repaid the remainder, so every frame slower than 100ms silently lost that time forever. Night arrived 2-3x late, and because the world clock is local-only, two neighbours on different hardware saw different skies. The FPS readout divided by that same clamped clock, so frame-ms-average could never exceed 100.0 while the true median frame was 249ms — and the auto-quality governor ate that number and could raise render scale on a device that was already drowning. Now 96-105% of real time while measured fps varies 15 to 52."
+  - "THE DEBUG HUD REPORTED THE FIRST-PERSON HAND AS THE ENTIRE WORLD, AND THE AUTHORS ALREADY KNEW. Three.js resets renderer.info on every render call. The loop renders the world and then renders the hand, so the HUD read the hand pass: it printed 1 draw call and 12 triangles for 420 seconds straight while 143 chunks were loaded. The truth was 116 draw calls and 81,298 triangles — under-counted 116x. The file already ships an audit helper whose own comment reads 'main pass only — info reflects terrain, not the hand overlay'. They hit this bug, worked around it in their private audit harness, and left the instrument the user sees broken."
+  - "SIX TIMES THE FAILURE WAS THE TEST, NOT THE CODE — INCLUDING THE MOST IMPORTANT CHECK, WHICH NEVER RAN ONCE. The acceptance gate read the world clock through a method that does not exist on that object. It returned null, the code treated null as 'not exposed, skip', and printed an info line. The single check the whole exercise was designed around silently skipped every run — and in a log, a skipped check looks almost exactly like a passing one. Separately, using offsetParent to test visibility produced five distinct false results, because CSSOM defines offsetParent as null for any fixed-position element: it reported a false failure against correct CSS, nearly got that CSS changed to satisfy it, burned a critic's entire test run, and sat undetected in the readiness check of both tools, where it silently degraded 'is the world playable?' into 'did the import resolve?'."
+prompt: |
+  I want you to take this application to the level of the best in its class.
+  It should be utterly perfect, visually beautiful, with every single thing
+  done at AAA quality — from textures to physics to anything you could think
+  of.
+
+  Fan out sub-agents and have sub-agents tackle each one individually so that
+  it is utterly perfect. You should /loop on each item and have a separate
+  sub-agent check it visually to ensure it looks triple A. That separate
+  sub-agent should be a really harsh critic, and if it doesn't look triple A,
+  it should keep going.
+
+  Don't stop until each sub-agent is utterly wowed with the quality when
+  compared with the real thing. It should literally compare them side by side
+  blind and say which one looks better.
+
+  The critic must test the paths the builder would never test. Open every
+  panel, tab and button the app ships, including its own self-test, and report
+  what they say. Put a real cursor on every control and click it — a button
+  that renders at full opacity can still be unreachable. Check that the
+  simulation is paced by the wall clock and not by frame count: throttle the
+  CPU and prove the world advances the same amount per real second. And when
+  something reports a failure, check the assertion before you "fix" the
+  implementation.
+
+  /loop until it's utterly perfect. Fan out sub-agents and ultracode.
+lessons:
+  - "Why an overlay at z-index 40 above a toolbar at 35 makes an entire UI unreachable while looking completely normal — and why only a real cursor on a real button in a headed browser with real pointer lock finds it"
+  - "How ambient occlusion can be correctly computed, correctly uploaded, and still invisible because 1.9 irradiance with no tone mapping clips the very highlight it was meant to darken — measure the pixel, not the buffer"
+  - "Why clamping delta-time is right for physics and wrong for a day/night clock, and how the unrepaid remainder makes a world run at 36% of real time while every instrument built on that same clamped clock agrees everything is fine"
+  - "How a check that calls a method which does not exist can silently skip on every single run, and why a skipped check is more dangerous than a failing one"
+  - "Why offsetParent is never a visibility test, and how one bad idiom produced five separate false results across two tools and three agents"
+  - "How to prove a green test suite means anything: 9 deliberate mutations, 9 kills, each turning exactly one assertion red"
+---
+<!-- VOXEL_WORLD v1 -->
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>A Minecraft-style voxel sandbox in one self-contained HTML file: infinite seeded terrain with biomes and caves, a day/night cycle, block breaking and placing, flight and swimming, touch and desktop controls, local-first saves with JSON export and import, peer-to-peer multiplayer over WebRTC, and a mineflayer-style bot API you can drive from the browser console.</p>
+  <p>It was already a mature file — 9,749 lines, with boot guards, private-mode handling on every storage call, a headless mode, and per-frame DOM writes carefully gated. That maturity is exactly what makes the results interesting.</p>
+</section>
+
+<aside class="lwk-try-embed">
+  <div class="lwk-try-embed-head">
+    <span class="lwk-try-embed-label">Voxel World — live</span>
+    <a href="/learnwithkody/demos/353-voxel-world.html" target="_blank" rel="noopener" class="lwk-try-embed-open">Open in new tab &#8599;</a>
+  </div>
+  <iframe src="/learnwithkody/demos/353-voxel-world.html" title="Voxel World — single-file Minecraft-style voxel sandbox" loading="lazy" sandbox="allow-scripts allow-same-origin"></iframe>
+</aside>
+
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>Eight agents worked the file at once. Six were builders, each owning a disjoint region so they could edit the same file concurrently without clobbering each other. Two were read-only critics whose only job was to be unimpressed.</p>
+  <p>The best defect they found is not a coding error. It is this: <strong>the ambient occlusion was real, correct, wired up, and completely invisible.</strong></p>
+  <p>A builder implemented per-vertex AO properly and checked its own work. It confirmed that 66.3% of quads carried per-vertex colour variation and that vertex colours were enabled on the material. It reported AO as a win, with evidence.</p>
+  <p>The blind critic scored it <strong>2 out of 10</strong>. The corners rendered perfectly flat.</p>
+  <p>Sun intensity 1.1 plus hemisphere 0.8 is roughly 1.9 irradiance, and with no tone mapping the highlights clip. Multiplying albedo by 0.7 barely moves a pixel that is already clamped at white. Every line of the implementation was correct. The data was in the buffer. It never reached the screen.</p>
+  <p>The builder measured the attribute. It never measured the pixel. That is a verification error, not a coding error, and no amount of re-reading the source finds it.</p>
+  <p>The blind protocol proved itself in both directions, which is the part I did not expect. Before the reveal, the critic ranked a three-way vista as A and C far above B, describing B as "flat ungraded sky, default Three.js". B turned out to be the oldest build — so the new sky work was a genuine, blind-verified win. But four other pairs it declared ties were real changes that had shipped invisibly; pixel-diffing two builds ten minutes apart showed one scene was <strong>bit-identical</strong>.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>The blocker that was invisible in every way except one</h2>
+  <p>The "Click to play" overlay is a fixed-position element covering the viewport at z-index 40. The toolbar is z-index 35. Every button in it hit-tested to the overlay.</p>
+  <p>Clicking the gear icon granted pointer lock instead of opening Settings. Pressing Escape released the lock and brought the overlay back, so the next click was swallowed again. F3 and H had keyboard fallbacks; Settings, the in-game terminal and the multiplayer panel had none. The only route in was fourteen presses of Tab followed by Enter.</p>
+  <p>The buttons render at full opacity above a 55% tint the entire time. Nothing looks wrong in a screenshot. Nothing looks wrong in the source — the CSS is unremarkable and the click handlers are correctly registered. It only appears if you put a real cursor on a real button in a headed browser where pointer lock actually behaves, and click.</p>
+  <p>It was already committed and shipped.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>And six times, the failure was the test</h2>
+  <p>The agents produced 21 real defects. They also produced six false ones, and those turned out to be the more useful half.</p>
+  <p>The acceptance gate read the world clock through a method that does not exist on that object. It returned null. The gate treated null as "not exposed, skip" and printed a tidy info line. <strong>The single check the entire exercise was built around never ran, on any pass.</strong> In a log, a skipped check and a passing check look almost identical.</p>
+  <p>Worse was a single bad idiom: using offsetParent to mean "not visible". CSSOM defines offsetParent as null for <em>any</em> fixed-position element. That one mistake produced five separate false results — it reported a failure against correct CSS, it nearly got that correct CSS changed to satisfy it, it burned a critic's entire test run, and it sat undetected in the readiness check of both tools, where it quietly degraded "is the world playable?" into "did the module import resolve?". Every boot-time number measured before it was caught was measuring the wrong moment.</p>
+  <p>One agent settled the question properly. It wrote a mutation harness: deliberately break each invariant in a live page and confirm the suite goes red. Nine mutations, nine kills, each turning exactly one assertion red with no collateral. That is the only evidence a green suite means anything — without it, "83 assertions passing" and "83 assertions that cannot fail" produce identical output.</p>
+  <p>Another agent measured a leak of 9.4 objects per round and had the numbers to prove it. Then it ran a zero-bot control group, watched the control climb identically, realised it had been measuring chunk-streaming warm-up, and retracted its own finding.</p>
+  <p>That is the behaviour worth building for. Not agents that find bugs — agents that check whether the bug is real.</p>
+</section>
