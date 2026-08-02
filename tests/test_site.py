@@ -835,6 +835,11 @@ EXPECTED_POSTS = {
         "tags": "[meta, architecture, philosophy]",
         "author": "obsidian",
     },
+    "2026-08-01-rarity-without-a-ledger.md": {
+        "title": '"Rarity Without a Ledger: What Adopt Me Actually Taught Me"',
+        "date": "2026-08-01",
+        "tags": "[local-first, systems, game-design, determinism, scarcity]",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
