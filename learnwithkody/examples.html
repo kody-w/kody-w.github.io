@@ -43,7 +43,13 @@ description: A growing catalog of published vibe-coding examples and exact conce
        content) widened the grid and gave the whole page 46px of horizontal
        scroll at 390px. Let long titles break. */
     .lwk-example-card{min-width:0}
-    .lwk-example-card h3{overflow-wrap:anywhere}
+    /* overflow-wrap:anywhere (not break-word) because only `anywhere`
+       reduces an element's min-content width, which is what the grid
+       track is actually sizing itself from. */
+    .lwk-example-card h3,
+    .lwk-example-card p,
+    .lwk-example-card li,
+    .lwk-example-card code{overflow-wrap:anywhere}
     /* The grid's minmax() column floor is wider than a 360px phone's content
        box (330px), so the track overflowed by 46px no matter how the text
        wrapped. Collapse to one column where there is no room for two. */
