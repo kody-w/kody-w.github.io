@@ -35,7 +35,9 @@ This is the load-bearing insight. In any collectible system, most pulls are bori
 
 I care about this because I build local-first systems: no server, no database, nothing that can be the sole writer of truth. So I sorted Adopt Me's mechanics by what they actually require.
 
-**Trading requires an authority, permanently.** Scarcity in a trade economy means non-duplication, and non-duplication means somebody has to be the one who says this item is here and therefore not there. That's a ledger. There's no clever hash that removes the need. Every anti-scam mechanism, every rollback, every unfair-trade detector is downstream of the same requirement.
+**Trading requires an authority.** Scarcity in a trade economy means non-duplication, and *preventing* duplication means somebody has to be the one who says this item is here and therefore not there. That's a ledger, and no clever hash removes the need for it. Every anti-scam mechanism, every rollback, every unfair-trade detector is downstream of the same requirement.
+
+(That's the *prevention* half. Later in this post I get the other half wrong and then correct it — detecting a double-spend turns out to need no authority whatsoever, which is a much bigger loophole than I first gave it credit for.)
 
 **Fusion requires nothing.** `4 → 1` is a pure function of its inputs. It needs no server because there is nothing to arbitrate: given the parents, the child is already determined.
 
@@ -73,13 +75,36 @@ What the child carries instead is its **generation** — and generation is arith
 
 I made this a test rather than an intention: fuse two thousand children, tally their rarity bands, and assert the distribution matches freshly minted creatures within noise. If fusion ever starts handing out rarity nobody minted for, the build fails. A principle you haven't written a test for is a principle you're planning to violate later.
 
-## What it honestly can't do
+## The part I got wrong
 
-Fusion proves the four parents **existed**. It does not prove they were **spent**.
+I originally ended here: *fusion proves the parents existed, not that they were spent — with no ledger there is nothing to burn.*
 
-With no ledger there is nothing to burn, so the same four secrets fuse to the same child again, forever. Generation is proof of accumulated minting, not proof of sacrifice.
+That was too strong, and someone rightly pushed back on it. I had collapsed two different things into one:
 
-I put that paragraph on the page itself, next to the button. Not out of modesty — because the credibility of every *other* claim in a trustless system depends on how you handle the one claim you can't make. A system that overstates a guarantee it can't keep has taught you exactly how much its other guarantees are worth.
+- **Preventing** a double-spend globally. This does need an authority.
+- **Detecting** one. This needs nothing at all.
+
+The primitive is a **nullifier** — a spend-marker derived from the secret:
+
+```
+nullifier(tail) = sha256("rapp/1:nullifier\n" + tail)
+```
+
+Only the holder can produce it, because the tail is a mint-once secret. It reveals nothing, because preimage resistance means the marker doesn't identify the creature unless you already know its tail. And — this is the whole trick — **it is identical every time**.
+
+Which is exactly why it must *not* be bound to the child. Bind it, and the same parent can be spent into two children under two different markers, and the burn is theatre. Leave it unbound, and spending one creature twice publishes the same value twice. That collision is the evidence.
+
+So the honest split is sharper than "no burn":
+
+- **On one device, the burn is enforced.** The registry refuses a parent it has already seen consumed. A spent creature is struck through and cannot be selected again.
+- **Across devices, the burn is detected.** Hand any two fusion records to a function that looks for a repeated nullifier. It runs offline, on nothing but the records themselves. Nobody adjudicates — the collision *is* the adjudication.
+- **What still needs an authority is ordering.** Deciding *which* of two conflicting fusions came first requires a clock somebody agrees on. So equivocation is caught, but not arbitrated.
+
+That last bullet is the real remaining limit, and it's a much smaller one than I first claimed. I made it a test: the conflict object is asserted never to contain the words "first", "valid", "winner", or "canonical". Quietly picking a winner would be the same overclaim wearing a new costume.
+
+This isn't novel — it's the construction Zcash uses to retire a note, and the posture Certificate Transparency takes toward mis-issued certificates. **You don't prevent the lie. You make it undeniable.** For a system with no server, that turns out to be most of the way there.
+
+The general point stands, but I had the boundary in the wrong place. "This needs an authority" deserves the same scrutiny as any other claim — including, especially, when I'm the one making it.
 
 ## The general lesson
 
