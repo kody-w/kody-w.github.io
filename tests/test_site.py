@@ -840,6 +840,11 @@ EXPECTED_POSTS = {
         "date": "2026-08-01",
         "tags": "[local-first, systems, game-design, determinism, scarcity]",
     },
+    "2026-08-01-a-403-is-an-answer.md": {
+        "title": '"A 403 Is an Answer, Silence Is Not"',
+        "date": "2026-08-01",
+        "tags": "[local-first, systems, agents, epistemics, automation]",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {

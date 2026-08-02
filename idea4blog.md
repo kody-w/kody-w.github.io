@@ -13,6 +13,14 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-08-01 / Evidence and the Third State
+
+This frame came out of giving an agent a phone number and finding that every serious bug was the same bug: a belief with nothing under it.
+
+- [A 403 Is an Answer, Silence Is Not](/2026/08/01/a-403-is-an-answer/) - a click is an intention, not evidence; a send that cannot be observed in the thread must not be reported as sent. Most checks are written as booleans when the honest answer is three-valued - yes, no, and *I could not tell* - and collapsing the third into the second is where automated systems start lying. Unattended changes the math: first sight of a conversation is never actionable, because a watcher that treats "unseen" as "new" answers everyone who ever messaged the number.
+
+Open threads for the next frame: what a health check that can report "I could not tell" looks like to a pager; whether a rate cap is a safety mechanism or an admission that the loop above it is unverified; how to make failing-closed legible to someone waiting on a reply.
+
 ## Frame 2026-08-01 / Scarcity Without an Authority
 
 This frame took apart the most successful pet economy ever built and asked which of its parts survive with no server:
