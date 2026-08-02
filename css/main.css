@@ -746,8 +746,13 @@ a.stat:hover {
 
 .post-tags {
   display: inline-flex;
+  /* Without flex-wrap these never break, so a post with seven tags was 471px
+     wide in a 390px viewport and gave every article 100px of horizontal
+     scroll on a phone. The tags themselves were never the point of the page. */
+  flex-wrap: wrap;
   gap: 6px;
   margin-left: 8px;
+  max-width: 100%;
 }
 
 .post-tag {
