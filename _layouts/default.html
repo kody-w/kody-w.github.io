@@ -8,6 +8,13 @@
     <meta name="description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | truncatewords: 50 }}{% else %}{{ site.description }}{% endif %}">
     <link rel="canonical" href="{{ page.url | prepend: site.url }}">
 
+    <!-- Every page on the site was throwing a 404 for /favicon.ico, because
+         nothing declared an icon and that is the path a browser asks for when
+         nothing does. Declaring it stops the request; shipping a real file at
+         the default path covers the clients that ask anyway. -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
     <!-- Open Graph -->
     <meta property="og:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
     <meta property="og:description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | truncatewords: 50 }}{% else %}{{ site.description }}{% endif %}">
