@@ -18,6 +18,33 @@
  "_hosting": "This channel lives inside the kody-w.github.io repo. GitHub Pages serves every repo of a user from one origin, so it plays in the RAPP Vision player at /rapp-vision while being published, versioned and owned right here next to the examples it documents.",
  "videos": [
   {
+   "id": "lwk-coastal-city",
+   "title": "An open-world city in one HTML file — and a gate that failed for the wrong reason",
+   "published": "2026-08-03",
+   "duration": 44,
+   "tags": [
+    "threejs",
+    "open-world",
+    "single-file",
+    "measurement",
+    "verification"
+   ],
+   "description": "Episode 3. A drivable procedural coastal city as ONE self-contained HTML file: no npm, no Vite, no build step, and not a single image file — every texture is drawn into a canvas at runtime, because with no asset pipeline there is nowhere else to put one. The whole world builds in 51.5ms. Then an independent acceptance gate re-measured every claim the builder made instead of trusting its self-report. It came back 10/11, failing on the most important check: is the simulation paced by the wall clock or by the frame rate? The app was fine. The gate had probed for a clock at a name the app does not use. That was the seventh time in one session that a reported failure turned out to be the test rather than the code. Corrected, it passes: day-fraction advance of 1.851e-3/s unthrottled versus 1.856e-3/s under 8x CPU throttle, a ratio of 1.002. The best line in the builder's own report was a caveat — CPU throttling had barely moved its frame rate, so rather than publish the clean number it proved the throttle was genuinely applied (a JS benchmark went 2.7ms to 56ms) and explained why, then re-ran the test with a main-thread hog that collapsed the frame rate 8.95x and got the same answer.",
+   "example": "https://kody-w.github.io/learnwithkody/examples/coastal-city-sandbox/",
+   "demo": "https://kody-w.github.io/learnwithkody/demos/354-coastal-city-sandbox.html",
+   "thumb": "thumbs/coastal-city.jpg",
+   "sources": [
+    {
+     "src": "media/coastal-city.webm",
+     "type": "video/webm"
+    },
+    {
+     "src": "media/coastal-city.mp4",
+     "type": "video/mp4"
+    }
+   ]
+  },
+  {
    "id": "lwk-buzzsaw-voxel",
    "title": "Six times the test was wrong: a buzzsaw pass over one 9,749-line file",
    "published": "2026-08-02",
@@ -29,17 +56,17 @@
     "threejs",
     "verification"
    ],
-   "description": "Episode 2. Eight agents on one self-contained HTML file: six builders owning disjoint regions, two read-only critics whose only job was to be unimpressed. They found 21 real defects — including a blocker, already in git HEAD, where every button in the desktop toolbar hit-tested to the \"Click to play\" overlay: clicking the gear granted pointer lock instead of opening Settings, and three panels had no keyboard fallback at all. It is invisible in the source and invisible in a screenshot. They also proved the day/night clock advanced by the clamped physics step, so the world ran at 36-66% of real time while every instrument built on that same clock agreed everything was fine — now 96-105%. But the best finding is not a bug: the ambient occlusion was real, correct, wired up, and completely invisible, because ~1.9 irradiance with no tone mapping clips the very highlight it was meant to darken. The builder measured the attribute and never measured the pixel. And six times the reported failure was the test being wrong, not the code — three of those were the coordinator’s own.",
+   "description": "Episode 2. Eight agents on one self-contained HTML file: six builders owning disjoint regions, two read-only critics whose only job was to be unimpressed. They found 21 real defects, including a blocker already in git HEAD where every button in the desktop toolbar hit-tested to the Click-to-play overlay: clicking the gear granted pointer lock instead of opening Settings, and three panels had no keyboard fallback at all. It is invisible in the source and invisible in a screenshot. They also proved the day/night clock advanced by the clamped physics step, so the world ran at 36-66% of real time while every instrument built on that same clock agreed everything was fine. Now 96-105%. But the best finding is not a bug: the ambient occlusion was real, correct, wired up, and completely invisible, because roughly 1.9 irradiance with no tone mapping clips the very highlight it was meant to darken. The builder measured the attribute and never measured the pixel. And six times the reported failure was the test being wrong, not the code.",
    "example": "https://kody-w.github.io/learnwithkody/examples/voxel-world/",
    "demo": "https://kody-w.github.io/learnwithkody/demos/353-voxel-world.html",
-   "thumb": "thumbs/voxel-world-catchup.jpg",
+   "thumb": "thumbs/buzzsaw-voxel.jpg",
    "sources": [
     {
-     "src": "media/voxel-world-catchup.webm",
+     "src": "media/buzzsaw-voxel.webm",
      "type": "video/webm"
     },
     {
-     "src": "media/voxel-world-catchup.mp4",
+     "src": "media/buzzsaw-voxel.mp4",
      "type": "video/mp4"
     }
    ]

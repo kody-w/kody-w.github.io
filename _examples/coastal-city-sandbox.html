@@ -1,0 +1,146 @@
+---
+title: "Coastal City Sandbox — a third-person open-world game in one HTML file you can double-click, and a gate that failed for the wrong reason"
+slug: coastal-city-sandbox
+order: 348
+featured: true
+tagline: "A drivable procedural coastal city — 8x7 road grid, working traffic lights, four vehicles, 26 ambient cars and 46 pedestrians routing around you, wall-clock day/night, a courier loop, and every single texture drawn in code at runtime — as ONE self-contained HTML file with no npm, no Vite and no build step. Then an independent gate re-measured every claim the builder made. It came back 10/11, and the one failure was the gate's fault, not the app's: it probed for a clock at a name the app doesn't use. That was the seventh time in one session the test was the broken thing."
+category: game
+difficulty: advanced
+status: live
+tags:
+  - threejs
+  - open-world
+  - single-file
+  - procedural
+  - measurement
+stack:
+  - "Three.js r160 via importmap CDN, everything else inline"
+  - "Procedural textures generated at runtime — no image assets at all"
+  - "Wall-clock-paced simulation, verified under 8x CPU throttle"
+  - "localStorage saves with JSON export/import, verified zero-diff round-trip"
+demo: /learnwithkody/demos/354-coastal-city-sandbox.html
+repo: https://github.com/kody-w/localFirstTools/blob/main/coastal-city-sandbox.html
+highlights:
+  - "ONE FILE, NO BUILD STEP, AND EVERY TEXTURE DRAWN IN CODE. The usual version of this prompt targets a Vite project with npm and a multi-file source tree. This one has to survive as a single .html you double-click. That constraint changes the actual engineering: no asset pipeline means every surface — asphalt, lane markings, storefronts, sand, palm bark — is generated at runtime into a canvas and uploaded as a texture. 167 KB, ~120-180 buildings on an 8x7 grid, 4 drivable vehicles, 26 ambient cars, 46 pedestrians, and a shader ocean."
+  - "THE GATE FAILED, AND THE GATE WAS WRONG. An independent acceptance gate re-measured all seven checks rather than trusting the builder's self-report. It came back 10/11, failing on 'simulation paced by wall clock'. The app was fine: it exposes its clock as `__gameDebug.tod`, and the gate had probed `__gameState.timeOfDay`. Check the assertion before you fix the implementation — this was the seventh instance in a single session where the reported failure was the test rather than the code. Corrected, the check passes: day-fraction advance of 1.851e-3/s unthrottled versus 1.856e-3/s under 8x CPU throttle, a ratio of 1.002."
+  - "THE BUILDER'S HONEST CAVEAT WAS BETTER THAN ITS RESULT. It reported that CPU throttling barely moved the frame rate — and rather than quietly reporting a clean number, it proved the throttle *was* applied (a JS benchmark went 2.7ms to 56ms, 20.7x) and explained why: SwiftShader's raster threads aren't throttled by that control. So it re-ran the test with a 320ms main-thread hog instead, collapsing the frame rate 8.95x, and got the same 1.0000 sim-ms per real-ms. That is the difference between a measurement and a number."
+  - "SEVEN BUGS FOUND BY RUNNING IT, NOT READING IT. Top-level `THREE.*` access before the dynamic import resolved. GLSL reading `.z` off a `vec2`. A sky dome sitting outside the camera's far plane. Toggling `light.visible` forcing shader recompiles every frame. Stale player speed after exiting a vehicle. Twenty metres of position drift across a save-and-restore. And vehicles wedging permanently against geometry — fixed with displacement-based stall detection that folds the forward vector back to the distance actually covered, plus a yaw-escape that aims the nose away after two seconds."
+  - "MEASURED, NOT ASSERTED. Save is 589 bytes and survives a reload with a position delta of 0.003 m. Export-then-import round-trips with an empty diff list, and malformed JSON is rejected rather than absorbed. On a 390x844 phone: zero horizontal overflow, zero tap targets under 44x44 CSS px, and the menu fits without scrolling (scrollHeight 603 = clientHeight 603). Frame timing is reported as 119 frames over 10 seconds under SwiftShader software rasterisation — with the explicit caveat that absolute fps in that environment is meaningless, so the honest numbers are the ~54-62 draw calls and ~83k triangles."
+prompt: |
+  Act as an autonomous senior game developer. Build a complete, playable
+  third-person open-world driving-and-walking game and leave it finished.
+
+  Work autonomously: create the file, run it in a real browser, test it, fix
+  what you find, and deliver something playable. Do not stop after planning.
+  Do not hand me code snippets to assemble. Do not ask me questions you can
+  answer by making a reasonable decision.
+
+  HARD CONSTRAINT — this is the whole exercise: it must be ONE self-contained
+  .html file that runs by double-clicking it. No npm, no Vite, no build step,
+  no bundler, no separate .css or .js files. Three.js from a CDN is allowed
+  and expected; everything else is inline. Every texture must be generated in
+  code at runtime — no image files, no downloaded assets, nothing copied from
+  an existing game.
+
+  Build a small, dense, sunny coastal city that feels alive:
+  - City blocks with roads, sidewalks, intersections, lane markings, traffic
+    lights, storefronts, apartments, a few towers, alleys, palms, streetlights
+    and parked cars.
+  - A third-person character with walk, run, jump and a smooth follow camera
+    that handles obstruction without clipping into geometry.
+  - At least three visually distinct drivable vehicles. Enter and exit on foot.
+    Arcade handling — weight and slide, not a simulator.
+  - Ambient traffic and pedestrians that route around the city and react to
+    the player rather than standing still.
+  - A day/night cycle driven by the wall clock, not by frame count.
+  - One repeatable objective loop with a clear start, success and failure, and
+    a restart that actually resets state.
+  - HUD with a minimap, and audio generated with the Web Audio API.
+  - Local-first: the world, player position and progress survive a reload via
+    localStorage, with JSON export and import.
+
+  Performance is a feature, not a nice-to-have. Use instanced geometry for
+  repeated scenery, pool anything you spawn repeatedly, cull by distance, cap
+  the device pixel ratio, and keep shadows cheap. It must hold a steady frame
+  rate on an ordinary laptop, and it must degrade rather than die on a slow one.
+
+  Scope discipline: no crafting, no multiplayer, no skill trees, no story
+  missions. If a feature turns out unreliable, ship the simplest version of it
+  that genuinely works instead of a broken ambitious one.
+
+  Before you tell me you are done, actually verify all of this in a real
+  browser and report the measured numbers, not your expectations:
+  1. It boots to playable from a cold load with zero console errors.
+  2. Driving, walking, entering and exiting a vehicle all work repeatedly, not
+     just once.
+  3. The player cannot fall through the world or get permanently stuck in
+     geometry.
+  4. Reload restores the saved world, and export then import round-trips it.
+  5. Frame timing is measured over at least ten seconds and reported honestly.
+  6. The simulation is paced by the wall clock: throttle the CPU and prove the
+     world advances the same amount per real second at a different frame rate.
+  7. It is usable on a phone-sized viewport with touch controls, and every
+     interactive control has a hit area of at least 44 by 44 CSS pixels.
+
+  When you are finished, reply with only: a short summary, the controls, the
+  measured numbers from the checks above, and anything you deliberately left
+  out and why.
+lessons:
+  - "Why removing the build step is not a simplification but a different engineering problem: with no asset pipeline, every texture has to be drawn into a canvas at runtime, which changes what the art direction can even be"
+  - "How to prove a simulation is paced by the wall clock rather than the frame rate, and why CPU throttling can fail to demonstrate it when a software rasteriser's threads aren't covered by the throttle"
+  - "Why an acceptance gate should FAIL rather than skip when it cannot measure something — and why the first suspect when a gate fails is the gate"
+  - "How displacement-based stall detection (folding the forward vector back to the distance actually covered) fixes vehicles wedging on geometry, where velocity-based detection does not"
+  - "Why 'it boots' is a useless check and 'it boots, drives, exits, re-enters and drives again five times' is a real one"
+---
+<!-- COASTAL_CITY_SANDBOX v1 -->
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>A third-person open-world city you can walk around, drive through, and run deliveries in — as a single self-contained HTML file. No npm, no Vite, no bundler, no build step. You double-click it and it runs.</p>
+  <p>There is a sunny coastal city on an 8&times;7 road grid: sidewalks, lane markings, working traffic lights, storefronts with signage and awnings, alleys, palms, streetlights, parked cars, a beach, a boardwalk and an ocean with an animated shader. Four drivable vehicles. Twenty-six ambient cars and forty-six pedestrians that route the grid and get out of your way. A wall-clock day/night cycle, a courier delivery loop, a minimap, Web Audio, and local-first saves with JSON export and import.</p>
+  <p>Every texture in it was drawn in code at runtime. There is not a single image file.</p>
+</section>
+
+<aside class="lwk-try-embed">
+  <div class="lwk-try-embed-head">
+    <span class="lwk-try-embed-label">Coastal City Sandbox &mdash; live</span>
+    <a href="/learnwithkody/demos/354-coastal-city-sandbox.html" target="_blank" rel="noopener" class="lwk-try-embed-open">Open in new tab &#8599;</a>
+  </div>
+  <iframe src="/learnwithkody/demos/354-coastal-city-sandbox.html" title="Coastal City Sandbox — single-file third-person open-world game" loading="lazy" sandbox="allow-scripts allow-same-origin"></iframe>
+</aside>
+
+<section class="lwk-section">
+  <h2>The constraint is the exercise</h2>
+  <p>The familiar version of this prompt targets a Vite project: npm, a multi-file source tree, an asset pipeline. This one had to survive as one file you can email to someone.</p>
+  <p>That is not a simplification. It is a different engineering problem. With no asset pipeline there is nowhere to put a texture, so every surface &mdash; asphalt, lane markings, storefront glass, sand, palm bark, car paint &mdash; has to be generated into a canvas at runtime and uploaded. The art direction is constrained by what you can draw procedurally in a few milliseconds, which is a real design pressure and not a cosmetic one.</p>
+  <p>The whole world builds in 51.5&nbsp;ms: textures 39.5, city geometry 6.7, actors 1.9, the rest materials and sky.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>The gate failed, and the gate was wrong</h2>
+  <p>The builder reported its own numbers, which is exactly the report you should not trust. So a separate acceptance gate re-measured all seven checks independently.</p>
+  <p>It came back <strong>10 out of 11</strong>. The failure was on the most important check: <em>is the simulation paced by the wall clock, or by the frame rate?</em></p>
+  <p>The app was fine. It exposes its clock as <code>__gameDebug.tod</code>. The gate had gone looking for <code>__gameState.timeOfDay</code>, found nothing, and correctly failed rather than skipping &mdash; but it was failing a correct implementation because the assertion was wrong.</p>
+  <p>This was the <strong>seventh time in a single session</strong> that a reported failure turned out to be the test rather than the code. It is the reason the first rule is: check the assertion before you fix the implementation.</p>
+  <p>Corrected, the check passes cleanly. Day-fraction advance measured at <strong>1.851&times;10<sup>-3</sup> per second</strong> unthrottled versus <strong>1.856&times;10<sup>-3</sup></strong> under 8&times; CPU throttle &mdash; a ratio of <strong>1.002</strong>. The world keeps the same time regardless of how fast it is drawing.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>The best thing in the builder's report was a caveat</h2>
+  <p>When it ran its own pacing test, CPU throttling barely moved the frame rate. A weaker report would have quietly published the clean-looking number.</p>
+  <p>Instead it proved the throttle was actually applied &mdash; a JavaScript benchmark went from 2.7&nbsp;ms to 56&nbsp;ms, a 20.7&times; slowdown &mdash; and then explained why the frame rate hadn't moved: under software rasterisation the raster threads dominate, and they are not covered by that throttle. So it re-ran the test with a 320&nbsp;ms main-thread hog instead, collapsed the frame rate 8.95&times;, and got <strong>1.0000 simulated milliseconds per real millisecond</strong>, drift 0.000%.</p>
+  <p>That is the difference between reporting a number and taking a measurement.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>Seven bugs, all found by running it</h2>
+  <p>None of these are visible by reading the source:</p>
+  <ul>
+    <li>Top-level <code>THREE.*</code> access that ran before the dynamic import resolved.</li>
+    <li>A GLSL shader reading <code>.z</code> off a <code>vec2</code>.</li>
+    <li>A sky dome placed outside the camera's far plane, so it simply wasn't there.</li>
+    <li>Toggling <code>light.visible</code> forcing a shader recompile every frame.</li>
+    <li>Stale player speed carried over after exiting a vehicle.</li>
+    <li>Twenty metres of position drift across a save and restore.</li>
+    <li>Vehicles wedging permanently against geometry &mdash; fixed with displacement-based stall detection that folds the forward vector back to the distance actually covered, plus a yaw-escape that points the nose away after two seconds. Velocity-based detection does not catch this, because a wedged car is still trying to move.</li>
+  </ul>
+</section>
