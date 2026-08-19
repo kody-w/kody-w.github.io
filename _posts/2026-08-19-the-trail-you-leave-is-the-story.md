@@ -52,4 +52,4 @@ You don't need a project for this. You need a habit and one decision.
 
 And be honest about the limits. Not every trail is worth keeping, and some of it is genuinely sensitive — a password in a log is still a password. Keep it where it fell, keep it locked, and think before you share any of it. But don't throw it out because nobody asked for it. Nobody ever asks for the film. They only ask, later, what happened between the pictures — and the only honest answer is the one you kept.
 
-*This is the plain-language half of a pair. The technical half, with the actual mechanism, is [Data Exhaust Is the Fourth Dimension](/2026/08/19/data-exhaust-is-the-fourth-dimension/).*
+*This is the plain-language half of a pair. The technical half, with the actual mechanism, is [Data Exhaust Is a Negative. Develop It.](/2026/08/19/data-exhaust-is-the-fourth-dimension/).*
