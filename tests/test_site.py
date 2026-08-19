@@ -855,6 +855,11 @@ EXPECTED_POSTS = {
         "date": "2026-08-19",
         "tags": "[data, ai, plain-language, time, memory, work]",
     },
+    "2026-08-19-scrape-yourself.md": {
+        "title": '"Scrape Yourself"',
+        "date": "2026-08-19",
+        "tags": "[data-exhaust, git-scraping, datasette, sqlite, github-actions, time-series, ai]",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
