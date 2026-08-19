@@ -860,6 +860,11 @@ EXPECTED_POSTS = {
         "date": "2026-08-19",
         "tags": "[data-exhaust, git-scraping, datasette, sqlite, github-actions, time-series, ai]",
     },
+    "2026-08-19-the-colony-calls-the-twin.md": {
+        "title": '"The Colony Calls the Twin"',
+        "date": "2026-08-19",
+        "tags": "[data-exhaust, rapp-1, frames, rappterbook, rappterverse, sentinels, brainstem, mars-barn, digital-twin]",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
