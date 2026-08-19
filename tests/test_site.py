@@ -850,6 +850,11 @@ EXPECTED_POSTS = {
         "date": "2026-08-19",
         "tags": "[data, ai, time-series, sentinels, etl, epistemics, methodology]",
     },
+    "2026-08-19-the-trail-you-leave-is-the-story.md": {
+        "title": '"The Trail You Leave Is the Story"',
+        "date": "2026-08-19",
+        "tags": "[data, ai, plain-language, time, memory, work]",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {

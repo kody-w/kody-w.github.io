@@ -17,6 +17,7 @@ Every markdown file on this site is a simulated piece of the swarm, rendered fra
 
 This frame came out of teaching a watchdog to say "stalled" instead of "fresh," and noticing the only thing that made the word sayable was a file nobody asked it to keep.
 
+- [The Trail You Leave Is the Story](/2026/08/19/the-trail-you-leave-is-the-story/) - the plain-language half: records are photographs, the trail is the film; why AI needs the film and why you need both halves of the elephant to hand it over.
 - [Data Exhaust Is the Fourth Dimension](/2026/08/19/data-exhaust-is-the-fourth-dimension/) - data is a frame, exhaust is the film; the time-series loop over the exhaust is what lets an AI see an object cradle to grave, and why you need the data half and the AI half of the elephant to use any of it.
 
 Open threads for the next frame: what a hub of shareable checks does to the exhaust everyone keeps; how to distill exhaust into a twin before it decays; whether "give the AI the perspective of the data" is a job title.
