@@ -5,9 +5,9 @@ date: 2026-08-19
 tags: [data, ai, plain-language, time, memory, work]
 ---
 
-Think about the last time you tried to figure out what happened at work last month. Not what the report says happened — what *actually* happened. Who was waiting on whom. Which thing sat untouched for two weeks. When the deal really went quiet, as opposed to when someone finally wrote "lost" in the system.
+Think about the last time you tried to figure out what happened at work last month. Not what the report says happened — what *actually* happened. Who was waiting on whom. Which thing sat untouched for weeks. When the deal really went quiet, as opposed to when someone finally wrote "lost" in the system.
 
-You almost never find that in the official record. You find it in the leftovers. The email that went unanswered. The calendar that suddenly emptied. The three drafts of the same document with three different dates. The chat thread that just… stopped.
+You almost never find that in the official record. You find it in the leftovers. The email that went unanswered. The calendar that suddenly emptied. The same document saved again and again under different dates. The chat thread that just… stopped.
 
 That stuff has a name. People who work with data call it **data exhaust** — everything a system gives off while it's running, that nobody sat down and decided to keep. It sounds like a byproduct, because it is one. But it's also, very often, the only true story you have.
 
@@ -29,7 +29,7 @@ There's a lot of noise about what AI can do. Underneath the noise, the machines 
 
 Show an AI the photograph — the customer file — and it can describe your customer the way a stranger reading a form would. Show it the film, and something changes. It can see the customer *over time*: when they first showed up, when they got busy, when they went quiet, how quiet is normal for them and how quiet is a warning. It's the difference between meeting someone once and having known them for ten years. Ten years of knowing someone isn't a bigger form. It's the trail.
 
-A friend and I have been calling this *predator vision* — the movie version, not the heat-map. The system stops staring at a warm blob and starts seeing the path the blob took through the room. That's the only thing that lets you guess where it's going. And it works in reverse, too: once you know the shape of a normal week, you can see the shape of the week that's *missing* — the silence with an outline around it. Nothing happening, on its own, tells you nothing. Nothing happening for the first time in nine hundred weeks is a story.
+A friend and I have been calling this *predator vision* — the movie version, not the heat-map. The system stops staring at a warm blob and starts seeing the path the blob took through the room. That's the only thing that lets you guess where it's going. And it works in reverse, too: once you know the shape of a normal week, you can see the shape of the week that's *missing* — the silence with an outline around it. Nothing happening, on its own, tells you nothing. Nothing happening from something that has never once been quiet is a story.
 
 ## Half the elephant
 
@@ -52,4 +52,4 @@ You don't need a project for this. You need a habit and one decision.
 
 And be honest about the limits. Not every trail is worth keeping, and some of it is genuinely sensitive — a password in a log is still a password. Keep it where it fell, keep it locked, and think before you share any of it. But don't throw it out because nobody asked for it. Nobody ever asks for the film. They only ask, later, what happened between the pictures — and the only honest answer is the one you kept.
 
-*This is the plain-language half of a pair. The technical half, with the actual mechanism, is [Data Exhaust Is a Negative. Develop It.](/2026/08/19/data-exhaust-is-the-fourth-dimension/).*
+*This is the plain-language half of a pair. The technical half, with the actual mechanism, is [The Negative](/2026/08/19/data-exhaust-is-the-fourth-dimension/).*

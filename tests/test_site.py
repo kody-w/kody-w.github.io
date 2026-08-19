@@ -846,9 +846,9 @@ EXPECTED_POSTS = {
         "tags": "[local-first, systems, agents, epistemics, automation]",
     },
     "2026-08-19-data-exhaust-is-the-fourth-dimension.md": {
-        "title": '"Data Exhaust Is a Negative. Develop It."',
+        "title": '"The Negative"',
         "date": "2026-08-19",
-        "tags": "[data, ai, data-exhaust, time-series, epistemics, etl, methodology]",
+        "tags": "[data-exhaust, ai, digital-twin, time-series, epistemics, methodology]",
     },
     "2026-08-19-the-trail-you-leave-is-the-story.md": {
         "title": '"The Trail You Leave Is the Story"',
