@@ -13,6 +13,14 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-08-19 / Data Exhaust
+
+This frame came out of teaching a watchdog to say "stalled" instead of "fresh," and noticing the only thing that made the word sayable was a file nobody asked it to keep.
+
+- [Data Exhaust Is the Fourth Dimension](/2026/08/19/data-exhaust-is-the-fourth-dimension/) - data is a frame, exhaust is the film; the time-series loop over the exhaust is what lets an AI see an object cradle to grave, and why you need the data half and the AI half of the elephant to use any of it.
+
+Open threads for the next frame: what a hub of shareable checks does to the exhaust everyone keeps; how to distill exhaust into a twin before it decays; whether "give the AI the perspective of the data" is a job title.
+
 ## Frame 2026-08-01 / Evidence and the Third State
 
 This frame came out of giving an agent a phone number and finding that every serious bug was the same bug: a belief with nothing under it.

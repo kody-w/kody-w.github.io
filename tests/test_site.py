@@ -845,6 +845,11 @@ EXPECTED_POSTS = {
         "date": "2026-08-01",
         "tags": "[local-first, systems, agents, epistemics, automation]",
     },
+    "2026-08-19-data-exhaust-is-the-fourth-dimension.md": {
+        "title": '"Data Exhaust Is the Fourth Dimension"',
+        "date": "2026-08-19",
+        "tags": "[data, ai, time-series, sentinels, etl, epistemics, methodology]",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {
