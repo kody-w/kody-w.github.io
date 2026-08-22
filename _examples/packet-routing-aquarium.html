@@ -1,0 +1,47 @@
+---
+title: "Packet Aquarium — Watch Congestion, Drops, and Retransmits Swim"
+slug: "packet-routing-aquarium"
+order: 352
+featured: true
+tagline: "Build a flow, squeeze a link, and watch retries turn one crowded queue into a feedback loop."
+category: "simulator"
+difficulty: "advanced"
+status: "live"
+tags: ["networking", "routing", "congestion", "retransmission", "simulation"]
+stack: ["HTML", "CSS", "JavaScript", "Canvas 2D"]
+demo: "/learnwithkody/demos/358-packet-routing-aquarium.html"
+repo: "https://github.com/kody-w/kody-w.github.io/blob/master/learnwithkody/demos/358-packet-routing-aquarium.html"
+highlights:
+  - "deterministic congestion preset"
+  - "finite queues"
+  - "acknowledgments/timeouts/retransmits"
+  - "throughput, p50/p95 latency, queue depth, and loss"
+prompt: |
+  Build “Packet Aquarium — Watch Congestion, Drops, and Retransmits Swim,” a polished single-file network simulation. Draw a multi-router topology with animated packet flows and per-link queues. Users create flows, change capacity/latency/loss, fail/heal links, select routing strategies, pause/step/play, and run a deterministic congestion preset. Model finite queues, drops, acknowledgments/timeouts/retransmits, route recomputation, throughput, p50/p95 latency, queue depth, and loss; make the statistics derive from the simulation. Show why congestion can worsen through retries. Include reset/seed, keyboard/pointer/touch, accessible controls, phone layout, reduced motion. Inline HTML/CSS/JS only, no external assets/deps/CDN/fetch/network/build, <=160KB.
+lessons:
+  - "A fixed-step event loop makes seeded queueing, random loss, timeouts, and route changes reproducible without hiding behind prerecorded animation."
+  - "Finite queues convert excess offered load into measurable delay and drops; a timeout shorter than that queueing delay injects duplicate work before the first packet can finish."
+  - "Rolling throughput, p50/p95 latency, per-link depth, hop loss, and send amplification expose congestion collapse far better than a single average."
+---
+
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>Packet Aquarium is a seven-router, twelve-link network laboratory where every glowing data fish and returning ACK is simulated. Create flows, edit a selected link’s packet capacity, propagation latency, random loss, and finite queue, fail or heal links, and compare latency-, capacity-, and queue-aware routing while the dashboard computes its measurements from live packet events.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>The deterministic congestion preset overloads one eight-packet-per-second corridor until its queueing delay crosses the retransmission timeout. Senders then inject duplicates into the exact bottleneck that delayed them, and the measured retry band grows while useful throughput stalls. Congestion stops being a red line on a chart and becomes a school of packets making its own traffic jam worse.</p>
+</section>
+
+<aside class="lwk-try-embed">
+  <div class="lwk-try-embed-head">
+    <span class="lwk-try-embed-label">Live demo</span>
+    <a href="/learnwithkody/demos/358-packet-routing-aquarium.html" target="_blank" rel="noopener" class="lwk-try-embed-open">Open in new tab ↗</a>
+  </div>
+  <iframe
+    src="/learnwithkody/demos/358-packet-routing-aquarium.html"
+    title="Packet Aquarium — Watch Congestion, Drops, and Retransmits Swim — live demo"
+    loading="lazy"
+    sandbox="allow-scripts allow-same-origin"></iframe>
+</aside>

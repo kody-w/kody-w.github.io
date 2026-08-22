@@ -1,0 +1,2248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#04131d">
+<meta name="color-scheme" content="dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'none'; connect-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Packet Aquarium — Watch Congestion, Drops, and Retransmits Swim</title>
+<style>
+:root{
+  color-scheme:dark;
+  --abyss:#031019;
+  --deep:#061c29;
+  --panel:#082331e8;
+  --panel-solid:#082330;
+  --panel-2:#0b2d3c;
+  --line:#1b5365;
+  --line-soft:#123b4a;
+  --ink:#edfaff;
+  --muted:#92b9c5;
+  --cyan:#58e4ff;
+  --aqua:#67f5c1;
+  --yellow:#ffd166;
+  --coral:#ff7188;
+  --violet:#b48cff;
+  --blue:#6fa8ff;
+  --shadow:0 24px 70px #0009;
+}
+*{box-sizing:border-box}
+html{min-width:300px;background:var(--abyss)}
+body{
+  min-height:100vh;margin:0;overflow-x:hidden;
+  background:
+    radial-gradient(circle at 14% -5%,#0a4257 0,transparent 34rem),
+    radial-gradient(circle at 86% 10%,#17365f55 0,transparent 30rem),
+    linear-gradient(180deg,#04131d,#020b11 82%);
+  color:var(--ink);
+  font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+button,input,select,output{font:inherit}
+button,select,input{color:inherit}
+button{touch-action:manipulation}
+button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible{
+  outline:3px solid var(--yellow);outline-offset:3px
+}
+.skip{
+  position:fixed;z-index:100;top:.5rem;left:.5rem;transform:translateY(-150%);
+  padding:.65rem .85rem;border-radius:.55rem;background:#fff;color:#031019;font-weight:800
+}
+.skip:focus{transform:none}
+.sr-only{
+  position:absolute!important;width:1px!important;height:1px!important;padding:0!important;
+  margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;border:0!important
+}
+.app{
+  width:min(1540px,100%);min-height:100svh;margin:auto;
+  padding:max(.65rem,env(safe-area-inset-top)) max(.65rem,env(safe-area-inset-right))
+    max(.9rem,env(safe-area-inset-bottom)) max(.65rem,env(safe-area-inset-left))
+}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.7rem .85rem;border:1px solid var(--line);border-radius:16px;
+  background:linear-gradient(135deg,#0a2c3ad9,#071c2ae8);box-shadow:var(--shadow);
+  backdrop-filter:blur(12px)
+}
+.brand{display:flex;align-items:center;gap:.75rem;min-width:0}
+.brand-mark{
+  position:relative;display:grid;flex:0 0 auto;width:42px;height:42px;place-items:center;
+  border:1px solid #58e4ff99;border-radius:50% 55% 48% 60%;
+  background:radial-gradient(circle at 35% 35%,#58e4ff55,#092635 70%);
+  box-shadow:inset 0 0 18px #58e4ff22,0 0 22px #58e4ff22;
+  color:var(--cyan);font-weight:950;letter-spacing:-.08em
+}
+.brand-mark::after{
+  content:"";position:absolute;right:-7px;width:12px;height:13px;
+  clip-path:polygon(0 50%,100% 0,100% 100%);background:#58e4ff99
+}
+.eyebrow{
+  margin:0;color:var(--aqua);font:750 .67rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.16em;text-transform:uppercase
+}
+h1{margin:.18rem 0 0;font-size:clamp(1rem,2.1vw,1.65rem);line-height:1.08;letter-spacing:-.035em}
+.transport{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:.45rem}
+.button{
+  min-height:42px;padding:.55rem .78rem;border:1px solid #35697a;border-radius:10px;
+  background:#0a2937;box-shadow:inset 0 1px #ffffff0c;color:var(--ink);
+  font-weight:760;cursor:pointer
+}
+.button:hover{border-color:var(--cyan);background:#0d3545}
+.button.primary{border-color:#47bfd4;background:linear-gradient(180deg,#0e4353,#0a3040);color:#eaffff}
+.button.preset{border-color:#a37944;color:#ffe3a0}
+.button.danger{border-color:#a7495b;background:#351622;color:#ffdbe1}
+.button.good{border-color:#3e9d77;background:#0f362b;color:#c9ffe9}
+.button.small{min-height:36px;padding:.4rem .6rem;font-size:.78rem}
+.key{
+  display:inline-grid;min-width:1.25rem;height:1.25rem;margin-left:.3rem;place-items:center;
+  border:1px solid #ffffff26;border-radius:4px;color:var(--muted);
+  font:700 .62rem/1 ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.metrics{
+  display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.55rem;margin:.65rem 0
+}
+.metric{
+  min-width:0;padding:.62rem .72rem;border:1px solid var(--line-soft);border-radius:12px;
+  background:linear-gradient(145deg,#092635dc,#061b27e8);box-shadow:inset 0 1px #ffffff08
+}
+.metric-label{
+  display:flex;align-items:center;gap:.35rem;color:var(--muted);
+  font-size:.64rem;font-weight:780;letter-spacing:.09em;text-transform:uppercase
+}
+.metric-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px currentColor}
+.metric:nth-child(2) .metric-dot{background:var(--aqua)}
+.metric:nth-child(3) .metric-dot{background:var(--yellow)}
+.metric:nth-child(4) .metric-dot{background:var(--violet)}
+.metric:nth-child(5) .metric-dot{background:var(--coral)}
+.metric:nth-child(6) .metric-dot{background:var(--blue)}
+.metric output{display:block;margin-top:.18rem;font-size:clamp(1.15rem,2.2vw,1.72rem);font-weight:850;letter-spacing:-.045em}
+.metric small{display:block;overflow:hidden;color:#6f9caa;font-size:.62rem;white-space:nowrap;text-overflow:ellipsis}
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) minmax(310px,370px);gap:.65rem;align-items:start}
+.tank,.control-panel{
+  border:1px solid var(--line);border-radius:16px;background:var(--panel);
+  box-shadow:var(--shadow);backdrop-filter:blur(12px)
+}
+.tank{min-width:0;overflow:hidden}
+.tank-head{
+  display:flex;align-items:center;justify-content:space-between;gap:.75rem;
+  min-height:48px;padding:.58rem .75rem;border-bottom:1px solid var(--line-soft);
+  background:#092634cc
+}
+.tank-title{display:flex;align-items:center;gap:.55rem;min-width:0}
+.tank-title strong{font-size:.78rem;letter-spacing:.09em;text-transform:uppercase}
+.tank-title span{color:var(--muted);font:650 .67rem/1.2 ui-monospace,SFMono-Regular,Consolas,monospace}
+.legend{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:.5rem;color:var(--muted);font-size:.64rem}
+.legend span{display:inline-flex;align-items:center;gap:.28rem;white-space:nowrap}
+.legend i{display:inline-block;width:13px;height:6px;border-radius:999px;background:var(--cyan)}
+.legend .ack{width:7px;height:7px;border:1px solid #fff;background:transparent}
+.legend .retry{background:var(--coral)}
+.legend .queue{height:8px;border:1px solid #e4b554;background:#7b5e27}
+.canvas-wrap{
+  position:relative;min-height:470px;
+  background:
+    linear-gradient(#071c2780 1px,transparent 1px),
+    linear-gradient(90deg,#071c2780 1px,transparent 1px),
+    radial-gradient(circle at 50% 45%,#0d3b4c 0,#061a27 48%,#03111b 100%);
+  background-size:34px 34px,34px 34px,auto
+}
+#network{
+  display:block;width:100%;height:clamp(470px,61vh,660px);touch-action:manipulation;cursor:crosshair
+}
+.tank-overlay{
+  position:absolute;z-index:2;top:.65rem;left:.65rem;display:flex;align-items:center;gap:.45rem;
+  max-width:calc(100% - 1.3rem);pointer-events:none
+}
+.sim-clock,.status-chip{
+  padding:.32rem .48rem;border:1px solid #2f6474;border-radius:7px;
+  background:#03151ed9;color:#bfe9f3;font:700 .67rem/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+  box-shadow:0 7px 20px #0006
+}
+.status-chip{
+  overflow:hidden;border-color:#426778;color:#d4edf4;white-space:nowrap;text-overflow:ellipsis
+}
+.tank-tip{
+  position:absolute;z-index:2;right:.7rem;bottom:.65rem;max-width:min(340px,75%);
+  padding:.42rem .55rem;border:1px solid #275366;border-radius:8px;
+  background:#03151ed9;color:#8eb9c5;font-size:.65rem;pointer-events:none
+}
+.pressure{
+  display:grid;grid-template-columns:minmax(220px,.72fr) minmax(280px,1.28fr);
+  gap:.75rem;padding:.72rem;border-top:1px solid var(--line-soft);background:#061b27
+}
+.pressure-copy{min-width:0}
+.pressure-kicker{color:var(--coral);font-size:.62rem;font-weight:850;letter-spacing:.12em;text-transform:uppercase}
+.pressure-copy strong{display:block;margin:.16rem 0;font-size:.82rem}
+.pressure-copy p{margin:.2rem 0 0;color:var(--muted);font-size:.69rem;line-height:1.35}
+.load-readout{display:grid;align-content:center;gap:.4rem;min-width:0}
+.load-values{display:flex;justify-content:space-between;gap:.6rem;color:var(--muted);font-size:.64rem}
+.load-values b{color:var(--ink)}
+.load-track{
+  position:relative;height:18px;overflow:hidden;border:1px solid #254b59;border-radius:999px;
+  background:#020d13;box-shadow:inset 0 2px 8px #0008
+}
+.load-band{position:absolute;top:0;bottom:0;left:0;min-width:0;transition:width .18s,left .18s}
+.load-band.original{background:linear-gradient(90deg,#1597ad,#58e4ff)}
+.load-band.retry{background:repeating-linear-gradient(135deg,#ff7188 0 6px,#c94c64 6px 12px)}
+.capacity-marker{
+  position:absolute;z-index:2;top:-4px;bottom:-4px;width:2px;background:#fff;
+  box-shadow:0 0 8px #fff;transition:left .18s
+}
+.load-legend{display:flex;flex-wrap:wrap;gap:.8rem;color:var(--muted);font-size:.61rem}
+.load-legend span{display:flex;align-items:center;gap:.3rem}
+.load-legend i{width:14px;height:6px;border-radius:3px;background:var(--cyan)}
+.load-legend .retry-key{background:var(--coral)}
+.load-legend .capacity-key{width:2px;height:10px;background:#fff}
+.history{
+  padding:.55rem .72rem .7rem;border-top:1px solid var(--line-soft);background:#051721
+}
+.history-head{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.25rem}
+.history-head strong{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase}
+.history-head span{color:var(--muted);font-size:.6rem}
+#historyChart{display:block;width:100%;height:96px}
+.chart-summary{margin:.28rem 0 0;color:#7faab6;font-size:.61rem}
+.control-panel{overflow:hidden}
+.panel-section{padding:.78rem}
+.panel-section+.panel-section{border-top:1px solid var(--line-soft)}
+.section-head{display:flex;align-items:start;justify-content:space-between;gap:.5rem;margin-bottom:.65rem}
+.section-head h2{margin:0;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase}
+.section-head p{margin:.14rem 0 0;color:var(--muted);font-size:.63rem}
+.badge{
+  flex:0 0 auto;padding:.2rem .38rem;border:1px solid #3c6b7a;border-radius:999px;
+  color:#b8dce6;font:750 .58rem/1 ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.field{display:grid;gap:.28rem;margin-top:.55rem}
+.field:first-child{margin-top:0}
+.field>span,.field-label{color:#bdd9e1;font-size:.66rem;font-weight:760}
+.field small{color:var(--muted);font-weight:500}
+select,input[type="number"]{
+  width:100%;min-height:42px;padding:.48rem .55rem;border:1px solid #326274;border-radius:9px;
+  background:#041923;color:var(--ink)
+}
+input[type="range"]{width:100%;min-height:30px;margin:0;accent-color:var(--cyan);cursor:pointer}
+.seed-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.45rem}
+.flow-grid{display:grid;grid-template-columns:1fr 1fr;gap:.48rem}
+.flow-rate{display:grid;grid-template-columns:1fr auto;align-items:center;gap:.45rem;margin-top:.5rem}
+.flow-rate output{
+  min-width:4.2rem;padding:.27rem .4rem;border:1px solid #315d6b;border-radius:7px;
+  background:#041923;color:var(--cyan);text-align:center;font:750 .67rem/1.2 ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.add-flow{width:100%;margin-top:.55rem}
+.flow-list{display:grid;gap:.42rem;margin-top:.62rem}
+.empty{
+  padding:.65rem;border:1px dashed #315765;border-radius:9px;color:var(--muted);
+  font-size:.67rem;text-align:center
+}
+.flow-card{
+  display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.5rem;align-items:center;
+  padding:.48rem;border:1px solid #204a59;border-radius:10px;background:#061b25
+}
+.flow-swatch{width:8px;height:34px;border-radius:999px;background:var(--flow);box-shadow:0 0 10px var(--flow)}
+.flow-main{min-width:0}
+.flow-main strong{display:block;font-size:.69rem}
+.flow-route{
+  display:block;overflow:hidden;margin-top:.08rem;color:var(--muted);
+  font:600 .59rem/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+  white-space:nowrap;text-overflow:ellipsis
+}
+.flow-meta{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.2rem;color:#7faab6;font-size:.56rem}
+.flow-actions{display:flex;gap:.25rem}
+.icon-button{
+  display:grid;width:33px;height:33px;place-items:center;border:1px solid #315b69;border-radius:8px;
+  background:#082531;cursor:pointer
+}
+.icon-button:hover{border-color:var(--cyan)}
+.icon-button.remove:hover{border-color:var(--coral);color:var(--coral)}
+.link-status{
+  display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin:.5rem 0;
+  padding:.45rem .5rem;border:1px solid #284f5e;border-radius:9px;background:#061a24
+}
+.link-status strong{font-size:.68rem}
+.state-pill{
+  padding:.18rem .35rem;border:1px solid #3b8b70;border-radius:999px;color:var(--aqua);
+  font:800 .57rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;text-transform:uppercase
+}
+.state-pill.down{border-color:#a7495b;color:#ff9daf}
+.range-control{display:grid;grid-template-columns:86px minmax(0,1fr) 58px;gap:.45rem;align-items:center;margin-top:.45rem}
+.range-control label{font-size:.63rem;font-weight:730}
+.range-control label small{display:block;color:var(--muted);font-size:.54rem;font-weight:500}
+.range-control output{
+  padding:.25rem .32rem;border:1px solid #2c5664;border-radius:7px;background:#041923;
+  color:#dff8ff;text-align:center;font:700 .61rem/1.2 ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.link-actions{display:grid;grid-template-columns:1fr auto;gap:.45rem;margin-top:.6rem}
+.event-log{display:grid;gap:.34rem;max-height:198px;overflow:auto;padding-right:.15rem}
+.event{
+  display:grid;grid-template-columns:3rem minmax(0,1fr);gap:.45rem;padding:.38rem .42rem;
+  border-left:2px solid #3b7383;background:#051a24;color:#bad4dc;font-size:.61rem
+}
+.event time{color:#6f9eaa;font:700 .57rem/1.35 ui-monospace,SFMono-Regular,Consolas,monospace}
+.event.drop{border-color:var(--coral)}
+.event.retry{border-color:var(--yellow)}
+.event.route{border-color:var(--violet)}
+.event.good{border-color:var(--aqua)}
+.footer{
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.65rem .2rem 0;
+  color:#739aa6;font-size:.62rem
+}
+.footer strong{color:#a8ced7}
+@media(max-width:1120px){
+  .metrics{grid-template-columns:repeat(3,1fr)}
+  .workspace{grid-template-columns:minmax(0,1fr) minmax(295px,335px)}
+  .pressure{grid-template-columns:1fr}
+}
+@media(max-width:880px){
+  .workspace{grid-template-columns:1fr}
+  .control-panel{display:grid;grid-template-columns:1fr 1fr}
+  .panel-section+.panel-section{border-top:0}
+  .panel-section:nth-child(even){border-left:1px solid var(--line-soft)}
+  .panel-section:nth-child(n+3){border-top:1px solid var(--line-soft)}
+  #network{height:520px}
+}
+@media(max-width:620px){
+  .app{padding:.4rem}
+  .topbar{align-items:flex-start;border-radius:12px}
+  .brand-mark{width:35px;height:35px}
+  h1{font-size:.96rem}
+  .eyebrow{font-size:.58rem}
+  .transport{gap:.3rem}
+  .button{min-height:40px;padding:.48rem .58rem;font-size:.7rem}
+  .button .key{display:none}
+  .metrics{grid-template-columns:repeat(2,1fr);gap:.38rem;margin:.4rem 0}
+  .metric{padding:.52rem .58rem}
+  .metric output{font-size:1.25rem}
+  .tank,.control-panel{border-radius:12px}
+  .tank-head{align-items:flex-start}
+  .tank-title span{display:none}
+  .legend{max-width:180px;gap:.35rem}
+  .legend span{font-size:.57rem}
+  .canvas-wrap{min-height:400px}
+  #network{height:410px}
+  .tank-tip{max-width:88%;font-size:.58rem}
+  .pressure{padding:.6rem}
+  .control-panel{display:block}
+  .panel-section+.panel-section,.panel-section:nth-child(even){border-left:0;border-top:1px solid var(--line-soft)}
+  .range-control{grid-template-columns:74px minmax(0,1fr) 52px}
+  .footer{display:block;line-height:1.5}
+}
+@media(max-width:390px){
+  .brand-mark{display:none}
+  .button{padding:.44rem .5rem}
+  .button[data-secondary-label]{font-size:0}
+  .button[data-secondary-label]::first-letter{font-size:.72rem}
+  .flow-grid{grid-template-columns:1fr}
+  .load-values{display:grid;grid-template-columns:1fr 1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}
+  .brand-mark,.metric-dot{box-shadow:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#controls">Skip animated topology and go to controls</a>
+<main class="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">PKT</span>
+      <div>
+        <p class="eyebrow">Deterministic network laboratory</p>
+        <h1>Packet Aquarium <span aria-hidden="true">—</span> Congestion swims in public</h1>
+      </div>
+    </div>
+    <div class="transport" role="group" aria-label="Simulation playback">
+      <button class="button primary" id="playButton" type="button" aria-pressed="true" aria-keyshortcuts="Space">
+        <span id="playIcon" aria-hidden="true">Ⅱ</span> <span id="playLabel">Pause</span><span class="key" aria-hidden="true">Space</span>
+      </button>
+      <button class="button" id="stepButton" type="button" aria-keyshortcuts=".">
+        Step<span class="key" aria-hidden="true">.</span>
+      </button>
+      <button class="button preset" id="presetButton" type="button" aria-keyshortcuts="C">
+        Congestion preset<span class="key" aria-hidden="true">C</span>
+      </button>
+      <button class="button" id="resetButton" type="button" aria-keyshortcuts="R">
+        Reset<span class="key" aria-hidden="true">R</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="metrics" aria-label="Live simulation statistics">
+    <div class="metric">
+      <span class="metric-label"><i class="metric-dot" aria-hidden="true"></i>Throughput</span>
+      <output id="throughputValue">0.0</output>
+      <small>unique deliveries / second</small>
+    </div>
+    <div class="metric">
+      <span class="metric-label"><i class="metric-dot" aria-hidden="true"></i>p50 latency</span>
+      <output id="p50Value">—</output>
+      <small>end-to-end, rolling 15 s</small>
+    </div>
+    <div class="metric">
+      <span class="metric-label"><i class="metric-dot" aria-hidden="true"></i>p95 latency</span>
+      <output id="p95Value">—</output>
+      <small>includes queueing + retries</small>
+    </div>
+    <div class="metric">
+      <span class="metric-label"><i class="metric-dot" aria-hidden="true"></i>Queue depth</span>
+      <output id="queueValue">0 / 0</output>
+      <small>packets across directed links</small>
+    </div>
+    <div class="metric">
+      <span class="metric-label"><i class="metric-dot" aria-hidden="true"></i>Hop loss</span>
+      <output id="lossValue">0.0%</output>
+      <small>queue, random, route, failures</small>
+    </div>
+    <div class="metric">
+      <span class="metric-label"><i class="metric-dot" aria-hidden="true"></i>Send amplification</span>
+      <output id="amplificationValue">1.00×</output>
+      <small>originals + retries / originals</small>
+    </div>
+  </section>
+
+  <div class="workspace">
+    <section class="tank" aria-labelledby="tank-heading">
+      <header class="tank-head">
+        <div class="tank-title">
+          <strong id="tank-heading">Live topology</strong>
+          <span>7 routers · 12 full-duplex links · finite queues</span>
+        </div>
+        <div class="legend" aria-label="Packet legend">
+          <span><i aria-hidden="true"></i>data</span>
+          <span><i class="ack" aria-hidden="true"></i>ACK</span>
+          <span><i class="retry" aria-hidden="true"></i>retry</span>
+          <span><i class="queue" aria-hidden="true"></i>queue</span>
+        </div>
+      </header>
+      <div class="canvas-wrap">
+        <canvas id="network" tabindex="0" role="img" aria-describedby="networkHelp"></canvas>
+        <p id="networkHelp" class="sr-only">Interactive router topology. Select links by pointer or use the link selector in the controls. Select routers in pairs to set the flow source and destination.</p>
+        <div class="tank-overlay" aria-hidden="true">
+          <span class="sim-clock" id="simulationClock">T+00:00.0</span>
+          <span class="status-chip" id="topologyStatus">Routing stable</span>
+        </div>
+        <p class="tank-tip">Tap a link to edit it. Tap two routers to set flow endpoints. Queues are shown on both sides of every link.</p>
+      </div>
+
+      <section class="pressure" aria-labelledby="pressure-heading">
+        <div class="pressure-copy">
+          <span class="pressure-kicker">Retry feedback monitor</span>
+          <strong id="pressure-heading">Waiting for packet pressure</strong>
+          <p id="pressureExplanation">Original packets and retransmissions are measured independently at the busiest directed link.</p>
+        </div>
+        <div class="load-readout">
+          <div class="load-values">
+            <span>Original <b id="originalLoadValue">0.0 pps</b></span>
+            <span>Retries <b id="retryLoadValue">0.0 pps</b></span>
+            <span>Capacity <b id="capacityValue">0 pps</b></span>
+          </div>
+          <div class="load-track" aria-hidden="true">
+            <span class="load-band original" id="originalBand"></span>
+            <span class="load-band retry" id="retryBand"></span>
+            <i class="capacity-marker" id="capacityMarker"></i>
+          </div>
+          <div class="load-legend" aria-hidden="true">
+            <span><i></i>new data</span><span><i class="retry-key"></i>timeout retries</span><span><i class="capacity-key"></i>service ceiling</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="history" aria-labelledby="history-heading">
+        <div class="history-head">
+          <strong id="history-heading">Rolling 20-second trace</strong>
+          <span>throughput <b>green</b> · originals <b>cyan</b> · retries <b>coral</b></span>
+        </div>
+        <canvas id="historyChart" role="img" aria-label="Rolling chart of measured throughput, original offered load, and retransmission load" aria-describedby="chartSummary"></canvas>
+        <p class="chart-summary" id="chartSummary">No trend yet. The trace is populated from simulation events every 250 milliseconds.</p>
+      </section>
+    </section>
+
+    <aside class="control-panel" id="controls" aria-label="Packet Aquarium controls">
+      <section class="panel-section">
+        <div class="section-head">
+          <div>
+            <h2>Simulation</h2>
+            <p>Routing and deterministic reset</p>
+          </div>
+          <span class="badge">50 ms ticks</span>
+        </div>
+        <label class="field" for="strategySelect">
+          <span>Routing strategy <small>(keys 1–3)</small></span>
+          <select id="strategySelect">
+            <option value="latency">1 · Lowest propagation latency</option>
+            <option value="capacity">2 · Capacity weighted</option>
+            <option value="adaptive">3 · Queue + loss aware</option>
+          </select>
+        </label>
+        <label class="field" for="seedInput">
+          <span>Seed</span>
+          <span class="seed-row">
+            <input id="seedInput" type="number" min="1" max="4294967295" step="1" inputmode="numeric" value="3582026">
+            <button class="button small" id="applySeedButton" type="button">Apply</button>
+          </span>
+        </label>
+        <div class="range-control">
+          <label for="rtoRange">Timeout <small>retransmission RTO</small></label>
+          <input id="rtoRange" type="range" min="300" max="2500" step="50" value="1100">
+          <output id="rtoOutput" for="rtoRange">1100 ms</output>
+        </div>
+      </section>
+
+      <section class="panel-section">
+        <div class="section-head">
+          <div>
+            <h2>Create a flow</h2>
+            <p>Fixed offered rate; ACKs return independently</p>
+          </div>
+          <span class="badge" id="flowCountBadge">0 / 6</span>
+        </div>
+        <div class="flow-grid">
+          <label class="field" for="sourceSelect">
+            <span>Source</span>
+            <select id="sourceSelect"></select>
+          </label>
+          <label class="field" for="destinationSelect">
+            <span>Destination</span>
+            <select id="destinationSelect"></select>
+          </label>
+        </div>
+        <label class="field-label" for="flowRate">Offered data rate</label>
+        <div class="flow-rate">
+          <input id="flowRate" type="range" min="0.5" max="12" step="0.5" value="3">
+          <output id="flowRateOutput" for="flowRate">3.0 pps</output>
+        </div>
+        <button class="button primary add-flow" id="addFlowButton" type="button">Add packet flow</button>
+        <div class="flow-list" id="flowList"></div>
+      </section>
+
+      <section class="panel-section">
+        <div class="section-head">
+          <div>
+            <h2>Edit a link</h2>
+            <p>Changes apply in both directions</p>
+          </div>
+          <span class="badge">tap topology</span>
+        </div>
+        <label class="field" for="linkSelect">
+          <span>Selected physical link</span>
+          <select id="linkSelect"></select>
+        </label>
+        <div class="link-status">
+          <strong id="linkName">Reef ↔ Lagoon</strong>
+          <span class="state-pill" id="linkState">up</span>
+        </div>
+        <div class="range-control">
+          <label for="capacityRange">Capacity <small>packets / second</small></label>
+          <input id="capacityRange" type="range" min="2" max="60" step="1" value="12">
+          <output id="capacityOutput" for="capacityRange">12 pps</output>
+        </div>
+        <div class="range-control">
+          <label for="latencyRange">Latency <small>one-way propagation</small></label>
+          <input id="latencyRange" type="range" min="20" max="400" step="5" value="45">
+          <output id="latencyOutput" for="latencyRange">45 ms</output>
+        </div>
+        <div class="range-control">
+          <label for="lossRange">Random loss <small>per transmitted hop</small></label>
+          <input id="lossRange" type="range" min="0" max="15" step="0.1" value="0.2">
+          <output id="lossOutput" for="lossRange">0.2%</output>
+        </div>
+        <div class="range-control">
+          <label for="queueRange">Queue limit <small>packets per direction</small></label>
+          <input id="queueRange" type="range" min="2" max="40" step="1" value="14">
+          <output id="queueOutput" for="queueRange">14 pkt</output>
+        </div>
+        <div class="link-actions">
+          <button class="button danger" id="toggleLinkButton" type="button" aria-pressed="false" aria-keyshortcuts="F">Fail link <span class="key" aria-hidden="true">F</span></button>
+          <button class="button small" id="clearQueuesButton" type="button">Drain queues</button>
+        </div>
+      </section>
+
+      <section class="panel-section">
+        <div class="section-head">
+          <div>
+            <h2>Protocol events</h2>
+            <p>Routes, drops, ACKs, and timeouts</p>
+          </div>
+          <span class="badge" id="eventBadge">0 drops</span>
+        </div>
+        <div class="event-log" id="eventLog" aria-label="Recent protocol events"></div>
+      </section>
+    </aside>
+  </div>
+
+  <footer class="footer">
+    <span><strong>Keyboard:</strong> Space play/pause · . or → step · C preset · R reset · F fail/heal selected link · 1–3 routing</span>
+    <span>All statistics come from simulated packet events. No prerecorded values.</span>
+  </footer>
+  <p class="sr-only" id="announcer" role="status" aria-live="polite" aria-atomic="true"></p>
+</main>
+
+<script>
+(() => {
+  "use strict";
+
+  const STEP_MS = 50;
+  const RATE_WINDOW_MS = 5000;
+  const LATENCY_WINDOW_MS = 15000;
+  const TRACE_WINDOW_MS = 20000;
+  const MAX_FLOWS = 6;
+  const MAX_ATTEMPTS = 7;
+  const PRESET_SEED = 3582026;
+  const FLOW_COLORS = ["#58e4ff", "#67f5c1", "#ffd166", "#b48cff", "#ff8f6f", "#6fa8ff"];
+
+  const NODE_DEFS = [
+    {id:"A", name:"Harbor", x:.08, y:.50},
+    {id:"B", name:"Kelp", x:.27, y:.19},
+    {id:"C", name:"Coral", x:.27, y:.81},
+    {id:"D", name:"Reef", x:.50, y:.50},
+    {id:"E", name:"Grotto", x:.70, y:.18},
+    {id:"F", name:"Current", x:.70, y:.82},
+    {id:"G", name:"Lagoon", x:.92, y:.50}
+  ];
+
+  const LINK_DEFS = [
+    {id:"AB", a:"A", b:"B", capacity:22, latency:70, loss:.003, queueLimit:16},
+    {id:"AC", a:"A", b:"C", capacity:20, latency:85, loss:.004, queueLimit:16},
+    {id:"BD", a:"B", b:"D", capacity:18, latency:60, loss:.004, queueLimit:14},
+    {id:"CD", a:"C", b:"D", capacity:18, latency:65, loss:.004, queueLimit:14},
+    {id:"BE", a:"B", b:"E", capacity:14, latency:120, loss:.006, queueLimit:12},
+    {id:"CF", a:"C", b:"F", capacity:14, latency:120, loss:.006, queueLimit:12},
+    {id:"DE", a:"D", b:"E", capacity:20, latency:55, loss:.003, queueLimit:16},
+    {id:"DF", a:"D", b:"F", capacity:20, latency:55, loss:.003, queueLimit:16},
+    {id:"EF", a:"E", b:"F", capacity:12, latency:90, loss:.008, queueLimit:10},
+    {id:"EG", a:"E", b:"G", capacity:18, latency:75, loss:.004, queueLimit:14},
+    {id:"FG", a:"F", b:"G", capacity:18, latency:75, loss:.004, queueLimit:14},
+    {id:"DG", a:"D", b:"G", capacity:12, latency:45, loss:.002, queueLimit:14}
+  ];
+
+  const $ = id => document.getElementById(id);
+  const dom = {
+    playButton:$("playButton"), playIcon:$("playIcon"), playLabel:$("playLabel"),
+    stepButton:$("stepButton"), presetButton:$("presetButton"), resetButton:$("resetButton"),
+    strategy:$("strategySelect"), seed:$("seedInput"), applySeed:$("applySeedButton"),
+    rto:$("rtoRange"), rtoOutput:$("rtoOutput"),
+    source:$("sourceSelect"), destination:$("destinationSelect"),
+    flowRate:$("flowRate"), flowRateOutput:$("flowRateOutput"), addFlow:$("addFlowButton"),
+    flowList:$("flowList"), flowCount:$("flowCountBadge"),
+    linkSelect:$("linkSelect"), linkName:$("linkName"), linkState:$("linkState"),
+    capacity:$("capacityRange"), capacityOutput:$("capacityOutput"),
+    latency:$("latencyRange"), latencyOutput:$("latencyOutput"),
+    loss:$("lossRange"), lossOutput:$("lossOutput"),
+    queue:$("queueRange"), queueOutput:$("queueOutput"),
+    toggleLink:$("toggleLinkButton"), clearQueues:$("clearQueuesButton"),
+    eventLog:$("eventLog"), eventBadge:$("eventBadge"),
+    throughput:$("throughputValue"), p50:$("p50Value"), p95:$("p95Value"),
+    queueValue:$("queueValue"), lossValue:$("lossValue"), amplification:$("amplificationValue"),
+    clock:$("simulationClock"), topologyStatus:$("topologyStatus"),
+    pressureHeading:$("pressure-heading"), pressureExplanation:$("pressureExplanation"),
+    originalLoad:$("originalLoadValue"), retryLoad:$("retryLoadValue"), capacityValue:$("capacityValue"),
+    originalBand:$("originalBand"), retryBand:$("retryBand"), capacityMarker:$("capacityMarker"),
+    network:$("network"), chart:$("historyChart"), chartSummary:$("chartSummary"), announcer:$("announcer")
+  };
+
+  const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let reducedMotion = motionQuery.matches;
+  if (motionQuery.addEventListener) motionQuery.addEventListener("change", event => { reducedMotion = event.matches; });
+
+  let state;
+  let lastRealTime = performance.now();
+  let realAccumulator = 0;
+  let lastUiPaint = 0;
+  let endpointPhase = "source";
+  let hitMap = {nodes:[], links:[]};
+  let canvasPointerStart = null;
+
+  function mulberry32(seed) {
+    let value = seed >>> 0;
+    return function random() {
+      value += 0x6D2B79F5;
+      let t = value;
+      t = Math.imul(t ^ t >>> 15, t | 1);
+      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  function nodeById(id) {
+    return NODE_DEFS.find(node => node.id === id);
+  }
+
+  function nodeName(id) {
+    const node = nodeById(id);
+    return node ? node.name : id;
+  }
+
+  function makeDirection(from, to) {
+    return {from, to, queue:[], credit:0, sent:0, maxDepth:0};
+  }
+
+  function freshLinks() {
+    return LINK_DEFS.map(def => ({
+      ...def,
+      up:true,
+      totalDrops:0,
+      dataAttempts:[],
+      ab:makeDirection(def.a, def.b),
+      ba:makeDirection(def.b, def.a)
+    }));
+  }
+
+  function makeState(seed) {
+    return {
+      seed,
+      rng:mulberry32(seed),
+      time:0,
+      running:true,
+      strategy:"latency",
+      rto:1100,
+      links:freshLinks(),
+      flows:[],
+      nextFlowId:1,
+      nextPacketId:1,
+      selectedLinkId:"DG",
+      inFlight:[],
+      bursts:[],
+      logs:[],
+      logThrottle:new Map(),
+      lastAdaptiveCheck:0,
+      lastSnapshot:-Infinity,
+      snapshots:[],
+      events:{generated:[], retries:[], deliveries:[], drops:[]},
+      stats:{
+        generated:0,
+        retries:0,
+        uniqueDelivered:0,
+        acknowledgments:0,
+        hopAttempts:0,
+        drops:0,
+        dataDrops:0,
+        ackDrops:0,
+        giveups:0,
+        routeRecomputes:0
+      }
+    };
+  }
+
+  function cleanSeed() {
+    let seed = Number.parseInt(dom.seed.value, 10);
+    if (!Number.isFinite(seed) || seed < 1) seed = PRESET_SEED;
+    seed = Math.min(4294967295, Math.floor(seed)) >>> 0;
+    if (seed === 0) seed = 1;
+    dom.seed.value = String(seed);
+    return seed;
+  }
+
+  function selectedLink() {
+    return state.links.find(link => link.id === state.selectedLinkId) || state.links[0];
+  }
+
+  function linkBetween(a, b) {
+    return state.links.find(link => (link.a === a && link.b === b) || (link.a === b && link.b === a));
+  }
+
+  function directionFor(link, from, to) {
+    if (link.a === from && link.b === to) return link.ab;
+    if (link.b === from && link.a === to) return link.ba;
+    return null;
+  }
+
+  function otherEnd(link, id) {
+    return link.a === id ? link.b : link.a;
+  }
+
+  function formatTime(ms) {
+    const total = Math.max(0, ms) / 1000;
+    const minutes = Math.floor(total / 60);
+    const seconds = total - minutes * 60;
+    return `T+${String(minutes).padStart(2, "0")}:${seconds.toFixed(1).padStart(4, "0")}`;
+  }
+
+  function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+      "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+    })[char]);
+  }
+
+  function announce(message) {
+    dom.announcer.textContent = "";
+    requestAnimationFrame(() => { dom.announcer.textContent = message; });
+  }
+
+  function logEvent(message, type = "route", throttleKey = "", throttleMs = 0) {
+    if (throttleKey) {
+      const last = state.logThrottle.get(throttleKey);
+      if (last !== undefined && state.time - last < throttleMs) return;
+      state.logThrottle.set(throttleKey, state.time);
+    }
+    state.logs.unshift({time:state.time, message, type});
+    if (state.logs.length > 10) state.logs.length = 10;
+  }
+
+  function pushTimed(list, item) {
+    list.push(item);
+  }
+
+  function trimTimedData() {
+    const cutoff = state.time - 60000;
+    for (const list of Object.values(state.events)) {
+      while (list.length && list[0].t < cutoff) list.shift();
+    }
+    for (const link of state.links) {
+      while (link.dataAttempts.length && link.dataAttempts[0].t < state.time - 12000) {
+        link.dataAttempts.shift();
+      }
+    }
+    state.bursts = state.bursts.filter(burst => state.time - burst.t < 950);
+    state.snapshots = state.snapshots.filter(point => point.t >= state.time - TRACE_WINDOW_MS - 1000);
+  }
+
+  function edgeCost(link, from, to) {
+    if (!link.up) return Infinity;
+    if (state.strategy === "latency") return link.latency;
+    if (state.strategy === "capacity") {
+      return link.latency * .16 + 1250 / Math.max(1, link.capacity) + link.loss * 500;
+    }
+    const dir = directionFor(link, from, to);
+    const queued = dir ? dir.queue.length : 0;
+    const queueDelay = queued / Math.max(1, link.capacity) * 1000;
+    const fullnessPenalty = queued >= link.queueLimit ? 4000 : Math.pow(queued / link.queueLimit, 2) * 700;
+    return link.latency + queueDelay * 1.35 + link.loss * 1800 + fullnessPenalty;
+  }
+
+  function computeRoute(source, destination, blocked = new Set()) {
+    if (source === destination) return [source];
+    const dist = {};
+    const previous = {};
+    const open = new Set(NODE_DEFS
+      .map(node => node.id)
+      .filter(id => id === source || id === destination || !blocked.has(id)));
+    for (const node of NODE_DEFS) dist[node.id] = Infinity;
+    dist[source] = 0;
+
+    while (open.size) {
+      let current = null;
+      let best = Infinity;
+      for (const node of NODE_DEFS) {
+        if (!open.has(node.id)) continue;
+        if (dist[node.id] < best - 1e-9) {
+          current = node.id;
+          best = dist[node.id];
+        }
+      }
+      if (current === null || !Number.isFinite(best)) break;
+      open.delete(current);
+      if (current === destination) break;
+
+      for (const link of state.links) {
+        if (!link.up || (link.a !== current && link.b !== current)) continue;
+        const next = otherEnd(link, current);
+        if (!open.has(next)) continue;
+        const candidate = best + edgeCost(link, current, next);
+        if (candidate < dist[next] - 1e-9) {
+          dist[next] = candidate;
+          previous[next] = current;
+        }
+      }
+    }
+
+    if (!Number.isFinite(dist[destination])) return null;
+    const path = [destination];
+    let cursor = destination;
+    while (cursor !== source) {
+      cursor = previous[cursor];
+      if (!cursor) return null;
+      path.unshift(cursor);
+    }
+    return path;
+  }
+
+  function routeString(route) {
+    return route ? route.join(" › ") : "no route";
+  }
+
+  function recomputeRoutes(reason, report = false) {
+    let changed = 0;
+    for (const flow of state.flows) {
+      const previous = routeString(flow.route);
+      flow.route = computeRoute(flow.source, flow.destination);
+      const next = routeString(flow.route);
+      if (previous !== next) {
+        changed++;
+        logEvent(`Flow ${flow.source}→${flow.destination} rerouted: ${next}`, "route", `route-${flow.id}`, 250);
+      }
+    }
+    if (changed || report) {
+      state.stats.routeRecomputes++;
+      dom.topologyStatus.textContent = changed ? `${changed} route${changed === 1 ? "" : "s"} changed` : `Routes checked · ${reason}`;
+    }
+    updateNetworkDescription();
+  }
+
+  function addFlowInternal(source, destination, rate) {
+    const flow = {
+      id:state.nextFlowId++,
+      source,
+      destination,
+      rate,
+      color:FLOW_COLORS[state.flows.length % FLOW_COLORS.length],
+      active:true,
+      generationCredit:state.rng(),
+      nextSequence:1,
+      outstanding:new Map(),
+      delivered:new Set(),
+      route:null,
+      uniqueDelivered:0,
+      retryCount:0
+    };
+    state.flows.push(flow);
+    flow.route = computeRoute(source, destination);
+    return flow;
+  }
+
+  function addFlowFromControls() {
+    const source = dom.source.value;
+    const destination = dom.destination.value;
+    const rate = Number(dom.flowRate.value);
+    if (source === destination) {
+      announce("Choose two different routers for the flow.");
+      dom.destination.focus();
+      return;
+    }
+    if (state.flows.length >= MAX_FLOWS) {
+      announce("The aquarium supports up to six simultaneous flows.");
+      return;
+    }
+    const flow = addFlowInternal(source, destination, rate);
+    logEvent(`Flow ${source}→${destination} started at ${rate.toFixed(1)} pps`, "good");
+    renderFlowList();
+    recomputeRoutes("flow added", true);
+    announce(`Flow from ${nodeName(source)} to ${nodeName(destination)} added at ${rate.toFixed(1)} packets per second.`);
+  }
+
+  function removeFlow(flowId) {
+    const flow = state.flows.find(item => item.id === flowId);
+    if (!flow) return;
+    state.flows = state.flows.filter(item => item.id !== flowId);
+    for (const link of state.links) {
+      link.ab.queue = link.ab.queue.filter(packet => packet.flowId !== flowId);
+      link.ba.queue = link.ba.queue.filter(packet => packet.flowId !== flowId);
+    }
+    state.inFlight = state.inFlight.filter(item => item.packet.flowId !== flowId);
+    logEvent(`Flow ${flow.source}→${flow.destination} removed`, "route");
+    renderFlowList();
+    announce(`Flow from ${nodeName(flow.source)} to ${nodeName(flow.destination)} removed.`);
+  }
+
+  function toggleFlow(flowId) {
+    const flow = state.flows.find(item => item.id === flowId);
+    if (!flow) return;
+    flow.active = !flow.active;
+    logEvent(`Flow ${flow.source}→${flow.destination} ${flow.active ? "resumed" : "paused"}`, flow.active ? "good" : "route");
+    renderFlowList();
+    announce(`Flow ${flow.active ? "resumed" : "paused"}. Existing packets and timeouts continue.`);
+  }
+
+  function burstContext(context) {
+    if (!context) return {nodeId:"D"};
+    return {...context};
+  }
+
+  function recordDrop(packet, reason, context) {
+    state.stats.drops++;
+    if (packet.kind === "data") state.stats.dataDrops++;
+    else state.stats.ackDrops++;
+    pushTimed(state.events.drops, {t:state.time, reason, kind:packet.kind});
+    if (context && context.linkId) {
+      const link = state.links.find(item => item.id === context.linkId);
+      if (link) link.totalDrops++;
+    }
+    state.bursts.push({t:state.time, reason, packetKind:packet.kind, ...burstContext(context)});
+    logEvent(`${packet.kind === "ack" ? "ACK" : "Data"} dropped · ${reason}`, "drop", `drop-${reason}`, 650);
+  }
+
+  function nextHopForPacket(packet, current) {
+    if (!Array.isArray(packet.visited)) packet.visited = [];
+    if (packet.visited[packet.visited.length - 1] !== current) packet.visited.push(current);
+    if (!Number.isFinite(packet.ttl)) packet.ttl = NODE_DEFS.length * 2;
+    if (packet.ttl <= 0) return {error:"hop limit expired"};
+    packet.ttl--;
+
+    let route = Array.isArray(packet.route) ? packet.route : null;
+    let routeIndex = route ? route.indexOf(current, Math.max(0, packet.routeIndex || 0)) : -1;
+    let next = routeIndex >= 0 ? route[routeIndex + 1] : null;
+    let link = next ? linkBetween(current, next) : null;
+    if (next && !packet.visited.includes(next) && link && link.up) {
+      packet.routeIndex = routeIndex;
+      return {next, link};
+    }
+
+    const blocked = new Set(packet.visited.filter(id => id !== current));
+    route = computeRoute(current, packet.destination, blocked);
+    if (!route || route.length < 2) return {error:"no loop-free route"};
+    next = route[1];
+    link = linkBetween(current, next);
+    if (!link || !link.up) return {error:"link unavailable"};
+    packet.route = route;
+    packet.routeIndex = 0;
+    return {next, link};
+  }
+
+  function enqueuePacket(packet, current) {
+    const hop = nextHopForPacket(packet, current);
+    if (hop.error) {
+      state.stats.hopAttempts++;
+      recordDrop(packet, hop.error, {nodeId:current});
+      return false;
+    }
+
+    const {next, link} = hop;
+    const dir = link ? directionFor(link, current, next) : null;
+    state.stats.hopAttempts++;
+
+    if (!link || !link.up || !dir) {
+      recordDrop(packet, "link unavailable", {nodeId:current});
+      return false;
+    }
+
+    if (packet.kind === "data") {
+      link.dataAttempts.push({
+        t:state.time,
+        retry:packet.attempt > 1,
+        from:current,
+        to:next
+      });
+    }
+
+    if (dir.queue.length >= link.queueLimit) {
+      recordDrop(packet, "finite queue full", {linkId:link.id, from:current, to:next, phase:.18});
+      return false;
+    }
+
+    packet.current = current;
+    packet.queuedAt = state.time;
+    dir.queue.push(packet);
+    dir.maxDepth = Math.max(dir.maxDepth, dir.queue.length);
+    return true;
+  }
+
+  function sendAttempt(flow, record, isRetry) {
+    record.attempts++;
+    record.lastSent = state.time;
+    const backoff = Math.min(3, 1 + Math.max(0, record.attempts - 1) * .35);
+    record.deadline = state.time + state.rto * backoff;
+
+    if (isRetry) {
+      state.stats.retries++;
+      flow.retryCount++;
+      pushTimed(state.events.retries, {t:state.time, flowId:flow.id});
+      logEvent(`Timeout ${flow.source}→${flow.destination} #${record.seq} · retry ${record.attempts - 1}`, "retry", `retry-${flow.id}`, 450);
+    }
+
+    const packet = {
+      id:state.nextPacketId++,
+      kind:"data",
+      flowId:flow.id,
+      seq:record.seq,
+      source:flow.source,
+      destination:flow.destination,
+      born:record.born,
+      attempt:record.attempts,
+      color:flow.color,
+      route:flow.route ? flow.route.slice() : computeRoute(flow.source, flow.destination),
+      routeIndex:0,
+      visited:[],
+      ttl:NODE_DEFS.length * 2
+    };
+    enqueuePacket(packet, flow.source);
+  }
+
+  function generateOriginal(flow) {
+    const record = {
+      seq:flow.nextSequence++,
+      born:state.time,
+      attempts:0,
+      lastSent:state.time,
+      deadline:state.time + state.rto
+    };
+    flow.outstanding.set(record.seq, record);
+    state.stats.generated++;
+    pushTimed(state.events.generated, {t:state.time, flowId:flow.id});
+    sendAttempt(flow, record, false);
+  }
+
+  function generateFlows() {
+    for (const flow of state.flows) {
+      if (!flow.active) continue;
+      flow.generationCredit += flow.rate * STEP_MS / 1000;
+      let guard = 0;
+      while (flow.generationCredit >= 1 && guard++ < 8) {
+        flow.generationCredit -= 1;
+        if (flow.outstanding.size >= 240) {
+          flow.generationCredit = Math.min(flow.generationCredit, .99);
+          break;
+        }
+        generateOriginal(flow);
+      }
+    }
+  }
+
+  function processTimeouts() {
+    for (const flow of state.flows) {
+      for (const record of Array.from(flow.outstanding.values())) {
+        if (state.time + 1e-6 < record.deadline) continue;
+        if (record.attempts >= MAX_ATTEMPTS) {
+          flow.outstanding.delete(record.seq);
+          state.stats.giveups++;
+          logEvent(`Flow ${flow.source}→${flow.destination} #${record.seq} gave up after ${MAX_ATTEMPTS} sends`, "drop", `giveup-${flow.id}`, 900);
+          continue;
+        }
+        sendAttempt(flow, record, true);
+      }
+    }
+  }
+
+  function onPacketArrival(packet, routerId) {
+    const flow = state.flows.find(item => item.id === packet.flowId);
+    if (!flow) return;
+
+    if (routerId === packet.destination) {
+      if (packet.kind === "data") {
+        const isFirstDelivery = !flow.delivered.has(packet.seq);
+        if (isFirstDelivery) {
+          flow.delivered.add(packet.seq);
+          if (flow.delivered.size > 1600) {
+            flow.delivered.delete(flow.delivered.values().next().value);
+          }
+          flow.uniqueDelivered++;
+          state.stats.uniqueDelivered++;
+          const latency = Math.max(0, state.time - packet.born);
+          pushTimed(state.events.deliveries, {t:state.time, latency, flowId:flow.id});
+        }
+        const ack = {
+          id:state.nextPacketId++,
+          kind:"ack",
+          flowId:flow.id,
+          seq:packet.seq,
+          source:routerId,
+          destination:flow.source,
+          born:packet.born,
+          attempt:packet.attempt,
+          color:flow.color,
+          route:computeRoute(routerId, flow.source),
+          routeIndex:0,
+          visited:[],
+          ttl:NODE_DEFS.length * 2
+        };
+        enqueuePacket(ack, routerId);
+      } else {
+        const record = flow.outstanding.get(packet.seq);
+        if (record) {
+          flow.outstanding.delete(packet.seq);
+          state.stats.acknowledgments++;
+        }
+      }
+      return;
+    }
+
+    enqueuePacket(packet, routerId);
+  }
+
+  function processArrivals() {
+    const remaining = [];
+    for (const item of state.inFlight) {
+      if (item.arrival <= state.time + 1e-6) onPacketArrival(item.packet, item.to);
+      else remaining.push(item);
+    }
+    state.inFlight = remaining;
+  }
+
+  function earliestArrivalBefore(limit) {
+    let earliest = Infinity;
+    for (const item of state.inFlight) {
+      if (item.arrival <= limit + 1e-6) earliest = Math.min(earliest, item.arrival);
+    }
+    return earliest;
+  }
+
+  function earliestTimeoutBefore(limit) {
+    let earliest = Infinity;
+    for (const flow of state.flows) {
+      for (const record of flow.outstanding.values()) {
+        if (record.deadline <= limit + 1e-6) earliest = Math.min(earliest, record.deadline);
+      }
+    }
+    return earliest;
+  }
+
+  function processScheduledEvents(targetTime) {
+    let guard = 0;
+    while (guard++ < 10000) {
+      const arrivalTime = earliestArrivalBefore(targetTime);
+      const timeoutTime = earliestTimeoutBefore(targetTime);
+      if (!Number.isFinite(arrivalTime) && !Number.isFinite(timeoutTime)) break;
+      if (arrivalTime <= timeoutTime) {
+        state.time = arrivalTime;
+        processArrivals();
+      } else {
+        state.time = timeoutTime;
+        processTimeouts();
+      }
+    }
+    state.time = targetTime;
+  }
+
+  function serviceDirection(link, dir) {
+    if (!dir.queue.length) {
+      dir.credit = 0;
+      return;
+    }
+    dir.credit += link.capacity * STEP_MS / 1000;
+    let guard = 0;
+    while (dir.credit >= 1 && dir.queue.length && guard++ < 10) {
+      dir.credit -= 1;
+      const packet = dir.queue.shift();
+      dir.sent++;
+      if (state.rng() < link.loss) {
+        recordDrop(packet, "random link loss", {linkId:link.id, from:dir.from, to:dir.to, phase:.52});
+        continue;
+      }
+      state.inFlight.push({
+        packet,
+        linkId:link.id,
+        from:dir.from,
+        to:dir.to,
+        start:state.time,
+        arrival:state.time + link.latency
+      });
+    }
+    if (!dir.queue.length) dir.credit = 0;
+  }
+
+  function serviceLinks() {
+    for (const link of state.links) {
+      if (!link.up) continue;
+      serviceDirection(link, link.ab);
+      serviceDirection(link, link.ba);
+    }
+  }
+
+  function currentQueueTotals() {
+    let queued = 0;
+    let slots = 0;
+    for (const link of state.links) {
+      queued += link.ab.queue.length + link.ba.queue.length;
+      slots += link.queueLimit * 2;
+    }
+    return {queued, slots};
+  }
+
+  function rateDuration() {
+    return Math.max(.5, Math.min(RATE_WINDOW_MS, Math.max(STEP_MS, state.time)) / 1000);
+  }
+
+  function countSince(list, cutoff) {
+    let count = 0;
+    for (let index = list.length - 1; index >= 0; index--) {
+      if (list[index].t <= cutoff) break;
+      count++;
+    }
+    return count;
+  }
+
+  function percentile(values, fraction) {
+    if (!values.length) return null;
+    const sorted = values.slice().sort((a, b) => a - b);
+    const index = Math.max(0, Math.ceil(sorted.length * fraction) - 1);
+    return sorted[index];
+  }
+
+  function computeMetrics() {
+    const duration = rateDuration();
+    const rateCutoff = state.time - RATE_WINDOW_MS;
+    const latencyCutoff = state.time - LATENCY_WINDOW_MS;
+    const deliveredRecent = state.events.deliveries.filter(event => event.t > rateCutoff);
+    const latencyEvents = state.events.deliveries.filter(event => event.t > latencyCutoff);
+    const latencies = latencyEvents.map(event => event.latency);
+    const queues = currentQueueTotals();
+    return {
+      throughput:deliveredRecent.length / duration,
+      offered:countSince(state.events.generated, rateCutoff) / duration,
+      retries:countSince(state.events.retries, rateCutoff) / duration,
+      p50:percentile(latencies, .50),
+      p95:percentile(latencies, .95),
+      queued:queues.queued,
+      slots:queues.slots,
+      loss:state.stats.hopAttempts ? state.stats.drops / state.stats.hopAttempts * 100 : 0,
+      amplification:state.stats.generated ? (state.stats.generated + state.stats.retries) / state.stats.generated : 1
+    };
+  }
+
+  function findBottleneck() {
+    const cutoff = state.time - RATE_WINDOW_MS;
+    const duration = rateDuration();
+    let best = null;
+    for (const link of state.links) {
+      if (!link.up) continue;
+      for (const dir of [link.ab, link.ba]) {
+        let original = 0;
+        let retry = 0;
+        for (const event of link.dataAttempts) {
+          if (event.t <= cutoff || event.from !== dir.from || event.to !== dir.to) continue;
+          if (event.retry) retry++;
+          else original++;
+        }
+        const originalRate = original / duration;
+        const retryRate = retry / duration;
+        const ratio = (originalRate + retryRate) / Math.max(1, link.capacity);
+        if (!best || ratio > best.ratio) {
+          best = {link, dir, original:originalRate, retry:retryRate, ratio};
+        }
+      }
+    }
+    return best || {
+      link:selectedLink(),
+      dir:selectedLink().ab,
+      original:0,
+      retry:0,
+      ratio:0
+    };
+  }
+
+  function takeSnapshot() {
+    const metrics = computeMetrics();
+    state.snapshots.push({
+      t:state.time,
+      throughput:metrics.throughput,
+      offered:metrics.offered,
+      retries:metrics.retries,
+      queueRatio:metrics.slots ? metrics.queued / metrics.slots : 0
+    });
+  }
+
+  function simulateTick() {
+    const targetTime = state.time + STEP_MS;
+    processScheduledEvents(targetTime);
+    generateFlows();
+    serviceLinks();
+
+    if (state.strategy === "adaptive" && state.time - state.lastAdaptiveCheck >= 500) {
+      state.lastAdaptiveCheck = state.time;
+      recomputeRoutes("queue update", false);
+    }
+    if (state.time - state.lastSnapshot >= 250) {
+      state.lastSnapshot = state.time;
+      takeSnapshot();
+    }
+    trimTimedData();
+  }
+
+  function flushLink(link, reason) {
+    for (const dir of [link.ab, link.ba]) {
+      while (dir.queue.length) {
+        const packet = dir.queue.shift();
+        recordDrop(packet, reason, {linkId:link.id, from:dir.from, to:dir.to, phase:.18});
+      }
+      dir.credit = 0;
+    }
+    const remaining = [];
+    for (const item of state.inFlight) {
+      if (item.linkId === link.id) {
+        const span = Math.max(1, item.arrival - item.start);
+        const phase = Math.max(0, Math.min(1, (state.time - item.start) / span));
+        recordDrop(item.packet, reason, {linkId:link.id, from:item.from, to:item.to, phase});
+      } else {
+        remaining.push(item);
+      }
+    }
+    state.inFlight = remaining;
+  }
+
+  function setLinkState(link, up) {
+    if (link.up === up) return;
+    link.up = up;
+    if (!up) flushLink(link, "link failed");
+    logEvent(`${nodeName(link.a)} ↔ ${nodeName(link.b)} ${up ? "healed" : "failed"}`, up ? "good" : "drop");
+    recomputeRoutes(up ? "link healed" : "link failed", true);
+    syncLinkControls();
+    announce(`${nodeName(link.a)} to ${nodeName(link.b)} link ${up ? "healed" : "failed"}. Routes recomputed.`);
+  }
+
+  function toggleSelectedLink() {
+    const link = selectedLink();
+    setLinkState(link, !link.up);
+  }
+
+  function drainSelectedQueues() {
+    const link = selectedLink();
+    const count = link.ab.queue.length + link.ba.queue.length;
+    for (const dir of [link.ab, link.ba]) {
+      while (dir.queue.length) {
+        const packet = dir.queue.pop();
+        recordDrop(packet, "manual queue drain", {linkId:link.id, from:dir.from, to:dir.to, phase:.18});
+      }
+      dir.credit = 0;
+    }
+    logEvent(`${link.a}↔${link.b} queues manually drained (${count} packets removed)`, "route");
+    announce(`${count} queued packets removed from the selected link.`);
+  }
+
+  function updateLinkProperty(property, rawValue, report = false) {
+    const link = selectedLink();
+    if (property === "loss") link.loss = Number(rawValue) / 100;
+    else link[property] = Number(rawValue);
+
+    if (property === "queueLimit") {
+      for (const dir of [link.ab, link.ba]) {
+        while (dir.queue.length > link.queueLimit) {
+          const packet = dir.queue.pop();
+          recordDrop(packet, "queue limit reduced", {linkId:link.id, from:dir.from, to:dir.to, phase:.18});
+        }
+      }
+    }
+    syncLinkOutputs();
+    recomputeRoutes(`${property} changed`, false);
+    if (report) {
+      logEvent(`${link.a}↔${link.b} ${property} changed`, "route", `edit-${property}`, 200);
+      announce(`${nodeName(link.a)} to ${nodeName(link.b)} ${property} updated.`);
+    }
+  }
+
+  function resetSimulation(preset = false) {
+    const seed = preset ? PRESET_SEED : cleanSeed();
+    dom.seed.value = String(seed);
+    state = makeState(seed);
+    state.strategy = preset ? "latency" : dom.strategy.value;
+    state.rto = preset ? 650 : 1100;
+    dom.strategy.value = state.strategy;
+    dom.rto.value = String(state.rto);
+
+    if (preset) {
+      const bottleneck = state.links.find(link => link.id === "DG");
+      bottleneck.capacity = 8;
+      bottleneck.latency = 80;
+      bottleneck.loss = .004;
+      bottleneck.queueLimit = 9;
+      addFlowInternal("A", "G", 6);
+      addFlowInternal("B", "G", 5);
+      addFlowInternal("C", "G", 5);
+      logEvent("Preset: 16 pps of new data aimed at an 8 pps corridor", "retry");
+      logEvent("RTO set to 650 ms; a full bottleneck queue waits longer", "route");
+      dom.topologyStatus.textContent = "Congestion preset running";
+    } else {
+      addFlowInternal("A", "G", 3);
+      addFlowInternal("C", "E", 2);
+      logEvent(`Reset with deterministic seed ${seed}`, "good");
+      dom.topologyStatus.textContent = "Routing stable";
+    }
+
+    state.selectedLinkId = "DG";
+    dom.linkSelect.value = "DG";
+    realAccumulator = 0;
+    endpointPhase = "source";
+    recomputeRoutes(preset ? "preset loaded" : "reset", true);
+    syncAllControls();
+    renderFlowList();
+    updatePlaybackButton();
+    takeSnapshot();
+    announce(preset
+      ? "Deterministic congestion preset started. Three flows offer sixteen packets per second to an eight packet per second bottleneck."
+      : `Simulation reset with seed ${seed}.`);
+  }
+
+  function updatePlaybackButton() {
+    dom.playButton.setAttribute("aria-pressed", String(state.running));
+    dom.playIcon.textContent = state.running ? "Ⅱ" : "▶";
+    dom.playLabel.textContent = state.running ? "Pause" : "Play";
+  }
+
+  function togglePlayback() {
+    state.running = !state.running;
+    realAccumulator = 0;
+    updatePlaybackButton();
+    dom.topologyStatus.textContent = state.running ? "Simulation running" : "Simulation paused";
+    announce(state.running ? "Simulation playing." : "Simulation paused.");
+  }
+
+  function stepSimulation() {
+    state.running = false;
+    updatePlaybackButton();
+    simulateTick();
+    refreshUI();
+    dom.topologyStatus.textContent = "Advanced one 50 ms tick";
+    announce("Simulation advanced by one 50 millisecond tick.");
+  }
+
+  function populateSelects() {
+    const nodeOptions = NODE_DEFS.map(node =>
+      `<option value="${node.id}">${escapeHTML(node.name)} · ${node.id}</option>`
+    ).join("");
+    dom.source.innerHTML = nodeOptions;
+    dom.destination.innerHTML = nodeOptions;
+    dom.source.value = "A";
+    dom.destination.value = "G";
+
+    dom.linkSelect.innerHTML = LINK_DEFS.map(link =>
+      `<option value="${link.id}">${escapeHTML(nodeName(link.a))} ↔ ${escapeHTML(nodeName(link.b))} · ${link.id}</option>`
+    ).join("");
+    dom.linkSelect.value = "DG";
+  }
+
+  function syncLinkOutputs() {
+    const link = selectedLink();
+    dom.capacityOutput.textContent = `${link.capacity.toFixed(0)} pps`;
+    dom.latencyOutput.textContent = `${link.latency.toFixed(0)} ms`;
+    dom.lossOutput.textContent = `${(link.loss * 100).toFixed(1)}%`;
+    dom.queueOutput.textContent = `${link.queueLimit.toFixed(0)} pkt`;
+  }
+
+  function syncLinkControls() {
+    const link = selectedLink();
+    dom.linkSelect.value = link.id;
+    dom.linkName.textContent = `${nodeName(link.a)} ↔ ${nodeName(link.b)}`;
+    dom.linkState.textContent = link.up ? "up" : "down";
+    dom.linkState.classList.toggle("down", !link.up);
+    dom.capacity.value = String(link.capacity);
+    dom.latency.value = String(link.latency);
+    dom.loss.value = String(link.loss * 100);
+    dom.queue.value = String(link.queueLimit);
+    dom.toggleLink.classList.toggle("danger", link.up);
+    dom.toggleLink.classList.toggle("good", !link.up);
+    dom.toggleLink.setAttribute("aria-pressed", String(!link.up));
+    dom.toggleLink.firstChild.textContent = link.up ? "Fail link " : "Heal link ";
+    syncLinkOutputs();
+  }
+
+  function syncAllControls() {
+    dom.strategy.value = state.strategy;
+    dom.rto.value = String(state.rto);
+    dom.rtoOutput.textContent = `${state.rto} ms`;
+    dom.flowRateOutput.textContent = `${Number(dom.flowRate.value).toFixed(1)} pps`;
+    syncLinkControls();
+  }
+
+  function renderFlowList() {
+    dom.flowCount.textContent = `${state.flows.length} / ${MAX_FLOWS}`;
+    if (!state.flows.length) {
+      dom.flowList.innerHTML = '<div class="empty">No active sources. Add a flow to release packets.</div>';
+      return;
+    }
+    dom.flowList.innerHTML = state.flows.map(flow => `
+      <div class="flow-card" data-flow-id="${flow.id}" style="--flow:${flow.color}">
+        <span class="flow-swatch" aria-hidden="true"></span>
+        <div class="flow-main">
+          <strong>${escapeHTML(nodeName(flow.source))} → ${escapeHTML(nodeName(flow.destination))} · ${flow.rate.toFixed(1)} pps</strong>
+          <span class="flow-route" data-role="route">${escapeHTML(routeString(flow.route))}</span>
+          <span class="flow-meta">
+            <span data-role="outstanding">0 in flight</span>
+            <span data-role="delivered">0 delivered</span>
+            <span data-role="retries">0 retries</span>
+          </span>
+        </div>
+        <div class="flow-actions">
+          <button class="icon-button" type="button" data-action="toggle" data-id="${flow.id}" aria-pressed="${!flow.active}" aria-label="${flow.active ? "Pause" : "Resume"} flow ${escapeHTML(flow.source)} to ${escapeHTML(flow.destination)}">${flow.active ? "Ⅱ" : "▶"}</button>
+          <button class="icon-button remove" type="button" data-action="remove" data-id="${flow.id}" aria-label="Remove flow ${escapeHTML(flow.source)} to ${escapeHTML(flow.destination)}">×</button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function updateFlowRows() {
+    for (const flow of state.flows) {
+      const card = dom.flowList.querySelector(`[data-flow-id="${flow.id}"]`);
+      if (!card) continue;
+      const route = card.querySelector('[data-role="route"]');
+      const outstanding = card.querySelector('[data-role="outstanding"]');
+      const delivered = card.querySelector('[data-role="delivered"]');
+      const retries = card.querySelector('[data-role="retries"]');
+      if (route) route.textContent = routeString(flow.route);
+      if (outstanding) outstanding.textContent = `${flow.outstanding.size} awaiting ACK`;
+      if (delivered) delivered.textContent = `${flow.uniqueDelivered} delivered`;
+      if (retries) retries.textContent = `${flow.retryCount} retries`;
+    }
+  }
+
+  function renderEventLog() {
+    dom.eventBadge.textContent = `${state.stats.drops} drop${state.stats.drops === 1 ? "" : "s"}`;
+    if (!state.logs.length) {
+      dom.eventLog.innerHTML = '<div class="empty">Protocol events will appear here.</div>';
+      return;
+    }
+    dom.eventLog.innerHTML = state.logs.map(event => `
+      <div class="event ${event.type}">
+        <time>${escapeHTML(formatTime(event.time).replace("T+", ""))}</time>
+        <span>${escapeHTML(event.message)}</span>
+      </div>
+    `).join("");
+  }
+
+  function updatePressure() {
+    const bottleneck = findBottleneck();
+    const total = bottleneck.original + bottleneck.retry;
+    const capacity = bottleneck.link.capacity;
+    const scale = Math.max(1, total, capacity) * 1.12;
+    const originalWidth = Math.min(100, bottleneck.original / scale * 100);
+    const retryWidth = Math.min(100 - originalWidth, bottleneck.retry / scale * 100);
+    const capacityPosition = Math.min(98.5, capacity / scale * 100);
+    const dir = bottleneck.dir;
+    const queue = dir.queue.length;
+
+    dom.originalBand.style.width = `${originalWidth}%`;
+    dom.retryBand.style.left = `${originalWidth}%`;
+    dom.retryBand.style.width = `${retryWidth}%`;
+    dom.capacityMarker.style.left = `${capacityPosition}%`;
+    dom.originalLoad.textContent = `${bottleneck.original.toFixed(1)} pps`;
+    dom.retryLoad.textContent = `${bottleneck.retry.toFixed(1)} pps`;
+    dom.capacityValue.textContent = `${capacity.toFixed(0)} pps`;
+
+    dom.pressureHeading.textContent =
+      `${nodeName(dir.from)} → ${nodeName(dir.to)} · ${total.toFixed(1)} pps aimed at ${capacity.toFixed(0)} pps`;
+
+    if (bottleneck.retry > .15 && total > capacity) {
+      const extra = bottleneck.original > 0 ? bottleneck.retry / bottleneck.original * 100 : 0;
+      dom.pressureExplanation.textContent =
+        `Timeouts add ${extra.toFixed(0)}% duplicate data while ${queue}/${bottleneck.link.queueLimit} queue slots are occupied. Retries are feeding the bottleneck that delayed them.`;
+    } else if (total > capacity) {
+      dom.pressureExplanation.textContent =
+        `New traffic already exceeds service capacity. The ${queue}/${bottleneck.link.queueLimit} queue is absorbing the difference until drops and timeouts begin.`;
+    } else {
+      dom.pressureExplanation.textContent =
+        `Measured at the busiest direction. ${Math.max(0, capacity - total).toFixed(1)} pps of service headroom remains; retries are shown separately when timeouts fire.`;
+    }
+  }
+
+  function updateNetworkDescription() {
+    if (!state) return;
+    const failed = state.links.filter(link => !link.up);
+    const selected = selectedLink();
+    const queues = currentQueueTotals();
+    dom.network.setAttribute("aria-label",
+      `Interactive topology with seven routers and twelve links. ${failed.length} failed links. ` +
+      `${queues.queued} packets queued. Selected link ${nodeName(selected.a)} to ${nodeName(selected.b)} is ${selected.up ? "up" : "down"}.`
+    );
+  }
+
+  function updateMetricsDOM() {
+    const metrics = computeMetrics();
+    dom.throughput.textContent = metrics.throughput.toFixed(1);
+    dom.p50.textContent = metrics.p50 === null ? "—" : `${Math.round(metrics.p50)} ms`;
+    dom.p95.textContent = metrics.p95 === null ? "—" : `${Math.round(metrics.p95)} ms`;
+    dom.queueValue.textContent = `${metrics.queued} / ${metrics.slots}`;
+    dom.lossValue.textContent = `${metrics.loss.toFixed(1)}%`;
+    dom.amplification.textContent = `${metrics.amplification.toFixed(2)}×`;
+    dom.clock.textContent = formatTime(state.time);
+    dom.rtoOutput.textContent = `${state.rto} ms`;
+    updateChartSummary(metrics);
+    updatePressure();
+    updateFlowRows();
+    renderEventLog();
+    updateNetworkDescription();
+  }
+
+  function traceTrend(key) {
+    const recent = state.snapshots.filter(point => point.t > state.time - 3000);
+    const previous = state.snapshots.filter(point => point.t > state.time - 6000 && point.t <= state.time - 3000);
+    if (!recent.length || !previous.length) return "not yet comparable";
+    const average = list => list.reduce((sum, point) => sum + point[key], 0) / list.length;
+    const delta = average(recent) - average(previous);
+    if (delta > .25) return "rising";
+    if (delta < -.25) return "falling";
+    return "steady";
+  }
+
+  function updateChartSummary(metrics) {
+    dom.chartSummary.textContent =
+      `Current throughput ${metrics.throughput.toFixed(1)} packets per second, original load ${metrics.offered.toFixed(1)}, ` +
+      `and retry load ${metrics.retries.toFixed(1)}. Over the latest three seconds, throughput is ${traceTrend("throughput")} ` +
+      `and retries are ${traceTrend("retries")}.`;
+  }
+
+  function refreshUI() {
+    updateMetricsDOM();
+    drawNetwork();
+    drawChart();
+  }
+
+  function ensureCanvasSize(canvas) {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const width = Math.max(1, Math.round(rect.width * dpr));
+    const height = Math.max(1, Math.round(rect.height * dpr));
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+    }
+    const context = canvas.getContext("2d");
+    context.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return {context, width:rect.width, height:rect.height, dpr};
+  }
+
+  function nodePoint(id, width, height) {
+    const node = nodeById(id);
+    const padX = Math.min(72, width * .095);
+    const padY = Math.min(70, height * .13);
+    return {
+      x:padX + node.x * (width - padX * 2),
+      y:padY + node.y * (height - padY * 2)
+    };
+  }
+
+  function roundedRect(context, x, y, width, height, radius) {
+    const r = Math.min(radius, Math.abs(width) / 2, Math.abs(height) / 2);
+    context.beginPath();
+    context.moveTo(x + r, y);
+    context.arcTo(x + width, y, x + width, y + height, r);
+    context.arcTo(x + width, y + height, x, y + height, r);
+    context.arcTo(x, y + height, x, y, r);
+    context.arcTo(x, y, x + width, y, r);
+    context.closePath();
+  }
+
+  function queueRatio(link) {
+    return Math.max(link.ab.queue.length, link.ba.queue.length) / Math.max(1, link.queueLimit);
+  }
+
+  function drawBubbles(context, width, height) {
+    if (reducedMotion) return;
+    context.save();
+    for (let index = 0; index < 24; index++) {
+      const x = ((index * 83 + 31) % 997) / 997 * width;
+      const speed = .004 + (index % 5) * .0015;
+      const base = ((index * 47 + 13) % 101) / 101 * (height + 70);
+      const y = (base - state.time * speed + height + 70) % (height + 70) - 25;
+      const radius = 1.5 + index % 4;
+      context.globalAlpha = .09 + (index % 3) * .035;
+      context.strokeStyle = "#9cecff";
+      context.lineWidth = 1;
+      context.beginPath();
+      context.arc(x, y, radius, 0, Math.PI * 2);
+      context.stroke();
+    }
+    context.restore();
+  }
+
+  function drawQueue(context, link, dir, p1, p2, side, selected) {
+    const dx = p2.x - p1.x;
+    const dy = p2.y - p1.y;
+    const length = Math.max(1, Math.hypot(dx, dy));
+    const nx = -dy / length;
+    const ny = dx / length;
+    const mx = (p1.x + p2.x) / 2 + nx * side * 13;
+    const my = (p1.y + p2.y) / 2 + ny * side * 13;
+    const segments = 7;
+    const boxWidth = 35;
+    const boxHeight = 7;
+    const startX = mx - boxWidth / 2;
+    const startY = my - boxHeight / 2;
+    const filled = Math.ceil(dir.queue.length / Math.max(1, link.queueLimit) * segments);
+
+    context.save();
+    roundedRect(context, startX - 2, startY - 2, boxWidth + 4, boxHeight + 4, 4);
+    context.fillStyle = selected ? "#092c38e8" : "#03151dc7";
+    context.fill();
+    context.strokeStyle = selected ? "#ffd166aa" : "#39708388";
+    context.lineWidth = 1;
+    context.stroke();
+
+    for (let index = 0; index < segments; index++) {
+      const gap = 1.2;
+      const segmentWidth = (boxWidth - gap * (segments - 1)) / segments;
+      context.fillStyle = index < filled
+        ? (dir.queue.length >= link.queueLimit ? "#ff7188" : "#d5a843")
+        : "#173643";
+      context.fillRect(startX + index * (segmentWidth + gap), startY, segmentWidth, boxHeight);
+    }
+    if (selected || dir.queue.length) {
+      context.fillStyle = "#d7edf3";
+      context.font = "600 9px ui-monospace, monospace";
+      context.textAlign = "center";
+      context.textBaseline = side > 0 ? "top" : "bottom";
+      context.fillText(`${dir.from}→${dir.to} ${dir.queue.length}/${link.queueLimit}`, mx, my + side * 8);
+    }
+    context.restore();
+  }
+
+  function drawRoutes(context, width, height) {
+    for (const flow of state.flows) {
+      if (!flow.active || !flow.route || flow.route.length < 2) continue;
+      context.save();
+      context.strokeStyle = flow.color;
+      context.globalAlpha = .28;
+      context.lineWidth = 3;
+      context.setLineDash([7, 9]);
+      context.beginPath();
+      flow.route.forEach((id, index) => {
+        const point = nodePoint(id, width, height);
+        if (index === 0) context.moveTo(point.x, point.y);
+        else context.lineTo(point.x, point.y);
+      });
+      context.stroke();
+      context.restore();
+    }
+  }
+
+  function drawLinks(context, width, height) {
+    hitMap.links = [];
+    for (const link of state.links) {
+      const p1 = nodePoint(link.a, width, height);
+      const p2 = nodePoint(link.b, width, height);
+      const selected = link.id === state.selectedLinkId;
+      const fullness = queueRatio(link);
+      const hue = !link.up ? "#ff7188" : fullness > .78 ? "#ff9b70" : fullness > .35 ? "#e2bd5f" : "#2c6b7b";
+
+      context.save();
+      context.lineCap = "round";
+      context.strokeStyle = selected ? "#eafcff" : "#0b2632";
+      context.lineWidth = selected ? 12 : 9;
+      context.globalAlpha = selected ? .36 : .75;
+      context.beginPath();
+      context.moveTo(p1.x, p1.y);
+      context.lineTo(p2.x, p2.y);
+      context.stroke();
+
+      context.strokeStyle = hue;
+      context.lineWidth = selected ? 4 : 3;
+      context.globalAlpha = link.up ? .95 : .8;
+      context.setLineDash(link.up ? [] : [7, 8]);
+      context.beginPath();
+      context.moveTo(p1.x, p1.y);
+      context.lineTo(p2.x, p2.y);
+      context.stroke();
+      context.restore();
+
+      drawQueue(context, link, link.ab, p1, p2, 1, selected);
+      drawQueue(context, link, link.ba, p1, p2, -1, selected);
+
+      if (!link.up) {
+        const mx = (p1.x + p2.x) / 2;
+        const my = (p1.y + p2.y) / 2;
+        context.save();
+        context.strokeStyle = "#ffdbe1";
+        context.lineWidth = 3;
+        context.beginPath();
+        context.moveTo(mx - 7, my - 7);
+        context.lineTo(mx + 7, my + 7);
+        context.moveTo(mx + 7, my - 7);
+        context.lineTo(mx - 7, my + 7);
+        context.stroke();
+        context.restore();
+      }
+      hitMap.links.push({id:link.id, p1, p2});
+    }
+  }
+
+  function drawNodes(context, width, height) {
+    hitMap.nodes = [];
+    const source = dom.source.value;
+    const destination = dom.destination.value;
+    const radius = width < 520 ? 18 : 21;
+
+    for (const node of NODE_DEFS) {
+      const point = nodePoint(node.id, width, height);
+      const isSource = node.id === source;
+      const isDestination = node.id === destination;
+      context.save();
+      if (isSource || isDestination) {
+        context.strokeStyle = isSource ? "#67f5c1" : "#b48cff";
+        context.globalAlpha = .72;
+        context.lineWidth = 2;
+        context.beginPath();
+        context.arc(point.x, point.y, radius + 7, 0, Math.PI * 2);
+        context.stroke();
+      }
+
+      const gradient = context.createRadialGradient(point.x - 6, point.y - 7, 2, point.x, point.y, radius);
+      gradient.addColorStop(0, "#d9fbff");
+      gradient.addColorStop(.18, "#45b9cf");
+      gradient.addColorStop(.55, "#0d5063");
+      gradient.addColorStop(1, "#062631");
+      context.fillStyle = gradient;
+      context.shadowColor = "#58e4ff";
+      context.shadowBlur = 14;
+      context.beginPath();
+      context.arc(point.x, point.y, radius, 0, Math.PI * 2);
+      context.fill();
+      context.shadowBlur = 0;
+      context.strokeStyle = "#99efff";
+      context.globalAlpha = .82;
+      context.lineWidth = 1.5;
+      context.stroke();
+
+      context.globalAlpha = 1;
+      context.fillStyle = "#f4fdff";
+      context.font = `850 ${width < 520 ? 11 : 12}px ui-sans-serif, system-ui`;
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      context.fillText(node.id, point.x, point.y);
+      context.fillStyle = "#b8dae2";
+      context.font = `650 ${width < 520 ? 9 : 10}px ui-sans-serif, system-ui`;
+      context.textBaseline = "top";
+      context.fillText(node.name, point.x, point.y + radius + 6);
+      context.restore();
+      hitMap.nodes.push({id:node.id, x:point.x, y:point.y, radius:radius + 9});
+    }
+  }
+
+  function drawPacket(context, item, width, height) {
+    const p1 = nodePoint(item.from, width, height);
+    const p2 = nodePoint(item.to, width, height);
+    const span = Math.max(1, item.arrival - item.start);
+    let progress = Math.max(0, Math.min(1, (state.time - item.start) / span));
+    if (reducedMotion) progress = Math.round(progress * 4) / 4;
+    const dx = p2.x - p1.x;
+    const dy = p2.y - p1.y;
+    const length = Math.max(1, Math.hypot(dx, dy));
+    const wiggle = reducedMotion ? 0 : Math.sin((progress * 3 + item.packet.id * .19) * Math.PI) * 2.2;
+    const x = p1.x + dx * progress - dy / length * wiggle;
+    const y = p1.y + dy * progress + dx / length * wiggle;
+    const angle = Math.atan2(dy, dx);
+    const packet = item.packet;
+
+    context.save();
+    context.translate(x, y);
+    context.rotate(angle);
+    if (packet.kind === "ack") {
+      context.shadowColor = packet.color;
+      context.shadowBlur = 9;
+      context.fillStyle = "#071a24";
+      context.strokeStyle = "#e8fcff";
+      context.lineWidth = 1.5;
+      context.beginPath();
+      context.arc(0, 0, 4.2, 0, Math.PI * 2);
+      context.fill();
+      context.stroke();
+      context.beginPath();
+      context.moveTo(-2, 0);
+      context.lineTo(2, 0);
+      context.stroke();
+    } else {
+      context.shadowColor = packet.attempt > 1 ? "#ff7188" : packet.color;
+      context.shadowBlur = packet.attempt > 1 ? 14 : 9;
+      context.fillStyle = packet.color;
+      context.strokeStyle = packet.attempt > 1 ? "#ffd4db" : "#eaffff";
+      context.lineWidth = packet.attempt > 1 ? 1.8 : 1;
+      context.beginPath();
+      context.moveTo(8, 0);
+      context.quadraticCurveTo(-1, -5, -6, -3.5);
+      context.lineTo(-4, 0);
+      context.lineTo(-6, 3.5);
+      context.quadraticCurveTo(-1, 5, 8, 0);
+      context.closePath();
+      context.fill();
+      context.stroke();
+      context.fillStyle = packet.attempt > 1 ? "#ff7188" : packet.color;
+      context.beginPath();
+      context.moveTo(-5, 0);
+      context.lineTo(-10, -4);
+      context.lineTo(-9, 4);
+      context.closePath();
+      context.fill();
+      if (packet.attempt > 1) {
+        context.strokeStyle = "#ff7188";
+        context.lineWidth = 1.2;
+        context.beginPath();
+        context.arc(0, 0, 11, 0, Math.PI * 2);
+        context.stroke();
+      }
+    }
+    context.restore();
+  }
+
+  function burstPoint(burst, width, height) {
+    if (burst.nodeId) return nodePoint(burst.nodeId, width, height);
+    const p1 = nodePoint(burst.from, width, height);
+    const p2 = nodePoint(burst.to, width, height);
+    const phase = burst.phase === undefined ? .5 : burst.phase;
+    return {x:p1.x + (p2.x - p1.x) * phase, y:p1.y + (p2.y - p1.y) * phase};
+  }
+
+  function drawBursts(context, width, height) {
+    for (const burst of state.bursts) {
+      const age = Math.max(0, Math.min(1, (state.time - burst.t) / 900));
+      const point = burstPoint(burst, width, height);
+      context.save();
+      context.globalAlpha = 1 - age;
+      context.strokeStyle = burst.packetKind === "ack" ? "#ffd166" : "#ff7188";
+      context.lineWidth = 1.8;
+      const radius = reducedMotion ? 7 : 5 + age * 18;
+      context.beginPath();
+      context.arc(point.x, point.y, radius, 0, Math.PI * 2);
+      context.stroke();
+      context.beginPath();
+      context.moveTo(point.x - 5, point.y - 5);
+      context.lineTo(point.x + 5, point.y + 5);
+      context.moveTo(point.x + 5, point.y - 5);
+      context.lineTo(point.x - 5, point.y + 5);
+      context.stroke();
+      context.restore();
+    }
+  }
+
+  function drawNetwork() {
+    const {context, width, height} = ensureCanvasSize(dom.network);
+    context.clearRect(0, 0, width, height);
+    drawBubbles(context, width, height);
+    drawRoutes(context, width, height);
+    drawLinks(context, width, height);
+    drawNodes(context, width, height);
+
+    const visiblePackets = state.inFlight.length > 700
+      ? state.inFlight.slice(state.inFlight.length - 700)
+      : state.inFlight;
+    for (const item of visiblePackets) drawPacket(context, item, width, height);
+    drawBursts(context, width, height);
+  }
+
+  function drawChartLine(context, points, xFor, yFor, valueFor, color, width = 2) {
+    if (!points.length) return;
+    context.save();
+    context.strokeStyle = color;
+    context.lineWidth = width;
+    context.lineJoin = "round";
+    context.lineCap = "round";
+    context.beginPath();
+    points.forEach((point, index) => {
+      const x = xFor(point);
+      const y = yFor(valueFor(point));
+      if (index === 0) context.moveTo(x, y);
+      else context.lineTo(x, y);
+    });
+    context.stroke();
+    context.restore();
+  }
+
+  function drawChart() {
+    const {context, width, height} = ensureCanvasSize(dom.chart);
+    context.clearRect(0, 0, width, height);
+    const pad = {left:3, right:3, top:8, bottom:8};
+    const innerWidth = Math.max(1, width - pad.left - pad.right);
+    const innerHeight = Math.max(1, height - pad.top - pad.bottom);
+    const cutoff = Math.max(0, state.time - TRACE_WINDOW_MS);
+    const points = state.snapshots.filter(point => point.t >= cutoff);
+    const maxValue = Math.max(5, ...points.flatMap(point => [point.throughput, point.offered, point.retries])) * 1.12;
+    const start = Math.max(0, state.time - TRACE_WINDOW_MS);
+    const span = Math.max(1000, state.time - start);
+    const xFor = point => pad.left + (point.t - start) / span * innerWidth;
+    const yFor = value => pad.top + innerHeight - Math.max(0, value) / maxValue * innerHeight;
+
+    context.save();
+    context.strokeStyle = "#24495788";
+    context.lineWidth = 1;
+    for (let index = 0; index <= 3; index++) {
+      const y = pad.top + innerHeight * index / 3;
+      context.beginPath();
+      context.moveTo(pad.left, y);
+      context.lineTo(width - pad.right, y);
+      context.stroke();
+    }
+    if (points.length) {
+      context.beginPath();
+      context.moveTo(xFor(points[0]), height - pad.bottom);
+      for (const point of points) {
+        context.lineTo(xFor(point), height - pad.bottom - point.queueRatio * innerHeight * .35);
+      }
+      context.lineTo(xFor(points[points.length - 1]), height - pad.bottom);
+      context.closePath();
+      context.fillStyle = "#ffd16610";
+      context.fill();
+    }
+    context.restore();
+
+    drawChartLine(context, points, xFor, yFor, point => point.offered, "#58e4ff", 1.6);
+    drawChartLine(context, points, xFor, yFor, point => point.retries, "#ff7188", 2);
+    drawChartLine(context, points, xFor, yFor, point => point.throughput, "#67f5c1", 2.2);
+  }
+
+  function distanceToSegment(point, start, end) {
+    const dx = end.x - start.x;
+    const dy = end.y - start.y;
+    const lengthSquared = dx * dx + dy * dy;
+    if (!lengthSquared) return Math.hypot(point.x - start.x, point.y - start.y);
+    let t = ((point.x - start.x) * dx + (point.y - start.y) * dy) / lengthSquared;
+    t = Math.max(0, Math.min(1, t));
+    const x = start.x + t * dx;
+    const y = start.y + t * dy;
+    return Math.hypot(point.x - x, point.y - y);
+  }
+
+  function selectEndpoint(nodeId) {
+    if (endpointPhase === "source") {
+      dom.source.value = nodeId;
+      endpointPhase = "destination";
+      dom.topologyStatus.textContent = `${nodeName(nodeId)} set as source · choose destination`;
+      announce(`${nodeName(nodeId)} selected as flow source. Choose a destination router.`);
+    } else {
+      if (dom.source.value === nodeId) {
+        announce("Source and destination must be different.");
+        return;
+      }
+      dom.destination.value = nodeId;
+      endpointPhase = "source";
+      dom.topologyStatus.textContent = `${nodeName(nodeId)} set as destination`;
+      announce(`${nodeName(nodeId)} selected as flow destination.`);
+    }
+  }
+
+  function handleCanvasPointer(event) {
+    const rect = dom.network.getBoundingClientRect();
+    const point = {x:event.clientX - rect.left, y:event.clientY - rect.top};
+    let nearestNode = null;
+    let nodeDistance = Infinity;
+    for (const node of hitMap.nodes) {
+      const distance = Math.hypot(point.x - node.x, point.y - node.y);
+      if (distance < nodeDistance) {
+        nodeDistance = distance;
+        nearestNode = node;
+      }
+    }
+    if (nearestNode && nodeDistance <= nearestNode.radius) {
+      selectEndpoint(nearestNode.id);
+      dom.network.focus({preventScroll:true});
+      return;
+    }
+
+    let nearestLink = null;
+    let linkDistance = Infinity;
+    for (const link of hitMap.links) {
+      const distance = distanceToSegment(point, link.p1, link.p2);
+      if (distance < linkDistance) {
+        linkDistance = distance;
+        nearestLink = link;
+      }
+    }
+    if (nearestLink && linkDistance <= 20) {
+      state.selectedLinkId = nearestLink.id;
+      syncLinkControls();
+      const link = selectedLink();
+      dom.topologyStatus.textContent = `${nodeName(link.a)} ↔ ${nodeName(link.b)} selected`;
+      announce(`${nodeName(link.a)} to ${nodeName(link.b)} link selected.`);
+      dom.network.focus({preventScroll:true});
+    }
+  }
+
+  function isTypingTarget(target) {
+    return target instanceof HTMLInputElement ||
+      target instanceof HTMLSelectElement ||
+      target instanceof HTMLTextAreaElement ||
+      target instanceof HTMLButtonElement ||
+      target.isContentEditable;
+  }
+
+  function setStrategy(value, report = true) {
+    state.strategy = value;
+    dom.strategy.value = value;
+    recomputeRoutes("strategy changed", true);
+    if (report) {
+      const label = dom.strategy.options[dom.strategy.selectedIndex].text.replace(/^\d · /, "");
+      logEvent(`Routing strategy: ${label}`, "route");
+      announce(`${label} routing selected. Routes recomputed.`);
+    }
+  }
+
+  function bindEvents() {
+    dom.playButton.addEventListener("click", togglePlayback);
+    dom.stepButton.addEventListener("click", stepSimulation);
+    dom.presetButton.addEventListener("click", () => resetSimulation(true));
+    dom.resetButton.addEventListener("click", () => resetSimulation(false));
+    dom.applySeed.addEventListener("click", () => resetSimulation(false));
+    dom.strategy.addEventListener("change", () => setStrategy(dom.strategy.value));
+    dom.rto.addEventListener("input", () => {
+      state.rto = Number(dom.rto.value);
+      dom.rtoOutput.textContent = `${state.rto} ms`;
+    });
+    dom.rto.addEventListener("change", () => {
+      logEvent(`Retransmission timeout set to ${state.rto} ms`, "route");
+      announce(`Retransmission timeout set to ${state.rto} milliseconds.`);
+    });
+    dom.flowRate.addEventListener("input", () => {
+      dom.flowRateOutput.textContent = `${Number(dom.flowRate.value).toFixed(1)} pps`;
+    });
+    dom.addFlow.addEventListener("click", addFlowFromControls);
+    dom.flowList.addEventListener("click", event => {
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
+      const id = Number(button.dataset.id);
+      if (button.dataset.action === "toggle") toggleFlow(id);
+      else removeFlow(id);
+    });
+    dom.linkSelect.addEventListener("change", () => {
+      state.selectedLinkId = dom.linkSelect.value;
+      syncLinkControls();
+      const link = selectedLink();
+      announce(`${nodeName(link.a)} to ${nodeName(link.b)} link selected.`);
+    });
+    dom.capacity.addEventListener("input", () => updateLinkProperty("capacity", dom.capacity.value));
+    dom.capacity.addEventListener("change", () => updateLinkProperty("capacity", dom.capacity.value, true));
+    dom.latency.addEventListener("input", () => updateLinkProperty("latency", dom.latency.value));
+    dom.latency.addEventListener("change", () => updateLinkProperty("latency", dom.latency.value, true));
+    dom.loss.addEventListener("input", () => updateLinkProperty("loss", dom.loss.value));
+    dom.loss.addEventListener("change", () => updateLinkProperty("loss", dom.loss.value, true));
+    dom.queue.addEventListener("input", () => updateLinkProperty("queueLimit", dom.queue.value));
+    dom.queue.addEventListener("change", () => updateLinkProperty("queueLimit", dom.queue.value, true));
+    dom.toggleLink.addEventListener("click", toggleSelectedLink);
+    dom.clearQueues.addEventListener("click", drainSelectedQueues);
+    dom.network.addEventListener("pointerdown", event => {
+      canvasPointerStart = {id:event.pointerId, x:event.clientX, y:event.clientY};
+    });
+    dom.network.addEventListener("pointerup", event => {
+      if (!canvasPointerStart || canvasPointerStart.id !== event.pointerId) return;
+      const movement = Math.hypot(event.clientX - canvasPointerStart.x, event.clientY - canvasPointerStart.y);
+      canvasPointerStart = null;
+      if (movement <= 8) handleCanvasPointer(event);
+    });
+    dom.network.addEventListener("pointercancel", () => { canvasPointerStart = null; });
+
+    window.addEventListener("keydown", event => {
+      if (isTypingTarget(event.target)) return;
+      const key = event.key.toLowerCase();
+      if (event.code === "Space") {
+        event.preventDefault();
+        togglePlayback();
+      } else if (event.key === "." || event.key === "ArrowRight") {
+        event.preventDefault();
+        stepSimulation();
+      } else if (key === "c") {
+        resetSimulation(true);
+      } else if (key === "r") {
+        resetSimulation(false);
+      } else if (key === "f") {
+        toggleSelectedLink();
+      } else if (key === "1") {
+        setStrategy("latency");
+      } else if (key === "2") {
+        setStrategy("capacity");
+      } else if (key === "3") {
+        setStrategy("adaptive");
+      }
+    });
+  }
+
+  function animationFrame(now) {
+    const elapsed = Math.min(250, Math.max(0, now - lastRealTime));
+    lastRealTime = now;
+    if (state.running) {
+      realAccumulator += elapsed;
+      let guard = 0;
+      while (realAccumulator >= STEP_MS && guard++ < 8) {
+        simulateTick();
+        realAccumulator -= STEP_MS;
+      }
+    } else {
+      realAccumulator = 0;
+    }
+
+    drawNetwork();
+    drawChart();
+    if (now - lastUiPaint >= 160) {
+      lastUiPaint = now;
+      updateMetricsDOM();
+    }
+    requestAnimationFrame(animationFrame);
+  }
+
+  populateSelects();
+  bindEvents();
+  resetSimulation(false);
+  requestAnimationFrame(animationFrame);
+})();
+</script>
+</body>
+</html>
