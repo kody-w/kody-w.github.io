@@ -1,0 +1,54 @@
+---
+title: "Raft in a Storm — Break a Five-Node Cluster Without Breaking Safety"
+slug: "raft-consensus-playground"
+order: 350
+featured: true
+tagline: "Partition leaders, crash replicas, strand writes without a quorum, and then watch higher-term AppendEntries reconcile every stale suffix while three continuously measured safety invariants stay intact."
+category: "simulator"
+difficulty: "advanced"
+status: "live"
+tags:
+  - "raft"
+  - "distributed-systems"
+  - "consensus"
+  - "fault-injection"
+  - "simulation"
+stack:
+  - "Vanilla HTML, CSS, and JavaScript"
+  - "Deterministic fixed-step event simulation"
+  - "Inline SVG protocol topology"
+  - "No dependencies, assets, network, or build step"
+demo: "/learnwithkody/demos/356-raft-consensus-playground.html"
+repo: "https://github.com/kody-w/kody-w.github.io/blob/master/learnwithkody/demos/356-raft-consensus-playground.html"
+highlights:
+  - "Every node exposes its current term, role, durable vote, randomized election timer, replicated log, and commit index; every RequestVote, vote reply, AppendEntries, acknowledgement, rejection, and retry travels through a deterministic latency queue."
+  - "The storm preset creates a real two-versus-three split, lets the stale minority leader accept an uncommitted command, elects a higher-term majority leader, removes the majority's third live replica, restores it, and finally heals the network so conflicting uncommitted suffixes are visibly truncated."
+  - "Safety is measured rather than narrated: the simulator records leaders by term, stores a replica-level proof for every committed slot, fingerprints every committed prefix forever, and pauses immediately if any invariant is violated."
+  - "The entire lab remains usable at 390px with touch-sized controls, focusable network links, keyboard shortcuts, screen-reader labels, a reduced-motion mode, seedable replay, pause/play, and exact 100ms stepping."
+prompt: |
+  Build “Raft in a Storm — Break a Five-Node Cluster Without Breaking Safety,” a polished single-file browser simulation of a five-node Raft-style cluster. Visualize terms, roles, election timers, AppendEntries/votes in flight, each node’s replicated log and commit index. Let users pause/step/play, submit commands, crash/restart nodes, partition/heal links, and trigger a deterministic “storm” preset. Preserve the core safety behaviors: at most one elected leader per term in the simulator, majority required for commit, logs reconcile after healing, and committed entries never roll back. Surface measurable invariants and a live event trace rather than merely animating dots. Include reset, deterministic seed, keyboard/pointer/touch controls, responsive 390px layout, accessible labels/focus, and reduced-motion behavior. One self-contained HTML file, inline CSS/JS, no dependencies/assets/CDN/fetch/network/build; <=160KB.
+lessons:
+  - "A leader can accept a client command while isolated, but the command is not committed until acknowledgements prove the entry exists on at least three of five durable logs."
+  - "A newly elected leader's current-term barrier forces stale uncommitted suffixes to meet a conflicting entry after healing, so reconciliation is visible without ever rewriting a committed slot."
+  - "Consensus animation becomes an engineering tool only when election uniqueness, quorum evidence, committed-prefix fingerprints, message drops, and convergence time are exposed as inspectable measurements."
+---
+
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>A deterministic, five-node Raft-style cluster you can operate and sabotage from one browser tab. Pause on any 100&nbsp;ms boundary, submit client commands, crash and restart durable replicas, or activate any of the ten links to cut it. Terms, roles, election countdowns, votes, AppendEntries, acknowledgements, log conflicts, commit indexes, and quorum receipts are all live simulator state.</p>
+  <p>The one-click storm is a reproducible protocol story: a leader is stranded with one follower, accepts a write it cannot commit, a three-node majority elects a newer leader, that side temporarily loses its own quorum, and the cluster finally heals. The stale suffix disappears. The committed prefix does not.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>Most consensus diagrams animate circles and ask you to trust the caption. This one keeps evidence. Every elected term has a leader ledger. Every commit has the exact replica set that proved its majority. Every committed slot is fingerprinted so a rollback or conflicting value would stop the clock immediately. During a partition the logs may honestly diverge; after healing, the convergence instrument measures when all live logs and commit indexes become identical again.</p>
+  <p>That turns Raft's promise from “the arrows looked right” into something falsifiable: break availability as aggressively as you want, then inspect why safety survived.</p>
+</section>
+
+<aside class="lwk-try-embed">
+  <div class="lwk-try-embed-head">
+    <span class="lwk-try-embed-label">Raft in a Storm &mdash; live</span>
+    <a href="/learnwithkody/demos/356-raft-consensus-playground.html" target="_blank" rel="noopener" class="lwk-try-embed-open">Open in new tab &#8599;</a>
+  </div>
+  <iframe src="/learnwithkody/demos/356-raft-consensus-playground.html" title="Raft in a Storm — live demo" loading="lazy" sandbox="allow-scripts allow-same-origin"></iframe>
+</aside>

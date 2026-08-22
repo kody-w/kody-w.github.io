@@ -1,0 +1,2837 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Raft in a Storm — Five-Node Consensus Playground</title>
+  <style>
+    :root {
+      --bg: #060a12;
+      --bg-soft: #0b1220;
+      --panel: rgba(13, 22, 38, 0.94);
+      --panel-2: #111c30;
+      --line: #263752;
+      --line-bright: #3d5578;
+      --ink: #eef5ff;
+      --muted: #9bacc3;
+      --cyan: #42d7ff;
+      --blue: #5e8cff;
+      --gold: #ffc857;
+      --violet: #bd82ff;
+      --green: #54e39a;
+      --red: #ff6878;
+      --orange: #ff9d5c;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 320px;
+      background: var(--bg);
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% -10%, rgba(94, 140, 255, 0.18), transparent 32rem),
+        radial-gradient(circle at 88% 12%, rgba(189, 130, 255, 0.12), transparent 28rem),
+        linear-gradient(180deg, #07101d 0, var(--bg) 32rem);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      min-height: 44px;
+      border: 1px solid var(--line-bright);
+      border-radius: 11px;
+      color: var(--ink);
+      background: #14213a;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+    }
+
+    button:hover {
+      border-color: #7895bd;
+      background: #192a49;
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    [tabindex="0"]:focus-visible {
+      outline: 3px solid #fff;
+      outline-offset: 3px;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .skip-link {
+      position: fixed;
+      z-index: 100;
+      top: 8px;
+      left: 8px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      color: #06101d;
+      background: #fff;
+      transform: translateY(-150%);
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .app {
+      width: min(1460px, 100%);
+      margin: 0 auto;
+      padding: 26px clamp(14px, 3vw, 38px) 54px;
+    }
+
+    .hero {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: end;
+      margin-bottom: 20px;
+      padding: clamp(20px, 4vw, 38px);
+      overflow: hidden;
+      border: 1px solid #2a3e5e;
+      border-radius: 24px;
+      background:
+        linear-gradient(118deg, rgba(15, 28, 50, 0.98), rgba(9, 16, 29, 0.9)),
+        var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      top: -30%;
+      right: 9%;
+      width: 2px;
+      height: 170%;
+      opacity: 0.28;
+      background: linear-gradient(transparent, #fff 25%, var(--cyan) 40%, transparent 70%);
+      transform: rotate(24deg);
+      pointer-events: none;
+    }
+
+    .kicker {
+      margin: 0 0 8px;
+      color: var(--cyan);
+      font: 700 0.75rem/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 900px;
+      margin-bottom: 12px;
+      font-size: clamp(2rem, 5vw, 4.5rem);
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+    }
+
+    .hero-copy {
+      max-width: 800px;
+      margin: 0;
+      color: #b7c6da;
+      font-size: clamp(0.96rem, 1.7vw, 1.16rem);
+    }
+
+    .hero-state {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      justify-items: end;
+      gap: 8px;
+      min-width: 160px;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
+    .run-state {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 6px 11px;
+      border: 1px solid #49617e;
+      border-radius: 999px;
+      color: #dce8f7;
+      background: rgba(5, 12, 23, 0.7);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .run-state::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 13px currentColor;
+    }
+
+    .run-state.running::before {
+      background: var(--green);
+    }
+
+    .hero-clock {
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: 0 15px 44px rgba(0, 0, 0, 0.22);
+    }
+
+    .control-deck {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+      gap: 14px;
+      margin-bottom: 14px;
+      padding: 14px;
+    }
+
+    .transport,
+    .command-form,
+    .seed-control {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      align-items: center;
+    }
+
+    .transport button,
+    .command-form button {
+      padding: 9px 14px;
+      font-weight: 750;
+    }
+
+    .primary {
+      border-color: #4f84b8;
+      color: #03121c;
+      background: var(--cyan);
+    }
+
+    .primary:hover {
+      border-color: #a8edff;
+      background: #7ce5ff;
+    }
+
+    .storm-button {
+      border-color: #765898;
+      color: #f4eaff;
+      background: #332145;
+    }
+
+    .storm-button.active {
+      border-color: var(--violet);
+      box-shadow: 0 0 0 2px rgba(189, 130, 255, 0.15), 0 0 24px rgba(189, 130, 255, 0.16);
+    }
+
+    .seed-control {
+      flex: 1 1 245px;
+      min-width: 0;
+      padding-left: 4px;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    input {
+      min-width: 0;
+      min-height: 44px;
+      border: 1px solid var(--line-bright);
+      border-radius: 10px;
+      color: var(--ink);
+      background: #081221;
+      padding: 9px 11px;
+    }
+
+    #seed-input {
+      width: min(190px, 100%);
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
+    .command-side {
+      display: grid;
+      align-content: center;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .command-form {
+      flex-wrap: nowrap;
+    }
+
+    #command-input {
+      flex: 1 1 auto;
+      width: 100%;
+    }
+
+    .microcopy {
+      margin: 0;
+      color: #8396af;
+      font-size: 0.76rem;
+    }
+
+    kbd {
+      display: inline-block;
+      min-width: 1.7em;
+      padding: 1px 5px;
+      border: 1px solid #43536b;
+      border-bottom-width: 2px;
+      border-radius: 5px;
+      color: #d9e6f7;
+      background: #111c2e;
+      font: 700 0.7rem/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
+      text-align: center;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: minmax(0, 1.65fr) minmax(310px, 0.7fr);
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .panel-head {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 17px 18px 0;
+    }
+
+    .panel-head h2 {
+      margin-bottom: 3px;
+      font-size: 1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .panel-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .metric-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      justify-content: flex-end;
+    }
+
+    .metric {
+      min-width: 70px;
+      padding: 6px 9px;
+      border: 1px solid #2b405d;
+      border-radius: 9px;
+      background: #0a1424;
+      text-align: right;
+    }
+
+    .metric span {
+      display: block;
+      color: #7f93ad;
+      font: 700 0.59rem/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 2px;
+      overflow: hidden;
+      color: #eaf4ff;
+      font: 800 0.78rem/1.25 ui-monospace, SFMono-Regular, Consolas, monospace;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .topology-panel {
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .network-stage {
+      position: relative;
+      width: calc(100% - 24px);
+      max-width: 820px;
+      min-height: 0;
+      aspect-ratio: 3 / 2;
+      margin: 8px auto 0;
+      isolation: isolate;
+    }
+
+    #network-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .link-visible {
+      stroke: #3a506f;
+      stroke-width: 4;
+      vector-effect: non-scaling-stroke;
+      transition: stroke 150ms ease, opacity 150ms ease, stroke-width 150ms ease;
+    }
+
+    .link-visible.blocked {
+      stroke: var(--red);
+      stroke-dasharray: 9 8;
+      opacity: 0.58;
+    }
+
+    .link-hit {
+      stroke: transparent;
+      stroke-width: 24;
+      pointer-events: stroke;
+      cursor: pointer;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .link-hit:focus + .link-visible {
+      stroke: #fff;
+      stroke-width: 7;
+    }
+
+    .message-dot {
+      stroke: #07101d;
+      stroke-width: 3;
+      vector-effect: non-scaling-stroke;
+      filter: drop-shadow(0 0 7px currentColor);
+      pointer-events: none;
+    }
+
+    .node-orb {
+      --role-color: var(--cyan);
+      --timer: 0.5;
+      position: absolute;
+      z-index: 3;
+      display: grid;
+      width: clamp(76px, 10vw, 96px);
+      min-height: 0;
+      aspect-ratio: 1;
+      place-content: center;
+      padding: 9px;
+      border: 0;
+      border-radius: 50%;
+      color: var(--ink);
+      background:
+        radial-gradient(circle, #111e33 0 58%, transparent 59%),
+        conic-gradient(var(--role-color) calc(var(--timer) * 1turn), #26354a 0);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.12),
+        0 10px 34px rgba(0, 0, 0, 0.42),
+        0 0 26px color-mix(in srgb, var(--role-color) 22%, transparent);
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .node-orb:hover {
+      border-color: transparent;
+      background:
+        radial-gradient(circle, #182943 0 58%, transparent 59%),
+        conic-gradient(var(--role-color) calc(var(--timer) * 1turn), #2b3d56 0);
+    }
+
+    .node-orb.role-leader {
+      --role-color: var(--gold);
+    }
+
+    .node-orb.role-candidate {
+      --role-color: var(--violet);
+    }
+
+    .node-orb.crashed {
+      --role-color: #64748a;
+      filter: grayscale(0.7);
+      opacity: 0.7;
+    }
+
+    .orb-name {
+      font-size: clamp(1.15rem, 2vw, 1.5rem);
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .orb-role,
+    .orb-term {
+      display: block;
+      max-width: 70px;
+      overflow: hidden;
+      font: 750 0.58rem/1.25 ui-monospace, SFMono-Regular, Consolas, monospace;
+      letter-spacing: 0.05em;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .orb-role {
+      margin-top: 4px;
+      color: var(--role-color);
+    }
+
+    .orb-term {
+      margin-top: 2px;
+      color: #a9bbd1;
+    }
+
+    .network-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px 16px;
+      padding: 0 18px 17px;
+      color: var(--muted);
+      font-size: 0.72rem;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .legend-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--cyan);
+    }
+
+    .legend-dot.vote {
+      background: var(--violet);
+    }
+
+    .legend-dot.ack {
+      background: var(--green);
+    }
+
+    .legend-dot.blocked {
+      border-radius: 2px;
+      background: var(--red);
+    }
+
+    .invariant-panel {
+      padding-bottom: 15px;
+    }
+
+    .safety-score {
+      display: inline-flex;
+      align-items: center;
+      min-height: 31px;
+      padding: 5px 10px;
+      border: 1px solid rgba(84, 227, 154, 0.38);
+      border-radius: 999px;
+      color: var(--green);
+      background: rgba(84, 227, 154, 0.08);
+      font: 850 0.68rem/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+      letter-spacing: 0.06em;
+    }
+
+    .safety-score.fail {
+      border-color: rgba(255, 104, 120, 0.5);
+      color: var(--red);
+      background: rgba(255, 104, 120, 0.1);
+    }
+
+    .invariant-list {
+      display: grid;
+      gap: 9px;
+      padding: 14px;
+    }
+
+    .invariant {
+      position: relative;
+      padding: 12px 12px 12px 38px;
+      border: 1px solid #2b3d57;
+      border-radius: 12px;
+      background: #0a1424;
+    }
+
+    .invariant::before {
+      content: "✓";
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      display: grid;
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      place-content: center;
+      color: #042115;
+      background: var(--green);
+      font-size: 0.7rem;
+      font-weight: 1000;
+    }
+
+    .invariant.info::before {
+      content: "↻";
+      color: #071421;
+      background: var(--cyan);
+    }
+
+    .invariant.fail {
+      border-color: rgba(255, 104, 120, 0.58);
+      background: rgba(255, 104, 120, 0.07);
+    }
+
+    .invariant.fail::before {
+      content: "!";
+      color: #27050a;
+      background: var(--red);
+    }
+
+    .invariant strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 0.82rem;
+    }
+
+    .invariant span {
+      display: block;
+      color: var(--muted);
+      font: 650 0.7rem/1.45 ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
+    .node-section {
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      min-width: 0;
+    }
+
+    .node-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(210px, 1fr));
+      gap: 10px;
+      padding: 13px;
+      overflow-x: auto;
+    }
+
+    .node-card {
+      min-width: 210px;
+      border: 1px solid #2b3f5b;
+      border-radius: 13px;
+      background: #0a1424;
+      overflow: hidden;
+    }
+
+    .node-card.leader {
+      border-color: rgba(255, 200, 87, 0.62);
+      box-shadow: inset 0 2px 0 var(--gold);
+    }
+
+    .node-card.candidate {
+      border-color: rgba(189, 130, 255, 0.54);
+    }
+
+    .node-card.crashed {
+      opacity: 0.66;
+    }
+
+    .node-card-head {
+      display: flex;
+      gap: 9px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px;
+      border-bottom: 1px solid #22334c;
+    }
+
+    .node-identity {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .node-letter {
+      display: grid;
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      place-content: center;
+      color: #05131d;
+      background: var(--cyan);
+      font-weight: 950;
+    }
+
+    .node-card.leader .node-letter {
+      background: var(--gold);
+    }
+
+    .node-card.candidate .node-letter {
+      color: #170825;
+      background: var(--violet);
+    }
+
+    .node-card.crashed .node-letter {
+      color: #d9e2ed;
+      background: #58677b;
+    }
+
+    .node-role {
+      display: block;
+      overflow: hidden;
+      color: #e8f1ff;
+      font-size: 0.78rem;
+      font-weight: 850;
+      text-overflow: ellipsis;
+      text-transform: capitalize;
+      white-space: nowrap;
+    }
+
+    .node-term {
+      display: block;
+      color: #879ab2;
+      font: 650 0.65rem/1.3 ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
+    .node-toggle {
+      flex: 0 0 auto;
+      min-height: 44px;
+      padding: 6px 9px;
+      border-color: #4a607c;
+      font-size: 0.68rem;
+      font-weight: 800;
+    }
+
+    .node-card.crashed .node-toggle {
+      border-color: rgba(84, 227, 154, 0.5);
+      color: var(--green);
+    }
+
+    .node-facts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      border-bottom: 1px solid #22334c;
+      background: #22334c;
+    }
+
+    .node-fact {
+      padding: 7px 9px;
+      background: #0c1728;
+    }
+
+    .node-fact span {
+      display: block;
+      color: #71849e;
+      font: 700 0.56rem/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .node-fact strong {
+      display: block;
+      margin-top: 2px;
+      color: #dce8f7;
+      font: 750 0.68rem/1.3 ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
+    .log-label {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 9px 5px;
+      color: #8094ad;
+      font: 700 0.58rem/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .log-strip {
+      display: flex;
+      gap: 6px;
+      min-height: 69px;
+      padding: 0 9px 10px;
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
+      scrollbar-color: #435a79 #0a1424;
+      scrollbar-width: thin;
+    }
+
+    .log-entry {
+      position: relative;
+      flex: 0 0 92px;
+      min-width: 0;
+      padding: 7px;
+      border: 1px solid #40516b;
+      border-radius: 8px;
+      color: #bcc9da;
+      background: #141f31;
+    }
+
+    .log-entry.committed {
+      border-color: rgba(84, 227, 154, 0.62);
+      color: #dffff0;
+      background: rgba(24, 88, 60, 0.34);
+    }
+
+    .log-entry.system {
+      border-style: dashed;
+    }
+
+    .log-index,
+    .log-term {
+      color: #8093ab;
+      font: 700 0.55rem/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
+    .log-term {
+      float: right;
+    }
+
+    .log-command {
+      display: block;
+      margin-top: 8px;
+      overflow: hidden;
+      font: 750 0.65rem/1.3 ui-monospace, SFMono-Regular, Consolas, monospace;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .empty-log {
+      display: grid;
+      width: 100%;
+      min-height: 55px;
+      border: 1px dashed #344761;
+      border-radius: 8px;
+      place-content: center;
+      color: #6f829b;
+      font: 650 0.64rem/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
+    .lower-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+      gap: 14px;
+    }
+
+    .message-panel,
+    .trace-panel {
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      padding: 10px 14px 14px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 530px;
+      border-collapse: collapse;
+      font: 650 0.7rem/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
+    th,
+    td {
+      padding: 8px 7px;
+      border-bottom: 1px solid #24354d;
+      text-align: left;
+    }
+
+    th {
+      color: #7d91a9;
+      font-size: 0.59rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    td {
+      color: #c9d6e6;
+    }
+
+    .message-type {
+      display: inline-flex;
+      min-height: 24px;
+      align-items: center;
+      padding: 3px 7px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      color: var(--cyan);
+      font-size: 0.6rem;
+      font-weight: 850;
+      letter-spacing: 0.04em;
+    }
+
+    .message-type.vote {
+      color: var(--violet);
+    }
+
+    .message-type.ack {
+      color: var(--green);
+    }
+
+    .empty-row {
+      padding: 22px 8px;
+      color: #778ba5;
+      text-align: center;
+    }
+
+    .trace-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .trace-actions span {
+      color: #788ca5;
+      font: 700 0.65rem/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
+    .quiet-button {
+      min-height: 44px;
+      padding: 6px 9px;
+      font-size: 0.68rem;
+      font-weight: 800;
+    }
+
+    .trace-list {
+      height: 306px;
+      margin: 10px 14px 14px;
+      padding: 0;
+      overflow-y: auto;
+      border: 1px solid #253750;
+      border-radius: 11px;
+      background: #07101d;
+      list-style: none;
+      scrollbar-color: #405676 #07101d;
+      scrollbar-width: thin;
+    }
+
+    .trace-list li {
+      display: grid;
+      grid-template-columns: 52px 64px minmax(0, 1fr);
+      gap: 7px;
+      padding: 7px 9px;
+      border-bottom: 1px solid #18283d;
+      color: #b6c5d7;
+      font: 620 0.67rem/1.42 ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
+    .trace-time {
+      color: #657b96;
+    }
+
+    .trace-kind {
+      color: var(--cyan);
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    li[data-kind="election"] .trace-kind,
+    li[data-kind="vote"] .trace-kind {
+      color: var(--violet);
+    }
+
+    li[data-kind="commit"] .trace-kind {
+      color: var(--green);
+    }
+
+    li[data-kind="storm"] .trace-kind {
+      color: var(--orange);
+    }
+
+    li[data-kind="drop"] .trace-kind,
+    li[data-kind="violation"] .trace-kind {
+      color: var(--red);
+    }
+
+    .footer-note {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 22px;
+      justify-content: space-between;
+      margin-top: 14px;
+      padding: 12px 4px 0;
+      color: #778ba4;
+      font-size: 0.72rem;
+    }
+
+    .footer-note p {
+      margin: 0;
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 50;
+      right: 18px;
+      bottom: 18px;
+      max-width: min(390px, calc(100vw - 28px));
+      padding: 11px 14px;
+      border: 1px solid #506886;
+      border-radius: 11px;
+      color: #eaf3ff;
+      background: #101d31;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px);
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 1080px) {
+      .control-deck,
+      .dashboard,
+      .lower-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .node-grid {
+        grid-template-columns: repeat(5, minmax(220px, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .app {
+        padding: 12px 10px 38px;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+        align-items: start;
+        padding: 21px 17px;
+        border-radius: 18px;
+      }
+
+      .hero-state {
+        grid-auto-flow: column;
+        justify-content: start;
+        justify-items: start;
+        min-width: 0;
+      }
+
+      .control-deck {
+        padding: 10px;
+      }
+
+      .transport > button {
+        flex: 1 1 calc(50% - 9px);
+      }
+
+      .seed-control {
+        flex: 1 1 100%;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        padding-left: 0;
+      }
+
+      #seed-input {
+        width: 100%;
+      }
+
+      .command-form {
+        flex-wrap: wrap;
+      }
+
+      .command-form button {
+        width: 100%;
+      }
+
+      .panel-head {
+        display: grid;
+        padding: 14px 13px 0;
+      }
+
+      .metric-strip {
+        display: grid;
+        width: 100%;
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .metric {
+        min-width: 0;
+        padding: 6px;
+        text-align: left;
+      }
+
+      .network-stage {
+        width: calc(100% - 6px);
+        min-height: 0;
+        aspect-ratio: 3 / 2;
+      }
+
+      .node-orb {
+        width: 70px;
+      }
+
+      .orb-role,
+      .orb-term {
+        max-width: 55px;
+        font-size: 0.52rem;
+      }
+
+      .node-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        overflow: visible;
+      }
+
+      .node-card {
+        min-width: 0;
+      }
+
+      .trace-list {
+        height: 340px;
+      }
+    }
+
+    @media (max-width: 410px) {
+      h1 {
+        font-size: 2.12rem;
+      }
+
+      .transport > button {
+        padding-inline: 8px;
+        font-size: 0.82rem;
+      }
+
+      .seed-control {
+        grid-template-columns: 1fr;
+      }
+
+      .node-orb {
+        width: 64px;
+      }
+
+      .orb-name {
+        font-size: 1.05rem;
+      }
+
+      .orb-role,
+      .orb-term {
+        max-width: 50px;
+        font-size: 0.48rem;
+      }
+
+      .trace-list li {
+        grid-template-columns: 45px 55px minmax(0, 1fr);
+        gap: 5px;
+        padding-inline: 7px;
+        font-size: 0.61rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.001ms !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+      }
+
+      .message-dot {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#simulator">Skip to simulator controls</a>
+  <main class="app">
+    <header class="hero">
+      <div>
+        <p class="kicker">Deterministic distributed-systems lab</p>
+        <h1>Raft in a Storm</h1>
+        <p class="hero-copy">Break a five-node cluster without breaking safety. Every vote, heartbeat, log conflict, quorum proof, and commit is real simulator state—not decorative motion.</p>
+      </div>
+      <div class="hero-state" aria-label="Simulation status">
+        <span id="run-state" class="run-state">Paused</span>
+        <span id="hero-clock" class="hero-clock">logical time 0.0s</span>
+      </div>
+    </header>
+
+    <section id="simulator" class="panel control-deck" aria-label="Simulator controls">
+      <div class="transport">
+        <button id="play-button" class="primary" type="button" aria-pressed="false">▶ Play</button>
+        <button id="step-button" type="button">Step +100ms</button>
+        <button id="storm-button" class="storm-button" type="button">⚡ Run storm</button>
+        <button id="heal-button" type="button">Heal all links</button>
+        <div class="seed-control">
+          <label for="seed-input">Seed</label>
+          <input id="seed-input" type="text" value="gale-356" maxlength="40" spellcheck="false" autocomplete="off" aria-describedby="seed-help">
+          <button id="reset-button" type="button">Reset</button>
+        </div>
+      </div>
+      <div class="command-side">
+        <form id="command-form" class="command-form">
+          <label class="sr-only" for="command-input">Client command</label>
+          <input id="command-input" type="text" maxlength="32" value="course=north" placeholder="client command, e.g. x=7" autocomplete="off">
+          <button class="primary" type="submit">Submit to leader</button>
+        </form>
+        <p id="seed-help" class="microcopy"><kbd>Space</kbd> play/pause · <kbd>→</kbd> step · <kbd>1</kbd>–<kbd>5</kbd> crash/restart · tap a link to partition it</p>
+      </div>
+    </section>
+
+    <div class="dashboard">
+      <section class="panel topology-panel" aria-labelledby="cluster-title">
+        <div class="panel-head">
+          <div>
+            <h2 id="cluster-title">Cluster topology</h2>
+            <p>Node ring = election/heartbeat time remaining. Links are interactive.</p>
+          </div>
+          <div class="metric-strip" aria-label="Cluster measurements">
+            <div class="metric"><span>Term</span><strong id="term-metric">0</strong></div>
+            <div class="metric"><span>Leader</span><strong id="leader-metric">electing</strong></div>
+            <div class="metric"><span>Reach</span><strong id="reach-metric">5/5</strong></div>
+            <div class="metric"><span>In flight</span><strong id="flight-metric">0</strong></div>
+          </div>
+        </div>
+        <div id="network-stage" class="network-stage">
+          <svg id="network-svg" viewBox="0 0 600 400" role="group" aria-labelledby="network-title network-desc">
+            <title id="network-title">Five-node Raft network</title>
+            <desc id="network-desc">Ten focusable links connect nodes A through E. Activate a link to partition or heal it. Colored dots represent protocol messages in flight.</desc>
+            <g id="link-layer"></g>
+            <g id="message-layer" aria-hidden="true"></g>
+          </svg>
+          <div id="node-orbs"></div>
+        </div>
+        <div class="network-legend" aria-label="Message legend">
+          <span class="legend-item"><i class="legend-dot"></i> AppendEntries</span>
+          <span class="legend-item"><i class="legend-dot vote"></i> RequestVote / vote</span>
+          <span class="legend-item"><i class="legend-dot ack"></i> acknowledgement</span>
+          <span class="legend-item"><i class="legend-dot blocked"></i> partitioned link</span>
+        </div>
+      </section>
+
+      <aside class="panel invariant-panel" aria-labelledby="invariant-title">
+        <div class="panel-head">
+          <div>
+            <h2 id="invariant-title">Safety instruments</h2>
+            <p>Continuously checked against simulator state.</p>
+          </div>
+          <span id="safety-score" class="safety-score">SAFETY 3/3</span>
+        </div>
+        <div class="invariant-list">
+          <div id="inv-election" class="invariant">
+            <strong>Election uniqueness</strong>
+            <span id="inv-election-text">0 terms elected; max 1 leader per term</span>
+          </div>
+          <div id="inv-quorum" class="invariant">
+            <strong>Majority commit proof</strong>
+            <span id="inv-quorum-text">Waiting for the first replicated entry</span>
+          </div>
+          <div id="inv-permanence" class="invariant">
+            <strong>Committed-prefix permanence</strong>
+            <span id="inv-permanence-text">0 committed slots; 0 rollback attempts</span>
+          </div>
+          <div id="inv-reconcile" class="invariant info">
+            <strong>Log reconciliation</strong>
+            <span id="inv-reconcile-text">All 5 live logs match</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <section class="panel node-section" aria-labelledby="logs-title">
+      <div class="panel-head">
+        <div>
+          <h2 id="logs-title">Replicated logs</h2>
+          <p>Green entries are committed. Dashed entries are leadership barriers. Uncommitted conflicts may be truncated; committed entries may not.</p>
+        </div>
+      </div>
+      <div id="node-grid" class="node-grid"></div>
+    </section>
+
+    <div class="lower-grid">
+      <section class="panel message-panel" aria-labelledby="messages-title">
+        <div class="panel-head">
+          <div>
+            <h2 id="messages-title">Protocol traffic</h2>
+            <p>Scheduled delivery uses deterministic seed-based latency.</p>
+          </div>
+          <div class="metric-strip">
+            <div class="metric"><span>Delivered</span><strong id="delivered-metric">0</strong></div>
+            <div class="metric"><span>Dropped</span><strong id="dropped-metric">0</strong></div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>RPC</th>
+                <th>Route</th>
+                <th>Term</th>
+                <th>Payload</th>
+                <th>ETA</th>
+              </tr>
+            </thead>
+            <tbody id="flight-rows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel trace-panel" aria-labelledby="trace-title">
+        <div class="panel-head">
+          <div>
+            <h2 id="trace-title">Event trace</h2>
+            <p>Newest event first; protocol decisions remain inspectable.</p>
+          </div>
+          <div class="trace-actions">
+            <span id="trace-count">0 events</span>
+            <button id="clear-trace" class="quiet-button" type="button">Clear</button>
+          </div>
+        </div>
+        <ol id="trace-list" class="trace-list" role="log" aria-live="off" aria-relevant="additions"></ol>
+      </section>
+    </div>
+
+    <footer class="footer-note">
+      <p>Shortcuts: <kbd>S</kbd> storm · <kbd>H</kbd> heal · <kbd>R</kbd> reset · <kbd>1</kbd>–<kbd>5</kbd> toggle nodes.</p>
+      <p>No network, storage, libraries, or hidden backend. Logical time advances in fixed 100ms steps.</p>
+    </footer>
+  </main>
+
+  <div id="announcement" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const NODE_IDS = ["A", "B", "C", "D", "E"];
+      const POSITIONS = {
+        A: { x: 300, y: 62 },
+        B: { x: 500, y: 170 },
+        C: { x: 430, y: 342 },
+        D: { x: 170, y: 342 },
+        E: { x: 100, y: 170 }
+      };
+      const STEP_MS = 100;
+      const HEARTBEAT_MS = 300;
+      const ELECTION_MIN_MS = 1100;
+      const ELECTION_SLOTS = 15;
+      const MAX_LOG_ENTRIES = 40;
+      const SVG_NS = "http://www.w3.org/2000/svg";
+      const MESSAGE_INFO = {
+        requestVote: { name: "RequestVote", short: "VOTE?", color: "#bd82ff", className: "vote" },
+        voteResponse: { name: "VoteReply", short: "VOTE", color: "#d3a5ff", className: "vote" },
+        appendEntries: { name: "AppendEntries", short: "APPEND", color: "#42d7ff", className: "" },
+        appendResponse: { name: "AppendReply", short: "ACK", color: "#54e39a", className: "ack" }
+      };
+
+      const linkPairs = [];
+      for (let i = 0; i < NODE_IDS.length; i += 1) {
+        for (let j = i + 1; j < NODE_IDS.length; j += 1) {
+          linkPairs.push([NODE_IDS[i], NODE_IDS[j]]);
+        }
+      }
+
+      const els = {
+        runState: document.querySelector("#run-state"),
+        heroClock: document.querySelector("#hero-clock"),
+        play: document.querySelector("#play-button"),
+        step: document.querySelector("#step-button"),
+        storm: document.querySelector("#storm-button"),
+        heal: document.querySelector("#heal-button"),
+        reset: document.querySelector("#reset-button"),
+        seed: document.querySelector("#seed-input"),
+        commandForm: document.querySelector("#command-form"),
+        command: document.querySelector("#command-input"),
+        termMetric: document.querySelector("#term-metric"),
+        leaderMetric: document.querySelector("#leader-metric"),
+        reachMetric: document.querySelector("#reach-metric"),
+        flightMetric: document.querySelector("#flight-metric"),
+        deliveredMetric: document.querySelector("#delivered-metric"),
+        droppedMetric: document.querySelector("#dropped-metric"),
+        linkLayer: document.querySelector("#link-layer"),
+        messageLayer: document.querySelector("#message-layer"),
+        nodeOrbs: document.querySelector("#node-orbs"),
+        nodeGrid: document.querySelector("#node-grid"),
+        flightRows: document.querySelector("#flight-rows"),
+        traceList: document.querySelector("#trace-list"),
+        traceCount: document.querySelector("#trace-count"),
+        clearTrace: document.querySelector("#clear-trace"),
+        safetyScore: document.querySelector("#safety-score"),
+        invElection: document.querySelector("#inv-election"),
+        invElectionText: document.querySelector("#inv-election-text"),
+        invQuorum: document.querySelector("#inv-quorum"),
+        invQuorumText: document.querySelector("#inv-quorum-text"),
+        invPermanence: document.querySelector("#inv-permanence"),
+        invPermanenceText: document.querySelector("#inv-permanence-text"),
+        invReconcile: document.querySelector("#inv-reconcile"),
+        invReconcileText: document.querySelector("#inv-reconcile-text"),
+        announcement: document.querySelector("#announcement"),
+        toast: document.querySelector("#toast")
+      };
+
+      const state = {
+        seed: "",
+        rng: Math.random,
+        now: 0,
+        running: false,
+        lastFrame: 0,
+        accumulator: 0,
+        nodes: new Map(),
+        links: new Map(),
+        messages: [],
+        messageId: 0,
+        entryId: 0,
+        delivered: 0,
+        dropped: 0,
+        traceTotal: 0,
+        leadersByTerm: new Map(),
+        commitProofs: [],
+        globalCommitted: new Map(),
+        violations: [],
+        violationKeys: new Set(),
+        stormActions: [],
+        stormActive: false,
+        storm: {},
+        lastHealAt: null,
+        lastConvergenceMs: null
+      };
+
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      let toastTimer = 0;
+
+      function linkKey(a, b) {
+        return [a, b].sort().join("-");
+      }
+
+      function hashSeed(value) {
+        let hash = 2166136261;
+        for (let i = 0; i < value.length; i += 1) {
+          hash ^= value.charCodeAt(i);
+          hash = Math.imul(hash, 16777619);
+        }
+        return hash >>> 0;
+      }
+
+      function seededRandom(seed) {
+        let value = hashSeed(seed) || 0x6d2b79f5;
+        return () => {
+          value += 0x6d2b79f5;
+          let result = value;
+          result = Math.imul(result ^ (result >>> 15), result | 1);
+          result ^= result + Math.imul(result ^ (result >>> 7), result | 61);
+          return ((result ^ (result >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+
+      function formatTime(ms) {
+        return `${(ms / 1000).toFixed(1)}s`;
+      }
+
+      function lastLogIndex(node) {
+        return node.log.length - 1;
+      }
+
+      function lastLogTerm(node) {
+        return node.log.length ? node.log[node.log.length - 1].term : 0;
+      }
+
+      function entryFingerprint(entry) {
+        return `${entry.term}|${entry.kind}|${entry.command}`;
+      }
+
+      function logSignature(node, includeCommit = false) {
+        const entries = node.log.map(entryFingerprint).join("¦");
+        return includeCommit ? `${entries}@${node.commitIndex}` : entries;
+      }
+
+      function randomElectionTimeout() {
+        return ELECTION_MIN_MS + Math.floor(state.rng() * ELECTION_SLOTS) * 100;
+      }
+
+      function resetElectionTimer(node) {
+        node.electionTotal = randomElectionTimeout();
+        node.electionRemaining = node.electionTotal;
+      }
+
+      function makeNode(id) {
+        const node = {
+          id,
+          alive: true,
+          term: 0,
+          role: "follower",
+          votedFor: null,
+          leaderId: null,
+          votes: new Set(),
+          log: [],
+          commitIndex: -1,
+          commitFloor: -1,
+          committedMemory: new Map(),
+          electionTotal: 0,
+          electionRemaining: 0,
+          heartbeatRemaining: HEARTBEAT_MS,
+          nextIndex: new Map(),
+          matchIndex: new Map()
+        };
+        resetElectionTimer(node);
+        return node;
+      }
+
+      function isLinkOpen(a, b) {
+        return state.links.get(linkKey(a, b)) !== false;
+      }
+
+      function setLink(a, b, open, logEvent = true) {
+        const key = linkKey(a, b);
+        const previous = state.links.get(key) !== false;
+        state.links.set(key, open);
+        if (previous === open) return;
+        state.lastConvergenceMs = null;
+        if (open && allLinksOpen()) state.lastHealAt = state.now;
+        if (!open) state.lastHealAt = null;
+        if (logEvent) {
+          addTrace(open ? "network" : "drop", `Link ${key} ${open ? "healed" : "partitioned"}.`, true);
+        }
+      }
+
+      function allLinksOpen() {
+        return linkPairs.every(([a, b]) => isLinkOpen(a, b));
+      }
+
+      function bestDirectReach() {
+        let best = 0;
+        for (const id of NODE_IDS) {
+          const node = state.nodes.get(id);
+          if (!node || !node.alive) continue;
+          let reachable = 1;
+          for (const peerId of NODE_IDS) {
+            if (peerId === id) continue;
+            const peer = state.nodes.get(peerId);
+            if (peer.alive && isLinkOpen(id, peerId)) reachable += 1;
+          }
+          best = Math.max(best, reachable);
+        }
+        return best;
+      }
+
+      function networkGroups() {
+        const live = NODE_IDS.filter(id => state.nodes.get(id).alive);
+        const unseen = new Set(live);
+        const groups = [];
+        while (unseen.size) {
+          const first = unseen.values().next().value;
+          const stack = [first];
+          const group = [];
+          unseen.delete(first);
+          while (stack.length) {
+            const id = stack.pop();
+            group.push(id);
+            for (const peerId of [...unseen]) {
+              if (isLinkOpen(id, peerId)) {
+                unseen.delete(peerId);
+                stack.push(peerId);
+              }
+            }
+          }
+          groups.push(group.sort());
+        }
+        return groups.sort((a, b) => b.length - a.length);
+      }
+
+      function currentLeaders() {
+        return NODE_IDS
+          .map(id => state.nodes.get(id))
+          .filter(node => node.alive && node.role === "leader")
+          .sort((a, b) => b.term - a.term || a.id.localeCompare(b.id));
+      }
+
+      function highestLeader(filterIds = null) {
+        const allowed = filterIds ? new Set(filterIds) : null;
+        return currentLeaders().find(node => !allowed || allowed.has(node.id)) || null;
+      }
+
+      function announce(text) {
+        els.announcement.textContent = "";
+        window.setTimeout(() => {
+          els.announcement.textContent = text;
+        }, 10);
+      }
+
+      function showToast(text) {
+        window.clearTimeout(toastTimer);
+        els.toast.textContent = text;
+        els.toast.classList.add("show");
+        toastTimer = window.setTimeout(() => els.toast.classList.remove("show"), 2500);
+      }
+
+      function addTrace(kind, text, major = false) {
+        state.traceTotal += 1;
+        const item = document.createElement("li");
+        item.dataset.kind = kind;
+
+        const time = document.createElement("span");
+        time.className = "trace-time";
+        time.textContent = formatTime(state.now);
+
+        const label = document.createElement("span");
+        label.className = "trace-kind";
+        label.textContent = kind;
+
+        const message = document.createElement("span");
+        message.textContent = text;
+
+        item.append(time, label, message);
+        els.traceList.prepend(item);
+        while (els.traceList.children.length > 80) {
+          els.traceList.lastElementChild.remove();
+        }
+        els.traceCount.textContent = `${state.traceTotal} event${state.traceTotal === 1 ? "" : "s"}`;
+        if (major) announce(text);
+      }
+
+      function clearTrace() {
+        els.traceList.replaceChildren();
+        state.traceTotal = 0;
+        els.traceCount.textContent = "0 events";
+      }
+
+      function recordViolation(key, text) {
+        if (state.violationKeys.has(key)) return;
+        state.violationKeys.add(key);
+        state.violations.push({ key, text, at: state.now });
+        state.running = false;
+        addTrace("violation", text, true);
+        showToast(`Safety monitor paused the simulation: ${text}`);
+      }
+
+      function messagePayloadLabel(type, payload) {
+        if (type === "requestVote") return `last #${payload.lastLogIndex + 1}/T${payload.lastLogTerm}`;
+        if (type === "voteResponse") return payload.granted ? "granted" : "denied";
+        if (type === "appendEntries") {
+          if (!payload.entries.length) return `heartbeat · prev #${payload.prevIndex + 1}`;
+          return `${payload.entries.length} entr${payload.entries.length === 1 ? "y" : "ies"} · prev #${payload.prevIndex + 1}`;
+        }
+        return payload.success ? `match #${payload.matchIndex + 1}` : `retry #${payload.conflictIndex + 1}`;
+      }
+
+      function sendMessage(type, from, to, payload) {
+        if (!isLinkOpen(from, to)) {
+          state.dropped += 1;
+          return false;
+        }
+        const latency = 100 + Math.floor(state.rng() * 181);
+        state.messages.push({
+          id: ++state.messageId,
+          type,
+          from,
+          to,
+          payload,
+          sentAt: state.now,
+          deliverAt: state.now + latency
+        });
+        return true;
+      }
+
+      function stepDown(node, term, leaderId = null, reason = "") {
+        const previousRole = node.role;
+        const previousTerm = node.term;
+        if (term > node.term) {
+          node.term = term;
+          node.votedFor = null;
+        }
+        node.role = "follower";
+        node.leaderId = leaderId;
+        node.votes = new Set();
+        resetElectionTimer(node);
+        if ((previousRole === "leader" || previousRole === "candidate") &&
+            (previousRole !== node.role || previousTerm !== node.term)) {
+          const suffix = reason ? ` (${reason})` : "";
+          addTrace("election", `Node ${node.id} steps down at term ${node.term}${suffix}.`, true);
+        }
+      }
+
+      function startElection(node) {
+        if (!node.alive) return;
+        node.role = "candidate";
+        node.term += 1;
+        node.votedFor = node.id;
+        node.leaderId = null;
+        node.votes = new Set([node.id]);
+        resetElectionTimer(node);
+        addTrace("election", `Node ${node.id} starts term ${node.term} with its own vote.`, true);
+
+        const payload = {
+          term: node.term,
+          candidateId: node.id,
+          lastLogIndex: lastLogIndex(node),
+          lastLogTerm: lastLogTerm(node)
+        };
+        for (const peerId of NODE_IDS) {
+          if (peerId !== node.id) sendMessage("requestVote", node.id, peerId, { ...payload });
+        }
+      }
+
+      function candidateIsUpToDate(payload, voter) {
+        const voterTerm = lastLogTerm(voter);
+        if (payload.lastLogTerm !== voterTerm) return payload.lastLogTerm > voterTerm;
+        return payload.lastLogIndex >= lastLogIndex(voter);
+      }
+
+      function handleVoteRequest(node, message) {
+        const payload = message.payload;
+        if (payload.term > node.term) stepDown(node, payload.term, null, "higher-term vote request");
+
+        let granted = false;
+        if (payload.term === node.term) {
+          const canVote = node.votedFor === null || node.votedFor === payload.candidateId;
+          const upToDate = candidateIsUpToDate(payload, node);
+          granted = canVote && upToDate;
+          if (granted) {
+            node.votedFor = payload.candidateId;
+            node.leaderId = null;
+            resetElectionTimer(node);
+          }
+          addTrace(
+            "vote",
+            `Node ${node.id} ${granted ? "grants" : "denies"} ${payload.candidateId} in T${payload.term}${granted ? "" : ` (vote=${node.votedFor || "open"}, log=${upToDate ? "current" : "newer"})`}.`
+          );
+        }
+
+        sendMessage("voteResponse", node.id, message.from, {
+          term: node.term,
+          requestTerm: payload.term,
+          granted,
+          voterId: node.id
+        });
+      }
+
+      function handleVoteResponse(node, message) {
+        const payload = message.payload;
+        if (payload.term > node.term) {
+          stepDown(node, payload.term, null, "higher-term vote reply");
+          return;
+        }
+        if (!node.alive || node.role !== "candidate" || payload.requestTerm !== node.term || !payload.granted) return;
+        node.votes.add(payload.voterId);
+        addTrace("vote", `Candidate ${node.id} has ${node.votes.size}/3 votes in T${node.term}.`);
+        if (node.votes.size >= 3) becomeLeader(node);
+      }
+
+      function becomeLeader(node) {
+        const elected = state.leadersByTerm.get(node.term) || new Set();
+        const other = [...elected].find(id => id !== node.id);
+        if (other) {
+          recordViolation(`leader-${node.term}`, `Terms must be unique: ${other} and ${node.id} both attempted leadership in T${node.term}.`);
+          stepDown(node, node.term, other, "election uniqueness guard");
+          return;
+        }
+        elected.add(node.id);
+        state.leadersByTerm.set(node.term, elected);
+
+        node.role = "leader";
+        node.leaderId = node.id;
+        node.heartbeatRemaining = 0;
+        node.nextIndex = new Map();
+        node.matchIndex = new Map();
+        for (const id of NODE_IDS) {
+          node.nextIndex.set(id, node.log.length);
+          node.matchIndex.set(id, id === node.id ? lastLogIndex(node) : -1);
+        }
+        addTrace("election", `Node ${node.id} becomes leader for T${node.term} with votes ${[...node.votes].sort().join(", ")}.`, true);
+        appendToLeader(node, `leadership barrier T${node.term}`, "system");
+      }
+
+      function appendToLeader(node, command, kind = "client") {
+        if (!node.alive || node.role !== "leader") return -1;
+        if (node.log.length >= MAX_LOG_ENTRIES) {
+          addTrace("client", `Node ${node.id}'s lab log is full; reset to continue.`, true);
+          showToast("The 40-entry lab log is full. Reset to continue.");
+          return -1;
+        }
+        const entry = {
+          id: `${node.term}.${++state.entryId}`,
+          term: node.term,
+          command,
+          kind
+        };
+        node.log.push(entry);
+        node.matchIndex.set(node.id, lastLogIndex(node));
+        if (kind === "client") {
+          addTrace("client", `Leader ${node.id} appends “${command}” at #${node.log.length} in T${node.term}.`, true);
+        } else {
+          addTrace("log", `Leader ${node.id} appends a T${node.term} barrier at #${node.log.length}.`);
+        }
+        sendAppendAll(node);
+        return lastLogIndex(node);
+      }
+
+      function submitCommand(command, targetNode = null) {
+        const clean = command.trim().slice(0, 32);
+        if (!clean) {
+          showToast("Enter a command first.");
+          return false;
+        }
+        const leader = targetNode || highestLeader();
+        if (!leader || !leader.alive || leader.role !== "leader") {
+          addTrace("client", `Client command “${clean}” rejected: no live leader.`, true);
+          showToast("No live leader yet. Step or play until an election completes.");
+          return false;
+        }
+        return appendToLeader(leader, clean, "client") >= 0;
+      }
+
+      function sendAppendAll(leader) {
+        if (!leader.alive || leader.role !== "leader") return;
+        for (const peerId of NODE_IDS) {
+          if (peerId !== leader.id) sendAppend(leader, peerId);
+        }
+        leader.heartbeatRemaining = HEARTBEAT_MS;
+      }
+
+      function sendAppend(leader, peerId) {
+        if (!leader.alive || leader.role !== "leader") return;
+        const next = Math.max(0, Math.min(leader.nextIndex.get(peerId) ?? leader.log.length, leader.log.length));
+        const prevIndex = next - 1;
+        const entries = leader.log.slice(next).map(entry => ({ ...entry }));
+        sendMessage("appendEntries", leader.id, peerId, {
+          term: leader.term,
+          leaderId: leader.id,
+          prevIndex,
+          prevTerm: prevIndex >= 0 ? leader.log[prevIndex].term : 0,
+          entries,
+          leaderCommit: leader.commitIndex
+        });
+      }
+
+      function handleAppendEntries(node, message) {
+        const payload = message.payload;
+        if (payload.term < node.term) {
+          sendMessage("appendResponse", node.id, message.from, {
+            term: node.term,
+            requestTerm: payload.term,
+            success: false,
+            matchIndex: -1,
+            conflictIndex: node.log.length
+          });
+          return;
+        }
+
+        if (payload.term > node.term || node.role !== "follower") {
+          stepDown(node, payload.term, payload.leaderId, payload.term > node.term ? "higher-term AppendEntries" : "leader heartbeat");
+        } else {
+          node.leaderId = payload.leaderId;
+          resetElectionTimer(node);
+        }
+
+        if (payload.prevIndex >= node.log.length ||
+            (payload.prevIndex >= 0 && node.log[payload.prevIndex].term !== payload.prevTerm)) {
+          let conflictIndex = node.log.length;
+          if (payload.prevIndex >= 0 && payload.prevIndex < node.log.length) {
+            const conflictTerm = node.log[payload.prevIndex].term;
+            conflictIndex = payload.prevIndex;
+            while (conflictIndex > 0 && node.log[conflictIndex - 1].term === conflictTerm) conflictIndex -= 1;
+          }
+          sendMessage("appendResponse", node.id, message.from, {
+            term: node.term,
+            requestTerm: payload.term,
+            success: false,
+            matchIndex: -1,
+            conflictIndex
+          });
+          return;
+        }
+
+        let changed = false;
+        let appended = 0;
+        for (let offset = 0; offset < payload.entries.length; offset += 1) {
+          const index = payload.prevIndex + 1 + offset;
+          const incoming = payload.entries[offset];
+          if (index < node.log.length && entryFingerprint(node.log[index]) !== entryFingerprint(incoming)) {
+            if (index <= node.commitIndex) {
+              recordViolation(
+                `truncate-${node.id}-${index}`,
+                `Node ${node.id} refused to replace committed slot #${index + 1}.`
+              );
+              sendMessage("appendResponse", node.id, message.from, {
+                term: node.term,
+                requestTerm: payload.term,
+                success: false,
+                matchIndex: index - 1,
+                conflictIndex: index
+              });
+              return;
+            }
+            const removed = node.log.splice(index);
+            changed = true;
+            addTrace("log", `Node ${node.id} truncates ${removed.length} uncommitted entr${removed.length === 1 ? "y" : "ies"} from #${index + 1}.`, true);
+          }
+          if (index >= node.log.length) {
+            node.log.push({ ...incoming });
+            appended += 1;
+            changed = true;
+          }
+        }
+
+        if (payload.leaderCommit > node.commitIndex) {
+          setCommitIndex(node, Math.min(payload.leaderCommit, lastLogIndex(node)), null);
+        }
+        if (changed && appended) {
+          addTrace("log", `Node ${node.id} accepts ${appended} entr${appended === 1 ? "y" : "ies"} from leader ${payload.leaderId}.`);
+        }
+
+        sendMessage("appendResponse", node.id, message.from, {
+          term: node.term,
+          requestTerm: payload.term,
+          success: true,
+          matchIndex: payload.prevIndex + payload.entries.length,
+          conflictIndex: -1
+        });
+      }
+
+      function handleAppendResponse(node, message) {
+        const payload = message.payload;
+        if (payload.term > node.term) {
+          stepDown(node, payload.term, null, "higher-term append reply");
+          return;
+        }
+        if (!node.alive || node.role !== "leader" || payload.requestTerm !== node.term) return;
+
+        if (payload.success) {
+          const previous = node.matchIndex.get(message.from) ?? -1;
+          const matched = Math.max(previous, payload.matchIndex);
+          node.matchIndex.set(message.from, matched);
+          node.nextIndex.set(message.from, matched + 1);
+          advanceCommit(node);
+          if (matched < lastLogIndex(node)) sendAppend(node, message.from);
+        } else {
+          const current = node.nextIndex.get(message.from) ?? node.log.length;
+          const retry = Math.max(0, Math.min(current - 1, payload.conflictIndex));
+          node.nextIndex.set(message.from, retry);
+          addTrace("log", `Leader ${node.id} backs ${message.from} up to #${retry + 1} after a log mismatch.`);
+          sendAppend(node, message.from);
+        }
+      }
+
+      function rememberCommitted(node, index) {
+        const entry = node.log[index];
+        if (!entry) {
+          recordViolation(`missing-${node.id}-${index}`, `Node ${node.id} committed missing slot #${index + 1}.`);
+          return;
+        }
+        const fingerprint = entryFingerprint(entry);
+        const remembered = node.committedMemory.get(index);
+        if (remembered && remembered !== fingerprint) {
+          recordViolation(`memory-${node.id}-${index}`, `Node ${node.id}'s committed slot #${index + 1} changed.`);
+        }
+        node.committedMemory.set(index, fingerprint);
+
+        const global = state.globalCommitted.get(index);
+        if (global && global !== fingerprint) {
+          recordViolation(`global-${index}`, `Two different commands became committed at slot #${index + 1}.`);
+        } else {
+          state.globalCommitted.set(index, fingerprint);
+        }
+      }
+
+      function setCommitIndex(node, newIndex, proof) {
+        if (newIndex < node.commitIndex) {
+          recordViolation(`rollback-index-${node.id}`, `Node ${node.id}'s commit index attempted to move backward.`);
+          return;
+        }
+        const bounded = Math.min(newIndex, lastLogIndex(node));
+        const previous = node.commitIndex;
+        for (let index = previous + 1; index <= bounded; index += 1) {
+          rememberCommitted(node, index);
+          if (proof) {
+            const commitProof = {
+              index,
+              term: node.log[index].term,
+              leader: node.id,
+              acks: [...proof].sort(),
+              at: state.now
+            };
+            state.commitProofs.push(commitProof);
+            if (commitProof.acks.length < 3) {
+              recordViolation(`quorum-${node.id}-${index}`, `Slot #${index + 1} committed with only ${commitProof.acks.length} replicas.`);
+            }
+          }
+        }
+        node.commitIndex = bounded;
+        node.commitFloor = Math.max(node.commitFloor, bounded);
+        if (bounded > previous) {
+          const newlyCommitted = node.log
+            .slice(previous + 1, bounded + 1)
+            .filter(entry => entry.kind === "client")
+            .map(entry => `“${entry.command}”`);
+          const detail = newlyCommitted.length ? `: ${newlyCommitted.join(", ")}` : "";
+          addTrace("commit", `Node ${node.id} advances commit index to #${bounded + 1}${detail}.`, true);
+        }
+      }
+
+      function advanceCommit(leader) {
+        for (let index = lastLogIndex(leader); index > leader.commitIndex; index -= 1) {
+          if (leader.log[index].term !== leader.term) continue;
+          const replicas = NODE_IDS.filter(id => id === leader.id || (leader.matchIndex.get(id) ?? -1) >= index);
+          if (replicas.length >= 3) {
+            setCommitIndex(leader, index, replicas);
+            sendAppendAll(leader);
+            return;
+          }
+        }
+      }
+
+      function handleMessage(message) {
+        const node = state.nodes.get(message.to);
+        if (message.type === "requestVote") handleVoteRequest(node, message);
+        else if (message.type === "voteResponse") handleVoteResponse(node, message);
+        else if (message.type === "appendEntries") handleAppendEntries(node, message);
+        else if (message.type === "appendResponse") handleAppendResponse(node, message);
+      }
+
+      function deliverMessages() {
+        const due = [];
+        const pending = [];
+        for (const message of state.messages) {
+          if (message.deliverAt <= state.now) due.push(message);
+          else pending.push(message);
+        }
+        state.messages = pending;
+        due.sort((a, b) => a.deliverAt - b.deliverAt || a.id - b.id);
+        for (const message of due) {
+          const target = state.nodes.get(message.to);
+          if (!isLinkOpen(message.from, message.to) || !target.alive) {
+            state.dropped += 1;
+            continue;
+          }
+          state.delivered += 1;
+          handleMessage(message);
+        }
+      }
+
+      function crashNode(id, fromStorm = false) {
+        const node = state.nodes.get(id);
+        if (!node.alive) return;
+        const oldRole = node.role;
+        node.alive = false;
+        node.role = "follower";
+        node.leaderId = null;
+        node.votes = new Set();
+        addTrace("network", `Node ${id} crashes${oldRole === "leader" ? " while leading" : ""}; its term and log stay on disk.`, true);
+        if (!fromStorm) showToast(`Node ${id} crashed. Activate it again to restart.`);
+      }
+
+      function restartNode(id, fromStorm = false) {
+        const node = state.nodes.get(id);
+        if (node.alive) return;
+        node.alive = true;
+        node.role = "follower";
+        node.leaderId = null;
+        node.votes = new Set();
+        resetElectionTimer(node);
+        addTrace("network", `Node ${id} restarts at T${node.term} with ${node.log.length} persisted log entries.`, true);
+        if (!fromStorm) showToast(`Node ${id} restarted with durable state intact.`);
+      }
+
+      function toggleNodeAvailability(id) {
+        const node = state.nodes.get(id);
+        if (node.alive) crashNode(id);
+        else restartNode(id);
+        checkInvariants();
+        render();
+      }
+
+      function healAll(fromStorm = false) {
+        let changed = false;
+        for (const [a, b] of linkPairs) {
+          if (!isLinkOpen(a, b)) changed = true;
+          setLink(a, b, true, false);
+        }
+        state.lastHealAt = state.now;
+        state.lastConvergenceMs = null;
+        if (changed) addTrace("network", "All ten links healed; leaders will reconcile divergent suffixes.", true);
+        else if (!fromStorm) showToast("All links are already healthy.");
+        render();
+      }
+
+      function partitionGroups(leftIds, rightIds) {
+        const left = new Set(leftIds);
+        const right = new Set(rightIds);
+        for (const [a, b] of linkPairs) {
+          if ((left.has(a) && right.has(b)) || (left.has(b) && right.has(a))) {
+            setLink(a, b, false, false);
+          }
+        }
+      }
+
+      function scheduleStorm(at, label, run) {
+        state.stormActions.push({ at, label, run, done: false });
+      }
+
+      function processStormActions() {
+        if (!state.stormActive) return;
+        for (const action of state.stormActions) {
+          if (action.done || state.now < action.at) continue;
+          const completed = action.run();
+          if (completed === false) {
+            action.at = state.now + 300;
+          } else {
+            action.done = true;
+          }
+        }
+      }
+
+      function runStorm() {
+        resetSimulation(els.seed.value);
+        state.stormActive = true;
+        state.storm = {};
+        addTrace("storm", `Storm preset armed with seed “${state.seed}”.`, true);
+
+        scheduleStorm(2400, "initial command", () => {
+          const leader = highestLeader();
+          if (!leader) return false;
+          if (!submitCommand("course=north", leader)) return false;
+          state.storm.firstCommand = true;
+          return true;
+        });
+
+        scheduleStorm(3400, "minority partition", () => {
+          if (!state.storm.firstCommand) return false;
+          const leader = highestLeader();
+          if (!leader) return false;
+          const index = NODE_IDS.indexOf(leader.id);
+          const buddy = NODE_IDS[(index + 1) % NODE_IDS.length];
+          const minority = [leader.id, buddy];
+          const majority = NODE_IDS.filter(id => !minority.includes(id));
+          state.storm.oldLeader = leader.id;
+          state.storm.minority = minority;
+          state.storm.majority = majority;
+          partitionGroups(minority, majority);
+          addTrace("storm", `Lightning splits minority ${minority.join("+")} from majority ${majority.join("+")}; leader ${leader.id} cannot commit alone.`, true);
+          return true;
+        });
+
+        scheduleStorm(3900, "stale write", () => {
+          const oldLeader = state.nodes.get(state.storm.oldLeader);
+          if (!oldLeader) return false;
+          if (oldLeader.alive && oldLeader.role === "leader") {
+            appendToLeader(oldLeader, "dock=amber", "client");
+            state.storm.staleWrite = true;
+            addTrace("storm", `Minority leader ${oldLeader.id} accepts “dock=amber”, but lacks three replicas.`, true);
+          }
+          return true;
+        });
+
+        scheduleStorm(6100, "majority write", () => {
+          const leader = highestLeader(state.storm.majority || []);
+          if (!leader || leader.id === state.storm.oldLeader) return false;
+          const index = appendToLeader(leader, "course=east", "client");
+          if (index < 0) return false;
+          state.storm.majorityLeader = leader.id;
+          state.storm.majorityIndex = index;
+          state.storm.majorityFingerprint = entryFingerprint(leader.log[index]);
+          state.storm.majorityWrite = true;
+          addTrace("storm", `Majority leader ${leader.id} can commit while the old leader remains isolated.`, true);
+          return true;
+        });
+
+        scheduleStorm(6900, "crash follower", () => {
+          if (!state.storm.majorityWrite ||
+              state.globalCommitted.get(state.storm.majorityIndex) !== state.storm.majorityFingerprint) return false;
+          const leader = highestLeader(state.storm.majority);
+          if (!leader) return false;
+          const victim = state.storm.majority.find(id => id !== leader.id && state.nodes.get(id).alive);
+          if (!victim) return false;
+          state.storm.crashed = victim;
+          crashNode(victim, true);
+          addTrace("storm", `A second strike removes ${victim}; the majority island now has only two live replicas.`, true);
+          return true;
+        });
+
+        scheduleStorm(7300, "no quorum write", () => {
+          if (!state.storm.crashed) return false;
+          const leader = highestLeader(state.storm.majority);
+          if (!leader) return false;
+          appendToLeader(leader, "cargo=hold", "client");
+          state.storm.noQuorumWrite = true;
+          addTrace("storm", `“cargo=hold” remains uncommitted: two replicas are not a five-node majority.`, true);
+          return true;
+        });
+
+        scheduleStorm(8400, "restart follower", () => {
+          if (!state.storm.noQuorumWrite) return false;
+          restartNode(state.storm.crashed, true);
+          state.storm.restarted = true;
+          addTrace("storm", `${state.storm.crashed} returns; the majority side can prove three durable copies again.`, true);
+          return true;
+        });
+
+        scheduleStorm(9800, "heal network", () => {
+          if (!state.storm.restarted) return false;
+          healAll(true);
+          state.storm.healed = true;
+          addTrace("storm", "The storm wall clears. Higher-term AppendEntries now overwrite only stale, uncommitted suffixes.", true);
+          return true;
+        });
+
+        scheduleStorm(11200, "final command", () => {
+          if (!state.storm.healed) return false;
+          const leader = highestLeader();
+          if (!leader) return false;
+          const index = appendToLeader(leader, "harbor=open", "client");
+          if (index < 0) return false;
+          state.storm.finalIndex = index;
+          state.storm.finalFingerprint = entryFingerprint(leader.log[index]);
+          state.storm.finalCommand = true;
+          return true;
+        });
+
+        scheduleStorm(12800, "storm complete", () => {
+          if (!state.storm.finalCommand) return false;
+          const live = NODE_IDS.map(id => state.nodes.get(id)).filter(node => node.alive);
+          const signatures = new Set(live.map(node => logSignature(node, true)));
+          if (state.globalCommitted.get(state.storm.finalIndex) !== state.storm.finalFingerprint ||
+              signatures.size !== 1) return false;
+          state.stormActive = false;
+          addTrace("storm", "Storm complete: one surviving committed history, with stale suffixes reconciled.", true);
+          showToast("Storm complete. Inspect the quorum proofs and logs.");
+          return true;
+        });
+
+        setRunning(true);
+        render();
+      }
+
+      function checkInvariants() {
+        for (const [term, leaders] of state.leadersByTerm) {
+          if (leaders.size > 1) {
+            recordViolation(`leaders-${term}`, `Term ${term} elected ${leaders.size} leaders.`);
+          }
+        }
+        for (const proof of state.commitProofs) {
+          if (proof.acks.length < 3) {
+            recordViolation(`proof-${proof.leader}-${proof.index}`, `Slot #${proof.index + 1} has a ${proof.acks.length}-node commit proof.`);
+          }
+        }
+        for (const node of state.nodes.values()) {
+          if (node.commitIndex < node.commitFloor) {
+            recordViolation(`floor-${node.id}`, `Node ${node.id}'s commit index rolled back.`);
+          }
+          if (node.commitIndex >= node.log.length) {
+            recordViolation(`bounds-${node.id}`, `Node ${node.id}'s commit index points beyond its log.`);
+          }
+          node.commitFloor = Math.max(node.commitFloor, node.commitIndex);
+          for (const [index, fingerprint] of node.committedMemory) {
+            if (!node.log[index] || entryFingerprint(node.log[index]) !== fingerprint) {
+              recordViolation(`durable-${node.id}-${index}`, `Node ${node.id}'s committed slot #${index + 1} was changed or removed.`);
+            }
+          }
+          for (let index = 0; index <= node.commitIndex; index += 1) {
+            const global = state.globalCommitted.get(index);
+            if (global && entryFingerprint(node.log[index]) !== global) {
+              recordViolation(`agreement-${node.id}-${index}`, `Node ${node.id} committed a conflicting value at #${index + 1}.`);
+            }
+          }
+        }
+      }
+
+      function simulationStep() {
+        state.now += STEP_MS;
+        processStormActions();
+        deliverMessages();
+
+        for (const node of state.nodes.values()) {
+          if (!node.alive) continue;
+          if (node.role === "leader") {
+            node.heartbeatRemaining -= STEP_MS;
+            if (node.heartbeatRemaining <= 0) sendAppendAll(node);
+          } else {
+            node.electionRemaining -= STEP_MS;
+            if (node.electionRemaining <= 0) startElection(node);
+          }
+        }
+        checkInvariants();
+        render();
+      }
+
+      function setRunning(running) {
+        state.running = Boolean(running) && state.violations.length === 0;
+        state.lastFrame = performance.now();
+        state.accumulator = 0;
+        renderTransport();
+      }
+
+      function resetSimulation(rawSeed) {
+        const seed = String(rawSeed || "").trim() || "gale-356";
+        state.seed = seed;
+        state.rng = seededRandom(seed);
+        state.now = 0;
+        state.running = false;
+        state.lastFrame = performance.now();
+        state.accumulator = 0;
+        state.nodes = new Map();
+        state.links = new Map();
+        state.messages = [];
+        state.messageId = 0;
+        state.entryId = 0;
+        state.delivered = 0;
+        state.dropped = 0;
+        state.leadersByTerm = new Map();
+        state.commitProofs = [];
+        state.globalCommitted = new Map();
+        state.violations = [];
+        state.violationKeys = new Set();
+        state.stormActions = [];
+        state.stormActive = false;
+        state.storm = {};
+        state.lastHealAt = 0;
+        state.lastConvergenceMs = 0;
+
+        for (const [a, b] of linkPairs) state.links.set(linkKey(a, b), true);
+        for (const id of NODE_IDS) state.nodes.set(id, makeNode(id));
+
+        els.seed.value = seed;
+        clearTrace();
+        addTrace("system", `Cluster reset with deterministic seed “${seed}”.`, true);
+        render();
+      }
+
+      function renderTransport() {
+        els.play.textContent = state.running ? "❚❚ Pause" : "▶ Play";
+        els.play.setAttribute("aria-pressed", String(state.running));
+        els.runState.textContent = state.running ? "Running" : "Paused";
+        els.runState.classList.toggle("running", state.running);
+        els.storm.classList.toggle("active", state.stormActive);
+        els.storm.textContent = state.stormActive ? "⚡ Restart storm" : "⚡ Run storm";
+      }
+
+      function setInvariant(element, mode) {
+        element.classList.toggle("fail", mode === "fail");
+        element.classList.toggle("info", mode === "info");
+      }
+
+      function convergenceStatus() {
+        const live = NODE_IDS.map(id => state.nodes.get(id)).filter(node => node.alive);
+        const signatures = new Set(live.map(node => logSignature(node, true)));
+        if (allLinksOpen()) {
+          if (signatures.size <= 1) {
+            if (state.lastHealAt !== null && state.lastConvergenceMs === null) {
+              state.lastConvergenceMs = state.now - state.lastHealAt;
+            }
+            const latency = state.lastConvergenceMs === null ? "" : ` · settled in ${(state.lastConvergenceMs / 1000).toFixed(1)}s`;
+            return { mode: "pass", text: `All ${live.length} live logs + commit indexes match${latency}` };
+          }
+          return {
+            mode: "info",
+            text: `Converging: ${signatures.size} live log shapes · ${state.messages.length} packets queued`
+          };
+        }
+        const groups = networkGroups().map(group => group.join("")).join(" | ");
+        return { mode: "info", text: `Partition active: ${groups || "no live nodes"} · divergence is allowed before heal` };
+      }
+
+      function renderInvariants() {
+        const failed = state.violations.length > 0;
+        const electedTerms = [...state.leadersByTerm.values()].filter(set => set.size).length;
+        const maxLeaders = Math.max(0, ...[...state.leadersByTerm.values()].map(set => set.size));
+        els.invElectionText.textContent = `${electedTerms} term${electedTerms === 1 ? "" : "s"} elected; max ${maxLeaders || 0} leader per term`;
+        setInvariant(els.invElection, failed ? "fail" : "pass");
+
+        if (state.commitProofs.length) {
+          const min = Math.min(...state.commitProofs.map(proof => proof.acks.length));
+          els.invQuorumText.textContent = `${state.commitProofs.length} slot proof${state.commitProofs.length === 1 ? "" : "s"}; minimum ${min}/5 durable replicas`;
+        } else {
+          els.invQuorumText.textContent = "Waiting for the first replicated entry";
+        }
+        setInvariant(els.invQuorum, failed ? "fail" : "pass");
+
+        els.invPermanenceText.textContent = `${state.globalCommitted.size} committed slot${state.globalCommitted.size === 1 ? "" : "s"}; ${state.violations.length} rollback attempt${state.violations.length === 1 ? "" : "s"}`;
+        setInvariant(els.invPermanence, failed ? "fail" : "pass");
+
+        const convergence = convergenceStatus();
+        els.invReconcileText.textContent = convergence.text;
+        setInvariant(els.invReconcile, failed ? "fail" : convergence.mode);
+
+        els.safetyScore.textContent = failed ? `SAFETY FAIL ${state.violations.length}` : "SAFETY 3/3";
+        els.safetyScore.classList.toggle("fail", failed);
+      }
+
+      function renderLinks() {
+        for (const [a, b] of linkPairs) {
+          const key = linkKey(a, b);
+          const open = isLinkOpen(a, b);
+          const hit = document.querySelector(`[data-link-key="${key}"]`);
+          const visible = document.querySelector(`#link-${key}`);
+          if (!hit || !visible) continue;
+          visible.classList.toggle("blocked", !open);
+          hit.setAttribute("aria-pressed", String(!open));
+          hit.setAttribute("aria-label", `${open ? "Partition" : "Heal"} link ${a} to ${b}; currently ${open ? "healthy" : "partitioned"}`);
+        }
+      }
+
+      function timerFraction(node) {
+        if (!node.alive) return 0;
+        if (node.role === "leader") return Math.max(0, Math.min(1, node.heartbeatRemaining / HEARTBEAT_MS));
+        return Math.max(0, Math.min(1, node.electionRemaining / node.electionTotal));
+      }
+
+      function roleLabel(node) {
+        return node.alive ? node.role : "crashed";
+      }
+
+      function renderNodeLog(node, strip) {
+        const renderKey = `${logSignature(node)}@${node.commitIndex}`;
+        if (strip.dataset.renderKey === renderKey) return;
+        const oldScroll = strip.scrollLeft;
+        const fragment = document.createDocumentFragment();
+        if (!node.log.length) {
+          const empty = document.createElement("span");
+          empty.className = "empty-log";
+          empty.textContent = "empty log";
+          fragment.append(empty);
+        } else {
+          node.log.forEach((entry, index) => {
+            const item = document.createElement("div");
+            item.className = `log-entry${index <= node.commitIndex ? " committed" : ""}${entry.kind === "system" ? " system" : ""}`;
+            item.title = `Index ${index + 1}, term ${entry.term}, ${index <= node.commitIndex ? "committed" : "uncommitted"}: ${entry.command}`;
+
+            const indexLabel = document.createElement("span");
+            indexLabel.className = "log-index";
+            indexLabel.textContent = `#${index + 1}`;
+
+            const term = document.createElement("span");
+            term.className = "log-term";
+            term.textContent = `T${entry.term}`;
+
+            const command = document.createElement("span");
+            command.className = "log-command";
+            command.textContent = entry.kind === "system" ? `barrier T${entry.term}` : entry.command;
+
+            item.append(indexLabel, term, command);
+            fragment.append(item);
+          });
+        }
+        strip.replaceChildren(fragment);
+        strip.dataset.renderKey = renderKey;
+        strip.scrollLeft = oldScroll;
+      }
+
+      function renderNodes() {
+        for (const id of NODE_IDS) {
+          const node = state.nodes.get(id);
+          const role = roleLabel(node);
+          const orb = document.querySelector(`#orb-${id}`);
+          orb.className = `node-orb role-${node.role}${node.alive ? "" : " crashed"}`;
+          orb.style.setProperty("--timer", timerFraction(node).toFixed(3));
+          orb.querySelector(".orb-role").textContent = role;
+          orb.querySelector(".orb-term").textContent = `T${node.term} · ${node.commitIndex >= 0 ? `C${node.commitIndex + 1}` : "C—"}`;
+          orb.setAttribute("aria-pressed", String(!node.alive));
+          orb.setAttribute(
+            "aria-label",
+            `${node.alive ? "Crash" : "Restart"} node ${id}. Currently ${role}, term ${node.term}, commit index ${node.commitIndex >= 0 ? node.commitIndex + 1 : "none"}.`
+          );
+
+          const card = document.querySelector(`#card-${id}`);
+          card.className = `node-card ${node.role}${node.alive ? "" : " crashed"}`;
+          card.querySelector(".node-role").textContent = role;
+          card.querySelector(".node-term").textContent = `term ${node.term} · vote ${node.votedFor || "—"}`;
+          card.querySelector(".node-toggle").textContent = node.alive ? "Crash" : "Restart";
+          card.querySelector(".node-toggle").setAttribute("aria-label", `${node.alive ? "Crash" : "Restart"} node ${id}`);
+          card.querySelector(".timer-value").textContent = node.alive
+            ? node.role === "leader"
+              ? `${Math.max(0, node.heartbeatRemaining)}ms hb`
+              : `${Math.max(0, node.electionRemaining)}ms`
+            : "stopped";
+          card.querySelector(".leader-value").textContent = node.leaderId || (node.role === "leader" ? id : "—");
+          card.querySelector(".commit-value").textContent = node.commitIndex >= 0 ? `#${node.commitIndex + 1}` : "—";
+          card.querySelector(".log-count").textContent = `${node.log.length} entr${node.log.length === 1 ? "y" : "ies"}`;
+          renderNodeLog(node, card.querySelector(".log-strip"));
+        }
+      }
+
+      function renderMessageTable() {
+        const fragment = document.createDocumentFragment();
+        const messages = [...state.messages]
+          .sort((a, b) => a.deliverAt - b.deliverAt || a.id - b.id)
+          .slice(0, 14);
+        if (!messages.length) {
+          const row = document.createElement("tr");
+          const cell = document.createElement("td");
+          cell.className = "empty-row";
+          cell.colSpan = 5;
+          cell.textContent = "No messages in flight. Play or step the simulation.";
+          row.append(cell);
+          fragment.append(row);
+        } else {
+          for (const message of messages) {
+            const info = MESSAGE_INFO[message.type];
+            const row = document.createElement("tr");
+
+            const typeCell = document.createElement("td");
+            const badge = document.createElement("span");
+            badge.className = `message-type ${info.className}`;
+            badge.textContent = info.short;
+            badge.title = info.name;
+            typeCell.append(badge);
+
+            const route = document.createElement("td");
+            route.textContent = `${message.from} → ${message.to}`;
+
+            const term = document.createElement("td");
+            term.textContent = `T${message.payload.term}`;
+
+            const payload = document.createElement("td");
+            payload.textContent = messagePayloadLabel(message.type, message.payload);
+
+            const eta = document.createElement("td");
+            eta.textContent = `${Math.max(0, Math.ceil(message.deliverAt - state.now))}ms`;
+
+            row.append(typeCell, route, term, payload, eta);
+            fragment.append(row);
+          }
+        }
+        els.flightRows.replaceChildren(fragment);
+      }
+
+      function renderMessageDots() {
+        if (reducedMotion.matches) {
+          els.messageLayer.replaceChildren();
+          return;
+        }
+        const fragment = document.createDocumentFragment();
+        for (const message of state.messages.slice(0, 24)) {
+          const from = POSITIONS[message.from];
+          const to = POSITIONS[message.to];
+          const duration = Math.max(1, message.deliverAt - message.sentAt);
+          const progress = Math.max(0, Math.min(1, (state.now - message.sentAt) / duration));
+          const x = from.x + (to.x - from.x) * progress;
+          const y = from.y + (to.y - from.y) * progress;
+          const circle = document.createElementNS(SVG_NS, "circle");
+          circle.setAttribute("class", "message-dot");
+          circle.setAttribute("cx", x.toFixed(1));
+          circle.setAttribute("cy", y.toFixed(1));
+          circle.setAttribute("r", message.type === "appendEntries" ? "7" : "6");
+          circle.setAttribute("fill", MESSAGE_INFO[message.type].color);
+          circle.style.color = MESSAGE_INFO[message.type].color;
+          fragment.append(circle);
+        }
+        els.messageLayer.replaceChildren(fragment);
+      }
+
+      function render() {
+        renderTransport();
+        els.heroClock.textContent = `logical time ${formatTime(state.now)}`;
+        const leaders = currentLeaders();
+        const maxTerm = Math.max(0, ...[...state.nodes.values()].map(node => node.term));
+        els.termMetric.textContent = String(maxTerm);
+        els.leaderMetric.textContent = leaders.length
+          ? leaders.map(node => `${node.id}/T${node.term}`).join("+")
+          : "electing";
+        els.leaderMetric.title = leaders.length
+          ? leaders.map(node => `Node ${node.id}, term ${node.term}`).join("; ")
+          : "No live leader";
+        els.reachMetric.textContent = `${bestDirectReach()}/5`;
+        els.flightMetric.textContent = String(state.messages.length);
+        els.deliveredMetric.textContent = String(state.delivered);
+        els.droppedMetric.textContent = String(state.dropped);
+        renderLinks();
+        renderNodes();
+        renderInvariants();
+        renderMessageTable();
+        renderMessageDots();
+      }
+
+      function buildStaticUI() {
+        for (const [a, b] of linkPairs) {
+          const key = linkKey(a, b);
+          const hit = document.createElementNS(SVG_NS, "line");
+          hit.setAttribute("class", "link-hit");
+          hit.setAttribute("x1", POSITIONS[a].x);
+          hit.setAttribute("y1", POSITIONS[a].y);
+          hit.setAttribute("x2", POSITIONS[b].x);
+          hit.setAttribute("y2", POSITIONS[b].y);
+          hit.setAttribute("tabindex", "0");
+          hit.setAttribute("role", "button");
+          hit.setAttribute("aria-label", `Partition link ${a} to ${b}; currently healthy`);
+          hit.setAttribute("aria-pressed", "false");
+          hit.dataset.linkKey = key;
+
+          const visible = document.createElementNS(SVG_NS, "line");
+          visible.setAttribute("class", "link-visible");
+          visible.setAttribute("id", `link-${key}`);
+          visible.setAttribute("x1", POSITIONS[a].x);
+          visible.setAttribute("y1", POSITIONS[a].y);
+          visible.setAttribute("x2", POSITIONS[b].x);
+          visible.setAttribute("y2", POSITIONS[b].y);
+          visible.setAttribute("aria-hidden", "true");
+
+          const toggle = event => {
+            event.preventDefault();
+            setLink(a, b, !isLinkOpen(a, b));
+            render();
+          };
+          hit.addEventListener("click", toggle);
+          hit.addEventListener("keydown", event => {
+            if (event.key === "Enter" || event.key === " ") toggle(event);
+          });
+          els.linkLayer.append(hit, visible);
+        }
+
+        for (const id of NODE_IDS) {
+          const position = POSITIONS[id];
+          const orb = document.createElement("button");
+          orb.id = `orb-${id}`;
+          orb.type = "button";
+          orb.className = "node-orb";
+          orb.style.left = `${(position.x / 600) * 100}%`;
+          orb.style.top = `${(position.y / 400) * 100}%`;
+
+          const name = document.createElement("span");
+          name.className = "orb-name";
+          name.textContent = id;
+          const role = document.createElement("span");
+          role.className = "orb-role";
+          const term = document.createElement("span");
+          term.className = "orb-term";
+          orb.append(name, role, term);
+          orb.addEventListener("click", () => toggleNodeAvailability(id));
+          els.nodeOrbs.append(orb);
+
+          const card = document.createElement("article");
+          card.id = `card-${id}`;
+          card.className = "node-card";
+
+          const head = document.createElement("div");
+          head.className = "node-card-head";
+          const identity = document.createElement("div");
+          identity.className = "node-identity";
+          const letter = document.createElement("span");
+          letter.className = "node-letter";
+          letter.textContent = id;
+          const labels = document.createElement("span");
+          const roleLabelElement = document.createElement("span");
+          roleLabelElement.className = "node-role";
+          const termLabel = document.createElement("span");
+          termLabel.className = "node-term";
+          labels.append(roleLabelElement, termLabel);
+          identity.append(letter, labels);
+          const toggle = document.createElement("button");
+          toggle.type = "button";
+          toggle.className = "node-toggle";
+          toggle.addEventListener("click", () => toggleNodeAvailability(id));
+          head.append(identity, toggle);
+
+          const facts = document.createElement("div");
+          facts.className = "node-facts";
+          const factData = [
+            ["Timer", "timer-value"],
+            ["Leader", "leader-value"],
+            ["Commit", "commit-value"],
+            ["Log", "log-count"]
+          ];
+          for (const [labelText, valueClass] of factData) {
+            const fact = document.createElement("div");
+            fact.className = "node-fact";
+            const label = document.createElement("span");
+            label.textContent = labelText;
+            const value = document.createElement("strong");
+            value.className = valueClass;
+            fact.append(label, value);
+            facts.append(fact);
+          }
+
+          const logLabel = document.createElement("div");
+          logLabel.className = "log-label";
+          const replicated = document.createElement("span");
+          replicated.textContent = "replicated log";
+          const key = document.createElement("span");
+          key.textContent = "green = committed";
+          logLabel.append(replicated, key);
+
+          const strip = document.createElement("div");
+          strip.className = "log-strip";
+          strip.setAttribute("aria-label", `Node ${id} replicated log`);
+          card.append(head, facts, logLabel, strip);
+          els.nodeGrid.append(card);
+        }
+      }
+
+      function animationFrame(timestamp) {
+        if (state.running) {
+          const elapsed = Math.min(500, Math.max(0, timestamp - state.lastFrame));
+          state.accumulator += elapsed;
+          let loops = 0;
+          while (state.accumulator >= STEP_MS && loops < 5 && state.running) {
+            simulationStep();
+            state.accumulator -= STEP_MS;
+            loops += 1;
+          }
+        }
+        state.lastFrame = timestamp;
+        if (state.running) renderMessageDots();
+        window.requestAnimationFrame(animationFrame);
+      }
+
+      els.play.addEventListener("click", () => setRunning(!state.running));
+      els.step.addEventListener("click", () => {
+        setRunning(false);
+        simulationStep();
+      });
+      els.reset.addEventListener("click", () => resetSimulation(els.seed.value));
+      els.heal.addEventListener("click", () => healAll());
+      els.storm.addEventListener("click", runStorm);
+      els.clearTrace.addEventListener("click", clearTrace);
+      els.commandForm.addEventListener("submit", event => {
+        event.preventDefault();
+        if (submitCommand(els.command.value)) {
+          els.command.select();
+          render();
+        }
+      });
+
+      document.addEventListener("keydown", event => {
+        const target = event.target;
+        const interactive = target instanceof HTMLInputElement ||
+          target instanceof HTMLButtonElement ||
+          target instanceof HTMLAnchorElement ||
+          target.isContentEditable;
+        if (interactive) return;
+        if (event.code === "Space") {
+          event.preventDefault();
+          setRunning(!state.running);
+        } else if (event.key === "ArrowRight" || event.key === ".") {
+          event.preventDefault();
+          setRunning(false);
+          simulationStep();
+        } else if (event.key.toLowerCase() === "r") {
+          resetSimulation(els.seed.value);
+        } else if (event.key.toLowerCase() === "h") {
+          healAll();
+        } else if (event.key.toLowerCase() === "s") {
+          runStorm();
+        } else if (/^[1-5]$/.test(event.key)) {
+          toggleNodeAvailability(NODE_IDS[Number(event.key) - 1]);
+        }
+      });
+
+      reducedMotion.addEventListener?.("change", renderMessageDots);
+
+      window.__raftStorm = {
+        snapshot() {
+          return {
+            seed: state.seed,
+            now: state.now,
+            running: state.running,
+            nodes: NODE_IDS.map(id => {
+              const node = state.nodes.get(id);
+              return {
+                id,
+                alive: node.alive,
+                term: node.term,
+                role: node.role,
+                votedFor: node.votedFor,
+                leaderId: node.leaderId,
+                commitIndex: node.commitIndex,
+                log: node.log.map(entry => ({ ...entry }))
+              };
+            }),
+            blockedLinks: linkPairs.filter(([a, b]) => !isLinkOpen(a, b)).map(([a, b]) => linkKey(a, b)),
+            messages: state.messages.map(message => ({ ...message, payload: { ...message.payload } })),
+            leadersByTerm: [...state.leadersByTerm].map(([term, ids]) => [term, [...ids]]),
+            commitProofs: state.commitProofs.map(proof => ({ ...proof, acks: [...proof.acks] })),
+            committedSlots: [...state.globalCommitted],
+            violations: state.violations.map(violation => ({ ...violation }))
+          };
+        },
+        step(count = 1) {
+          setRunning(false);
+          const steps = Math.max(1, Math.min(500, Number(count) || 1));
+          for (let i = 0; i < steps; i += 1) simulationStep();
+          return this.snapshot();
+        },
+        reset(seed = state.seed) {
+          resetSimulation(seed);
+          return this.snapshot();
+        },
+        storm() {
+          runStorm();
+          return this.snapshot();
+        },
+        submit(command) {
+          const result = submitCommand(String(command || ""));
+          render();
+          return result;
+        },
+        toggleLink(a, b) {
+          if (!NODE_IDS.includes(a) || !NODE_IDS.includes(b) || a === b) return false;
+          setLink(a, b, !isLinkOpen(a, b));
+          render();
+          return isLinkOpen(a, b);
+        },
+        toggleNode(id) {
+          if (!NODE_IDS.includes(id)) return false;
+          toggleNodeAvailability(id);
+          return state.nodes.get(id).alive;
+        }
+      };
+
+      buildStaticUI();
+      resetSimulation(els.seed.value);
+      window.requestAnimationFrame(animationFrame);
+    })();
+  </script>
+</body>
+</html>
