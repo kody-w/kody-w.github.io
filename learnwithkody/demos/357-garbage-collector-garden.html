@@ -1,0 +1,1612 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; script-src-attr 'none'; style-src 'unsafe-inline'; style-src-attr 'none'; img-src 'none'; font-src 'none'; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#07110e">
+<title>Garbage Collector Garden — Grow, Trace, and Compact a Living Heap</title>
+<style>
+:root{
+  --night:#07110e;
+  --deep:#0a1813;
+  --panel:#10231c;
+  --panel-2:#142b22;
+  --panel-3:#193429;
+  --line:#2c5141;
+  --line-soft:rgba(151,211,169,.18);
+  --ink:#effff3;
+  --muted:#a3c3ad;
+  --dim:#6f9380;
+  --leaf:#7ce38b;
+  --lime:#c7f36b;
+  --mint:#5ce6ba;
+  --violet:#b99cff;
+  --amber:#ffc66d;
+  --coral:#ff857f;
+  --sky:#75d5ff;
+  --focus:#fff38a;
+  --shadow:0 22px 70px rgba(0,0,0,.38);
+  --radius:18px;
+}
+*{box-sizing:border-box}
+html{background:var(--night);scroll-behavior:smooth}
+body{
+  min-width:300px;margin:0;overflow-x:hidden;color:var(--ink);
+  background:
+    radial-gradient(circle at 10% -8%,rgba(92,230,186,.17),transparent 31rem),
+    radial-gradient(circle at 95% 8%,rgba(185,156,255,.13),transparent 30rem),
+    linear-gradient(180deg,#07110e 0%,#091712 46%,#050c0a 100%);
+  font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+body::before{
+  position:fixed;z-index:-2;inset:0;pointer-events:none;content:"";
+  background-image:
+    linear-gradient(rgba(124,227,139,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(124,227,139,.025) 1px,transparent 1px);
+  background-size:32px 32px;
+  mask-image:linear-gradient(to bottom,#000,transparent 92%);
+}
+body::after{
+  position:fixed;z-index:-1;inset:auto -12vw -22vh;width:70vw;height:70vw;
+  border-radius:50%;background:rgba(92,230,186,.035);filter:blur(2px);content:"";
+  box-shadow:-42vw -8vw 0 rgba(185,156,255,.025);
+}
+button,input,select{font:inherit}
+button,input,select{color:inherit}
+button{touch-action:manipulation}
+button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{
+  outline:3px solid var(--focus);outline-offset:3px
+}
+.skip-link{
+  position:fixed;z-index:100;top:.65rem;left:.65rem;padding:.7rem 1rem;border-radius:.7rem;
+  background:#fff;color:#07110e;font-weight:900;transform:translateY(-180%)
+}
+.skip-link:focus{transform:none}
+.sr-only{
+  position:absolute!important;width:1px!important;height:1px!important;padding:0!important;
+  margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;border:0!important
+}
+.app{width:min(1440px,calc(100% - 24px));margin:0 auto;padding:18px 0 36px}
+.hero{
+  position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;
+  align-items:end;padding:clamp(20px,4vw,42px);overflow:hidden;border:1px solid var(--line);
+  border-radius:26px;background:
+    linear-gradient(135deg,rgba(255,255,255,.055),transparent 24%),
+    linear-gradient(120deg,rgba(18,45,34,.96),rgba(8,21,17,.96));
+  box-shadow:var(--shadow)
+}
+.hero::after{
+  position:absolute;right:-42px;bottom:-74px;width:250px;height:250px;border:1px solid rgba(124,227,139,.2);
+  border-radius:47% 53% 63% 37%;content:"";transform:rotate(24deg);
+  box-shadow:inset 0 0 60px rgba(92,230,186,.06)
+}
+.eyebrow{
+  margin:0 0 8px;color:var(--mint);font:900 .72rem/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.18em;text-transform:uppercase
+}
+h1{max-width:920px;margin:0;font-size:clamp(2.2rem,6vw,5.8rem);line-height:.91;letter-spacing:-.065em}
+h1 span{display:block;color:var(--lime)}
+.hero-copy{max-width:820px;margin:16px 0 0;color:var(--muted);font-size:clamp(.96rem,1.7vw,1.15rem)}
+.hero-state{
+  position:relative;z-index:1;min-width:205px;padding:14px;border:1px solid var(--line);
+  border-radius:16px;background:rgba(4,12,9,.62);backdrop-filter:blur(10px)
+}
+.state-kicker{display:block;color:var(--dim);font:800 .68rem/1.2 ui-monospace,monospace;letter-spacing:.13em;text-transform:uppercase}
+.state-value{display:block;margin-top:4px;color:var(--lime);font-size:1.15rem;font-weight:900}
+.state-detail{display:block;margin-top:3px;color:var(--muted);font-size:.78rem}
+.panel{
+  border:1px solid var(--line);border-radius:var(--radius);
+  background:linear-gradient(145deg,rgba(255,255,255,.035),transparent 30%),rgba(13,31,24,.94);
+  box-shadow:var(--shadow)
+}
+.transport{
+  display:grid;grid-template-columns:minmax(0,1.15fr) minmax(260px,.85fr);gap:14px;
+  margin-top:14px;padding:14px
+}
+.transport-group{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.transport-group + .transport-group{justify-content:flex-end}
+.button{
+  display:inline-flex;min-height:44px;align-items:center;justify-content:center;gap:8px;
+  padding:9px 14px;border:1px solid #3d6854;border-radius:11px;background:#163227;
+  color:var(--ink);font-weight:850;cursor:pointer;box-shadow:inset 0 1px rgba(255,255,255,.05)
+}
+.button:hover:not(:disabled){border-color:var(--mint);background:#1b3d30}
+.button:active:not(:disabled){transform:translateY(1px)}
+.button:disabled{opacity:.4;cursor:not-allowed}
+.button.primary{border-color:#7ace89;background:var(--leaf);color:#082011}
+.button.primary:hover:not(:disabled){background:#9aed9f}
+.button.play{border-color:#a1d951;background:#294321;color:#efffd4}
+.button.danger{border-color:#87514e;background:#382421;color:#ffd9d5}
+.button.icon{min-width:44px;padding-inline:11px}
+.shortcut{color:currentColor;font:800 .64rem/1 ui-monospace,monospace;opacity:.66}
+.collector-switch{
+  display:flex;min-width:0;gap:5px;margin:0;padding:4px;border:1px solid var(--line);
+  border-radius:13px;background:#091712
+}
+.collector-switch legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.mode-button{
+  min-height:38px;padding:7px 11px;border:0;border-radius:9px;background:transparent;color:var(--muted);
+  font-weight:850;cursor:pointer;white-space:nowrap
+}
+.mode-button[aria-pressed="true"]{background:#254b3a;color:var(--lime);box-shadow:inset 0 0 0 1px #4d7e63}
+.speed-label{display:flex;gap:7px;align-items:center;color:var(--muted);font-size:.78rem;font-weight:800}
+select,input{
+  min-height:44px;border:1px solid #3b624f;border-radius:10px;background:#0b1c16;padding:8px 10px
+}
+select{cursor:pointer}
+.metrics{
+  display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:14px 0
+}
+.metric{min-width:0;padding:13px 14px}
+.metric-label{display:block;color:var(--dim);font:800 .67rem/1.2 ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase}
+.metric-value{display:block;margin-top:4px;font-size:clamp(1.15rem,2vw,1.7rem);font-weight:950;letter-spacing:-.04em}
+.metric-note{display:block;margin-top:2px;color:var(--muted);font-size:.7rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.metric.live .metric-value{color:var(--leaf)}
+.metric.garbage .metric-value{color:var(--coral)}
+.metric.reclaimed .metric-value{color:var(--sky)}
+.metric.fragmentation .metric-value{color:var(--amber)}
+.metric.pause .metric-value{color:var(--violet)}
+progress{width:100%;height:5px;margin-top:8px;border:0;border-radius:99px;overflow:hidden;background:#07120e}
+progress::-webkit-progress-bar{background:#07120e}
+progress::-webkit-progress-value{background:linear-gradient(90deg,var(--leaf),var(--mint))}
+progress::-moz-progress-bar{background:linear-gradient(90deg,var(--leaf),var(--mint))}
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:14px;align-items:start}
+.visual-panel{min-width:0;overflow:hidden}
+.panel-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;
+  border-bottom:1px solid var(--line)
+}
+.panel-head h2,.side-section h2,.lower-card h2{margin:0;font-size:.86rem;letter-spacing:.08em;text-transform:uppercase}
+.phase-badge{
+  display:inline-flex;min-height:28px;align-items:center;padding:4px 9px;border:1px solid #4a755f;
+  border-radius:999px;background:#0a1a14;color:var(--mint);font:900 .67rem/1 ui-monospace,monospace;
+  letter-spacing:.08em;text-transform:uppercase
+}
+.phase-track{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0;padding:12px 14px 0;list-style:none
+}
+.phase-track li{
+  position:relative;min-width:0;padding:9px 8px;border:1px solid var(--line-soft);
+  border-radius:10px;background:#0a1913;color:var(--dim);text-align:center;
+  font:850 .68rem/1.2 ui-monospace,monospace;text-transform:uppercase
+}
+.phase-track li.active{border-color:var(--lime);color:var(--lime);box-shadow:0 0 20px rgba(199,243,107,.1)}
+.phase-track li.done{border-color:#46795c;color:var(--leaf);background:#132a20}
+.phase-track li.skipped{text-decoration:line-through;opacity:.5}
+.legend{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 16px;color:var(--muted);font-size:.7rem}
+.legend-item{display:inline-flex;gap:6px;align-items:center}
+.legend-dot{width:10px;height:10px;border:2px solid currentColor;border-radius:50%}
+.legend-item.reachable{color:var(--leaf)}
+.legend-item.garbage{color:var(--coral)}
+.legend-item.frontier{color:var(--amber)}
+.legend-item.forwarded{color:var(--violet)}
+.visual-wrap{
+  position:relative;margin:0 12px 12px;overflow:hidden;border:1px solid #28493a;border-radius:15px;
+  background:
+    radial-gradient(circle at 50% 18%,rgba(92,230,186,.08),transparent 38%),
+    linear-gradient(180deg,#0b1b15,#08130f)
+}
+#heapVisual{display:block;width:100%;height:auto;min-height:420px;touch-action:manipulation}
+.visual-note{margin:0;padding:0 16px 14px;color:var(--muted);font-size:.76rem}
+.svg-title{fill:#a9c9b2;font:800 11px ui-monospace,monospace;letter-spacing:1.5px}
+.svg-muted{fill:#789887;font:700 10px ui-monospace,monospace}
+.root-chip{fill:#173628;stroke:#73d783;stroke-width:1.5}
+.root-chip.stale{fill:#382e18;stroke:var(--amber);stroke-dasharray:4 3}
+.root-text{fill:#eaffeb;font:850 10px ui-monospace,monospace}
+.edge{fill:none;stroke:#4c7a62;stroke-width:2;opacity:.75}
+.edge.stale{stroke:var(--amber);stroke-width:2.6;stroke-dasharray:6 5;opacity:1}
+.edge.rewriting{stroke:var(--sky);stroke-width:3;animation:dash .55s linear infinite}
+.edge-label{fill:#9dbda8;font:800 9px ui-monospace,monospace;paint-order:stroke;stroke:#08130f;stroke-width:4px}
+.edge-label.stale{fill:var(--amber)}
+.node{cursor:pointer}
+.node-shell{fill:#153126;stroke:#4f8065;stroke-width:2}
+.node:hover .node-shell,.node:focus .node-shell{stroke:var(--focus);stroke-width:3}
+.node.reachable .node-shell,.node.marked .node-shell{stroke:var(--leaf);fill:#173a29}
+.node.garbage .node-shell{stroke:var(--coral);fill:url(#garbageHatch);stroke-dasharray:7 4}
+.node.frontier .node-shell{stroke:var(--amber);fill:#392f19;stroke-width:3;filter:url(#softGlow)}
+.node.moving .node-shell{stroke:var(--violet);animation:pulseMove .65s ease}
+.node.selected .node-shell{stroke:var(--focus);stroke-width:4}
+.node-name{fill:#f2fff5;font:900 13px system-ui,sans-serif}
+.node-meta{fill:#a4c4ae;font:750 9px ui-monospace,monospace}
+.node-state{fill:#07120e;stroke:#436e58}
+.node-state-text{fill:#c2dec9;font:900 8px ui-monospace,monospace;letter-spacing:.5px}
+.stem{stroke:#62b476;stroke-width:3;stroke-linecap:round}
+.leaf{fill:#7ce38b}
+.memory-cell{fill:#0a1813;stroke:#29483a;stroke-width:1}
+.memory-cell.free{fill:#09140f}
+.memory-cell.reachable{fill:#25563b;stroke:#68c97b}
+.memory-cell.garbage{fill:#552a28;stroke:#e57570}
+.memory-cell.frontier{fill:#59471f;stroke:#efbb5f}
+.memory-cell.moving{fill:#513c73;stroke:#b99cff}
+.memory-address{fill:#70907d;font:700 7px ui-monospace,monospace}
+.memory-owner{fill:#f4fff5;font:900 8px ui-monospace,monospace}
+.memory-outline{fill:none;stroke:var(--violet);stroke-width:2;stroke-dasharray:5 4}
+.relocation-path{fill:none;stroke:var(--violet);stroke-width:2.5;stroke-dasharray:7 5;opacity:.85}
+.flying-seed{fill:var(--lime);stroke:#fff;stroke-width:1.5;filter:url(#softGlow)}
+.forward-label{fill:var(--violet);font:900 9px ui-monospace,monospace}
+.heap-bracket{fill:none;stroke:#315542;stroke-width:1.5}
+.side-panel{display:grid;gap:14px;box-shadow:none;background:transparent;border:0}
+.side-section{padding:15px}
+.side-section h2{margin-bottom:12px}
+.field{display:grid;gap:5px;margin-top:10px}
+.field:first-of-type{margin-top:0}
+.field label,.field-label{color:var(--muted);font-size:.73rem;font-weight:800}
+.field-row{display:grid;grid-template-columns:1fr 105px;gap:8px}
+.field-row.actions{grid-template-columns:1fr 1fr}
+.field input,.field select{width:100%;min-width:0}
+.hint{
+  margin:10px 0 0;padding:9px 10px;border-left:3px solid var(--mint);border-radius:0 9px 9px 0;
+  background:#0b1b15;color:var(--muted);font-size:.72rem
+}
+.hint strong{color:var(--ink)}
+.preset-row{display:grid;grid-template-columns:1fr auto;gap:8px}
+.seed-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:8px}
+.seed-row input{min-width:0;width:100%}
+.selected-summary{
+  min-height:56px;padding:10px;border:1px solid var(--line);border-radius:11px;background:#0a1913
+}
+.selected-summary strong,.selected-summary span{display:block}
+.selected-summary span{margin-top:2px;color:var(--muted);font:700 .72rem/1.4 ui-monospace,monospace}
+.object-list{display:grid;max-height:360px;gap:7px;overflow:auto;padding-right:3px}
+.object-card{
+  display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:9px;align-items:center;width:100%;
+  min-height:52px;padding:8px 9px;border:1px solid #315442;border-radius:11px;background:#0b1b15;
+  color:var(--ink);text-align:left;cursor:pointer
+}
+.object-card:hover{border-color:var(--mint)}
+.object-card[aria-selected="true"]{border-color:var(--focus);background:#173126}
+.object-card.garbage{border-color:#70413d;background:#241918}
+.object-card.frontier{border-color:#80662f;background:#2d2617}
+.object-swatch{width:13px;height:32px;border-radius:8px;background:var(--leaf);box-shadow:0 0 12px var(--leaf)}
+.object-card.tone-0 .object-swatch{background:#7ce38b;box-shadow:0 0 12px #7ce38b}
+.object-card.tone-1 .object-swatch{background:#5ce6ba;box-shadow:0 0 12px #5ce6ba}
+.object-card.tone-2 .object-swatch{background:#75d5ff;box-shadow:0 0 12px #75d5ff}
+.object-card.tone-3 .object-swatch{background:#b99cff;box-shadow:0 0 12px #b99cff}
+.object-card.tone-4 .object-swatch{background:#ffc66d;box-shadow:0 0 12px #ffc66d}
+.object-card.tone-5 .object-swatch{background:#ef91b7;box-shadow:0 0 12px #ef91b7}
+.object-card.tone-6 .object-swatch{background:#9ee67a;box-shadow:0 0 12px #9ee67a}
+.object-card.tone-7 .object-swatch{background:#64c9b4;box-shadow:0 0 12px #64c9b4}
+.object-copy{min-width:0}
+.object-copy strong,.object-copy span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.object-copy span{color:var(--muted);font:700 .68rem/1.3 ui-monospace,monospace}
+.object-badge{padding:3px 6px;border:1px solid #47745c;border-radius:999px;color:var(--leaf);font-size:.62rem;font-weight:900}
+.empty{margin:0;color:var(--dim);font-size:.78rem}
+.lower-grid{display:grid;grid-template-columns:1.1fr 1fr .9fr;gap:14px;margin-top:14px}
+.lower-card{min-width:0;padding:16px}
+.lower-card h2{margin-bottom:12px}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.compare-card{padding:12px;border:1px solid var(--line);border-radius:12px;background:#0a1913}
+.compare-card.active{border-color:var(--lime);box-shadow:inset 0 0 0 1px rgba(199,243,107,.18)}
+.compare-card h3{margin:0;font-size:.85rem}
+.compare-card p{margin:7px 0 0;color:var(--muted);font-size:.72rem}
+.compare-stat{display:block;margin-top:9px;color:var(--ink);font:850 .72rem/1.45 ui-monospace,monospace}
+.accuracy-note{margin:10px 0 0;color:var(--dim);font-size:.68rem}
+.invariant-list,.event-list{display:grid;gap:7px;margin:0;padding:0;list-style:none}
+.invariant{
+  display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:start;padding:8px 9px;
+  border:1px solid var(--line-soft);border-radius:10px;background:#0a1913
+}
+.invariant-icon{
+  display:grid;width:21px;height:21px;place-items:center;border-radius:50%;background:#183528;
+  color:var(--leaf);font-size:.72rem;font-weight:950
+}
+.invariant.warn .invariant-icon{background:#3b3019;color:var(--amber)}
+.invariant.fail .invariant-icon{background:#42211f;color:var(--coral)}
+.invariant strong,.invariant span{display:block}
+.invariant strong{font-size:.72rem}.invariant span{margin-top:1px;color:var(--muted);font-size:.65rem}
+.event-list{max-height:245px;overflow:auto}
+.event{
+  padding:8px 9px;border-left:2px solid #4d7f65;border-radius:0 8px 8px 0;
+  background:#0a1913;color:var(--muted);font:700 .68rem/1.45 ui-monospace,monospace
+}
+.event.latest{border-color:var(--lime);color:var(--ink)}
+.keyboard-bar{
+  display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:14px;
+  padding:11px;color:var(--dim);font-size:.7rem
+}
+kbd{
+  min-width:24px;padding:3px 6px;border:1px solid #456b57;border-bottom-width:3px;border-radius:6px;
+  background:#10241c;color:var(--ink);font:800 .67rem/1 ui-monospace,monospace;text-align:center
+}
+.paused .phase-badge::before{
+  width:6px;height:6px;margin-right:6px;border-radius:50%;background:var(--amber);content:""
+}
+@keyframes dash{to{stroke-dashoffset:-22}}
+@keyframes pulseMove{0%{filter:drop-shadow(0 0 0 rgba(185,156,255,0))}45%{filter:drop-shadow(0 0 18px rgba(185,156,255,.9))}100%{filter:none}}
+@media (max-width:1100px){
+  .metrics{grid-template-columns:repeat(3,1fr)}
+  .workspace{grid-template-columns:minmax(0,1fr) 300px}
+  .lower-grid{grid-template-columns:1fr 1fr}
+  .lower-card.events-card{grid-column:1/-1}
+}
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr}.hero-state{width:100%;min-width:0}
+  .transport{grid-template-columns:1fr}.transport-group + .transport-group{justify-content:flex-start}
+  .workspace{grid-template-columns:1fr}
+  .side-panel{grid-template-columns:1fr 1fr}.side-section.objects-section{grid-column:1/-1}
+  .object-list{grid-template-columns:1fr 1fr;max-height:none}
+}
+@media (max-width:560px){
+  .app{width:min(100% - 14px,540px);padding-top:7px}
+  .hero{padding:20px 17px;border-radius:20px}
+  h1{font-size:clamp(2.15rem,12vw,3.4rem)}
+  .transport{padding:10px}
+  .transport-group{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
+  .transport-group + .transport-group{grid-template-columns:1fr}
+  .collector-switch{display:grid;grid-template-columns:1fr 1fr}
+  .button{width:100%;padding-inline:9px}
+  .metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .metric{padding:11px}
+  .phase-track{grid-template-columns:1fr 1fr}
+  .legend{gap:8px}
+  #heapVisual{min-height:620px}
+  .side-panel{grid-template-columns:1fr}
+  .side-section.objects-section{grid-column:auto}
+  .object-list{grid-template-columns:1fr}
+  .lower-grid{grid-template-columns:1fr}
+  .lower-card.events-card{grid-column:auto}
+  .compare-grid{grid-template-columns:1fr}
+  .field-row{grid-template-columns:1fr 96px}
+  .field-row.actions{grid-template-columns:1fr 1fr}
+  .keyboard-bar{justify-content:flex-start}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to the heap garden</a>
+<main class="app paused" id="main">
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Tracing collector laboratory · 384-byte heap</p>
+      <h1>Garbage Collector <span>Garden</span></h1>
+      <p class="hero-copy">Grow an object graph, trace it from pinned roots, sweep unreachable cycles, then compact the survivors and watch every stale pointer get rewritten.</p>
+    </div>
+    <div class="hero-state" aria-live="polite" aria-atomic="true">
+      <span class="state-kicker">Collector state</span>
+      <strong class="state-value" id="stateValue">Ready to trace</strong>
+      <span class="state-detail" id="stateDetail">Cycle / leak lab · seed 357</span>
+    </div>
+  </header>
+
+  <section class="transport panel" aria-label="Collector transport">
+    <div class="transport-group">
+      <button class="button" id="resetBtn" type="button" aria-keyshortcuts="R"><span aria-hidden="true">↺</span> Reset <span class="shortcut">R</span></button>
+      <button class="button play" id="playBtn" type="button" aria-keyshortcuts="Space"><span aria-hidden="true">▶</span> Play <span class="shortcut">Space</span></button>
+      <button class="button" id="pauseBtn" type="button" disabled><span aria-hidden="true">Ⅱ</span> Pause</button>
+      <button class="button primary" id="stepBtn" type="button" aria-keyshortcuts="N"><span aria-hidden="true">→</span> Step <span class="shortcut">N</span></button>
+    </div>
+    <div class="transport-group">
+      <fieldset class="collector-switch" aria-label="Collector strategy">
+        <legend>Collector strategy</legend>
+        <button class="mode-button" id="sweepModeBtn" type="button" data-mode="sweep" aria-pressed="true">Mark–sweep</button>
+        <button class="mode-button" id="compactModeBtn" type="button" data-mode="compact" aria-pressed="false">Mark–compact</button>
+      </fieldset>
+      <label class="speed-label" for="speedSelect">Pace
+        <select id="speedSelect">
+          <option value="1000">Slow</option>
+          <option value="650" selected>Garden</option>
+          <option value="320">Fast</option>
+        </select>
+      </label>
+    </div>
+  </section>
+
+  <section class="metrics" aria-label="Heap metrics">
+    <article class="metric panel live">
+      <span class="metric-label">Live bytes</span>
+      <strong class="metric-value" id="liveBytes">0 B</strong>
+      <span class="metric-note" id="liveNote">reachable from roots</span>
+      <progress id="liveProgress" max="384" value="0" aria-label="Live heap bytes"></progress>
+    </article>
+    <article class="metric panel garbage">
+      <span class="metric-label">Garbage bytes</span>
+      <strong class="metric-value" id="garbageBytes">0 B</strong>
+      <span class="metric-note">currently unreachable</span>
+    </article>
+    <article class="metric panel reclaimed">
+      <span class="metric-label">Reclaimed bytes</span>
+      <strong class="metric-value" id="reclaimedBytes">0 B</strong>
+      <span class="metric-note">this collection</span>
+    </article>
+    <article class="metric panel fragmentation">
+      <span class="metric-label">Fragmentation</span>
+      <strong class="metric-value" id="fragmentationValue">0%</strong>
+      <span class="metric-note" id="fragmentationNote">external · 1 free run</span>
+    </article>
+    <article class="metric panel pause">
+      <span class="metric-label">Pause time</span>
+      <strong class="metric-value" id="pauseValue">0.0 ms</strong>
+      <span class="metric-note">deterministic STW model</span>
+    </article>
+    <article class="metric panel">
+      <span class="metric-label">Heap used</span>
+      <strong class="metric-value" id="usedBytes">0 B</strong>
+      <span class="metric-note" id="freeNote">384 B free</span>
+    </article>
+  </section>
+
+  <div class="workspace">
+    <section class="visual-panel panel" aria-labelledby="heapHeading">
+      <div class="panel-head">
+        <h2 id="heapHeading">Living heap</h2>
+        <span class="phase-badge" id="phaseBadge">Mutator</span>
+      </div>
+      <ol class="phase-track" aria-label="Collection phases">
+        <li id="phaseRoots">Roots</li>
+        <li id="phaseMark">Mark</li>
+        <li id="phaseSweep">Sweep</li>
+        <li id="phaseCompact">Compact</li>
+      </ol>
+      <div class="legend" aria-label="Object state legend">
+        <span class="legend-item reachable"><span class="legend-dot"></span>Reachable</span>
+        <span class="legend-item garbage"><span class="legend-dot"></span>Unreachable</span>
+        <span class="legend-item frontier"><span class="legend-dot"></span>Mark frontier</span>
+        <span class="legend-item forwarded"><span class="legend-dot"></span>Relocated / stale pointer</span>
+      </div>
+      <div class="visual-wrap">
+        <svg id="heapVisual" viewBox="0 0 920 560" role="img" aria-labelledby="visualTitle visualDesc">
+          <title id="visualTitle">Interactive heap object graph and memory map</title>
+          <desc id="visualDesc">Pinned roots connect to reachable objects. Unreachable objects are striped red. The lower memory cells expose gaps and relocation.</desc>
+        </svg>
+      </div>
+      <p class="visual-note" id="visualHelp">Select a pod in the graph or object list. Pointer labels show the stored byte address; amber labels are stale until the compacting collector rewrites them.</p>
+    </section>
+
+    <aside class="side-panel" aria-label="Heap editing controls">
+      <section class="side-section panel">
+        <h2>Deterministic grove</h2>
+        <div class="preset-row">
+          <label class="sr-only" for="presetSelect">Preset</label>
+          <select id="presetSelect">
+            <option value="cycle">Cycle / leak lab</option>
+            <option value="orchard">Fragmented orchard</option>
+            <option value="seeded">Seeded grove</option>
+          </select>
+          <button class="button icon" id="loadPresetBtn" type="button" aria-label="Load selected preset">Load</button>
+        </div>
+        <div class="seed-row">
+          <label class="sr-only" for="seedInput">Deterministic seed</label>
+          <input id="seedInput" type="number" inputmode="numeric" min="1" max="999999" value="357" aria-label="Deterministic seed">
+          <button class="button icon" id="growSeedBtn" type="button">Grow</button>
+        </div>
+        <p class="hint" id="presetHint"><strong>Cycle / leak lab:</strong> Cache ↔ Listener stays alive through a root. Ivy A ↔ Ivy B has no root and must be collected.</p>
+      </section>
+
+      <section class="side-section panel">
+        <h2>Grow the heap</h2>
+        <form id="allocationForm">
+          <div class="field">
+            <label for="objectName">Pod name</label>
+            <input id="objectName" type="text" maxlength="18" autocomplete="off" placeholder="New pod">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="objectSize">Size</label>
+              <select id="objectSize">
+                <option value="1">16 bytes</option>
+                <option value="2" selected>32 bytes</option>
+                <option value="3">48 bytes</option>
+              </select>
+            </div>
+            <button class="button primary" id="allocateBtn" type="submit">Allocate</button>
+          </div>
+        </form>
+        <p class="hint" id="allocationHint">First-fit allocation uses the first contiguous free run. Enough total space can still fail when the heap is fragmented.</p>
+      </section>
+
+      <section class="side-section panel">
+        <h2>References &amp; roots</h2>
+        <div class="selected-summary" id="selectedSummary">
+          <strong>No object selected</strong>
+          <span>Select a pod to edit its outgoing pointer.</span>
+        </div>
+        <div class="field">
+          <label for="referenceTarget">Pointer target</label>
+          <select id="referenceTarget" disabled>
+            <option value="">No target</option>
+          </select>
+        </div>
+        <div class="field-row actions">
+          <button class="button" id="addRefBtn" type="button" disabled>Add ref</button>
+          <button class="button danger" id="removeRefBtn" type="button" disabled>Remove ref</button>
+        </div>
+        <div class="field">
+          <button class="button" id="rootBtn" type="button" disabled aria-keyshortcuts="P">Pin as root <span class="shortcut">P</span></button>
+        </div>
+      </section>
+
+      <section class="side-section panel objects-section">
+        <h2>Objects <span id="objectCount" aria-hidden="true">0</span></h2>
+        <div class="object-list" id="objectList" role="listbox" aria-label="Heap objects"></div>
+      </section>
+    </aside>
+  </div>
+
+  <section class="lower-grid">
+    <article class="lower-card panel" aria-labelledby="compareHeading">
+      <h2 id="compareHeading">Collector comparison</h2>
+      <div class="compare-grid">
+        <div class="compare-card active" id="sweepCompare">
+          <h3>Mark–sweep</h3>
+          <p>Trace from roots, free white objects, keep every survivor at the same address. Fast pointer handling; holes remain.</p>
+          <span class="compare-stat" id="sweepProjection">Projecting…</span>
+        </div>
+        <div class="compare-card" id="compactCompare">
+          <h3>Copy / compact</h3>
+          <p>Relocate survivors into a dense prefix and rewrite roots and fields. Allocation becomes a bump; addresses change.</p>
+          <span class="compare-stat" id="compactProjection">Projecting…</span>
+        </div>
+      </div>
+      <p class="accuracy-note">This runnable relocation path is mark-compact: it marks, sweeps, then slides. A semispace copying collector traces directly into to-space instead; both relocate survivors and must rewrite pointers, but copying reserves extra space.</p>
+    </article>
+
+    <article class="lower-card panel" aria-labelledby="invariantHeading">
+      <h2 id="invariantHeading">Invariant checks</h2>
+      <ul class="invariant-list" id="invariantList"></ul>
+    </article>
+
+    <article class="lower-card panel events-card" aria-labelledby="eventHeading">
+      <h2 id="eventHeading">Collector journal</h2>
+      <ol class="event-list" id="eventList"></ol>
+    </article>
+  </section>
+
+  <footer class="keyboard-bar panel" aria-label="Keyboard controls">
+    <span><kbd>Space</kbd> play / pause</span>
+    <span><kbd>N</kbd> one atomic action</span>
+    <span><kbd>R</kbd> deterministic reset</span>
+    <span><kbd>P</kbd> pin selected root</span>
+    <span><kbd>←</kbd><kbd>→</kbd> select object</span>
+  </footer>
+</main>
+<div class="sr-only" id="announcer" role="status" aria-live="polite" aria-atomic="true"></div>
+<script>
+(() => {
+  "use strict";
+
+  const UNIT_BYTES = 16;
+  const HEAP_UNITS = 24;
+  const HEAP_BYTES = HEAP_UNITS * UNIT_BYTES;
+  const names = ["Fern","Moss","Clover","Aster","Sage","Thyme","Reed","Iris","Briar","Lotus","Dahlia","Willow"];
+  const palette = ["#7ce38b","#5ce6ba","#75d5ff","#b99cff","#ffc66d","#ef91b7","#9ee67a","#64c9b4"];
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  const $ = id => document.getElementById(id);
+  const ui = {
+    main: $("main"), visual: $("heapVisual"), stateValue: $("stateValue"), stateDetail: $("stateDetail"),
+    phaseBadge: $("phaseBadge"), liveBytes: $("liveBytes"), liveNote: $("liveNote"),
+    garbageBytes: $("garbageBytes"), reclaimedBytes: $("reclaimedBytes"),
+    fragmentationValue: $("fragmentationValue"), fragmentationNote: $("fragmentationNote"),
+    pauseValue: $("pauseValue"), usedBytes: $("usedBytes"), freeNote: $("freeNote"),
+    liveProgress: $("liveProgress"), resetBtn: $("resetBtn"), playBtn: $("playBtn"),
+    pauseBtn: $("pauseBtn"), stepBtn: $("stepBtn"), sweepModeBtn: $("sweepModeBtn"),
+    compactModeBtn: $("compactModeBtn"), speedSelect: $("speedSelect"),
+    phaseRoots: $("phaseRoots"), phaseMark: $("phaseMark"), phaseSweep: $("phaseSweep"),
+    phaseCompact: $("phaseCompact"), presetSelect: $("presetSelect"), seedInput: $("seedInput"),
+    loadPresetBtn: $("loadPresetBtn"), growSeedBtn: $("growSeedBtn"), presetHint: $("presetHint"),
+    allocationForm: $("allocationForm"), objectName: $("objectName"), objectSize: $("objectSize"),
+    allocateBtn: $("allocateBtn"), allocationHint: $("allocationHint"),
+    selectedSummary: $("selectedSummary"), referenceTarget: $("referenceTarget"),
+    addRefBtn: $("addRefBtn"), removeRefBtn: $("removeRefBtn"), rootBtn: $("rootBtn"),
+    objectList: $("objectList"), objectCount: $("objectCount"),
+    sweepCompare: $("sweepCompare"), compactCompare: $("compactCompare"),
+    sweepProjection: $("sweepProjection"), compactProjection: $("compactProjection"),
+    invariantList: $("invariantList"), eventList: $("eventList"), announcer: $("announcer")
+  };
+
+  const state = {
+    objects: [], nextId: 1, selectedId: null, collector: "sweep", phase: "idle",
+    subphase: "Ready to trace", playing: false, paused: true, markQueue: [], queued: new Set(),
+    sweepQueue: [], moveQueue: [], rewriteQueue: [], forwarding: new Map(),
+    snapshotReachable: new Set(), snapshotObjects: new Set(), reclaimedBytes: 0,
+    pauseMs: 0, lastMove: null, lastRewrite: null, currentPreset: "cycle",
+    seed: 357, cycleNumber: 0, journal: [], accumulator: 0, lastFrame: 0
+  };
+
+  function esc(value) {
+    return String(value).replace(/[&<>"']/g, character => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    })[character]);
+  }
+
+  function hexAddress(unit) {
+    return "0x" + (unit * UNIT_BYTES).toString(16).toUpperCase().padStart(3, "0");
+  }
+
+  function bytes(units) {
+    return units * UNIT_BYTES;
+  }
+
+  function colorFor(id) {
+    const number = Number(String(id).replace(/\D/g, "")) || 0;
+    return palette[number % palette.length];
+  }
+
+  function toneFor(id) {
+    const number = Number(String(id).replace(/\D/g, "")) || 0;
+    return number % palette.length;
+  }
+
+  function objectById(id) {
+    return state.objects.find(object => object.id === id) || null;
+  }
+
+  function sortedObjects() {
+    return [...state.objects].sort((a, b) => a.addr - b.addr || a.id.localeCompare(b.id));
+  }
+
+  function computeReachable(objects = state.objects) {
+    const byId = new Map(objects.map(object => [object.id, object]));
+    const seen = new Set();
+    const stack = objects.filter(object => object.root).map(object => object.id).sort().reverse();
+    while (stack.length) {
+      const id = stack.pop();
+      if (seen.has(id) || !byId.has(id)) continue;
+      seen.add(id);
+      const object = byId.get(id);
+      object.refs.map(reference => reference.to).sort().reverse().forEach(target => {
+        if (!seen.has(target)) stack.push(target);
+      });
+    }
+    return seen;
+  }
+
+  function occupancy(objects = state.objects) {
+    const cells = Array(HEAP_UNITS).fill(null);
+    objects.forEach(object => {
+      for (let unit = object.addr; unit < object.addr + object.units; unit += 1) {
+        if (unit >= 0 && unit < HEAP_UNITS) cells[unit] = object.id;
+      }
+    });
+    return cells;
+  }
+
+  function freeRuns(objects = state.objects) {
+    const cells = occupancy(objects);
+    const runs = [];
+    let start = -1;
+    cells.forEach((owner, index) => {
+      if (owner === null && start < 0) start = index;
+      if (owner !== null && start >= 0) {
+        runs.push({ start, units: index - start });
+        start = -1;
+      }
+    });
+    if (start >= 0) runs.push({ start, units: HEAP_UNITS - start });
+    return runs;
+  }
+
+  function fragmentation(objects = state.objects) {
+    const runs = freeRuns(objects);
+    const free = runs.reduce((sum, run) => sum + run.units, 0);
+    const largest = runs.reduce((max, run) => Math.max(max, run.units), 0);
+    return {
+      runs, free, largest,
+      percent: free ? Math.round((1 - largest / free) * 100) : 0
+    };
+  }
+
+  function firstFit(units) {
+    const run = freeRuns().find(candidate => candidate.units >= units);
+    return run ? run.start : -1;
+  }
+
+  function makeObject(name, units, addr, root = false) {
+    const id = "o" + state.nextId++;
+    return { id, name, units, addr, root, rootPtr: root ? addr : null, refs: [], mark: false };
+  }
+
+  function link(source, target) {
+    if (!source || !target || source.refs.some(reference => reference.to === target.id)) return false;
+    source.refs.push({ to: target.id, ptr: target.addr });
+    return true;
+  }
+
+  function buildFromSpecs(specs) {
+    state.objects = [];
+    state.nextId = 1;
+    const byName = new Map();
+    specs.forEach(spec => {
+      const object = makeObject(spec.name, spec.units, spec.addr, Boolean(spec.root));
+      state.objects.push(object);
+      byName.set(spec.name, object);
+    });
+    specs.forEach(spec => {
+      const source = byName.get(spec.name);
+      (spec.refs || []).forEach(name => link(source, byName.get(name)));
+    });
+    state.selectedId = state.objects[0] ? state.objects[0].id : null;
+  }
+
+  function seededSpecs(seed) {
+    let value = (Number(seed) >>> 0) || 357;
+    const random = () => {
+      value = (Math.imul(value, 1664525) + 1013904223) >>> 0;
+      return value / 4294967296;
+    };
+    const specs = [];
+    let cursor = 0;
+    for (let index = 0; index < 7; index += 1) {
+      const units = 1 + Math.floor(random() * 2);
+      const gap = index === 0 ? 0 : Math.floor(random() * 2);
+      cursor += gap;
+      if (cursor + units > HEAP_UNITS) cursor = Math.max(0, HEAP_UNITS - units);
+      specs.push({
+        name: names[(Math.floor(random() * names.length) + index) % names.length] + " " + (index + 1),
+        units, addr: cursor, root: index === 0 || index === 4, refs: []
+      });
+      cursor += units;
+    }
+    for (let index = 0; index < 4; index += 1) {
+      specs[index].refs.push(specs[index + 1].name);
+      if (index < 3 && random() > .54) specs[index].refs.push(specs[Math.min(4, index + 2)].name);
+    }
+    specs[5].refs = [specs[6].name];
+    specs[6].refs = [specs[5].name];
+    return specs;
+  }
+
+  function clearCollectorState() {
+    state.phase = "idle";
+    state.subphase = "Ready to trace";
+    state.playing = false;
+    state.paused = true;
+    state.markQueue = [];
+    state.queued = new Set();
+    state.sweepQueue = [];
+    state.moveQueue = [];
+    state.rewriteQueue = [];
+    state.forwarding = new Map();
+    state.snapshotReachable = new Set();
+    state.snapshotObjects = new Set();
+    state.reclaimedBytes = 0;
+    state.pauseMs = 0;
+    state.lastMove = null;
+    state.lastRewrite = null;
+    state.objects.forEach(object => { object.mark = false; });
+  }
+
+  function loadPreset(kind, seed = state.seed, message = true) {
+    state.currentPreset = kind;
+    state.seed = Math.max(1, Math.min(999999, Number(seed) || 357));
+    if (kind === "cycle") {
+      buildFromSpecs([
+        { name: "UI Root", units: 2, addr: 0, root: true, refs: ["Cache", "Bloom"] },
+        { name: "Cache", units: 3, addr: 4, refs: ["Listener"] },
+        { name: "Listener", units: 1, addr: 9, refs: ["Cache"] },
+        { name: "Bloom", units: 2, addr: 11, refs: ["Petal"] },
+        { name: "Petal", units: 1, addr: 15, refs: [] },
+        { name: "Ivy A", units: 2, addr: 18, refs: ["Ivy B"] },
+        { name: "Ivy B", units: 2, addr: 21, refs: ["Ivy A"] }
+      ]);
+      ui.presetHint.innerHTML = "<strong>Cycle / leak lab:</strong> Cache ↔ Listener stays alive through a root. Ivy A ↔ Ivy B has no root and must be collected.";
+    } else if (kind === "orchard") {
+      buildFromSpecs([
+        { name: "Sun Root", units: 1, addr: 0, root: true, refs: ["Branch"] },
+        { name: "Old Weed", units: 2, addr: 2, refs: ["Dry Seed"] },
+        { name: "Branch", units: 3, addr: 6, refs: ["Fruit"] },
+        { name: "Dry Seed", units: 1, addr: 10, refs: [] },
+        { name: "Fruit", units: 2, addr: 13, refs: ["Bee"] },
+        { name: "Trellis", units: 1, addr: 17, root: true, refs: ["Bee"] },
+        { name: "Bee", units: 2, addr: 21, refs: [] }
+      ]);
+      ui.presetHint.innerHTML = "<strong>Fragmented orchard:</strong> two dead islands sit between rooted survivors. Sweep leaves holes; compact gathers the live beds.";
+    } else {
+      buildFromSpecs(seededSpecs(state.seed));
+      ui.presetHint.innerHTML = "<strong>Seeded grove:</strong> seed " + state.seed + " always rebuilds this graph. The final two pods form an unrooted cycle.";
+    }
+    clearCollectorState();
+    state.journal = [];
+    logEvent("Loaded " + presetLabel(kind) + " · deterministic seed " + state.seed + ".");
+    ui.presetSelect.value = kind;
+    ui.seedInput.value = String(state.seed);
+    if (message) announce("Loaded " + presetLabel(kind));
+    renderAll();
+  }
+
+  function presetLabel(kind) {
+    return kind === "cycle" ? "cycle / leak lab" : kind === "orchard" ? "fragmented orchard" : "seeded grove";
+  }
+
+  function invalidateCollection(reason) {
+    state.phase = "idle";
+    state.subphase = "Heap edited";
+    state.playing = false;
+    state.paused = true;
+    state.markQueue = [];
+    state.queued = new Set();
+    state.sweepQueue = [];
+    state.moveQueue = [];
+    state.rewriteQueue = [];
+    state.forwarding = new Map();
+    state.snapshotReachable = new Set();
+    state.snapshotObjects = new Set();
+    state.reclaimedBytes = 0;
+    state.pauseMs = 0;
+    state.lastMove = null;
+    state.lastRewrite = null;
+    state.objects.forEach(object => { object.mark = false; });
+    logEvent(reason);
+  }
+
+  function canEdit() {
+    return state.phase === "idle" || state.phase === "done";
+  }
+
+  function beginCollection() {
+    state.cycleNumber += 1;
+    state.phase = "mark";
+    state.subphase = "Gray the roots";
+    state.reclaimedBytes = 0;
+    state.pauseMs = 0;
+    state.lastMove = null;
+    state.lastRewrite = null;
+    state.forwarding = new Map();
+    state.objects.forEach(object => { object.mark = false; });
+    state.snapshotReachable = computeReachable();
+    state.snapshotObjects = new Set(state.objects.map(object => object.id));
+    state.markQueue = state.objects.filter(object => object.root).sort((a, b) => a.addr - b.addr).map(object => object.id);
+    state.queued = new Set(state.markQueue);
+    state.sweepQueue = [];
+    state.moveQueue = [];
+    state.rewriteQueue = [];
+    logEvent("Collection " + state.cycleNumber + " began: " + state.markQueue.length + " root" + (state.markQueue.length === 1 ? "" : "s") + " entered the gray frontier.");
+  }
+
+  function planCompaction() {
+    let cursor = 0;
+    state.forwarding = new Map();
+    state.moveQueue = [];
+    sortedObjects().forEach(object => {
+      state.forwarding.set(object.addr, cursor);
+      if (object.addr !== cursor) state.moveQueue.push({ id: object.id, from: object.addr, to: cursor });
+      cursor += object.units;
+    });
+    state.phase = "compact";
+    state.subphase = state.moveQueue.length ? "Relocate survivors" : "Verify dense prefix";
+    logEvent("Compact plan installed " + state.forwarding.size + " forwarding entr" + (state.forwarding.size === 1 ? "y" : "ies") + ".");
+  }
+
+  function planRewrites() {
+    state.rewriteQueue = [];
+    sortedObjects().forEach(object => {
+      if (object.root && object.rootPtr !== object.addr) {
+        state.rewriteQueue.push({ type: "root", owner: object.id, target: object.id });
+      }
+      object.refs.forEach(reference => {
+        const target = objectById(reference.to);
+        if (target && reference.ptr !== target.addr) {
+          state.rewriteQueue.push({ type: "field", owner: object.id, target: target.id });
+        }
+      });
+    });
+    state.subphase = state.rewriteQueue.length ? "Rewrite stale pointers" : "Verify dense prefix";
+    if (state.rewriteQueue.length) {
+      logEvent(state.rewriteQueue.length + " stale pointer word" + (state.rewriteQueue.length === 1 ? "" : "s") + " queued for rewrite.");
+    }
+  }
+
+  function finishCollection() {
+    state.phase = "done";
+    state.subphase = "Collection complete";
+    state.playing = false;
+    state.paused = true;
+    state.lastMove = null;
+    state.lastRewrite = null;
+    const deadCycleGone = [...state.snapshotObjects].filter(id => !state.snapshotReachable.has(id)).every(id => !objectById(id));
+    logEvent("Collection complete: reclaimed " + state.reclaimedBytes + " B; rootless garbage " + (deadCycleGone ? "is gone" : "remains") + ".");
+    announce("Collection complete. Reclaimed " + state.reclaimedBytes + " bytes.");
+  }
+
+  function advanceCollector() {
+    if (state.phase === "idle" || state.phase === "done") beginCollection();
+    state.lastMove = null;
+    state.lastRewrite = null;
+
+    if (state.phase === "mark") {
+      if (!state.markQueue.length) {
+        state.phase = "sweep";
+        state.subphase = "Inspect heap blocks";
+        state.sweepQueue = sortedObjects().map(object => object.id);
+        state.pauseMs += .08;
+        logEvent("Mark fixed point reached. " + state.snapshotReachable.size + " object" + (state.snapshotReachable.size === 1 ? "" : "s") + " are black; sweep begins.");
+      } else {
+        const id = state.markQueue.shift();
+        state.queued.delete(id);
+        const object = objectById(id);
+        if (object && !object.mark) {
+          object.mark = true;
+          let added = 0;
+          object.refs.forEach(reference => {
+            const target = objectById(reference.to);
+            if (target && !target.mark && !state.queued.has(target.id)) {
+              state.markQueue.push(target.id);
+              state.queued.add(target.id);
+              added += 1;
+            }
+          });
+          state.pauseMs += .12 + object.refs.length * .055;
+          state.subphase = "Trace " + object.name;
+          logEvent("Marked " + object.name + " at " + hexAddress(object.addr) + "; discovered " + added + " white neighbor" + (added === 1 ? "" : "s") + ".");
+        }
+      }
+    } else if (state.phase === "sweep") {
+      if (!state.sweepQueue.length) {
+        if (state.collector === "compact") planCompaction();
+        else finishCollection();
+      } else {
+        const id = state.sweepQueue.shift();
+        const object = objectById(id);
+        if (object) {
+          state.pauseMs += .07 + object.units * .035;
+          if (!object.mark) {
+            const reclaimed = bytes(object.units);
+            state.reclaimedBytes += reclaimed;
+            state.objects.forEach(owner => {
+              owner.refs = owner.refs.filter(reference => reference.to !== id);
+            });
+            state.objects = state.objects.filter(candidate => candidate.id !== id);
+            if (state.selectedId === id) state.selectedId = state.objects[0] ? state.objects[0].id : null;
+            state.subphase = "Reclaim " + object.name;
+            logEvent("Swept " + object.name + " from " + hexAddress(object.addr) + " · reclaimed " + reclaimed + " B.");
+          } else {
+            state.subphase = "Keep " + object.name;
+            logEvent("Kept marked survivor " + object.name + " at " + hexAddress(object.addr) + ".");
+          }
+        }
+      }
+    } else if (state.phase === "compact") {
+      if (state.moveQueue.length) {
+        const move = state.moveQueue.shift();
+        const object = objectById(move.id);
+        if (object) {
+          object.addr = move.to;
+          state.lastMove = { id: object.id, from: move.from, to: move.to };
+          state.pauseMs += .13 + object.units * .085;
+          state.subphase = "Move " + object.name;
+          logEvent("Relocated " + object.name + " " + hexAddress(move.from) + " → " + hexAddress(move.to) + "; pointers are temporarily stale.");
+        }
+      } else if (!state.rewriteQueue.length && state.subphase !== "Rewrite stale pointers") {
+        planRewrites();
+        if (!state.rewriteQueue.length) finishCollection();
+      } else if (state.rewriteQueue.length) {
+        const rewrite = state.rewriteQueue.shift();
+        const owner = objectById(rewrite.owner);
+        const target = objectById(rewrite.target);
+        if (owner && target) {
+          if (rewrite.type === "root") {
+            const old = owner.rootPtr;
+            owner.rootPtr = owner.addr;
+            state.lastRewrite = { type: "root", owner: owner.id, target: owner.id };
+            logEvent("Rewrote ROOT " + hexAddress(old) + " → " + hexAddress(owner.addr) + " for " + owner.name + ".");
+          } else {
+            const reference = owner.refs.find(item => item.to === target.id);
+            if (reference) {
+              const old = reference.ptr;
+              reference.ptr = target.addr;
+              state.lastRewrite = { type: "field", owner: owner.id, target: target.id };
+              logEvent("Rewrote " + owner.name + ".ref " + hexAddress(old) + " → " + hexAddress(target.addr) + ".");
+            }
+          }
+          state.pauseMs += .065;
+          state.subphase = "Rewrite pointer";
+        }
+        if (!state.rewriteQueue.length) state.subphase = "Rewrite stale pointers";
+      } else {
+        finishCollection();
+      }
+    }
+    renderAll();
+  }
+
+  function play() {
+    if (!state.playing) {
+      state.playing = true;
+      state.paused = false;
+      state.accumulator = Number(ui.speedSelect.value);
+      announce("Collector playing");
+      renderAll();
+    }
+  }
+
+  function pause(reason = "Collector paused") {
+    state.playing = false;
+    state.paused = true;
+    state.accumulator = 0;
+    announce(reason);
+    renderAll();
+  }
+
+  function logEvent(message) {
+    state.journal.unshift(message);
+    state.journal = state.journal.slice(0, 12);
+  }
+
+  function announce(message) {
+    ui.announcer.textContent = "";
+    window.setTimeout(() => { ui.announcer.textContent = message; }, 15);
+  }
+
+  function truthState(object, reachable) {
+    if (state.phase === "mark") {
+      if (object.mark) return "marked";
+      if (state.queued.has(object.id)) return "frontier";
+    }
+    return reachable.has(object.id) ? "reachable" : "garbage";
+  }
+
+  function displayState(object, reachable) {
+    if (state.phase === "mark") {
+      if (object.mark) return "MARKED";
+      if (state.queued.has(object.id)) return "GRAY";
+      return reachable.has(object.id) ? "WHITE · PENDING" : "WHITE · GARBAGE";
+    }
+    return reachable.has(object.id) ? "REACHABLE" : "UNREACHABLE";
+  }
+
+  function layoutFor(width, objects) {
+    const mobile = width < 600;
+    const columns = mobile ? 2 : 4;
+    const nodeWidth = mobile ? 158 : 172;
+    const nodeHeight = 78;
+    const gapX = mobile ? 18 : 38;
+    const left = mobile ? 17 : 47;
+    const top = 124;
+    const gapY = 104;
+    const rows = Math.max(1, Math.ceil(objects.length / columns));
+    const graphBottom = top + rows * gapY;
+    const memoryTop = graphBottom + 54;
+    const cellColumns = mobile ? 12 : 24;
+    const cellGap = mobile ? 2 : 3;
+    const cellWidth = mobile ? 27 : 33;
+    const cellHeight = 34;
+    const memoryLeft = mobile ? 19 : 35;
+    const memoryRows = Math.ceil(HEAP_UNITS / cellColumns);
+    const height = memoryTop + memoryRows * (cellHeight + 18) + 68;
+    const positions = new Map();
+    objects.forEach((object, index) => {
+      positions.set(object.id, {
+        x: left + (index % columns) * (nodeWidth + gapX),
+        y: top + Math.floor(index / columns) * gapY,
+        width: nodeWidth, height: nodeHeight
+      });
+    });
+    const cellPosition = unit => ({
+      x: memoryLeft + (unit % cellColumns) * (cellWidth + cellGap),
+      y: memoryTop + Math.floor(unit / cellColumns) * (cellHeight + 18)
+    });
+    return { mobile, width, height, positions, nodeWidth, nodeHeight, memoryTop, cellWidth, cellHeight, cellPosition };
+  }
+
+  function edgePath(from, to, self) {
+    if (self) {
+      const x = from.x + from.width - 22;
+      const y = from.y + 18;
+      return "M " + x + " " + y + " C " + (x + 48) + " " + (y - 38) + ", " + (x + 48) + " " + (y + 70) + ", " + x + " " + (y + 51);
+    }
+    const startX = from.x + from.width / 2;
+    const startY = from.y + from.height;
+    const endX = to.x + to.width / 2;
+    const endY = to.y;
+    const bend = Math.max(30, Math.abs(endY - startY) * .42);
+    return "M " + startX + " " + startY + " C " + startX + " " + (startY + bend) + ", " + endX + " " + (endY - bend) + ", " + endX + " " + endY;
+  }
+
+  function renderVisual() {
+    const width = window.innerWidth <= 560 ? 390 : 920;
+    const objects = sortedObjects();
+    const layout = layoutFor(width, objects);
+    const reachable = computeReachable();
+    const cells = occupancy();
+    const rootObjects = objects.filter(object => object.root);
+    const parts = [];
+    parts.push(
+      '<title id="visualTitle">Interactive heap object graph and memory map</title>',
+      '<desc id="visualDesc">Pinned roots connect to reachable objects. Unreachable objects are striped red. The lower memory cells expose gaps and relocation.</desc>',
+      '<defs>',
+      '<pattern id="garbageHatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><rect width="9" height="9" fill="#321d1b"></rect><rect width="3" height="9" fill="#552a27"></rect></pattern>',
+      '<filter id="softGlow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="4" result="blur"></feGaussianBlur><feMerge><feMergeNode in="blur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge></filter>',
+      '<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke"></path></marker>',
+      '</defs>'
+    );
+    parts.push('<text class="svg-title" x="' + (layout.mobile ? 18 : 35) + '" y="28">ROOT SET · STORED POINTER WORDS</text>');
+    if (!rootObjects.length) {
+      parts.push('<text class="svg-muted" x="' + (layout.mobile ? 18 : 35) + '" y="62">No pinned roots — every pod is collectible.</text>');
+    } else {
+      rootObjects.forEach((object, index) => {
+        const position = layout.positions.get(object.id);
+        const chipWidth = layout.mobile ? 112 : 138;
+        const x = layout.mobile ? 18 + (index % 3) * 119 : 35 + index * 150;
+        const y = layout.mobile ? 42 + Math.floor(index / 3) * 38 : 42;
+        const stale = object.rootPtr !== object.addr;
+        const rewriting = state.lastRewrite && state.lastRewrite.type === "root" && state.lastRewrite.owner === object.id;
+        parts.push(
+          '<path class="edge root-edge ' + (stale ? "stale " : "") + (rewriting ? "rewriting" : "") + '" d="M ' + (x + chipWidth / 2) + ' ' + (y + 25) + ' C ' + (x + chipWidth / 2) + ' ' + (y + 62) + ', ' + (position.x + position.width / 2) + ' ' + (position.y - 30) + ', ' + (position.x + position.width / 2) + ' ' + position.y + '" marker-end="url(#arrow)"></path>',
+          '<rect class="root-chip ' + (stale ? "stale" : "") + '" x="' + x + '" y="' + y + '" width="' + chipWidth + '" height="25" rx="12"></rect>',
+          '<text class="root-text" x="' + (x + 10) + '" y="' + (y + 16) + '">ROOT → ' + hexAddress(object.rootPtr) + '</text>'
+        );
+      });
+    }
+
+    objects.forEach(source => {
+      const from = layout.positions.get(source.id);
+      source.refs.forEach(reference => {
+        const target = objectById(reference.to);
+        const to = target ? layout.positions.get(target.id) : null;
+        if (!target || !to) return;
+        const stale = reference.ptr !== target.addr;
+        const rewriting = state.lastRewrite && state.lastRewrite.type === "field" &&
+          state.lastRewrite.owner === source.id && state.lastRewrite.target === target.id;
+        const path = edgePath(from, to, source.id === target.id);
+        const labelX = source.id === target.id ? from.x + from.width + 12 : (from.x + from.width / 2 + to.x + to.width / 2) / 2;
+        const labelY = source.id === target.id ? from.y + 19 : (from.y + from.height + to.y) / 2 - 5;
+        parts.push(
+          '<path class="edge ' + (stale ? "stale " : "") + (rewriting ? "rewriting" : "") + '" d="' + path + '" marker-end="url(#arrow)"></path>',
+          '<text class="edge-label ' + (stale ? "stale" : "") + '" x="' + labelX + '" y="' + labelY + '" text-anchor="middle">' +
+            hexAddress(reference.ptr) + (stale ? " → " + hexAddress(target.addr) : "") + '</text>'
+        );
+      });
+    });
+
+    objects.forEach(object => {
+      const position = layout.positions.get(object.id);
+      const objectState = truthState(object, reachable);
+      const selected = object.id === state.selectedId;
+      const moving = state.lastMove && state.lastMove.id === object.id;
+      const label = object.name + ", " + bytes(object.units) + " bytes at " + hexAddress(object.addr) + ", " +
+        displayState(object, reachable) + (object.root ? ", pinned root" : "");
+      parts.push(
+        '<g class="node ' + objectState + (selected ? " selected" : "") + (moving ? " moving" : "") +
+          '" data-object-id="' + object.id + '" tabindex="0" role="button" aria-label="' + esc(label) + '">',
+        '<line class="stem" x1="' + (position.x + 24) + '" y1="' + (position.y + 13) + '" x2="' + (position.x + 24) + '" y2="' + (position.y - 7) + '"></line>',
+        '<ellipse class="leaf" cx="' + (position.x + 16) + '" cy="' + (position.y - 4) + '" rx="10" ry="5" transform="rotate(-26 ' + (position.x + 16) + ' ' + (position.y - 4) + ')"></ellipse>',
+        '<ellipse class="leaf" cx="' + (position.x + 31) + '" cy="' + (position.y - 9) + '" rx="9" ry="4" transform="rotate(26 ' + (position.x + 31) + ' ' + (position.y - 9) + ')"></ellipse>',
+        '<rect class="node-shell" x="' + position.x + '" y="' + position.y + '" width="' + position.width + '" height="' + position.height + '" rx="15"></rect>',
+        '<circle cx="' + (position.x + 24) + '" cy="' + (position.y + 25) + '" r="8" fill="' + colorFor(object.id) + '"></circle>',
+        '<text class="node-name" x="' + (position.x + 41) + '" y="' + (position.y + 29) + '">' + esc(object.name) + '</text>',
+        '<text class="node-meta" x="' + (position.x + 14) + '" y="' + (position.y + 49) + '">' + bytes(object.units) + ' B · ' + hexAddress(object.addr) + ' · ' + object.refs.length + ' ref' + (object.refs.length === 1 ? "" : "s") + '</text>',
+        '<rect class="node-state" x="' + (position.x + 13) + '" y="' + (position.y + 57) + '" width="' + (position.width - 26) + '" height="15" rx="7"></rect>',
+        '<text class="node-state-text" x="' + (position.x + position.width / 2) + '" y="' + (position.y + 68) + '" text-anchor="middle">' + displayState(object, reachable) + (object.root ? " · ROOT" : "") + '</text>',
+        '</g>'
+      );
+    });
+
+    parts.push(
+      '<text class="svg-title" x="' + (layout.mobile ? 18 : 35) + '" y="' + (layout.memoryTop - 25) + '">LINEAR HEAP · 24 CELLS × 16 BYTES</text>',
+      '<path class="heap-bracket" d="M ' + (layout.mobile ? 18 : 34) + ' ' + (layout.memoryTop - 15) + ' H ' + (layout.width - (layout.mobile ? 18 : 34)) + '"></path>'
+    );
+    for (let unit = 0; unit < HEAP_UNITS; unit += 1) {
+      const position = layout.cellPosition(unit);
+      const owner = cells[unit] ? objectById(cells[unit]) : null;
+      const className = owner ? truthState(owner, reachable) : "free";
+      const firstCell = owner && owner.addr === unit;
+      parts.push(
+        '<rect class="memory-cell ' + className + (state.lastMove && owner && state.lastMove.id === owner.id ? " moving" : "") +
+          '" x="' + position.x + '" y="' + position.y + '" width="' + layout.cellWidth + '" height="' + layout.cellHeight + '" rx="5"></rect>',
+        '<text class="memory-address" x="' + (position.x + 3) + '" y="' + (position.y + layout.cellHeight + 11) + '">' + unit + '</text>'
+      );
+      if (firstCell) {
+        parts.push('<text class="memory-owner" x="' + (position.x + layout.cellWidth / 2) + '" y="' + (position.y + 21) + '" text-anchor="middle">' + esc(owner.id.toUpperCase()) + '</text>');
+      }
+    }
+    if (state.lastMove) {
+      const object = objectById(state.lastMove.id);
+      const from = layout.cellPosition(state.lastMove.from);
+      const to = layout.cellPosition(state.lastMove.to);
+      const startX = from.x + layout.cellWidth / 2;
+      const startY = from.y + layout.cellHeight / 2;
+      const endX = to.x + layout.cellWidth / 2;
+      const endY = to.y + layout.cellHeight / 2;
+      const curveY = Math.min(startY, endY) - 38;
+      const path = "M " + startX + " " + startY + " Q " + ((startX + endX) / 2) + " " + curveY + " " + endX + " " + endY;
+      for (let index = 0; object && index < object.units; index += 1) {
+        const ghost = layout.cellPosition(state.lastMove.from + index);
+        parts.push('<rect class="memory-outline" x="' + ghost.x + '" y="' + ghost.y + '" width="' + layout.cellWidth + '" height="' + layout.cellHeight + '" rx="5"></rect>');
+      }
+      parts.push('<path class="relocation-path" d="' + path + '"></path>');
+      if (!reducedMotion.matches) {
+        parts.push('<circle class="flying-seed" r="7"><animateMotion dur=".62s" path="' + path + '" fill="freeze"></animateMotion></circle>');
+      } else {
+        parts.push('<circle class="flying-seed" cx="' + endX + '" cy="' + endY + '" r="7"></circle>');
+      }
+      parts.push('<text class="forward-label" x="' + ((startX + endX) / 2) + '" y="' + (curveY - 7) + '" text-anchor="middle">' + hexAddress(state.lastMove.from) + ' → ' + hexAddress(state.lastMove.to) + '</text>');
+    }
+
+    ui.visual.setAttribute("viewBox", "0 0 " + layout.width + " " + layout.height);
+    ui.visual.innerHTML = parts.join("");
+  }
+
+  function projectOutcomes() {
+    const reachable = computeReachable();
+    const survivors = sortedObjects().filter(object => reachable.has(object.id));
+    const sweepFrag = fragmentation(survivors);
+    let cursor = 0;
+    let moves = 0;
+    const movedTargets = new Set();
+    survivors.forEach(object => {
+      if (object.addr !== cursor) {
+        moves += 1;
+        movedTargets.add(object.id);
+      }
+      cursor += object.units;
+    });
+    let rewrites = survivors.filter(object => object.root && movedTargets.has(object.id)).length;
+    survivors.forEach(object => {
+      rewrites += object.refs.filter(reference => movedTargets.has(reference.to)).length;
+    });
+    ui.sweepProjection.textContent = bytes(survivors.reduce((sum, object) => sum + object.units, 0)) +
+      " B survive · " + sweepFrag.runs.length + " free run" + (sweepFrag.runs.length === 1 ? "" : "s") +
+      " · " + sweepFrag.percent + "% fragmentation";
+    ui.compactProjection.textContent = moves + " relocation" + (moves === 1 ? "" : "s") + " · " +
+      rewrites + " pointer rewrite" + (rewrites === 1 ? "" : "s") + " · one dense free run";
+  }
+
+  function invariantResults() {
+    const results = [];
+    const cells = Array(HEAP_UNITS).fill(null);
+    let layoutValid = true;
+    state.objects.forEach(object => {
+      if (object.addr < 0 || object.addr + object.units > HEAP_UNITS) layoutValid = false;
+      for (let unit = object.addr; unit < object.addr + object.units; unit += 1) {
+        if (cells[unit] !== null) layoutValid = false;
+        cells[unit] = object.id;
+      }
+    });
+    results.push({ status: layoutValid ? "pass" : "fail", title: "Blocks are bounded and disjoint", detail: layoutValid ? "Every byte belongs to at most one object." : "An object overlaps or leaves the heap." });
+
+    const ids = new Set(state.objects.map(object => object.id));
+    const refsValid = state.objects.every(object => object.refs.every(reference => ids.has(reference.to)));
+    results.push({ status: refsValid ? "pass" : "fail", title: "References resolve", detail: refsValid ? "No field points to a reclaimed object." : "A dangling object identity exists." });
+
+    const stale = state.objects.reduce((count, object) => {
+      let next = count + (object.root && object.rootPtr !== object.addr ? 1 : 0);
+      object.refs.forEach(reference => {
+        const target = objectById(reference.to);
+        if (target && reference.ptr !== target.addr) next += 1;
+      });
+      return next;
+    }, 0);
+    const rewritesAllowed = state.phase === "compact" && (state.moveQueue.length || state.rewriteQueue.length || stale);
+    results.push({
+      status: stale === 0 ? "pass" : rewritesAllowed ? "warn" : "fail",
+      title: "Pointer words match target addresses",
+      detail: stale === 0 ? "Roots and fields contain current addresses." : stale + " stale pointer" + (stale === 1 ? "" : "s") + (rewritesAllowed ? " protected by forwarding metadata." : " remain after collection.")
+    });
+
+    let survivorStatus = "pass";
+    let survivorDetail = "A collection snapshot has not removed any reachable object.";
+    if (state.snapshotReachable.size) {
+      const missing = [...state.snapshotReachable].filter(id => !ids.has(id));
+      survivorStatus = missing.length ? "fail" : "pass";
+      survivorDetail = missing.length ? missing.length + " reachable survivor(s) were lost." : "All " + state.snapshotReachable.size + " start-of-cycle survivors remain.";
+    }
+    results.push({ status: survivorStatus, title: "Reachable survivors are preserved", detail: survivorDetail });
+
+    if (state.phase === "done") {
+      const garbageLeft = [...state.snapshotObjects].filter(id => !state.snapshotReachable.has(id) && ids.has(id));
+      results.push({
+        status: garbageLeft.length ? "fail" : "pass",
+        title: "Rootless garbage is reclaimed",
+        detail: garbageLeft.length ? garbageLeft.length + " unreachable object(s) remain." : "Every initially unreachable object, including cycles, is gone."
+      });
+    } else {
+      results.push({ status: "warn", title: "Rootless garbage is reclaimed", detail: "Pending until sweep reaches the entire heap." });
+    }
+
+    if (state.collector === "compact" && state.phase === "done") {
+      let cursor = 0;
+      const dense = sortedObjects().every(object => {
+        const correct = object.addr === cursor;
+        cursor += object.units;
+        return correct;
+      });
+      results.push({ status: dense ? "pass" : "fail", title: "Compacted heap is dense", detail: dense ? "All free bytes form one suffix." : "A hole remains between survivors." });
+    } else {
+      results.push({ status: "warn", title: "Compacted heap is dense", detail: state.collector === "sweep" ? "Not required in mark–sweep mode." : "Pending until relocation completes." });
+    }
+    return results;
+  }
+
+  function renderMetrics() {
+    const reachable = computeReachable();
+    const usedUnits = state.objects.reduce((sum, object) => sum + object.units, 0);
+    const liveUnits = state.objects.filter(object => reachable.has(object.id)).reduce((sum, object) => sum + object.units, 0);
+    const garbageUnits = usedUnits - liveUnits;
+    const frag = fragmentation();
+    ui.liveBytes.textContent = bytes(liveUnits) + " B";
+    ui.garbageBytes.textContent = bytes(garbageUnits) + " B";
+    ui.reclaimedBytes.textContent = state.reclaimedBytes + " B";
+    ui.fragmentationValue.textContent = frag.percent + "%";
+    ui.fragmentationNote.textContent = "external · " + frag.runs.length + " free run" + (frag.runs.length === 1 ? "" : "s");
+    ui.pauseValue.textContent = state.pauseMs.toFixed(1) + " ms";
+    ui.usedBytes.textContent = bytes(usedUnits) + " B";
+    ui.freeNote.textContent = bytes(HEAP_UNITS - usedUnits) + " B free · largest " + bytes(frag.largest) + " B";
+    ui.liveProgress.value = bytes(liveUnits);
+    ui.liveNote.textContent = reachable.size + " reachable object" + (reachable.size === 1 ? "" : "s");
+  }
+
+  function renderPhase() {
+    const phaseName = state.phase === "idle" ? "Mutator" : state.phase === "done" ? "Complete" : state.phase === "compact" ? "Compact" : state.phase[0].toUpperCase() + state.phase.slice(1);
+    ui.phaseBadge.textContent = phaseName;
+    ui.stateValue.textContent = state.playing ? phaseName + " running" : state.subphase;
+    ui.stateDetail.textContent = presetLabel(state.currentPreset) + " · seed " + state.seed + " · " + (state.collector === "sweep" ? "mark–sweep" : "mark–compact");
+    ui.main.classList.toggle("paused", !state.playing);
+    const phaseOrder = ["mark", "sweep", "compact", "done"];
+    const phaseIndex = phaseOrder.indexOf(state.phase);
+    [ui.phaseRoots, ui.phaseMark, ui.phaseSweep, ui.phaseCompact].forEach(item => { item.className = ""; });
+    if (state.phase === "idle") ui.phaseRoots.className = "active";
+    else {
+      ui.phaseRoots.className = "done";
+      if (phaseIndex >= 0) {
+        if (state.phase === "mark") ui.phaseMark.className = "active";
+        else ui.phaseMark.className = "done";
+        if (state.phase === "sweep") ui.phaseSweep.className = "active";
+        else if (phaseIndex >= 2 || state.phase === "done") ui.phaseSweep.className = "done";
+        if (state.phase === "compact") ui.phaseCompact.className = "active";
+        else if (state.phase === "done" && state.collector === "compact") ui.phaseCompact.className = "done";
+        else if (state.collector === "sweep") ui.phaseCompact.className = "skipped";
+      }
+    }
+    ui.playBtn.disabled = state.playing;
+    ui.pauseBtn.disabled = !state.playing;
+    ui.stepBtn.disabled = state.playing;
+    ui.sweepModeBtn.setAttribute("aria-pressed", String(state.collector === "sweep"));
+    ui.compactModeBtn.setAttribute("aria-pressed", String(state.collector === "compact"));
+    ui.sweepCompare.classList.toggle("active", state.collector === "sweep");
+    ui.compactCompare.classList.toggle("active", state.collector === "compact");
+  }
+
+  function renderObjects() {
+    const reachable = computeReachable();
+    ui.objectCount.textContent = String(state.objects.length);
+    if (!state.objects.length) {
+      ui.objectList.innerHTML = '<p class="empty">The heap is empty. Allocate a pod or load a preset.</p>';
+    } else {
+      ui.objectList.innerHTML = sortedObjects().map(object => {
+        const objectState = truthState(object, reachable);
+        return '<button class="object-card ' + objectState + ' tone-' + toneFor(object.id) + '" type="button" role="option" data-list-object="' + object.id +
+          '" aria-selected="' + (object.id === state.selectedId) + '">' +
+          '<span class="object-swatch" aria-hidden="true"></span><span class="object-copy"><strong>' + esc(object.name) +
+          '</strong><span>' + hexAddress(object.addr) + ' · ' + bytes(object.units) + ' B · ' + displayState(object, reachable) +
+          '</span></span>' + (object.root ? '<span class="object-badge">ROOT</span>' : '') + '</button>';
+      }).join("");
+    }
+
+    const selected = objectById(state.selectedId);
+    const editable = canEdit() && !state.playing;
+    if (selected) {
+      ui.selectedSummary.innerHTML = '<strong>' + esc(selected.name) + '</strong><span>' + hexAddress(selected.addr) + ' · ' +
+        bytes(selected.units) + ' B · ' + selected.refs.length + ' outgoing ref' + (selected.refs.length === 1 ? '' : 's') + '</span>';
+      const previous = ui.referenceTarget.value;
+      ui.referenceTarget.innerHTML = state.objects.map(object =>
+        '<option value="' + object.id + '">' + esc(object.name) + ' · ' + hexAddress(object.addr) + '</option>'
+      ).join("");
+      if (state.objects.some(object => object.id === previous)) ui.referenceTarget.value = previous;
+      else if (state.objects.length) ui.referenceTarget.value = state.objects[0].id;
+      ui.referenceTarget.disabled = !editable;
+      ui.addRefBtn.disabled = !editable;
+      ui.removeRefBtn.disabled = !editable;
+      ui.rootBtn.disabled = !editable;
+      ui.rootBtn.innerHTML = selected.root ? 'Unpin root <span class="shortcut">P</span>' : 'Pin as root <span class="shortcut">P</span>';
+    } else {
+      ui.selectedSummary.innerHTML = '<strong>No object selected</strong><span>Select a pod to edit its outgoing pointer.</span>';
+      ui.referenceTarget.innerHTML = '<option value="">No target</option>';
+      ui.referenceTarget.disabled = true;
+      ui.addRefBtn.disabled = true;
+      ui.removeRefBtn.disabled = true;
+      ui.rootBtn.disabled = true;
+    }
+    ui.allocateBtn.disabled = !editable;
+    ui.objectName.disabled = !editable;
+    ui.objectSize.disabled = !editable;
+    ui.presetSelect.disabled = state.playing;
+    ui.seedInput.disabled = state.playing;
+    ui.loadPresetBtn.disabled = state.playing;
+    ui.growSeedBtn.disabled = state.playing;
+    ui.sweepModeBtn.disabled = !editable;
+    ui.compactModeBtn.disabled = !editable;
+  }
+
+  function renderInvariants() {
+    ui.invariantList.innerHTML = invariantResults().map(result => {
+      const icon = result.status === "pass" ? "✓" : result.status === "warn" ? "…" : "!";
+      return '<li class="invariant ' + result.status + '"><span class="invariant-icon" aria-hidden="true">' + icon +
+        '</span><span><strong>' + esc(result.title) + '</strong><span>' + esc(result.detail) + '</span></span></li>';
+    }).join("");
+  }
+
+  function renderJournal() {
+    ui.eventList.innerHTML = state.journal.map((entry, index) =>
+      '<li class="event ' + (index === 0 ? "latest" : "") + '">' + esc(entry) + '</li>'
+    ).join("");
+  }
+
+  function renderAll() {
+    renderPhase();
+    renderMetrics();
+    projectOutcomes();
+    renderVisual();
+    renderObjects();
+    renderInvariants();
+    renderJournal();
+  }
+
+  function selectObject(id, speak = false) {
+    if (!objectById(id)) return;
+    state.selectedId = id;
+    if (speak) announce("Selected " + objectById(id).name);
+    renderAll();
+  }
+
+  function allocateObject(event) {
+    event.preventDefault();
+    if (!canEdit() || state.playing) return;
+    const units = Number(ui.objectSize.value);
+    const addr = firstFit(units);
+    if (addr < 0) {
+      const frag = fragmentation();
+      const enoughTotal = frag.free >= units;
+      ui.allocationHint.textContent = enoughTotal ?
+        "Allocation failed: enough total bytes exist, but no contiguous " + bytes(units) + " B run does. Run compact mode." :
+        "Allocation failed: the heap does not have " + bytes(units) + " B free.";
+      announce(ui.allocationHint.textContent);
+      return;
+    }
+    const safeName = ui.objectName.value.trim().replace(/[\u0000-\u001f\u007f]/g, "").slice(0, 18);
+    const object = makeObject(safeName || "Pod " + state.nextId, units, addr, false);
+    state.objects.push(object);
+    state.selectedId = object.id;
+    ui.objectName.value = "";
+    ui.allocationHint.textContent = "Allocated " + object.name + " with first-fit at " + hexAddress(addr) + ".";
+    invalidateCollection("Allocated " + object.name + " · " + bytes(units) + " B at " + hexAddress(addr) + ".");
+    announce(ui.allocationHint.textContent);
+    renderAll();
+  }
+
+  function addReference() {
+    if (!canEdit() || state.playing) return;
+    const source = objectById(state.selectedId);
+    const target = objectById(ui.referenceTarget.value);
+    if (!source || !target) return;
+    if (link(source, target)) {
+      invalidateCollection("Added " + source.name + " → " + target.name + " at stored address " + hexAddress(target.addr) + ".");
+      announce("Reference added");
+    } else {
+      announce("That reference already exists");
+    }
+    renderAll();
+  }
+
+  function removeReference() {
+    if (!canEdit() || state.playing) return;
+    const source = objectById(state.selectedId);
+    const target = objectById(ui.referenceTarget.value);
+    if (!source || !target) return;
+    const before = source.refs.length;
+    source.refs = source.refs.filter(reference => reference.to !== target.id);
+    if (source.refs.length !== before) {
+      invalidateCollection("Removed " + source.name + " → " + target.name + "; reachability recomputed.");
+      announce("Reference removed");
+    } else {
+      announce("No matching reference to remove");
+    }
+    renderAll();
+  }
+
+  function toggleRoot() {
+    if (!canEdit() || state.playing) return;
+    const object = objectById(state.selectedId);
+    if (!object) return;
+    object.root = !object.root;
+    object.rootPtr = object.root ? object.addr : null;
+    invalidateCollection((object.root ? "Pinned " : "Unpinned ") + object.name + (object.root ? " as a root." : "; its subgraph may now be garbage."));
+    announce(object.name + (object.root ? " pinned as root" : " unpinned"));
+    renderAll();
+  }
+
+  function setCollector(mode) {
+    if (!canEdit() || state.playing) return;
+    state.collector = mode;
+    state.phase = "idle";
+    state.subphase = mode === "sweep" ? "Mark–sweep selected" : "Mark–compact selected";
+    state.objects.forEach(object => { object.mark = false; });
+    logEvent("Collector changed to " + (mode === "sweep" ? "mark–sweep: addresses stay stable." : "mark–compact: survivors will relocate.") );
+    announce(state.subphase);
+    renderAll();
+  }
+
+  function moveSelection(direction) {
+    const objects = sortedObjects();
+    if (!objects.length) return;
+    let index = objects.findIndex(object => object.id === state.selectedId);
+    if (index < 0) index = 0;
+    index = (index + direction + objects.length) % objects.length;
+    selectObject(objects[index].id, true);
+  }
+
+  ui.resetBtn.addEventListener("click", () => loadPreset(state.currentPreset, state.seed));
+  ui.playBtn.addEventListener("click", play);
+  ui.pauseBtn.addEventListener("click", () => pause());
+  ui.stepBtn.addEventListener("click", advanceCollector);
+  ui.sweepModeBtn.addEventListener("click", () => setCollector("sweep"));
+  ui.compactModeBtn.addEventListener("click", () => setCollector("compact"));
+  ui.loadPresetBtn.addEventListener("click", () => loadPreset(ui.presetSelect.value, ui.seedInput.value));
+  ui.growSeedBtn.addEventListener("click", () => loadPreset("seeded", ui.seedInput.value));
+  ui.allocationForm.addEventListener("submit", allocateObject);
+  ui.addRefBtn.addEventListener("click", addReference);
+  ui.removeRefBtn.addEventListener("click", removeReference);
+  ui.rootBtn.addEventListener("click", toggleRoot);
+  ui.objectList.addEventListener("click", event => {
+    const card = event.target.closest("[data-list-object]");
+    if (card) selectObject(card.getAttribute("data-list-object"), true);
+  });
+  ui.visual.addEventListener("pointerdown", event => {
+    const node = event.target.closest("[data-object-id]");
+    if (node) selectObject(node.getAttribute("data-object-id"), true);
+  });
+  ui.visual.addEventListener("keydown", event => {
+    const node = event.target.closest("[data-object-id]");
+    if (node && (event.key === "Enter" || event.key === " ")) {
+      event.preventDefault();
+      selectObject(node.getAttribute("data-object-id"), true);
+    }
+  });
+
+  window.addEventListener("keydown", event => {
+    const tag = event.target.tagName;
+    const typing = tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA";
+    if (typing) return;
+    if (event.key === " ") {
+      event.preventDefault();
+      state.playing ? pause() : play();
+    } else if (event.key.toLowerCase() === "n") {
+      event.preventDefault();
+      if (!state.playing) advanceCollector();
+    } else if (event.key.toLowerCase() === "r") {
+      event.preventDefault();
+      loadPreset(state.currentPreset, state.seed);
+    } else if (event.key.toLowerCase() === "p") {
+      event.preventDefault();
+      toggleRoot();
+    } else if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      moveSelection(-1);
+    } else if (event.key === "ArrowRight") {
+      event.preventDefault();
+      moveSelection(1);
+    }
+  });
+
+  window.addEventListener("resize", renderVisual);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden && state.playing) pause("Collector paused because the page is hidden");
+  });
+
+  function frame(time) {
+    if (!state.lastFrame) state.lastFrame = time;
+    const delta = Math.min(100, time - state.lastFrame);
+    state.lastFrame = time;
+    if (state.playing && !document.hidden) {
+      state.accumulator += delta;
+      const interval = Number(ui.speedSelect.value);
+      if (state.accumulator >= interval) {
+        state.accumulator %= interval;
+        advanceCollector();
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  loadPreset("cycle", 357, false);
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
