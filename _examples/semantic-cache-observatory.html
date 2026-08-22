@@ -1,0 +1,55 @@
+---
+title: "Semantic Cache Observatory — Tune Speed Against Wrong Answers"
+slug: "semantic-cache-observatory"
+order: 358
+tagline: "A deterministic cache lab where every millisecond saved has to survive a correctness audit: replay paraphrases, near-misses, changed facts, and context boundaries while tuning threshold, TTL, keys, lookup mode, and invalidation."
+category: "tool"
+difficulty: "advanced"
+status: "live"
+tags:
+  - "semantic-cache"
+  - "caching"
+  - "retrieval"
+  - "observability"
+  - "multi-tenant"
+stack:
+  - "Inline HTML, CSS, and JavaScript"
+  - "Deterministic lexical normalization"
+  - "Explainable weighted similarity"
+  - "Seeded multi-tenant workload"
+demo: "/learnwithkody/demos/364-semantic-cache-observatory.html"
+repo: "https://github.com/kody-w/kody-w.github.io/blob/master/learnwithkody/demos/364-semantic-cache-observatory.html"
+highlights:
+  - "EVERY HIT HAS A RECEIPT. The observatory exposes the normalized tokens, weighted-token overlap, ordered-bigram overlap, character-trigram overlap, mismatch penalties, candidate age, selected context key, and final threshold comparison behind each decision."
+  - "SPEED CANNOT HIDE A WRONG ANSWER. Stale hits and context contamination count against hit precision, and their apparent latency and cost savings are separated from trusted savings instead of being celebrated as wins."
+  - "TENANT IS AN INVARIANT, NOT A DROPDOWN. Cross-tenant entries are discarded before exact matching or similarity scoring, even in the most aggressive speed preset; only locale and plan scope can be widened."
+  - "THE SAME SEEDED WORKLOAD MAKES POLICY TRADE-OFFS VISIBLE. Safe, balanced, and speed presets replay paraphrases, near-misses, changed refund and support facts, numeric changes, and locale/plan boundaries with no network or randomness."
+prompt: |
+  Build “Semantic Cache Observatory — Tune Speed Against Wrong Answers,” a polished single-file simulation of exact and semantic response caching. Use a deterministic, transparent local text-similarity model (token normalization plus explainable weighted similarity; do not pretend it is a real hosted embedding). Provide a seeded prompt/answer workload with paraphrases, near-misses, changed facts, and tenant/context boundaries. Users tune similarity threshold, TTL, context-key strategy, exact-vs-semantic mode, and invalidation; step/play workloads and inspect why each request hit/missed, matched candidate/score, stale/wrong-answer classification, latency/cost saved, hit rate, contamination count, and precision. Include strict tenant isolation invariant, reset/presets, responsive 390px, accessibility, keyboard/touch, reduced motion. Inline HTML/CSS/JS only, no external deps/assets/network/build, <=160KB.
+lessons:
+  - "A semantic cache is a precision system, not just a hit-rate system: correct hits divided by all hits exposes the false economy that raw latency charts hide."
+  - "Tenant isolation belongs before candidate generation, while locale, plan, fact version, TTL, and invalidation determine how much safe reuse remains inside that hard boundary."
+  - "A small lexical model can teach threshold behavior honestly when its normalization, weights, overlap terms, and penalties are visible instead of being mislabeled as a hosted embedding."
+---
+
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>A deterministic, single-file response-cache laboratory. Replay the same multi-tenant workload under exact, semantic, or hybrid lookup; tune threshold, TTL, context keys, and fact-change invalidation; then inspect the candidate, score components, key boundary, entry age, answer, and correctness classification behind every hit or miss.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>The fastest-looking policy can be the least useful one. The observatory makes that failure measurable: stale and contaminated hits lower precision and contribute zero trusted savings, while an immutable tenant guard proves that aggressive reuse never becomes cross-tenant leakage. The “semantic” model is deliberately local and lexical, with every weight and penalty visible instead of hidden behind an imaginary embedding API.</p>
+</section>
+
+<aside class="lwk-try-embed">
+  <div class="lwk-try-embed-head">
+    <span class="lwk-try-embed-label">Live demo</span>
+    <a href="/learnwithkody/demos/364-semantic-cache-observatory.html" target="_blank" rel="noopener" class="lwk-try-embed-open">Open in new tab ↗</a>
+  </div>
+  <iframe
+    src="/learnwithkody/demos/364-semantic-cache-observatory.html"
+    title="Semantic Cache Observatory — live demo"
+    loading="lazy"
+    sandbox="allow-scripts allow-same-origin"></iframe>
+</aside>
