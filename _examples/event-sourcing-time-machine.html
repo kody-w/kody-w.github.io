@@ -1,0 +1,53 @@
+---
+title: "The Event-Sourced Time Machine — Rebuild Any State Without Rewriting History"
+slug: "event-sourcing-time-machine"
+order: 353
+tagline: "Issue real warehouse commands, watch immutable events become disposable projections, rewind without erasing, and fork a future the canonical timeline never has to believe."
+category: "tool"
+difficulty: "advanced"
+status: "live"
+tags:
+  - "event-sourcing"
+  - "immutable-log"
+  - "projections"
+  - "local-first"
+  - "systems-design"
+stack:
+  - "HTML"
+  - "CSS"
+  - "Vanilla JavaScript"
+  - "FNV-1a 64-bit hash chain"
+demo: "/learnwithkody/demos/359-event-sourcing-time-machine.html"
+repo: "https://github.com/kody-w/kody-w.github.io/blob/master/learnwithkody/demos/359-event-sourcing-time-machine.html"
+highlights:
+  - "THE PROJECTION IS DISPOSABLE. Every inventory quantity, reservation, order status, metric, and comparison is reduced from immutable event envelopes. Drag the replay cursor backward and the read model changes while the event array does not; replay to the head and the projection fingerprint must land on the same 64-bit hash."
+  - "A HYPOTHETICAL FUTURE GETS ITS OWN HASH CHAIN. Fork any verified canonical prefix, append commands to the violet branch, and compare both head projections SKU by SKU. Branch events reuse the past but never enter the canonical array, so experimentation is explicit instead of masquerading as history."
+  - "CORRUPTION FAILS CLOSED. The sabotage control appends a well-formed event whose previous-hash link is forged. Replay halts at the last valid sequence, writes lock, the bad envelope stays visible, and strict JSON import rejects the stream atomically instead of trusting a plausible payload."
+  - "SNAPSHOTS ARE CACHES, NOT TRUTH. Each snapshot carries its event hash, projection hash, and derived state; import independently replays its source events and rejects any snapshot whose cached bytes disagree."
+prompt: |
+  Build “The Event-Sourced Time Machine — Rebuild Any State Without Rewriting History,” a polished, local-first, single-file event-sourcing lab. Use a concrete domain (inventory/orders or banking) with commands that validate and append immutable events. Show event log, one or more projections, current sequence/hash, replay cursor, snapshots, and rejected commands. Users can rewind the projection without mutating history, fork a hypothetical branch, compare branch state with canonical state, replay, inject a corrupt event to demonstrate validation, export/import JSON, and reset/run a deterministic incident preset. Ensure projection state is actually derived from events and replay produces the same hash. Include pause/step where useful, accessible keyboard/touch controls, responsive 390px layout, reduced motion. Inline self-contained HTML/CSS/JS only, no dependencies/network/build, <=160KB.
+lessons:
+  - "Why event sourcing separates facts from views: commands may be rejected, accepted events become immutable history, and every projection can be deleted and rebuilt without losing the business record."
+  - "How hash-linked envelopes, deterministic reducers, verified snapshots, and atomic import validation turn replay from a visual trick into an integrity proof."
+  - "Why a branch is not an edit to the past: it shares a canonical prefix, owns an isolated tail, and can be compared with the real head without rewriting either timeline."
+---
+
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>A local-first warehouse flight recorder in one self-contained HTML file. Register products, receive inventory, place and ship orders, cancel reservations, and make controlled stock adjustments. Commands validate against the active head projection; accepted commands append one deeply frozen, hash-linked event, while rejected commands advance no sequence at all. The inventory table, order cards, operational metrics, branch comparison, and every displayed state fingerprint are rebuilt from those events.</p>
+  <p>The replay cursor can move from genesis to the latest valid sequence without touching history. Verified snapshots cache derived state, a deterministic incident preset always produces the same stream, and the data port exports plain JSON or atomically validates an import entirely in the browser.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>Rewinding changes what the application knows without changing what happened. Fork sequence six and the hypothetical timeline inherits the same verified past, then grows a separate hash chain whose inventory can be compared directly with canonical reality. Neither future edits the other.</p>
+  <p>Then break it on purpose. The corruption control appends a plausible event with a forged previous-hash link. The reducer stops at the last trustworthy fact, writes lock, the invalid envelope remains visible, and strict import refuses to absorb it. Replay is not an animation here—it is the proof that immutable facts plus a deterministic reducer reproduce the same state hash.</p>
+</section>
+
+<aside class="lwk-try-embed">
+  <div class="lwk-try-embed-head">
+    <span class="lwk-try-embed-label">Live demo</span>
+    <a href="/learnwithkody/demos/359-event-sourcing-time-machine.html" target="_blank" rel="noopener" class="lwk-try-embed-open">Open in new tab ↗</a>
+  </div>
+  <iframe src="/learnwithkody/demos/359-event-sourcing-time-machine.html" title="The Event-Sourced Time Machine — live demo" loading="lazy" sandbox="allow-scripts allow-same-origin"></iframe>
+</aside>
