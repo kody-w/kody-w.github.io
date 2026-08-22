@@ -1,0 +1,2126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src 'none'; font-src 'none'; manifest-src 'none'; media-src 'none'; object-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'none'; img-src 'none'; frame-src 'none'; script-src 'unsafe-inline'; script-src-attr 'none'; style-src 'unsafe-inline'">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07111f">
+  <meta name="description" content="A deterministic expand, migrate, and contract simulator for changing a live schema without downtime.">
+  <title>Migration Flight Simulator — Change a Live Schema Without Downtime</title>
+  <style>
+    :root{
+      color-scheme:dark;
+      --bg:#07111f;
+      --panel:#0c1a2b;
+      --panel-2:#102238;
+      --line:#253c57;
+      --line-soft:#172d44;
+      --text:#ecf5ff;
+      --muted:#91a8bf;
+      --cyan:#55d9ff;
+      --blue:#5d8cff;
+      --green:#66e3a4;
+      --amber:#ffc867;
+      --red:#ff6f79;
+      --violet:#c29cff;
+      --shadow:0 18px 50px rgba(0,0,0,.28);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html{background:var(--bg);scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-width:280px;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 18% -10%,rgba(85,217,255,.12),transparent 34rem),
+        radial-gradient(circle at 100% 12%,rgba(194,156,255,.09),transparent 30rem),
+        linear-gradient(180deg,#07111f,#081522 56%,#06101c);
+      color:var(--text);
+      font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    button,input,select{font:inherit}
+    button,select{min-height:44px}
+    button{touch-action:manipulation}
+    button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{
+      outline:3px solid var(--amber);
+      outline-offset:3px;
+    }
+    .skip{
+      position:fixed;
+      left:12px;
+      top:12px;
+      z-index:100;
+      transform:translateY(-150%);
+      border-radius:10px;
+      background:#fff;
+      color:#06101c;
+      padding:10px 14px;
+      font-weight:800;
+    }
+    .skip:focus{transform:none}
+    .shell{width:min(1500px,100%);margin:auto;padding:18px clamp(12px,2.6vw,34px) 34px}
+    .mast{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:20px;
+      padding:10px 2px 18px;
+    }
+    .eyebrow{
+      margin:0 0 4px;
+      color:var(--cyan);
+      font:800 11px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+    }
+    h1{
+      margin:0;
+      max-width:850px;
+      font-size:clamp(25px,4vw,48px);
+      line-height:1.04;
+      letter-spacing:-.045em;
+    }
+    .subtitle{max-width:760px;margin:9px 0 0;color:var(--muted);font-size:clamp(13px,1.4vw,16px)}
+    .mast-status{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;max-width:420px}
+    .status-chip,.tiny-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      min-height:32px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:rgba(12,26,43,.76);
+      color:#cfe1f2;
+      padding:6px 10px;
+      font:750 11px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+      letter-spacing:.03em;
+      white-space:nowrap;
+    }
+    .status-chip::before,.tiny-chip::before{
+      content:"";
+      width:7px;
+      height:7px;
+      flex:0 0 auto;
+      border-radius:50%;
+      background:var(--muted);
+      box-shadow:0 0 0 3px rgba(145,168,191,.1);
+    }
+    .status-chip[data-tone="good"]::before,.tiny-chip[data-tone="good"]::before{background:var(--green);box-shadow:0 0 0 3px rgba(102,227,164,.12)}
+    .status-chip[data-tone="warn"]::before,.tiny-chip[data-tone="warn"]::before{background:var(--amber);box-shadow:0 0 0 3px rgba(255,200,103,.12)}
+    .status-chip[data-tone="bad"]::before,.tiny-chip[data-tone="bad"]::before{background:var(--red);box-shadow:0 0 0 3px rgba(255,111,121,.12)}
+    .panel{
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:linear-gradient(180deg,rgba(14,31,51,.96),rgba(9,23,38,.96));
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .panel-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      padding:16px 18px 13px;
+      border-bottom:1px solid var(--line-soft);
+    }
+    .panel-head h2,.panel-head h3{margin:0;font-size:15px;letter-spacing:.01em}
+    .panel-head p{margin:3px 0 0;color:var(--muted);font-size:12px}
+    .metrics{
+      display:grid;
+      grid-template-columns:repeat(6,minmax(0,1fr));
+      gap:10px;
+      margin-bottom:12px;
+    }
+    .metric{
+      position:relative;
+      min-height:104px;
+      padding:14px;
+      border:1px solid var(--line);
+      border-radius:15px;
+      background:linear-gradient(145deg,rgba(16,34,56,.94),rgba(10,25,41,.94));
+      overflow:hidden;
+    }
+    .metric::after{
+      content:"";
+      position:absolute;
+      right:-24px;
+      bottom:-38px;
+      width:88px;
+      height:88px;
+      border-radius:50%;
+      background:var(--cyan);
+      opacity:.05;
+    }
+    .metric[data-tone="warn"]::after{background:var(--amber);opacity:.09}
+    .metric[data-tone="bad"]::after{background:var(--red);opacity:.1}
+    .metric-label{
+      display:block;
+      color:var(--muted);
+      font:750 10px/1.25 ui-monospace,SFMono-Regular,Consolas,monospace;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+    }
+    .metric-value{
+      display:block;
+      margin-top:7px;
+      font:850 clamp(21px,2.3vw,31px)/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+      letter-spacing:-.055em;
+    }
+    .metric-sub{display:block;margin-top:7px;color:#a9bfd3;font-size:11px}
+    .stage-panel{margin-bottom:12px}
+    .stage-summary{display:flex;align-items:center;gap:10px;min-width:0}
+    .stage-number{
+      display:grid;
+      width:38px;
+      height:38px;
+      flex:0 0 auto;
+      place-items:center;
+      border-radius:11px;
+      background:rgba(85,217,255,.12);
+      color:var(--cyan);
+      font:900 14px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+    }
+    .stage-copy strong{display:block;font-size:15px}
+    .stage-copy span{display:block;color:var(--muted);font-size:12px}
+    .stage-rail{
+      display:grid;
+      grid-template-columns:repeat(7,minmax(112px,1fr));
+      gap:0;
+      margin:0;
+      padding:15px 16px 17px;
+      list-style:none;
+      overflow-x:auto;
+      scrollbar-color:var(--line) transparent;
+    }
+    .stage-step{position:relative;min-width:112px;padding:0 8px;text-align:center}
+    .stage-step::before{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      top:16px;
+      height:2px;
+      background:var(--line);
+    }
+    .stage-step:first-child::before{left:50%}
+    .stage-step:last-child::before{right:50%}
+    .stage-dot{
+      position:relative;
+      z-index:1;
+      display:grid;
+      width:33px;
+      height:33px;
+      margin:auto;
+      place-items:center;
+      border:2px solid var(--line);
+      border-radius:50%;
+      background:#0a1929;
+      color:var(--muted);
+      font:850 11px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+    }
+    .stage-step.past::before,.stage-step.current::before{background:linear-gradient(90deg,var(--blue),var(--cyan))}
+    .stage-step.past .stage-dot{border-color:var(--green);background:rgba(102,227,164,.13);color:var(--green)}
+    .stage-step.current .stage-dot{
+      border-color:var(--cyan);
+      background:rgba(85,217,255,.16);
+      color:#fff;
+      box-shadow:0 0 0 5px rgba(85,217,255,.08),0 0 22px rgba(85,217,255,.2);
+    }
+    .stage-name{display:block;margin-top:8px;color:#b7c9da;font-size:11px;font-weight:750;white-space:nowrap}
+    .stage-step.current .stage-name{color:#fff}
+    .workspace{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(310px,.72fr);gap:12px}
+    .data-plane{min-width:0}
+    .flow-wrap{padding:10px 14px 0}
+    #flowMap{
+      display:block;
+      width:100%;
+      min-height:260px;
+      border:1px solid var(--line-soft);
+      border-radius:15px;
+      background:
+        linear-gradient(rgba(85,217,255,.035) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(85,217,255,.035) 1px,transparent 1px),
+        #091727;
+      background-size:24px 24px;
+    }
+    #flowMap text{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;fill:#dbeafa}
+    #flowMap .small-label{fill:#8fa8c0;font-size:11px;letter-spacing:.08em}
+    #flowMap .main-label{font-size:14px;font-weight:800}
+    #flowMap .box{fill:#10243a;stroke:#31506e;stroke-width:1.5}
+    #flowMap .box.good{stroke:#3d9c79}
+    #flowMap .box.warn{stroke:#b58435}
+    #flowMap .box.bad{stroke:#b84f59}
+    #flowMap .route{
+      fill:none;
+      stroke:#35536f;
+      stroke-width:3;
+      stroke-linecap:round;
+      stroke-dasharray:7 8;
+      marker-end:url(#arrow);
+    }
+    #flowMap .route.enabled{stroke:#4b96c8}
+    #flowMap.running .route.enabled{animation:flowDash 1.05s linear infinite}
+    #flowMap .route.hot{stroke:var(--cyan);stroke-width:4;filter:drop-shadow(0 0 5px rgba(85,217,255,.55))}
+    #flowMap .route.fault{stroke:var(--red)}
+    #flowMap .db-divider{stroke:#27435e;stroke-width:1}
+    #flowMap .lamp{fill:#466078}
+    #flowMap .lamp.good{fill:var(--green)}
+    #flowMap .lamp.warn{fill:var(--amber)}
+    #flowMap .lamp.bad{fill:var(--red)}
+    #failureMarker text{fill:#ffd9dc;font-size:11px;font-weight:800}
+    @keyframes flowDash{to{stroke-dashoffset:-30}}
+    .policy-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      padding:12px 14px;
+    }
+    .policy{
+      border:1px solid var(--line-soft);
+      border-radius:14px;
+      background:rgba(7,18,31,.6);
+      padding:12px;
+    }
+    .policy-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+    .policy-top strong{font-size:12px}
+    .policy select{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:#0b1b2d;
+      color:var(--text);
+      padding:9px 34px 9px 10px;
+    }
+    .sequence{
+      margin:9px 0 0;
+      color:#d8e8f7;
+      font:750 12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;
+    }
+    .policy-note{margin:7px 0 0;color:var(--muted);font-size:11px}
+    .order-guard{
+      margin:0 14px 13px;
+      border:1px solid var(--line);
+      border-left:4px solid var(--green);
+      border-radius:11px;
+      background:rgba(102,227,164,.06);
+      padding:10px 12px;
+      color:#cfe4d9;
+      font-size:12px;
+    }
+    .order-guard.warn{border-left-color:var(--amber);background:rgba(255,200,103,.07);color:#f3dfba}
+    .order-guard.bad{border-left-color:var(--red);background:rgba(255,111,121,.07);color:#ffd1d5}
+    .record-strip{border-top:1px solid var(--line-soft);padding:13px 14px 15px}
+    .record-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+    .record-head strong{font-size:12px}
+    .ghost-button{
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:#10233a;
+      color:#dceafb;
+      padding:8px 11px;
+      cursor:pointer;
+      font-weight:750;
+    }
+    .record-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+    .record-card{min-width:0;border:1px solid var(--line-soft);border-radius:12px;background:#071523;padding:10px}
+    .record-card header{display:flex;align-items:center;justify-content:space-between;gap:7px;margin-bottom:7px}
+    .record-card header span:first-child{color:var(--muted);font:750 10px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;text-transform:uppercase;letter-spacing:.08em}
+    .shape-state{font-size:10px;font-weight:850}
+    .shape-state.good{color:var(--green)}
+    .shape-state.warn{color:var(--amber)}
+    .shape-state.bad{color:var(--red)}
+    pre{
+      margin:0;
+      min-height:84px;
+      overflow:auto;
+      color:#d4e7f8;
+      font:11px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace;
+      white-space:pre-wrap;
+      overflow-wrap:anywhere;
+    }
+    .controls{display:flex;flex-direction:column;min-width:0}
+    .control-body{padding:14px}
+    .button-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .button-grid.two{grid-template-columns:1fr 1fr;margin-top:8px}
+    .control-button{
+      border:1px solid var(--line);
+      border-radius:11px;
+      background:#122a44;
+      color:#edf7ff;
+      padding:10px 8px;
+      cursor:pointer;
+      font-weight:800;
+    }
+    .control-button:hover{border-color:#4a6988;background:#173451}
+    .control-button.primary{border-color:#357ba0;background:linear-gradient(135deg,#17698c,#2257a3)}
+    .control-button.safe{border-color:#367d63;background:rgba(53,126,98,.25);color:#cffff0}
+    .control-button.rush{border-color:#8f6131;background:rgba(143,97,49,.24);color:#ffe1b7}
+    .control-button.danger{border-color:#8a3f49;background:rgba(138,63,73,.24);color:#ffd7db}
+    .control-button:disabled{cursor:not-allowed;opacity:.46}
+    .control-divider{height:1px;margin:15px 0;background:var(--line-soft)}
+    .field{margin:13px 0}
+    .field:first-child{margin-top:0}
+    .field-line{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:7px}
+    .field label{font-size:12px;font-weight:750}
+    output{color:var(--cyan);font:800 11px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace}
+    input[type="range"]{width:100%;min-height:30px;margin:0;accent-color:var(--cyan);cursor:pointer}
+    .range-scale{display:flex;justify-content:space-between;color:#69849d;font-size:10px}
+    .failure-row{display:grid;grid-template-columns:1fr auto;gap:8px}
+    .failure-row select{
+      min-width:0;
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:#0b1b2d;
+      color:var(--text);
+      padding:9px;
+    }
+    .fault-status{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-top:8px;
+      border:1px solid var(--line-soft);
+      border-radius:10px;
+      background:#081827;
+      padding:8px 10px;
+      color:var(--muted);
+      font-size:11px;
+    }
+    .callout{
+      margin-top:auto;
+      border-top:1px solid var(--line-soft);
+      border-left:4px solid var(--cyan);
+      background:rgba(85,217,255,.055);
+      padding:14px 15px;
+    }
+    .callout.warn{border-left-color:var(--amber);background:rgba(255,200,103,.055)}
+    .callout.bad{border-left-color:var(--red);background:rgba(255,111,121,.065)}
+    .callout.good{border-left-color:var(--green);background:rgba(102,227,164,.055)}
+    .callout strong{display:block;margin-bottom:4px;font-size:12px}
+    .callout p{margin:0;color:#b9cddd;font-size:11px}
+    .lower-grid{display:grid;grid-template-columns:1.05fr .95fr 1.15fr;gap:12px;margin-top:12px}
+    .table-wrap{overflow-x:auto}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th,td{padding:12px 13px;border-bottom:1px solid var(--line-soft);text-align:left;vertical-align:top}
+    thead th{color:var(--muted);font:750 10px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.08em;text-transform:uppercase}
+    tbody th{width:86px;color:#e3f0fb;font-size:12px}
+    tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
+    .compat-state{display:inline-flex;align-items:center;gap:6px;font-weight:850}
+    .compat-state::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--muted)}
+    td.good .compat-state{color:var(--green)}
+    td.good .compat-state::before{background:var(--green)}
+    td.warn .compat-state{color:var(--amber)}
+    td.warn .compat-state::before{background:var(--amber)}
+    td.bad .compat-state{color:var(--red)}
+    td.bad .compat-state::before{background:var(--red)}
+    td small{display:block;margin-top:3px;color:var(--muted);line-height:1.35}
+    .invariant-list{margin:0;padding:7px 14px 13px;list-style:none}
+    .invariant{
+      display:grid;
+      grid-template-columns:18px 1fr;
+      gap:9px;
+      padding:9px 0;
+      border-bottom:1px solid var(--line-soft);
+    }
+    .invariant:last-child{border-bottom:0}
+    .invariant-mark{display:grid;width:18px;height:18px;place-items:center;border-radius:50%;background:#1c344b;color:var(--muted);font-size:11px;font-weight:900}
+    .invariant.good .invariant-mark{background:rgba(102,227,164,.14);color:var(--green)}
+    .invariant.warn .invariant-mark{background:rgba(255,200,103,.14);color:var(--amber)}
+    .invariant.bad .invariant-mark{background:rgba(255,111,121,.14);color:var(--red)}
+    .invariant strong{display:block;font-size:11px}
+    .invariant small{display:block;margin-top:2px;color:var(--muted);font-size:10px}
+    .gate{padding:0 14px 14px}
+    .gate-meter{height:8px;border-radius:99px;background:#071522;overflow:hidden}
+    .gate-meter span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--green));transition:width .25s ease}
+    .gate-list{margin:9px 0 0;padding-left:18px;color:#b8cbdb;font-size:10px}
+    .gate-list li{margin:4px 0}
+    .telemetry-body{display:grid;grid-template-rows:auto minmax(150px,1fr);min-height:343px}
+    .chart-wrap{padding:10px 14px 4px;border-bottom:1px solid var(--line-soft)}
+    #historyChart{display:block;width:100%;height:105px}
+    #historyChart .grid{stroke:#1c344b;stroke-width:1}
+    #historyChart .lag-line{fill:none;stroke:var(--violet);stroke-width:2.5}
+    #historyChart .error-line{fill:none;stroke:var(--red);stroke-width:2.5}
+    #historyChart text{fill:#7892aa;font:9px ui-monospace,SFMono-Regular,Consolas,monospace}
+    .legend{display:flex;gap:14px;color:var(--muted);font-size:10px}
+    .legend span::before{content:"";display:inline-block;width:16px;height:3px;margin-right:6px;border-radius:9px;vertical-align:middle;background:var(--violet)}
+    .legend span:last-child::before{background:var(--red)}
+    .event-log{margin:0;padding:7px 14px 12px;list-style:none;overflow:auto;max-height:220px}
+    .event{
+      display:grid;
+      grid-template-columns:42px 1fr;
+      gap:8px;
+      padding:8px 0;
+      border-bottom:1px solid var(--line-soft);
+    }
+    .event:last-child{border-bottom:0}
+    .event time{color:#6f8aa2;font:750 9px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace}
+    .event strong{display:block;font-size:10px}
+    .event small{display:block;color:var(--muted);font-size:9px;line-height:1.35}
+    .event.warn strong{color:var(--amber)}
+    .event.bad strong{color:var(--red)}
+    .event.good strong{color:var(--green)}
+    .help-line{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:15px 3px 0;
+      color:#6f879e;
+      font-size:11px;
+    }
+    kbd{
+      display:inline-block;
+      min-width:22px;
+      margin:0 2px;
+      border:1px solid #34506b;
+      border-bottom-width:2px;
+      border-radius:5px;
+      background:#102238;
+      color:#dceafa;
+      padding:2px 5px;
+      text-align:center;
+      font:750 10px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+    }
+    #toast{
+      position:fixed;
+      z-index:90;
+      left:50%;
+      bottom:max(18px,env(safe-area-inset-bottom));
+      width:min(520px,calc(100% - 28px));
+      transform:translate(-50%,18px);
+      border:1px solid var(--line);
+      border-radius:13px;
+      background:#10263c;
+      box-shadow:0 14px 45px rgba(0,0,0,.38);
+      color:#eaf5ff;
+      padding:11px 14px;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .18s ease,transform .18s ease;
+      font-size:12px;
+      font-weight:700;
+    }
+    #toast.show{transform:translate(-50%,0);opacity:1}
+    #toast.bad{border-color:#89434b;background:#351b24}
+    #toast.good{border-color:#34785f;background:#123329}
+    @media (max-width:1120px){
+      .metrics{grid-template-columns:repeat(3,1fr)}
+      .workspace{grid-template-columns:1fr}
+      .controls{display:grid;grid-template-columns:minmax(320px,.82fr) 1fr}
+      .controls .panel-head{grid-column:1/-1}
+      .callout{margin:0;border-top:0;border-left-width:4px;border-right:0}
+      .lower-grid{grid-template-columns:1fr 1fr}
+      .telemetry{grid-column:1/-1}
+    }
+    @media (max-width:720px){
+      .shell{padding:10px 10px 26px}
+      .mast{display:block;padding:8px 2px 14px}
+      .mast-status{justify-content:flex-start;margin-top:13px;max-width:none}
+      .metrics{grid-template-columns:repeat(2,1fr);gap:8px}
+      .metric{min-height:95px;padding:12px}
+      .stage-panel .panel-head{display:block}
+      .stage-panel .tiny-chip{margin-top:9px}
+      .policy-grid,.record-grid{grid-template-columns:1fr}
+      .controls{display:flex}
+      .lower-grid{grid-template-columns:1fr}
+      .telemetry{grid-column:auto}
+      .record-card pre{min-height:64px}
+      #flowMap{min-height:225px}
+    }
+    @media (max-width:420px){
+      h1{font-size:28px}
+      .status-chip{font-size:10px}
+      .metric-value{font-size:23px}
+      .panel-head{padding:14px}
+      .flow-wrap{padding:8px 8px 0}
+      .policy-grid{padding:9px 8px}
+      .order-guard{margin:0 8px 10px}
+      .record-strip{padding:11px 8px 12px}
+      .button-grid{grid-template-columns:1fr 1fr}
+      .button-grid .control-button:first-child{grid-column:1/-1}
+      .button-grid.two{grid-template-columns:1fr 1fr}
+      .failure-row{grid-template-columns:1fr}
+      .failure-row button{width:100%}
+      th,td{padding:10px 9px}
+      #flowMap{min-height:205px}
+      .help-line{display:block;line-height:1.8}
+    }
+    @media (prefers-reduced-motion:reduce){
+      html{scroll-behavior:auto}
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}
+      #flowMap .route{stroke-dasharray:none}
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#simulator">Skip to simulator controls</a>
+  <div class="shell">
+    <header class="mast">
+      <div>
+        <p class="eyebrow">Expand · Migrate · Contract</p>
+        <h1>Migration Flight Simulator</h1>
+        <p class="subtitle">Change a live customer-name schema while old and new clients keep reading and writing. The simulator tracks what users see, not just whether the DDL succeeds.</p>
+      </div>
+      <div class="mast-status" aria-label="Simulation status">
+        <span class="status-chip" id="runState" data-tone="warn">Paused</span>
+        <span class="status-chip" id="simClock">T+000s</span>
+        <span class="status-chip" id="presetState">Manual flight</span>
+      </div>
+    </header>
+
+    <main id="simulator">
+      <section class="metrics" aria-label="Migration telemetry">
+        <article class="metric" id="requestsCard">
+          <span class="metric-label">Requests</span>
+          <strong class="metric-value" id="requestsMetric">0</strong>
+          <span class="metric-sub" id="requestsSub">0 reads · 0 writes</span>
+        </article>
+        <article class="metric" id="errorsCard">
+          <span class="metric-label">Error rate</span>
+          <strong class="metric-value" id="errorMetric">0.0%</strong>
+          <span class="metric-sub" id="errorSub">0 failed requests</span>
+        </article>
+        <article class="metric" id="staleCard">
+          <span class="metric-label">Stale / mismatch</span>
+          <strong class="metric-value" id="staleMetric">0 / 0</strong>
+          <span class="metric-sub" id="staleSub">0 stale responses · rows / replicas</span>
+        </article>
+        <article class="metric" id="lagCard">
+          <span class="metric-label">Backfill lag</span>
+          <strong class="metric-value" id="lagMetric">—</strong>
+          <span class="metric-sub" id="lagSub">target shape not expanded</span>
+        </article>
+        <article class="metric" id="lossCard">
+          <span class="metric-label">Data-loss rows</span>
+          <strong class="metric-value" id="lossMetric">0</strong>
+          <span class="metric-sub" id="lossSub">no acknowledged value missing</span>
+        </article>
+        <article class="metric" id="checksCard">
+          <span class="metric-label">Invariant checks</span>
+          <strong class="metric-value" id="checksMetric">3 / 5</strong>
+          <span class="metric-sub" id="checksSub">guardrails evaluating</span>
+        </article>
+      </section>
+
+      <section class="panel stage-panel" aria-labelledby="stageTitle">
+        <div class="panel-head">
+          <div class="stage-summary">
+            <span class="stage-number" id="stageNumber">0</span>
+            <div class="stage-copy">
+              <strong id="stageTitle">Legacy only</strong>
+              <span id="stageDescription">One required full_name field serves every request.</span>
+            </div>
+          </div>
+          <span class="tiny-chip" id="stageSafety" data-tone="good">No destructive change</span>
+        </div>
+        <ol class="stage-rail" id="stageRail" aria-label="Migration stages">
+          <li class="stage-step current" data-stage="0" aria-current="step"><span class="stage-dot">0</span><span class="stage-name">Legacy</span></li>
+          <li class="stage-step" data-stage="1"><span class="stage-dot">1</span><span class="stage-name">Expand schema</span></li>
+          <li class="stage-step" data-stage="2"><span class="stage-dot">2</span><span class="stage-name">Dual write</span></li>
+          <li class="stage-step" data-stage="3"><span class="stage-dot">3</span><span class="stage-name">Backfill</span></li>
+          <li class="stage-step" data-stage="4"><span class="stage-dot">4</span><span class="stage-name">Switch reads</span></li>
+          <li class="stage-step" data-stage="5"><span class="stage-dot">5</span><span class="stage-name">Stop old writes</span></li>
+          <li class="stage-step" data-stage="6"><span class="stage-dot">6</span><span class="stage-name">Contract</span></li>
+        </ol>
+      </section>
+
+      <div class="workspace">
+        <section class="panel data-plane" aria-labelledby="dataPlaneTitle">
+          <div class="panel-head">
+            <div>
+              <h2 id="dataPlaneTitle">Live data plane</h2>
+              <p>Old v1 clients know <code>full_name</code>. New v2 clients expect <code>given_name</code> + <code>family_name</code>.</p>
+            </div>
+            <span class="tiny-chip" id="trafficChip">0 req/min</span>
+          </div>
+          <div class="flow-wrap">
+            <svg id="flowMap" viewBox="0 0 760 300" role="img" aria-label="Old and new clients sending live traffic through the migration writer to legacy and normalized record shapes">
+              <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#4b96c8"></path>
+                </marker>
+              </defs>
+              <path id="routeOld" class="route enabled" d="M142 83 C200 83 202 128 262 128"></path>
+              <path id="routeNew" class="route" d="M142 224 C200 224 202 170 262 170"></path>
+              <path id="routeLegacy" class="route enabled" d="M438 128 C492 128 498 83 553 83"></path>
+              <path id="routeNorm" class="route" d="M438 170 C492 170 498 218 553 218"></path>
+              <path id="routeBackfill" class="route" d="M626 116 C694 138 694 178 626 194"></path>
+
+              <rect id="oldClientBox" class="box good" x="28" y="48" width="114" height="70" rx="13"></rect>
+              <circle id="oldClientLamp" class="lamp good" cx="48" cy="69" r="5"></circle>
+              <text class="small-label" x="60" y="73">CLIENT V1</text>
+              <text class="main-label" x="48" y="96">full_name</text>
+
+              <rect id="newClientBox" class="box bad" x="28" y="189" width="114" height="70" rx="13"></rect>
+              <circle id="newClientLamp" class="lamp bad" cx="48" cy="210" r="5"></circle>
+              <text class="small-label" x="60" y="214">CLIENT V2</text>
+              <text class="main-label" x="48" y="237">given + family</text>
+
+              <rect class="box" x="262" y="92" width="176" height="114" rx="16"></rect>
+              <text class="small-label" x="282" y="116">COMPATIBILITY WRITER</text>
+              <text class="main-label" id="svgWriteMode" x="282" y="147">legacy only</text>
+              <text class="small-label" id="svgReadMode" x="282" y="174">read: legacy only</text>
+              <circle id="writerLamp" class="lamp good" cx="416" cy="113" r="6"></circle>
+
+              <rect id="databaseBox" class="box good" x="553" y="45" width="176" height="214" rx="17"></rect>
+              <text class="small-label" x="575" y="69">LIVE RECORD</text>
+              <line class="db-divider" x1="570" x2="712" y1="135" y2="135"></line>
+              <text class="main-label" x="575" y="96">legacy.full_name</text>
+              <text class="small-label" id="svgLegacyState" x="575" y="116">48 current rows</text>
+              <text class="main-label" x="575" y="202">normalized.name</text>
+              <text class="small-label" id="svgNormState" x="575" y="224">column absent</text>
+              <circle id="legacyLamp" class="lamp good" cx="707" cy="93" r="6"></circle>
+              <circle id="normLamp" class="lamp bad" cx="707" cy="199" r="6"></circle>
+
+              <g id="failureMarker" hidden>
+                <circle cx="480" cy="150" r="16" fill="#481f2a" stroke="#ff6f79" stroke-width="2"></circle>
+                <text x="475" y="154">!</text>
+                <text x="453" y="180">FAULT</text>
+              </g>
+            </svg>
+          </div>
+
+          <div class="policy-grid">
+            <div class="policy">
+              <div class="policy-top"><strong>Non-atomic write order</strong><span class="tiny-chip" id="writePolicyChip">1 leg</span></div>
+              <label class="eyebrow" for="writeOrder">First persisted copy</label>
+              <select id="writeOrder">
+                <option value="norm-first">Normalized → legacy</option>
+                <option value="legacy-first">Legacy → normalized</option>
+              </select>
+              <p class="sequence" id="writeSequence">client → legacy → ACK</p>
+              <p class="policy-note">A second-leg failure leaves the first copy visible even though the request returns an error.</p>
+            </div>
+            <div class="policy">
+              <div class="policy-top"><strong>New-client read order</strong><span class="tiny-chip" id="readPolicyChip">v2 offline</span></div>
+              <label class="eyebrow" for="readOrder">Primary then fallback</label>
+              <select id="readOrder">
+                <option value="legacy-first">Legacy → normalized</option>
+                <option value="norm-first">Normalized → legacy</option>
+              </select>
+              <p class="sequence" id="readSequence">v2 query unavailable</p>
+              <p class="policy-note">Fallback happens only when a shape is missing or unavailable. A present-but-stale value still wins.</p>
+            </div>
+          </div>
+          <div class="order-guard" id="orderGuard">Expand the target shape before sending new-client traffic.</div>
+
+          <div class="record-strip">
+            <div class="record-head">
+              <strong id="recordTitle">Record #1000 · expected version 1</strong>
+              <button class="ghost-button" id="nextRecord" type="button">Inspect next row</button>
+            </div>
+            <div class="record-grid">
+              <article class="record-card">
+                <header><span>Legacy shape</span><span class="shape-state good" id="legacyShapeState">CURRENT</span></header>
+                <pre id="legacySample" aria-label="Legacy record sample"></pre>
+              </article>
+              <article class="record-card">
+                <header><span>Normalized shape</span><span class="shape-state bad" id="normShapeState">ABSENT</span></header>
+                <pre id="normSample" aria-label="Normalized record sample"></pre>
+              </article>
+              <article class="record-card">
+                <header><span>Expected value</span><span class="shape-state good" id="truthShapeState">ACKNOWLEDGED</span></header>
+                <pre id="truthSample" aria-label="Expected acknowledged value"></pre>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel controls" aria-labelledby="controlsTitle">
+          <div class="panel-head">
+            <div>
+              <h2 id="controlsTitle">Flight controls</h2>
+              <p>Every action is deterministic and reversible until contract.</p>
+            </div>
+            <span class="tiny-chip" id="seedChip">seed 363</span>
+          </div>
+          <div class="control-body">
+            <div class="button-grid">
+              <button class="control-button primary" id="playBtn" type="button" aria-pressed="false">Play</button>
+              <button class="control-button" id="stepBtn" type="button">Step +1s</button>
+              <button class="control-button" id="resetBtn" type="button">Reset</button>
+            </div>
+            <div class="button-grid two">
+              <button class="control-button" id="backStage" type="button">← Roll back</button>
+              <button class="control-button primary" id="nextStage" type="button">Advance →</button>
+            </div>
+
+            <div class="control-divider"></div>
+
+            <div class="field">
+              <div class="field-line"><label for="clientMix">Client rollout</label><output id="clientMixOut" for="clientMix">0% new</output></div>
+              <input id="clientMix" type="range" min="0" max="100" step="5" value="0">
+              <div class="range-scale"><span>100% old v1</span><span>100% new v2</span></div>
+            </div>
+            <div class="field">
+              <div class="field-line"><label for="trafficRate">Live traffic</label><output id="trafficOut" for="trafficRate">90 req/min</output></div>
+              <input id="trafficRate" type="range" min="0" max="300" step="15" value="90">
+              <div class="range-scale"><span>quiet</span><span>300 req/min</span></div>
+            </div>
+            <div class="field">
+              <div class="field-line"><label for="batchSize">Backfill batch</label><output id="batchOut" for="batchSize">6 rows/s</output></div>
+              <input id="batchSize" type="range" min="1" max="12" step="1" value="6">
+              <div class="range-scale"><span>gentle</span><span>fast</span></div>
+            </div>
+
+            <div class="control-divider"></div>
+
+            <div class="button-grid two">
+              <button class="control-button safe" id="safePreset" type="button">Run safe flight</button>
+              <button class="control-button rush" id="rushedPreset" type="button">Run rushed cutover</button>
+            </div>
+
+            <div class="field">
+              <div class="field-line"><label for="failureType">Failure injection</label><output id="failureOut">none</output></div>
+              <div class="failure-row">
+                <select id="failureType">
+                  <option value="second-leg">Second write leg times out</option>
+                  <option value="backfill-stall">Backfill worker stalls</option>
+                  <option value="normalized-outage">Normalized shape unavailable</option>
+                </select>
+                <button class="control-button danger" id="injectBtn" type="button">Inject</button>
+              </div>
+              <div class="fault-status">
+                <span id="faultDetail">No active fault</span>
+                <button class="ghost-button" id="clearFault" type="button">Clear</button>
+              </div>
+            </div>
+          </div>
+          <div class="callout" id="callout" role="status" aria-live="polite">
+            <strong id="calloutTitle">Guardrail armed</strong>
+            <p id="calloutText">Contract stays blocked until normalized rows are complete, old-client traffic is zero, active faults are clear, and the write fence has soaked.</p>
+          </div>
+        </aside>
+      </div>
+
+      <div class="lower-grid">
+        <section class="panel" aria-labelledby="compatTitle">
+          <div class="panel-head">
+            <div>
+              <h2 id="compatTitle">Compatibility matrix</h2>
+              <p>What each client can do at the current stage.</p>
+            </div>
+            <span class="tiny-chip" id="compatChip">2 clients</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col">Client</th><th scope="col">Read</th><th scope="col">Write</th></tr></thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Old v1</th>
+                  <td id="oldReadCell"><span class="compat-state">Works</span><small>Reads full_name.</small></td>
+                  <td id="oldWriteCell"><span class="compat-state">Works</span><small>Writes full_name.</small></td>
+                </tr>
+                <tr>
+                  <th scope="row">New v2</th>
+                  <td id="newReadCell"><span class="compat-state">Blocked</span><small>Normalized columns do not exist.</small></td>
+                  <td id="newWriteCell"><span class="compat-state">Blocked</span><small>Normalized columns do not exist.</small></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="invariantTitle">
+          <div class="panel-head">
+            <div>
+              <h2 id="invariantTitle">Invariant &amp; contract gate</h2>
+              <p>The destructive step must prove these, not assume them.</p>
+            </div>
+            <span class="tiny-chip" id="gateChip" data-tone="warn">Not armed</span>
+          </div>
+          <ul class="invariant-list" id="invariantList"></ul>
+          <div class="gate">
+            <div class="gate-meter" aria-hidden="true"><span id="gateMeter"></span></div>
+            <ul class="gate-list" id="gateList"></ul>
+          </div>
+        </section>
+
+        <section class="panel telemetry" aria-labelledby="telemetryTitle">
+          <div class="panel-head">
+            <div>
+              <h2 id="telemetryTitle">Flight recorder</h2>
+              <p>Per-tick target lag and request errors, plus the decisions that changed them.</p>
+            </div>
+            <div class="legend" aria-hidden="true"><span>lag</span><span>errors</span></div>
+          </div>
+          <div class="telemetry-body">
+            <div class="chart-wrap">
+              <svg id="historyChart" viewBox="0 0 400 110" role="img" aria-label="Backfill lag and request error rate history">
+                <line class="grid" x1="0" y1="18" x2="400" y2="18"></line>
+                <line class="grid" x1="0" y1="55" x2="400" y2="55"></line>
+                <line class="grid" x1="0" y1="92" x2="400" y2="92"></line>
+                <text x="4" y="13">100%</text>
+                <text x="4" y="105">0%</text>
+                <polyline class="lag-line" id="lagLine" points=""></polyline>
+                <polyline class="error-line" id="errorLine" points=""></polyline>
+              </svg>
+            </div>
+            <ol class="event-log" id="eventLog" aria-label="Migration event log"></ol>
+          </div>
+        </section>
+      </div>
+
+      <footer class="help-line">
+        <span><strong>Keyboard:</strong> <kbd>Space</kbd> play/pause <kbd>S</kbd> step <kbd>←</kbd> rollback <kbd>→</kbd> advance <kbd>F</kbd> inject fault</span>
+        <span>Fixed 1-second simulation ticks · seeded pseudo-random traffic · 68% reads / 32% writes</span>
+      </footer>
+    </main>
+  </div>
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+  (function(){
+    "use strict";
+
+    const RECORD_COUNT = 48;
+    const TICK_MS = 250;
+    const SAFE_SEED = 363001;
+    const RUSHED_SEED = 363999;
+    const MANUAL_SEED = 363;
+    const GIVEN = ["Ada","Linus","Grace","Margaret","Ken","Edsger","Barbara","James","Radia","Donald","Anita","Alan","Frances","Tim","Katherine","Guido"];
+    const FAMILY = ["Lovelace","Torvalds","Hopper","Hamilton","Thompson","Dijkstra","Liskov","Gosling","Perlman","Knuth","Borg","Turing","Allen","Berners-Lee","Johnson","Rossum"];
+    const STAGES = [
+      {
+        title:"Legacy only",
+        description:"One required full_name field serves every request. New v2 queries fail because the normalized shape does not exist.",
+        safety:"No destructive change",
+        tone:"good"
+      },
+      {
+        title:"Expand schema",
+        description:"Add nullable given_name and family_name fields. Nothing is removed; old v1 remains compatible while v2 can deploy behind fallback reads.",
+        safety:"Additive DDL",
+        tone:"good"
+      },
+      {
+        title:"Dual write",
+        description:"A compatibility writer transforms each mutation and persists both shapes. The writes are deliberately non-atomic so ordering is observable.",
+        safety:"Partial writes possible",
+        tone:"warn"
+      },
+      {
+        title:"Backfill",
+        description:"A version-aware worker fills normalized rows while requests continue. Conflicts are surfaced instead of blindly overwriting newer values.",
+        safety:"Live data moving",
+        tone:"warn"
+      },
+      {
+        title:"Switch reads",
+        description:"New v2 reads normalized first and falls back only when absent. Dual writes continue while the new read path soaks under traffic.",
+        safety:"Read source changed",
+        tone:"warn"
+      },
+      {
+        title:"Stop old writes",
+        description:"Fence old v1 mutations and write normalized only. Old reads can now become stale, so old-client traffic must reach zero before contract.",
+        safety:"Compatibility fence",
+        tone:"warn"
+      },
+      {
+        title:"Contract",
+        description:"Drop full_name only after the gate proves every acknowledged value exists in normalized form and no live client still needs the legacy field.",
+        safety:"Legacy field removed",
+        tone:"good"
+      }
+    ];
+
+    const ids = [
+      "runState","simClock","presetState","requestsCard","requestsMetric","requestsSub","errorsCard","errorMetric","errorSub",
+      "staleCard","staleMetric","staleSub","lagCard","lagMetric","lagSub","lossCard","lossMetric","lossSub","checksCard","checksMetric",
+      "checksSub","stageNumber","stageTitle","stageDescription","stageSafety","stageRail","trafficChip","flowMap","routeOld",
+      "routeNew","routeLegacy","routeNorm","routeBackfill","oldClientBox","oldClientLamp","newClientBox","newClientLamp",
+      "writerLamp","databaseBox","legacyLamp","normLamp","svgWriteMode","svgReadMode","svgLegacyState","svgNormState",
+      "failureMarker","writeOrder","readOrder","writePolicyChip","readPolicyChip","writeSequence","readSequence","orderGuard",
+      "recordTitle","nextRecord","legacyShapeState","normShapeState","truthShapeState","legacySample","normSample","truthSample",
+      "playBtn","stepBtn","resetBtn","backStage","nextStage","clientMix","clientMixOut","trafficRate","trafficOut","batchSize",
+      "batchOut","safePreset","rushedPreset","failureType","failureOut","injectBtn","faultDetail","clearFault","callout",
+      "calloutTitle","calloutText","seedChip","compatChip","oldReadCell","oldWriteCell","newReadCell","newWriteCell",
+      "invariantList","gateChip","gateMeter","gateList","historyChart","lagLine","errorLine","eventLog","toast"
+    ];
+    const el = {};
+    ids.forEach(function(id){ el[id] = document.getElementById(id); });
+    const stageSteps = Array.from(el.stageRail.querySelectorAll(".stage-step"));
+
+    let state;
+    let records;
+    let lastFrame = 0;
+    let accumulator = 0;
+    let toastTimer = 0;
+
+    function initialState(seed){
+      return {
+        seed:seed >>> 0,
+        initialSeed:seed >>> 0,
+        tick:0,
+        stage:0,
+        stageEnteredTick:0,
+        schemaLegacy:true,
+        schemaNorm:false,
+        running:false,
+        pausedByVisibility:false,
+        requestCarry:0,
+        globalVersion:RECORD_COUNT,
+        newClientPercent:0,
+        trafficPerMinute:90,
+        backfillBatch:6,
+        backfillCursor:0,
+        readOrder:"legacy-first",
+        writeOrder:"norm-first",
+        failure:null,
+        preset:"manual",
+        presetDone:false,
+        flags:{},
+        sampleIndex:0,
+        callout:{
+          tone:"",
+          title:"Guardrail armed",
+          text:"Contract stays blocked until normalized rows are complete, old-client traffic is zero, active faults are clear, and the write fence has soaked."
+        },
+        metrics:{
+          requests:0,
+          errors:0,
+          reads:0,
+          writes:0,
+          staleResponses:0,
+          partialWrites:0,
+          fallbackReads:0,
+          rejectedOldWrites:0,
+          backfillWrites:0,
+          contractAttempts:0
+        },
+        previousSample:{requests:0,errors:0},
+        history:[],
+        events:[],
+        lastRequest:null
+      };
+    }
+
+    function makeRecords(){
+      const list = [];
+      for(let index=0; index<RECORD_COUNT; index+=1){
+        const value = {
+          given:GIVEN[index % GIVEN.length],
+          family:FAMILY[(index * 5 + 3) % FAMILY.length],
+          version:index + 1
+        };
+        list.push({
+          id:1000 + index,
+          legacy:legacyFromValue(value),
+          norm:null,
+          truth:cloneValue(value)
+        });
+      }
+      return list;
+    }
+
+    function cloneValue(value){
+      return {given:value.given,family:value.family,version:value.version};
+    }
+
+    function fullName(value){
+      return value.given + " " + value.family;
+    }
+
+    function legacyFromValue(value){
+      return {full_name:fullName(value),version:value.version};
+    }
+
+    function normFromValue(value){
+      return {given_name:value.given,family_name:value.family,version:value.version};
+    }
+
+    function valueFromLegacy(legacy){
+      const pieces = legacy.full_name.trim().split(/\s+/);
+      return {
+        given:pieces.shift() || "",
+        family:pieces.join(" "),
+        version:legacy.version
+      };
+    }
+
+    function valueFromNorm(norm){
+      return {given:norm.given_name,family:norm.family_name,version:norm.version};
+    }
+
+    function legacyMatchesTruth(record){
+      return Boolean(
+        record.legacy &&
+        record.legacy.full_name === fullName(record.truth) &&
+        record.legacy.version === record.truth.version
+      );
+    }
+
+    function normMatchesTruth(record){
+      return Boolean(
+        record.norm &&
+        record.norm.given_name === record.truth.given &&
+        record.norm.family_name === record.truth.family &&
+        record.norm.version === record.truth.version
+      );
+    }
+
+    function replicasMatch(record){
+      return Boolean(
+        record.legacy &&
+        record.norm &&
+        record.legacy.full_name === record.norm.given_name + " " + record.norm.family_name &&
+        record.legacy.version === record.norm.version
+      );
+    }
+
+    function random(){
+      state.seed = (Math.imul(state.seed,1664525) + 1013904223) >>> 0;
+      return state.seed / 4294967296;
+    }
+
+    function randomIndex(length){
+      return Math.floor(random() * length);
+    }
+
+    function nextValue(record){
+      let given;
+      let family;
+      do{
+        given = GIVEN[randomIndex(GIVEN.length)];
+        family = FAMILY[randomIndex(FAMILY.length)];
+      }while(given === record.truth.given && family === record.truth.family);
+      state.globalVersion += 1;
+      return {given:given,family:family,version:state.globalVersion};
+    }
+
+    function dataStats(){
+      let stale = 0;
+      let mismatch = 0;
+      let lag = 0;
+      let legacyLag = 0;
+      let lost = 0;
+      let primaryLag = 0;
+      let projectedLoss = 0;
+      records.forEach(function(record){
+        const legacyCurrent = legacyMatchesTruth(record);
+        const normCurrent = normMatchesTruth(record);
+        if((record.legacy && !legacyCurrent) || (record.norm && !normCurrent)) stale += 1;
+        if(record.legacy && record.norm && !replicasMatch(record)) mismatch += 1;
+        if(!normCurrent) lag += 1;
+        if(!legacyCurrent) legacyLag += 1;
+        if(!legacyCurrent && !normCurrent) lost += 1;
+        if(legacyCurrent && !normCurrent) projectedLoss += 1;
+        if(state.readOrder === "legacy-first"){
+          if(!legacyCurrent) primaryLag += 1;
+        }else if(!normCurrent){
+          primaryLag += 1;
+        }
+      });
+      return {
+        stale:stale,
+        mismatch:mismatch,
+        lag:lag,
+        legacyLag:legacyLag,
+        lost:lost,
+        primaryLag:primaryLag,
+        projectedLoss:projectedLoss
+      };
+    }
+
+    function addEvent(tone,title,detail){
+      state.events.unshift({tick:state.tick,tone:tone,title:title,detail:detail});
+      if(state.events.length > 28) state.events.length = 28;
+    }
+
+    function setCallout(tone,title,text){
+      state.callout = {tone:tone,title:title,text:text};
+    }
+
+    function announce(message,tone){
+      window.clearTimeout(toastTimer);
+      el.toast.textContent = message;
+      el.toast.className = "show" + (tone ? " " + tone : "");
+      toastTimer = window.setTimeout(function(){ el.toast.className = ""; },2200);
+    }
+
+    function resetSimulation(seed){
+      state = initialState(seed);
+      records = makeRecords();
+      accumulator = 0;
+      lastFrame = 0;
+      addEvent("good","Simulator reset","Legacy schema restored with 48 acknowledged records.");
+      sampleHistory();
+      render();
+    }
+
+    function takeManualControl(detail){
+      if(state.preset !== "manual" && !state.presetDone){
+        state.preset = "manual";
+        state.presetDone = true;
+        addEvent("warn","Autopilot disengaged",detail || "A manual control changed the flight plan.");
+      }
+    }
+
+    function togglePlay(){
+      state.running = !state.running;
+      state.pausedByVisibility = false;
+      addEvent(state.running ? "good" : "warn",state.running ? "Simulation playing" : "Simulation paused",state.running ? "Fixed one-second ticks resumed." : "Traffic and workers are frozen.");
+      render();
+    }
+
+    function stepOnce(){
+      state.running = false;
+      simulateTick();
+      announce("Advanced one deterministic simulation second.");
+    }
+
+    function setStage(next,direction){
+      const previous = state.stage;
+      state.stage = next;
+      state.stageEnteredTick = state.tick;
+
+      if(next === 1){
+        state.schemaNorm = true;
+        addEvent("good","Schema expanded","Nullable given_name and family_name fields are now available.");
+      }
+      if(next === 2 && direction === "forward"){
+        state.writeOrder = state.readOrder === "legacy-first" ? "norm-first" : "legacy-first";
+        addEvent("good","Dual write enabled","Both representations are written; the current read source is persisted last by default.");
+      }
+      if(next === 3 && direction === "forward"){
+        addEvent("good","Backfill worker started","Version-aware batches now move live rows into the normalized shape.");
+      }
+      if(next === 4){
+        state.readOrder = "norm-first";
+        state.writeOrder = "legacy-first";
+        addEvent("warn","Reads switched","New v2 clients now prefer normalized data; dual writes remain active.");
+        const stats = dataStats();
+        if(stats.lag > 0){
+          setCallout("warn","Read switch is early",stats.lag + " normalized rows do not match their last acknowledged value. Present-but-stale values will not trigger fallback.");
+        }
+      }
+      if(next === 3 && direction === "back"){
+        state.readOrder = "legacy-first";
+        state.writeOrder = "norm-first";
+        addEvent("warn","Read switch rolled back","New v2 clients prefer legacy again while the worker keeps reconciling.");
+      }
+      if(next === 5){
+        addEvent("warn","Old writes fenced","Old v1 write requests now fail; new writes persist normalized data only.");
+        if(state.newClientPercent < 100){
+          setCallout("warn","Old clients still airborne",(100 - state.newClientPercent) + "% of traffic is still v1. Its reads can become stale and its writes are now rejected.");
+        }
+      }
+      if(previous === 5 && next === 4){
+        addEvent("warn","Old-write fence removed","Dual writes resumed. Reconcile any legacy drift before reading from it.");
+      }
+      if(next === 0){
+        state.schemaNorm = false;
+        records.forEach(function(record){ record.norm = null; });
+        state.readOrder = "legacy-first";
+        addEvent("warn","Expansion rolled back","The additive normalized fields were removed after proving legacy still held every acknowledged value.");
+      }
+
+      setCallout(
+        STAGES[next].tone === "good" ? "good" : "warn",
+        STAGES[next].title,
+        STAGES[next].description
+      );
+    }
+
+    function advanceStage(internal){
+      if(!internal) takeManualControl("Stage advance requested manually.");
+      if(state.stage >= 6){
+        announce("Contract is already complete.");
+        return false;
+      }
+      if(state.stage === 5) return attemptContract();
+      setStage(state.stage + 1,"forward");
+      render();
+      return true;
+    }
+
+    function rollbackStage(){
+      takeManualControl("Rollback requested manually.");
+      if(state.stage === 0){
+        announce("Already at the legacy baseline.");
+        return false;
+      }
+      if(state.stage === 6){
+        state.schemaLegacy = true;
+        records.forEach(function(record){
+          record.legacy = legacyFromValue(record.truth);
+        });
+        state.stage = 5;
+        state.stageEnteredTick = state.tick;
+        addEvent("warn","Recovery expansion applied","Rollback from contract re-added full_name and rebuilt it from normalized data; this is a new migration, not an undo.");
+        setCallout("warn","Contract recovery","The legacy field was recreated from normalized data. Old writes remain fenced until compatibility is deliberately restored.");
+        render();
+        return true;
+      }
+      if(state.stage === 1){
+        const stats = dataStats();
+        if(state.newClientPercent > 0){
+          const message = "Rollback blocked: " + state.newClientPercent + "% of configured traffic still uses new v2.";
+          addEvent("bad","Unsafe rollback rejected",message);
+          setCallout("bad","Cannot remove normalized fields",message + " Drain v2 traffic before returning to legacy-only.");
+          announce(message,"bad");
+          render();
+          return false;
+        }
+        if(stats.legacyLag > 0){
+          const message = "Rollback blocked: " + stats.legacyLag + " acknowledged values are not current in the legacy field.";
+          addEvent("bad","Unsafe rollback rejected",message);
+          setCallout("bad","Cannot drop normalized fields",message + " Repair or reset before returning to legacy-only.");
+          announce(message,"bad");
+          render();
+          return false;
+        }
+      }
+      setStage(state.stage - 1,"back");
+      render();
+      return true;
+    }
+
+    function contractBlockers(){
+      const blockers = [];
+      const stats = dataStats();
+      if(state.stage !== 5) blockers.push("Reach Stop old writes before contract.");
+      if(!state.schemaNorm) blockers.push("Normalized schema is not present.");
+      if(stats.projectedLoss > 0) blockers.push(stats.projectedLoss + " rows would lose their last acknowledged value.");
+      if(stats.lost > 0) blockers.push(stats.lost + " rows already have no current live copy.");
+      if(state.readOrder !== "norm-first") blockers.push("New reads are not normalized-first.");
+      if(state.newClientPercent < 100) blockers.push((100 - state.newClientPercent) + "% of configured traffic is still old v1.");
+      if(state.failure) blockers.push("Active fault: " + state.failure.label + ".");
+      const soak = state.tick - state.stageEnteredTick;
+      if(state.stage === 5 && soak < 5) blockers.push("Write fence needs " + (5 - soak) + " more simulated seconds of soak.");
+      return blockers;
+    }
+
+    function attemptContract(){
+      state.metrics.contractAttempts += 1;
+      const blockers = contractBlockers();
+      if(blockers.length){
+        const detail = blockers.join(" ");
+        addEvent("bad","Contract rejected",detail);
+        setCallout("bad","Unsafe contract prevented",detail);
+        announce("Contract blocked: " + blockers[0],"bad");
+        render();
+        return false;
+      }
+      records.forEach(function(record){ record.legacy = null; });
+      state.schemaLegacy = false;
+      state.stage = 6;
+      state.stageEnteredTick = state.tick;
+      state.running = false;
+      state.presetDone = true;
+      addEvent("good","Contract completed","full_name was dropped only after every gate passed. New v2 traffic remains live.");
+      setCallout("good","Zero-downtime contract complete","The legacy field is gone, normalized data is current, and no configured client depends on the removed shape.");
+      announce("Contract passed. Legacy field removed safely.","good");
+      render();
+      return true;
+    }
+
+    function activeFailure(type){
+      return Boolean(state.failure && state.failure.type === type && state.failure.ticks > 0);
+    }
+
+    function injectFailure(type,internal){
+      if(!internal) takeManualControl("A fault was injected manually.");
+      const definitions = {
+        "second-leg":{label:"second write leg timeout",ticks:10},
+        "backfill-stall":{label:"backfill worker stalled",ticks:10},
+        "normalized-outage":{label:"normalized shape unavailable",ticks:9}
+      };
+      const selected = definitions[type] || definitions["second-leg"];
+      state.failure = {type:type,label:selected.label,ticks:selected.ticks};
+      addEvent("bad","Fault injected",selected.label + " for " + selected.ticks + " simulated seconds.");
+      setCallout("bad","Failure active",selected.label + ". Watch which client path fails and which representation becomes stale.");
+      announce("Injected: " + selected.label,"bad");
+      render();
+    }
+
+    function clearFailure(internal){
+      if(!internal) takeManualControl("The active fault was cleared manually.");
+      if(!state.failure){
+        announce("No active fault.");
+        return;
+      }
+      const label = state.failure.label;
+      state.failure = null;
+      addEvent("good","Fault cleared",label + " is no longer active.");
+      setCallout("good","Fault cleared","Traffic continues. Partial writes and stale rows remain until the migration path actually reconciles them.");
+      render();
+    }
+
+    function markRequest(client,operation,ok,detail){
+      state.lastRequest = {client:client,operation:operation,ok:ok,detail:detail,tick:state.tick};
+      if(!ok){
+        state.metrics.errors += 1;
+        if(state.metrics.errors <= 4 || state.metrics.errors % 8 === 0){
+          addEvent("bad","Request failed",client + " " + operation + ": " + detail);
+        }
+      }
+    }
+
+    function handleRead(client,record){
+      state.metrics.reads += 1;
+      if(client === "old"){
+        if(!state.schemaLegacy || !record.legacy){
+          markRequest("old v1","read",false,"full_name no longer exists");
+          return;
+        }
+        if(!legacyMatchesTruth(record)) state.metrics.staleResponses += 1;
+        markRequest("old v1","read",true,legacyMatchesTruth(record) ? "current" : "stale value returned");
+        return;
+      }
+
+      if(!state.schemaNorm){
+        markRequest("new v2","read",false,"normalized query references columns that do not exist");
+        return;
+      }
+
+      const order = state.readOrder === "legacy-first" ? ["legacy","norm"] : ["norm","legacy"];
+      let selected = null;
+      let usedFallback = false;
+      for(let index=0; index<order.length; index+=1){
+        const shape = order[index];
+        if(shape === "norm"){
+          if(activeFailure("normalized-outage") && random() < .72) continue;
+          if(record.norm){
+            selected = "norm";
+            usedFallback = index > 0;
+            break;
+          }
+        }else if(state.schemaLegacy && record.legacy){
+          selected = "legacy";
+          usedFallback = index > 0;
+          break;
+        }
+      }
+      if(!selected){
+        markRequest("new v2","read",false,"primary and fallback representations unavailable");
+        return;
+      }
+      if(usedFallback) state.metrics.fallbackReads += 1;
+      const current = selected === "norm" ? normMatchesTruth(record) : legacyMatchesTruth(record);
+      if(!current) state.metrics.staleResponses += 1;
+      markRequest("new v2","read",true,(usedFallback ? "fallback " : "primary ") + selected + (current ? " current" : " stale"));
+    }
+
+    function writeLegacy(record,value){
+      if(!state.schemaLegacy) return false;
+      record.legacy = legacyFromValue(value);
+      return true;
+    }
+
+    function writeNorm(record,value){
+      if(!state.schemaNorm) return false;
+      if(activeFailure("normalized-outage") && random() < .78) return false;
+      record.norm = normFromValue(value);
+      return true;
+    }
+
+    function dualWrite(client,record,value){
+      const order = state.writeOrder === "legacy-first" ? ["legacy","norm"] : ["norm","legacy"];
+      const firstOk = order[0] === "legacy" ? writeLegacy(record,value) : writeNorm(record,value);
+      if(!firstOk){
+        markRequest(client,"write",false,order[0] + " first leg unavailable");
+        return;
+      }
+
+      if(activeFailure("second-leg") && random() < .64){
+        state.metrics.partialWrites += 1;
+        markRequest(client,"write",false,"timeout after " + order[0] + " persisted; " + order[1] + " was not written");
+        return;
+      }
+
+      const secondOk = order[1] === "legacy" ? writeLegacy(record,value) : writeNorm(record,value);
+      if(!secondOk){
+        state.metrics.partialWrites += 1;
+        markRequest(client,"write",false,order[1] + " second leg unavailable after " + order[0] + " persisted");
+        return;
+      }
+
+      record.truth = cloneValue(value);
+      markRequest(client,"write",true,"both representations committed");
+    }
+
+    function handleWrite(client,record){
+      state.metrics.writes += 1;
+      const value = nextValue(record);
+
+      if(client === "old v1"){
+        if(state.stage >= 5 || !state.schemaLegacy){
+          state.metrics.rejectedOldWrites += 1;
+          markRequest(client,"write",false,"old-write fence rejected full_name mutation");
+          return;
+        }
+        if(state.stage < 2){
+          writeLegacy(record,value);
+          record.truth = cloneValue(value);
+          markRequest(client,"write",true,"legacy-only mutation acknowledged");
+          return;
+        }
+        dualWrite(client,record,value);
+        return;
+      }
+
+      if(!state.schemaNorm){
+        markRequest(client,"write",false,"normalized columns do not exist");
+        return;
+      }
+      if(state.stage === 1){
+        if(!writeNorm(record,value)){
+          markRequest(client,"write",false,"normalized shape unavailable");
+          return;
+        }
+        record.truth = cloneValue(value);
+        markRequest(client,"write",true,"normalized-only mutation acknowledged; legacy is now stale");
+        return;
+      }
+      if(state.stage >= 2 && state.stage <= 4){
+        dualWrite(client,record,value);
+        return;
+      }
+      if(!writeNorm(record,value)){
+        markRequest(client,"write",false,"normalized shape unavailable");
+        return;
+      }
+      record.truth = cloneValue(value);
+      markRequest(client,"write",true,"normalized-only mutation acknowledged");
+    }
+
+    function generateRequest(){
+      state.metrics.requests += 1;
+      const client = random() * 100 < state.newClientPercent ? "new v2" : "old v1";
+      const operation = random() < .68 ? "read" : "write";
+      const record = records[randomIndex(records.length)];
+      if(operation === "read") handleRead(client === "old v1" ? "old" : "new",record);
+      else handleWrite(client,record);
+    }
+
+    function processBackfill(){
+      if(state.stage < 3 || state.stage >= 6 || !state.schemaNorm || activeFailure("backfill-stall")) return;
+      let processed = 0;
+      while(processed < state.backfillBatch){
+        const record = records[state.backfillCursor];
+        state.backfillCursor = (state.backfillCursor + 1) % records.length;
+        processed += 1;
+
+        if(state.stage === 3){
+          if(record.legacy && !record.norm){
+            record.norm = normFromValue(valueFromLegacy(record.legacy));
+            state.metrics.backfillWrites += 1;
+          }else if(record.legacy && record.norm){
+            if(record.norm.version < record.legacy.version || (record.norm.version === record.legacy.version && !replicasMatch(record))){
+              record.norm = normFromValue(valueFromLegacy(record.legacy));
+              state.metrics.backfillWrites += 1;
+            }
+          }
+        }else if(state.stage === 4){
+          if(!record.norm && record.legacy){
+            record.norm = normFromValue(valueFromLegacy(record.legacy));
+            state.metrics.backfillWrites += 1;
+          }else if(record.norm && record.legacy && !replicasMatch(record) && normMatchesTruth(record)){
+            record.legacy = legacyFromValue(valueFromNorm(record.norm));
+            state.metrics.backfillWrites += 1;
+          }
+        }else if(state.stage === 5 && !record.norm && record.legacy){
+          record.norm = normFromValue(valueFromLegacy(record.legacy));
+          state.metrics.backfillWrites += 1;
+        }
+      }
+    }
+
+    function sampleHistory(){
+      const requestDelta = state.metrics.requests - state.previousSample.requests;
+      const errorDelta = state.metrics.errors - state.previousSample.errors;
+      const stats = dataStats();
+      state.history.push({
+        error:requestDelta ? errorDelta / requestDelta : 0,
+        lag:state.schemaNorm ? stats.lag / records.length : 1
+      });
+      if(state.history.length > 40) state.history.shift();
+      state.previousSample = {requests:state.metrics.requests,errors:state.metrics.errors};
+    }
+
+    function runSafeAutopilot(){
+      if(state.tick === 1 && !state.flags.expanded){
+        state.flags.expanded = true;
+        advanceStage(true);
+      }
+      if(state.tick === 3 && !state.flags.dual){
+        state.flags.dual = true;
+        advanceStage(true);
+      }
+      if(state.tick === 5 && !state.flags.backfill){
+        state.flags.backfill = true;
+        state.newClientPercent = 25;
+        advanceStage(true);
+      }
+      const stats = dataStats();
+      if(state.stage === 3 && stats.lag === 0 && !state.flags.switched){
+        state.flags.switched = true;
+        advanceStage(true);
+        state.newClientPercent = 75;
+        addEvent("good","Canary widened","75% of traffic is now new v2 after target lag reached zero.");
+      }
+      if(state.stage === 4 && state.tick - state.stageEnteredTick >= 5 && !state.flags.fenced){
+        state.flags.fenced = true;
+        state.newClientPercent = 100;
+        advanceStage(true);
+      }
+      if(state.stage === 5 && state.tick - state.stageEnteredTick >= 6 && !state.flags.contracted){
+        state.flags.contracted = true;
+        advanceStage(true);
+      }
+    }
+
+    function runRushedAutopilot(){
+      if(state.tick === 2 && !state.flags.expanded){
+        state.flags.expanded = true;
+        advanceStage(true);
+      }
+      if(state.tick === 3 && !state.flags.dual){
+        state.flags.dual = true;
+        advanceStage(true);
+        state.writeOrder = "legacy-first";
+        injectFailure("second-leg",true);
+      }
+      if(state.tick === 4 && !state.flags.backfill){
+        state.flags.backfill = true;
+        advanceStage(true);
+      }
+      if(state.tick === 6 && !state.flags.switched){
+        state.flags.switched = true;
+        advanceStage(true);
+        state.writeOrder = "norm-first";
+        addEvent("warn","Unsafe order selected","The normalized read source is also written first, so a failed request can leak into reads.");
+      }
+      if(state.tick === 8 && !state.flags.fenced){
+        state.flags.fenced = true;
+        state.newClientPercent = 70;
+        advanceStage(true);
+      }
+      if(state.tick === 10 && !state.flags.contractAttempted){
+        state.flags.contractAttempted = true;
+        advanceStage(true);
+      }
+      if(state.tick === 11 && state.stage === 5){
+        state.running = false;
+        state.presetDone = true;
+        addEvent("bad","Rushed flight stopped","Autopilot paused at the rejected contract so the blockers can be inspected.");
+        setCallout("bad","Rushed contract failed safely","The simulator refused destructive DDL. Inspect target lag, old-client compatibility, active faults, and acknowledged-value loss.");
+      }
+    }
+
+    function runAutopilot(){
+      if(state.presetDone) return;
+      if(state.preset === "safe") runSafeAutopilot();
+      if(state.preset === "rushed") runRushedAutopilot();
+    }
+
+    function simulateTick(){
+      state.tick += 1;
+      runAutopilot();
+      processBackfill();
+
+      state.requestCarry += state.trafficPerMinute / 60;
+      const requestCount = Math.floor(state.requestCarry);
+      state.requestCarry -= requestCount;
+      for(let request=0; request<requestCount; request+=1) generateRequest();
+
+      if(state.failure){
+        state.failure.ticks -= 1;
+        if(state.failure.ticks <= 0){
+          const label = state.failure.label;
+          state.failure = null;
+          addEvent("good","Fault expired",label + " recovered; persisted divergence remains visible.");
+        }
+      }
+      sampleHistory();
+      render();
+    }
+
+    function loadPreset(type){
+      resetSimulation(type === "safe" ? SAFE_SEED : RUSHED_SEED);
+      state.preset = type;
+      state.running = true;
+      if(type === "safe"){
+        state.newClientPercent = 0;
+        state.trafficPerMinute = 90;
+        state.backfillBatch = 8;
+        state.readOrder = "legacy-first";
+        state.writeOrder = "norm-first";
+        addEvent("good","Safe flight loaded","Expand first, mirror writes, finish backfill, switch reads, drain v1, soak, then contract.");
+        setCallout("good","Safe autopilot running","This plan writes the non-primary copy first, waits for zero target lag, drains old clients, and honors the contract gate.");
+      }else{
+        state.newClientPercent = 55;
+        state.trafficPerMinute = 240;
+        state.backfillBatch = 1;
+        state.readOrder = "legacy-first";
+        state.writeOrder = "legacy-first";
+        addEvent("warn","Rushed cutover loaded","New clients arrive before expansion, stages advance without waiting, and a second-leg timeout is injected.");
+        setCallout("warn","Rushed autopilot running","Watch errors and stale rows climb as deployment order, write order, and contract timing violate the safe sequence.");
+      }
+      render();
+    }
+
+    function invariantResults(stats){
+      const targetApplicable = state.schemaNorm;
+      const oldCompatibilityOkay = state.stage < 5 || state.newClientPercent === 100;
+      return [
+        {
+          tone:stats.lost === 0 ? "good" : "bad",
+          label:"Acknowledged value has a live copy",
+          detail:stats.lost === 0 ? "Every last successful write exists in at least one representation." : stats.lost + " rows have neither live shape equal to the last acknowledged value."
+        },
+        {
+          tone:!targetApplicable ? "warn" : (stats.lag === 0 ? "good" : "warn"),
+          label:"Normalized target is complete",
+          detail:!targetApplicable ? "Not applicable until schema expansion." : (stats.lag === 0 ? "All 48 rows match their acknowledged values." : stats.lag + " rows are missing or stale in normalized form.")
+        },
+        {
+          tone:state.stage < 2 ? "warn" : (stats.mismatch === 0 ? "good" : "warn"),
+          label:"Legacy and normalized replicas agree",
+          detail:state.stage < 2 ? "Parity is not guaranteed before dual write." : (stats.mismatch === 0 ? "Both shapes encode the same version where both exist." : stats.mismatch + " rows disagree across shapes.")
+        },
+        {
+          tone:stats.primaryLag === 0 ? "good" : (state.stage >= 4 ? "bad" : "warn"),
+          label:"Primary read source is current",
+          detail:stats.primaryLag === 0 ? "The first read choice matches every acknowledged value." : stats.primaryLag + " rows are stale or missing on the configured primary read path."
+        },
+        {
+          tone:oldCompatibilityOkay ? "good" : "bad",
+          label:"Client fleet matches the write fence",
+          detail:oldCompatibilityOkay ? "Configured traffic is compatible with this stage." : (100 - state.newClientPercent) + "% old v1 traffic remains after old writes were fenced."
+        }
+      ];
+    }
+
+    function setMetricTone(card,tone){
+      card.dataset.tone = tone || "";
+    }
+
+    function setCompat(cell,tone,label,detail){
+      cell.className = tone;
+      cell.querySelector(".compat-state").textContent = label;
+      cell.querySelector("small").textContent = detail;
+    }
+
+    function renderMetrics(stats,invariants){
+      const metrics = state.metrics;
+      const errorRate = metrics.requests ? metrics.errors / metrics.requests * 100 : 0;
+      const passed = invariants.filter(function(item){ return item.tone === "good"; }).length;
+
+      el.requestsMetric.textContent = metrics.requests.toLocaleString();
+      el.requestsSub.textContent = metrics.reads + " reads · " + metrics.writes + " writes";
+      el.errorMetric.textContent = errorRate.toFixed(1) + "%";
+      el.errorSub.textContent = metrics.errors + " failed · " + metrics.partialWrites + " partial";
+      el.staleMetric.textContent = stats.stale + " / " + stats.mismatch;
+      el.staleSub.textContent = metrics.staleResponses + " stale response" + (metrics.staleResponses === 1 ? "" : "s") + " · rows / replicas";
+      el.lagMetric.textContent = state.schemaNorm ? String(stats.lag) : "—";
+      el.lagSub.textContent = state.schemaNorm ? (RECORD_COUNT - stats.lag) + " / " + RECORD_COUNT + " target rows current" : "target shape not expanded";
+      el.lossMetric.textContent = String(stats.lost);
+      el.lossSub.textContent = stats.lost ? "last acknowledged value absent from live rows" : "no acknowledged value missing";
+      el.checksMetric.textContent = passed + " / " + invariants.length;
+      el.checksSub.textContent = passed === invariants.length ? "all guardrails green" : "guardrails still evaluating";
+
+      setMetricTone(el.errorsCard,errorRate >= 10 ? "bad" : (errorRate > 0 ? "warn" : ""));
+      setMetricTone(el.staleCard,stats.stale > 0 ? "warn" : "");
+      setMetricTone(el.lagCard,state.schemaNorm && stats.lag > 0 ? "warn" : "");
+      setMetricTone(el.lossCard,stats.lost > 0 ? "bad" : "");
+      setMetricTone(el.checksCard,passed === invariants.length ? "" : "warn");
+    }
+
+    function renderStage(){
+      const stage = STAGES[state.stage];
+      el.stageNumber.textContent = String(state.stage);
+      el.stageTitle.textContent = stage.title;
+      el.stageDescription.textContent = stage.description;
+      el.stageSafety.textContent = stage.safety;
+      el.stageSafety.dataset.tone = stage.tone;
+      stageSteps.forEach(function(step,index){
+        step.classList.toggle("past",index < state.stage);
+        step.classList.toggle("current",index === state.stage);
+        if(index === state.stage) step.setAttribute("aria-current","step");
+        else step.removeAttribute("aria-current");
+      });
+      el.backStage.disabled = state.stage === 0;
+      el.nextStage.disabled = state.stage === 6;
+      el.nextStage.textContent = state.stage === 5 ? "Attempt contract →" : (state.stage === 6 ? "Contract complete" : "Advance →");
+    }
+
+    function renderFlow(stats){
+      const oldShare = 100 - state.newClientPercent;
+      el.trafficChip.textContent = state.trafficPerMinute + " req/min · " + oldShare + "/" + state.newClientPercent + " split";
+      el.flowMap.classList.toggle("running",state.running);
+      el.routeOld.classList.toggle("enabled",oldShare > 0 && state.schemaLegacy);
+      el.routeNew.classList.toggle("enabled",state.newClientPercent > 0);
+      el.routeLegacy.classList.toggle("enabled",state.schemaLegacy && state.stage !== 5 && state.stage !== 6);
+      el.routeNorm.classList.toggle("enabled",state.schemaNorm);
+      el.routeBackfill.classList.toggle("enabled",state.stage >= 3 && state.stage < 6);
+
+      [el.routeOld,el.routeNew,el.routeLegacy,el.routeNorm].forEach(function(route){
+        route.classList.remove("hot","fault");
+      });
+      if(state.lastRequest && state.tick - state.lastRequest.tick <= 1){
+        const clientRoute = state.lastRequest.client.indexOf("old") === 0 ? el.routeOld : el.routeNew;
+        clientRoute.classList.add(state.lastRequest.ok ? "hot" : "fault");
+        if(state.lastRequest.operation === "write"){
+          const route = state.writeOrder === "legacy-first" ? el.routeLegacy : el.routeNorm;
+          route.classList.add(state.lastRequest.ok ? "hot" : "fault");
+        }
+      }
+
+      const oldTone = !state.schemaLegacy || state.stage >= 6 ? "bad" : (stats.legacyLag > 0 ? "warn" : "good");
+      const newTone = !state.schemaNorm ? "bad" : (stats.lag > 0 ? "warn" : "good");
+      el.oldClientBox.setAttribute("class","box " + oldTone);
+      el.oldClientLamp.setAttribute("class","lamp " + oldTone);
+      el.newClientBox.setAttribute("class","box " + newTone);
+      el.newClientLamp.setAttribute("class","lamp " + newTone);
+      el.legacyLamp.setAttribute("class","lamp " + oldTone);
+      el.normLamp.setAttribute("class","lamp " + newTone);
+      el.writerLamp.setAttribute("class","lamp " + (state.failure ? "bad" : (state.stage >= 2 ? "good" : "warn")));
+      el.databaseBox.setAttribute("class","box " + (stats.lost > 0 ? "bad" : (stats.stale > 0 ? "warn" : "good")));
+
+      if(state.stage < 2) el.svgWriteMode.textContent = state.stage === 0 ? "legacy only" : "single-shape writes";
+      else if(state.stage <= 4) el.svgWriteMode.textContent = state.writeOrder === "legacy-first" ? "legacy → normalized" : "normalized → legacy";
+      else el.svgWriteMode.textContent = "normalized only";
+      el.svgReadMode.textContent = state.schemaNorm ? "read: " + (state.readOrder === "legacy-first" ? "legacy → normalized" : "normalized → legacy") : "read: legacy only";
+      el.svgLegacyState.textContent = state.schemaLegacy ? (RECORD_COUNT - stats.legacyLag) + " current · " + stats.legacyLag + " stale" : "field dropped";
+      el.svgNormState.textContent = state.schemaNorm ? (RECORD_COUNT - stats.lag) + " current · " + stats.lag + " lag" : "column absent";
+      el.failureMarker.hidden = !state.failure;
+      el.flowMap.setAttribute("aria-label","Stage " + state.stage + ": " + oldShare + " percent old clients and " + state.newClientPercent + " percent new clients, with " + stats.lag + " normalized rows behind.");
+    }
+
+    function renderPolicies(){
+      if(state.stage >= 2 && state.stage <= 4){
+        const first = state.writeOrder === "legacy-first" ? "legacy" : "normalized";
+        const second = state.writeOrder === "legacy-first" ? "normalized" : "legacy";
+        el.writeSequence.textContent = "client → " + first + " → " + second + " → ACK";
+        el.writePolicyChip.textContent = "2 legs";
+      }else if(state.stage < 2){
+        el.writeSequence.textContent = state.stage === 0 ? "v1 → legacy → ACK" : "client → its own shape → ACK";
+        el.writePolicyChip.textContent = "1 leg";
+      }else{
+        el.writeSequence.textContent = "v2 → normalized → ACK";
+        el.writePolicyChip.textContent = "1 leg";
+      }
+      if(!state.schemaNorm){
+        el.readSequence.textContent = "v2 query unavailable";
+        el.readPolicyChip.textContent = "v2 offline";
+      }else{
+        el.readSequence.textContent = "v2 → " + (state.readOrder === "legacy-first" ? "legacy → normalized fallback" : "normalized → legacy fallback");
+        el.readPolicyChip.textContent = state.readOrder === "legacy-first" ? "legacy primary" : "normalized primary";
+      }
+
+      if(state.stage >= 2 && state.stage <= 4){
+        const primary = state.readOrder === "legacy-first" ? "legacy" : "normalized";
+        const first = state.writeOrder === "legacy-first" ? "legacy" : "normalized";
+        if(primary === first){
+          el.orderGuard.className = "order-guard bad";
+          el.orderGuard.textContent = "Ordering risk: the current read source is written first. If leg two fails, an unacknowledged value can leak into successful reads.";
+        }else{
+          el.orderGuard.className = "order-guard";
+          el.orderGuard.textContent = "Safer ordering: the current read source is written last. A leg-two failure stays off the primary read path while you reconcile it.";
+        }
+      }else if(state.stage === 1){
+        el.orderGuard.className = "order-guard warn";
+        el.orderGuard.textContent = "Migration gap: old and new writers update different shapes. Deploying v2 writes now creates immediate divergence.";
+      }else if(state.stage >= 5){
+        el.orderGuard.className = "order-guard";
+        el.orderGuard.textContent = state.stage === 6 ? "Contracted: normalized is the only read and write source." : "Write fence active: v1 writes are rejected and v2 writes normalized only.";
+      }else{
+        el.orderGuard.className = "order-guard";
+        el.orderGuard.textContent = "Expand the target shape before sending new-client traffic.";
+      }
+    }
+
+    function shapeTone(current,exists){
+      if(!exists) return "bad";
+      return current ? "good" : "warn";
+    }
+
+    function renderRecord(){
+      const record = records[state.sampleIndex % records.length];
+      const legacyCurrent = legacyMatchesTruth(record);
+      const normCurrent = normMatchesTruth(record);
+      el.recordTitle.textContent = "Record #" + record.id + " · expected version " + record.truth.version;
+      el.legacySample.textContent = record.legacy ? JSON.stringify(record.legacy,null,2) : "{\n  \"full_name\": \"<dropped>\"\n}";
+      el.normSample.textContent = record.norm ? JSON.stringify(record.norm,null,2) : "{\n  \"given_name\": null,\n  \"family_name\": null\n}";
+      el.truthSample.textContent = JSON.stringify({given_name:record.truth.given,family_name:record.truth.family,version:record.truth.version},null,2);
+
+      el.legacyShapeState.className = "shape-state " + shapeTone(legacyCurrent,Boolean(record.legacy));
+      el.legacyShapeState.textContent = !record.legacy ? "ABSENT" : (legacyCurrent ? "CURRENT" : "STALE");
+      el.normShapeState.className = "shape-state " + shapeTone(normCurrent,Boolean(record.norm));
+      el.normShapeState.textContent = !record.norm ? "ABSENT" : (normCurrent ? "CURRENT" : "STALE");
+      el.truthShapeState.className = "shape-state good";
+      el.truthShapeState.textContent = "ACKNOWLEDGED";
+    }
+
+    function renderControls(){
+      el.runState.textContent = state.running ? "Playing" : "Paused";
+      el.runState.dataset.tone = state.running ? "good" : "warn";
+      el.simClock.textContent = "T+" + String(state.tick).padStart(3,"0") + "s";
+      el.presetState.textContent = state.preset === "safe" ? (state.presetDone ? "Safe flight complete" : "Safe autopilot") : (state.preset === "rushed" ? (state.presetDone ? "Rushed flight stopped" : "Rushed autopilot") : "Manual flight");
+      el.presetState.dataset.tone = state.preset === "rushed" ? "warn" : (state.preset === "safe" ? "good" : "");
+      el.playBtn.textContent = state.running ? "Pause" : "Play";
+      el.playBtn.setAttribute("aria-pressed",String(state.running));
+      el.clientMix.value = String(state.newClientPercent);
+      el.trafficRate.value = String(state.trafficPerMinute);
+      el.batchSize.value = String(state.backfillBatch);
+      el.writeOrder.value = state.writeOrder;
+      el.readOrder.value = state.readOrder;
+      el.clientMixOut.textContent = state.newClientPercent + "% new";
+      el.trafficOut.textContent = state.trafficPerMinute + " req/min";
+      el.batchOut.textContent = state.backfillBatch + " rows/s";
+      el.seedChip.textContent = "seed " + state.initialSeed;
+      el.failureOut.textContent = state.failure ? state.failure.ticks + "s left" : "none";
+      el.faultDetail.textContent = state.failure ? state.failure.label + " · " + state.failure.ticks + "s remaining" : "No active fault";
+      el.clearFault.disabled = !state.failure;
+      el.callout.className = "callout" + (state.callout.tone ? " " + state.callout.tone : "");
+      el.calloutTitle.textContent = state.callout.title;
+      el.calloutText.textContent = state.callout.text;
+    }
+
+    function renderCompatibility(stats){
+      if(!state.schemaLegacy){
+        setCompat(el.oldReadCell,"bad","Blocked","full_name was removed by contract.");
+      }else if(stats.legacyLag > 0){
+        setCompat(el.oldReadCell,"warn","Degraded",stats.legacyLag + " legacy rows can return stale values.");
+      }else{
+        setCompat(el.oldReadCell,"good","Works","Reads current full_name values.");
+      }
+
+      if(state.stage >= 5 || !state.schemaLegacy){
+        setCompat(el.oldWriteCell,"bad","Rejected","The old-write fence rejects v1 mutations.");
+      }else if(state.stage >= 2){
+        setCompat(el.oldWriteCell,"good","Mirrored","v1 writes are transformed and dual-written.");
+      }else{
+        setCompat(el.oldWriteCell,"good","Works","Writes legacy only; normalized data may drift.");
+      }
+
+      if(!state.schemaNorm){
+        setCompat(el.newReadCell,"bad","Blocked","Normalized columns do not exist yet.");
+      }else if(stats.primaryLag > 0){
+        setCompat(el.newReadCell,state.stage >= 4 ? "bad" : "warn","Degraded",stats.primaryLag + " rows are stale or missing on the primary path.");
+      }else if(activeFailure("normalized-outage") && state.readOrder === "norm-first"){
+        setCompat(el.newReadCell,"warn","Fallback","Normalized reads can fail over to legacy while it exists.");
+      }else{
+        setCompat(el.newReadCell,"good","Works",state.readOrder === "norm-first" ? "Reads normalized first." : "Reads legacy first with normalized fallback.");
+      }
+
+      if(!state.schemaNorm){
+        setCompat(el.newWriteCell,"bad","Blocked","Normalized columns do not exist yet.");
+      }else if(state.stage === 1){
+        setCompat(el.newWriteCell,"warn","Risky","Writes normalized only, making v1 reads stale.");
+      }else if(activeFailure("normalized-outage")){
+        setCompat(el.newWriteCell,"bad","Failing","The normalized write leg is unavailable.");
+      }else if(state.stage >= 2 && state.stage <= 4){
+        setCompat(el.newWriteCell,"good","Mirrored","v2 writes are transformed and dual-written.");
+      }else{
+        setCompat(el.newWriteCell,"good","Works","Writes normalized only.");
+      }
+      el.compatChip.textContent = (100 - state.newClientPercent) + "% v1 · " + state.newClientPercent + "% v2";
+    }
+
+    function renderInvariants(invariants){
+      el.invariantList.replaceChildren();
+      invariants.forEach(function(item){
+        const li = document.createElement("li");
+        li.className = "invariant " + item.tone;
+        const mark = document.createElement("span");
+        mark.className = "invariant-mark";
+        mark.textContent = item.tone === "good" ? "✓" : (item.tone === "bad" ? "!" : "•");
+        const copy = document.createElement("span");
+        const strong = document.createElement("strong");
+        const small = document.createElement("small");
+        strong.textContent = item.label;
+        small.textContent = item.detail;
+        copy.append(strong,small);
+        li.append(mark,copy);
+        el.invariantList.append(li);
+      });
+
+      const blockers = contractBlockers();
+      const passed = invariants.filter(function(item){ return item.tone === "good"; }).length;
+      el.gateMeter.style.width = (passed / invariants.length * 100) + "%";
+      el.gateList.replaceChildren();
+      if(state.stage === 6){
+        const item = document.createElement("li");
+        item.textContent = "Contract passed; legacy field removed.";
+        el.gateList.append(item);
+        el.gateChip.textContent = "Passed";
+        el.gateChip.dataset.tone = "good";
+      }else if(state.stage < 5){
+        const item = document.createElement("li");
+        item.textContent = "Contract gate arms after Stop old writes.";
+        el.gateList.append(item);
+        el.gateChip.textContent = "Not armed";
+        el.gateChip.dataset.tone = "warn";
+      }else if(blockers.length){
+        blockers.forEach(function(blocker){
+          const item = document.createElement("li");
+          item.textContent = blocker;
+          el.gateList.append(item);
+        });
+        el.gateChip.textContent = blockers.length + " blocker" + (blockers.length === 1 ? "" : "s");
+        el.gateChip.dataset.tone = "bad";
+      }else{
+        const item = document.createElement("li");
+        item.textContent = "All destructive-change preconditions are satisfied.";
+        el.gateList.append(item);
+        el.gateChip.textContent = "Cleared";
+        el.gateChip.dataset.tone = "good";
+      }
+    }
+
+    function chartPoints(key){
+      if(state.history.length === 1) return "0,92 400,92";
+      return state.history.map(function(point,index){
+        const x = index / (state.history.length - 1) * 400;
+        const y = 92 - Math.max(0,Math.min(1,point[key])) * 74;
+        return x.toFixed(1) + "," + y.toFixed(1);
+      }).join(" ");
+    }
+
+    function renderTelemetry(stats){
+      el.lagLine.setAttribute("points",chartPoints("lag"));
+      el.errorLine.setAttribute("points",chartPoints("error"));
+      const latest = state.history[state.history.length - 1] || {lag:1,error:0};
+      el.historyChart.setAttribute("aria-label","Latest backfill lag is " + Math.round(latest.lag * 100) + " percent and latest request error rate is " + Math.round(latest.error * 100) + " percent.");
+      el.eventLog.replaceChildren();
+      state.events.slice(0,10).forEach(function(event){
+        const item = document.createElement("li");
+        item.className = "event " + event.tone;
+        const time = document.createElement("time");
+        time.textContent = "T+" + String(event.tick).padStart(3,"0");
+        const copy = document.createElement("span");
+        const title = document.createElement("strong");
+        const detail = document.createElement("small");
+        title.textContent = event.title;
+        detail.textContent = event.detail;
+        copy.append(title,detail);
+        item.append(time,copy);
+        el.eventLog.append(item);
+      });
+    }
+
+    function render(){
+      const stats = dataStats();
+      const invariants = invariantResults(stats);
+      renderMetrics(stats,invariants);
+      renderStage();
+      renderFlow(stats);
+      renderPolicies();
+      renderRecord();
+      renderControls();
+      renderCompatibility(stats);
+      renderInvariants(invariants);
+      renderTelemetry(stats);
+    }
+
+    function frame(timestamp){
+      if(!lastFrame) lastFrame = timestamp;
+      const elapsed = Math.min(1000,timestamp - lastFrame);
+      lastFrame = timestamp;
+      if(state.running){
+        accumulator += elapsed;
+        let safety = 0;
+        while(accumulator >= TICK_MS && safety < 6){
+          accumulator -= TICK_MS;
+          simulateTick();
+          safety += 1;
+        }
+      }else{
+        accumulator = 0;
+      }
+      window.requestAnimationFrame(frame);
+    }
+
+    el.playBtn.addEventListener("click",togglePlay);
+    el.stepBtn.addEventListener("click",stepOnce);
+    el.resetBtn.addEventListener("click",function(){
+      resetSimulation(MANUAL_SEED);
+      announce("Simulation reset to legacy baseline.");
+    });
+    el.backStage.addEventListener("click",rollbackStage);
+    el.nextStage.addEventListener("click",function(){ advanceStage(false); });
+    el.nextRecord.addEventListener("click",function(){
+      state.sampleIndex = (state.sampleIndex + 1) % records.length;
+      renderRecord();
+    });
+    el.clientMix.addEventListener("input",function(){
+      takeManualControl("Client mix changed manually.");
+      state.newClientPercent = Number(el.clientMix.value);
+      render();
+    });
+    el.trafficRate.addEventListener("input",function(){
+      takeManualControl("Traffic rate changed manually.");
+      state.trafficPerMinute = Number(el.trafficRate.value);
+      render();
+    });
+    el.batchSize.addEventListener("input",function(){
+      takeManualControl("Backfill batch changed manually.");
+      state.backfillBatch = Number(el.batchSize.value);
+      render();
+    });
+    el.writeOrder.addEventListener("change",function(){
+      takeManualControl("Write order changed manually.");
+      state.writeOrder = el.writeOrder.value;
+      addEvent("warn","Write order changed","Non-atomic dual writes now persist " + (state.writeOrder === "legacy-first" ? "legacy first." : "normalized first."));
+      render();
+    });
+    el.readOrder.addEventListener("change",function(){
+      takeManualControl("Read order changed manually.");
+      state.readOrder = el.readOrder.value;
+      addEvent("warn","Read order changed","New v2 clients now prefer " + (state.readOrder === "legacy-first" ? "legacy." : "normalized."));
+      render();
+    });
+    el.safePreset.addEventListener("click",function(){ loadPreset("safe"); });
+    el.rushedPreset.addEventListener("click",function(){ loadPreset("rushed"); });
+    el.injectBtn.addEventListener("click",function(){ injectFailure(el.failureType.value,false); });
+    el.clearFault.addEventListener("click",function(){ clearFailure(false); });
+
+    document.addEventListener("keydown",function(event){
+      const target = event.target;
+      const editing = target && (target.tagName === "INPUT" || target.tagName === "SELECT" || target.tagName === "BUTTON" || target.tagName === "TEXTAREA");
+      if(editing) return;
+      if(event.code === "Space"){
+        event.preventDefault();
+        togglePlay();
+      }else if(event.key === "s" || event.key === "S"){
+        event.preventDefault();
+        stepOnce();
+      }else if(event.key === "ArrowRight"){
+        event.preventDefault();
+        advanceStage(false);
+      }else if(event.key === "ArrowLeft"){
+        event.preventDefault();
+        rollbackStage();
+      }else if(event.key === "f" || event.key === "F"){
+        event.preventDefault();
+        injectFailure(el.failureType.value,false);
+      }
+    });
+
+    document.addEventListener("visibilitychange",function(){
+      if(document.hidden && state.running){
+        state.running = false;
+        state.pausedByVisibility = true;
+        addEvent("warn","Paused while hidden","Traffic was frozen so background-tab throttling cannot change deterministic results.");
+        render();
+      }else if(!document.hidden && state.pausedByVisibility){
+        state.pausedByVisibility = false;
+        setCallout("warn","Paused after tab return","Press Play to continue from the exact deterministic tick where the page became hidden.");
+        render();
+      }
+    });
+
+    resetSimulation(MANUAL_SEED);
+    window.requestAnimationFrame(frame);
+  })();
+  </script>
+</body>
+</html>
