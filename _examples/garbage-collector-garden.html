@@ -1,0 +1,50 @@
+---
+title: "Garbage Collector Garden — Grow, Trace, and Compact a Living Heap"
+slug: "garbage-collector-garden"
+order: 351
+tagline: "Plant objects in a finite heap, wire their references, sever their roots, and watch tracing collection prove that reachability—not cycles—decides what survives."
+category: "simulator"
+difficulty: "intermediate"
+status: "live"
+tags:
+  - "garbage-collection"
+  - "memory-management"
+  - "algorithms"
+  - "visualization"
+stack:
+  - "HTML"
+  - "CSS"
+  - "JavaScript"
+  - "SVG"
+demo: "/learnwithkody/demos/357-garbage-collector-garden.html"
+repo: "https://github.com/kody-w/kody-w.github.io/blob/master/learnwithkody/demos/357-garbage-collector-garden.html"
+highlights:
+  - "A real tracing model walks only from pinned roots, so an isolated two-object cycle is reclaimed while a rooted cache cycle survives as a logical leak."
+  - "Mark–sweep preserves every survivor address and exposes the holes it leaves; compact mode then relocates survivors and rewrites each stale root and field pointer visibly."
+  - "Every run reports live bytes, garbage bytes, reclaimed bytes, external fragmentation, modeled pause time, and executable heap invariants."
+  - "The cycle/leak lab and seeded groves are deterministic, while manual allocation, roots, and references let you construct your own counterexamples."
+prompt: |
+  Build “Garbage Collector Garden — Grow, Trace, and Compact a Living Heap,” a beautiful, accurate single-file interactive heap visualizer. Users allocate objects, add/remove references, pin/unpin roots, create a cycle/leak preset, and run mark, sweep, and compact phases step-by-step or continuously. Include at least mark-sweep and a copying/compacting comparison, clearly distinguish reachable/unreachable objects, animate relocation and pointer rewrites, expose fragmentation, pause time, live bytes, reclaimed bytes, and invariant checks. Cycles with no root must be collected. Add deterministic presets/seed, reset/play/pause/step, keyboard and pointer/touch usability, accessibility, responsive 390px layout, and reduced motion. Self-contained inline HTML/CSS/JS only; no external resources/network/build; <=160KB.
+lessons:
+  - "Tracing collectors care about paths from roots, not reference counts: a rootless cycle is ordinary garbage, while a rooted cycle can retain an entire subgraph."
+  - "Mark–sweep buys stable addresses at the cost of holes; relocation buys one large free region but requires forwarding metadata and a rewrite for every moved pointer."
+  - "A collector visualization becomes trustworthy only when survivor preservation, pointer validity, non-overlap, and post-collection density are checked as executable invariants."
+---
+
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>Garbage Collector Garden is a local, deterministic heap laboratory. Plant variable-sized objects, connect their fields, pin roots, and then advance a tracing collector one atomic action at a time or let it run. The bundled cycle/leak lab contains both a rooted cache cycle that survives and an isolated ivy cycle that must disappear, making the difference between circularity and reachability impossible to miss.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>The abstract mechanics become physical: gray frontier objects turn into traced survivors, white garbage is swept into visible holes, compacting slides live blocks toward address zero, and stale pointer words glow until each one is rewritten. The same heap can be projected through mark–sweep and copy-like compaction while live bytes, reclaimed bytes, fragmentation, pause cost, and invariants keep every visual claim honest.</p>
+</section>
+
+<aside class="lwk-try-embed">
+  <div class="lwk-try-embed-head">
+    <span class="lwk-try-embed-label">Live demo</span>
+    <a href="/learnwithkody/demos/357-garbage-collector-garden.html" target="_blank" rel="noopener" class="lwk-try-embed-open">Open in new tab ↗</a>
+  </div>
+  <iframe src="/learnwithkody/demos/357-garbage-collector-garden.html" title="Garbage Collector Garden — live demo" loading="lazy" sandbox="allow-scripts allow-same-origin"></iframe>
+</aside>
