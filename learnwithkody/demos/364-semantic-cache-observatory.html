@@ -1,0 +1,1865 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; script-src-attr 'none'; style-src 'unsafe-inline'; style-src-attr 'none'; img-src 'none'; font-src 'none'; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Semantic Cache Observatory — Tune Speed Against Wrong Answers</title>
+<style>
+:root{
+  --bg:#061014;
+  --bg-deep:#03090c;
+  --panel:#0b171c;
+  --panel-2:#102127;
+  --line:#24404a;
+  --line-hot:#3b6876;
+  --text:#eef8f7;
+  --muted:#9eb6b8;
+  --cyan:#67e8f9;
+  --teal:#55f2c2;
+  --amber:#ffcb6b;
+  --orange:#ff9666;
+  --red:#ff6b7a;
+  --blue:#82aaff;
+  --violet:#c792ea;
+  --shadow:0 24px 70px #0008;
+}
+*{box-sizing:border-box}
+html{background:var(--bg-deep);scroll-behavior:smooth}
+body{
+  margin:0;
+  min-width:0;
+  min-height:100vh;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 82% -10%,#174553 0,transparent 36rem),
+    radial-gradient(circle at -12% 38%,#153b34 0,transparent 31rem),
+    linear-gradient(180deg,var(--bg),var(--bg-deep));
+  font:500 15px/1.48 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+button,input,select{font:inherit}
+button,select,input[type="range"]{touch-action:manipulation}
+button,select{
+  min-height:44px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  color:var(--text);
+  background:#102027;
+}
+button{
+  padding:9px 13px;
+  font-weight:800;
+  letter-spacing:.01em;
+  cursor:pointer;
+}
+button:hover{border-color:var(--cyan);background:#15303a}
+button:active{transform:translateY(1px)}
+button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible,.history-item:focus-visible{
+  outline:3px solid #fff27a;
+  outline-offset:3px;
+}
+button[aria-pressed="true"],.preset.active{
+  border-color:var(--cyan);
+  color:#021012;
+  background:var(--cyan);
+}
+button:disabled{cursor:not-allowed;opacity:.45}
+select{width:100%;padding:8px 34px 8px 10px}
+input[type="range"]{width:100%;min-height:44px;accent-color:var(--cyan);cursor:pointer}
+.skip{
+  position:fixed;
+  z-index:30;
+  top:8px;
+  left:8px;
+  transform:translateY(-150%);
+  padding:10px 14px;
+  border-radius:9px;
+  color:#001012;
+  background:#fff;
+  font-weight:900;
+}
+.skip:focus{transform:none}
+.shell{width:min(1480px,calc(100% - 32px));margin:auto;padding:28px 0 48px}
+.hero{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:28px;
+  align-items:end;
+  padding:10px 4px 26px;
+}
+.eyebrow{
+  margin:0 0 10px;
+  color:var(--cyan);
+  font:800 11px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+}
+h1{
+  max-width:980px;
+  margin:0;
+  font-size:clamp(36px,6vw,82px);
+  line-height:.91;
+  letter-spacing:-.065em;
+}
+h1 span{display:block;color:var(--amber)}
+.lede{max-width:850px;margin:18px 0 0;color:var(--muted);font-size:clamp(14px,1.8vw,18px)}
+.proofs{display:grid;gap:8px;min-width:250px}
+.proof{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-height:42px;
+  padding:9px 11px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#09161bdd;
+  box-shadow:0 12px 35px #0004;
+  font:800 10px/1.25 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.proof::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--teal);box-shadow:0 0 14px var(--teal)}
+.proof.warning::before{background:var(--amber);box-shadow:0 0 14px var(--amber)}
+.workspace{display:grid;grid-template-columns:350px minmax(0,1fr);gap:14px;align-items:start}
+.panel{
+  min-width:0;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:linear-gradient(180deg,#0d1c22ee,#081317f5);
+  box-shadow:var(--shadow);
+}
+.panel-head{
+  display:flex;
+  align-items:start;
+  justify-content:space-between;
+  gap:14px;
+  padding:17px 18px 13px;
+  border-bottom:1px solid var(--line);
+}
+.panel-head h2,.panel-head h3{margin:0;font-size:16px;letter-spacing:-.02em}
+.panel-head p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.controls{position:sticky;top:10px}
+.controls-body{display:grid;gap:16px;padding:16px}
+.control-group{display:grid;gap:7px}
+.control-label,.control-group legend{
+  padding:0;
+  color:#cde0e1;
+  font:800 10px/1.25 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.control-label{display:flex;justify-content:space-between;gap:12px}
+.control-label output{color:var(--cyan)}
+fieldset{min-width:0;margin:0;padding:0;border:0}
+.choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:7px}
+.choice{position:relative;min-width:0}
+.choice input{position:absolute;opacity:0;inset:0}
+.choice label{
+  display:grid;
+  place-items:center;
+  min-height:44px;
+  padding:7px 5px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  color:var(--muted);
+  background:#0a171c;
+  font-size:11px;
+  font-weight:850;
+  text-align:center;
+  cursor:pointer;
+}
+.choice input:checked+label{border-color:var(--cyan);color:#041012;background:var(--cyan)}
+.choice input:focus-visible+label{outline:3px solid #fff27a;outline-offset:3px}
+.hint{margin:0;color:var(--muted);font-size:11px}
+.tenant-lock{
+  display:flex;
+  gap:9px;
+  align-items:flex-start;
+  padding:10px 11px;
+  border:1px solid #26745e;
+  border-radius:10px;
+  color:#cffff0;
+  background:#0a2a24;
+  font-size:11px;
+}
+.tenant-lock b{color:var(--teal)}
+.preset-row,.run-row,.purge-row{display:grid;gap:7px}
+.preset-row{grid-template-columns:repeat(3,minmax(0,1fr))}
+.preset-row button{padding-inline:6px;font-size:11px}
+.run-row{grid-template-columns:1fr 1fr 1fr}
+.run-row #step{border-color:var(--cyan);color:var(--cyan)}
+.run-row #play{border-color:var(--teal);color:var(--teal)}
+.run-row #play[aria-pressed="true"]{color:#03110d;background:var(--teal)}
+.purge-row{grid-template-columns:1fr auto}
+.kbd{
+  display:inline-grid;
+  place-items:center;
+  min-width:22px;
+  min-height:22px;
+  padding:0 5px;
+  border:1px solid var(--line-hot);
+  border-bottom-width:3px;
+  border-radius:5px;
+  color:#d8ebed;
+  background:#0c1a20;
+  font:800 10px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+.dashboard{display:grid;gap:14px;min-width:0}
+.metrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.metric{
+  min-width:0;
+  padding:13px 12px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:linear-gradient(180deg,#10242b,#0a171c);
+  box-shadow:0 12px 35px #0003;
+}
+.metric span{
+  display:block;
+  min-height:25px;
+  color:var(--muted);
+  font:800 9px/1.25 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+}
+.metric strong{display:block;margin-top:4px;font-size:clamp(19px,2.5vw,28px);line-height:1;letter-spacing:-.05em}
+.metric small{display:block;margin-top:6px;color:var(--muted);font-size:9px}
+.metric.good strong{color:var(--teal)}
+.metric.warn strong{color:var(--amber)}
+.metric.bad strong{color:var(--red)}
+.observatory{overflow:hidden}
+.observatory-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:13px 16px;
+  border-bottom:1px solid var(--line);
+}
+.progress-copy{font:800 11px/1.3 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted)}
+.progress-copy b{color:var(--text)}
+.invariant{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  min-height:32px;
+  padding:6px 9px;
+  border:1px solid #26745e;
+  border-radius:999px;
+  color:var(--teal);
+  background:#09251f;
+  font:850 9px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.invariant::before{content:"✓";font-size:13px}
+.invariant.fail{border-color:#8e3040;color:#ffd5da;background:#32131a}
+.invariant.fail::before{content:"!"}
+.flow-wrap{
+  overflow-x:auto;
+  padding:12px 14px 4px;
+  border-bottom:1px solid var(--line);
+  background:
+    linear-gradient(#10242b33 1px,transparent 1px),
+    linear-gradient(90deg,#10242b33 1px,transparent 1px),
+    #071217;
+  background-size:24px 24px;
+  scrollbar-color:#31505a #071217;
+}
+.flow-wrap:focus-visible{outline:3px solid #fff27a;outline-offset:-3px}
+.flow{display:block;width:100%;height:auto;max-height:190px}
+.flow .rail{fill:none;stroke:#31505a;stroke-width:4;stroke-linecap:round}
+.flow .box{fill:#0d2027;stroke:#31505a;stroke-width:2}
+.flow .box-label{fill:#86a8ad;font:800 10px ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.1em}
+.flow .box-value{fill:#f2fbfa;font:850 13px ui-monospace,SFMono-Regular,Consolas,monospace}
+.flow .signal{fill:var(--cyan);stroke:#d8fbff;stroke-width:2;filter:drop-shadow(0 0 7px var(--cyan))}
+.flow.correct .decision-box{stroke:var(--teal);fill:#0a2b23}
+.flow.wrong .decision-box{stroke:var(--red);fill:#35131a}
+.flow.miss .decision-box{stroke:var(--amber);fill:#302414}
+.flow.event .decision-box{stroke:var(--violet);fill:#25182d}
+.flow.correct .decision-value{fill:var(--teal)}
+.flow.wrong .decision-value{fill:var(--red)}
+.flow.miss .decision-value{fill:var(--amber)}
+.flow.event .decision-value{fill:var(--violet)}
+.detail{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(280px,.88fr);gap:12px;padding:14px}
+.request-card,.candidate-card{
+  min-width:0;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#09161b;
+}
+.card-title{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  min-height:43px;
+  padding:9px 11px;
+  border-bottom:1px solid var(--line);
+  color:var(--muted);
+  font:800 9px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.status-chip{
+  display:inline-flex;
+  align-items:center;
+  min-height:26px;
+  padding:4px 8px;
+  border:1px solid var(--line-hot);
+  border-radius:999px;
+  color:var(--muted);
+  background:#0b1c22;
+  letter-spacing:.04em;
+}
+.status-chip.correct{border-color:#26745e;color:var(--teal);background:#09251f}
+.status-chip.wrong{border-color:#8e3040;color:#ffd1d7;background:#32131a}
+.status-chip.miss{border-color:#795d28;color:var(--amber);background:#2a2112}
+.status-chip.event{border-color:#68447d;color:#e8c7f6;background:#24172b}
+.prompt{
+  margin:0;
+  padding:14px 14px 8px;
+  font-size:clamp(17px,2.1vw,23px);
+  line-height:1.25;
+  letter-spacing:-.025em;
+  overflow-wrap:anywhere;
+}
+.meta-line{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 13px}
+.tag{
+  display:inline-flex;
+  align-items:center;
+  min-height:25px;
+  padding:4px 7px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  color:#c7dcde;
+  background:#0d2026;
+  font:750 9px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+.answer-grid{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line)}
+.answer{min-width:0;padding:12px 14px}
+.answer+.answer{border-left:1px solid var(--line)}
+.answer b{display:block;margin-bottom:6px;color:var(--muted);font:800 9px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.08em;text-transform:uppercase}
+.answer p{margin:0;font-size:12px;overflow-wrap:anywhere}
+.answer.returned p{color:#e7f8f6}
+.why{margin:0;padding:12px 14px;border-top:1px solid var(--line);color:#c9dcde;font-size:12px}
+.candidate-body{padding:12px}
+.candidate-prompt{margin:0 0 10px;font-size:13px;font-weight:750;overflow-wrap:anywhere}
+.scoreline{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center}
+.scoreline strong{color:var(--cyan);font:900 24px/1 ui-monospace,SFMono-Regular,Consolas,monospace}
+.score-track{display:block;width:100%;height:8px;overflow:hidden;border-radius:999px}
+.score-track .score-bg{fill:#15282e}
+.score-track .score-fill{fill:var(--cyan)}
+.scoreline small{color:var(--muted);font:750 9px ui-monospace,SFMono-Regular,Consolas,monospace}
+.candidate-meta{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:11px 0}
+.mini{
+  min-width:0;
+  padding:7px 8px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  color:var(--muted);
+  background:#0b1c21;
+  font-size:9px;
+  overflow-wrap:anywhere;
+}
+.mini b{display:block;margin-bottom:3px;color:#d9ebec}
+.breakdown{display:grid;gap:5px;margin:0;padding:10px 0 0;border-top:1px solid var(--line);list-style:none}
+.breakdown li{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font:700 9px/1.35 ui-monospace,SFMono-Regular,Consolas,monospace}
+.breakdown li b{color:#dcebec;text-align:right}
+.tenant-note{margin:10px 0 0;padding:9px;border:1px solid #285246;border-radius:8px;color:#bfe7dc;background:#0a211d;font-size:10px}
+.lower{display:grid;grid-template-columns:minmax(0,1.16fr) minmax(300px,.84fr);gap:14px}
+.history-list,.cache-list{display:grid;gap:7px;max-height:530px;overflow:auto;padding:12px;scrollbar-color:#31505a #09161b}
+.history-item{
+  width:100%;
+  min-height:62px;
+  display:grid;
+  grid-template-columns:54px minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  padding:9px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  color:var(--text);
+  background:#09161b;
+  text-align:left;
+}
+.history-item:hover{border-color:var(--line-hot);background:#0d2026}
+.history-code{
+  display:grid;
+  place-items:center;
+  align-self:stretch;
+  border-radius:7px;
+  color:var(--muted);
+  background:#102127;
+  font:850 10px ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+.history-main{min-width:0}
+.history-main b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.history-main small{display:block;margin-top:4px;color:var(--muted);font-size:9px}
+.history-outcome{
+  max-width:105px;
+  color:var(--muted);
+  font:850 9px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+  text-align:right;
+  text-transform:uppercase;
+}
+.history-item.correct .history-outcome{color:var(--teal)}
+.history-item.wrong .history-outcome{color:var(--red)}
+.history-item.miss .history-outcome{color:var(--amber)}
+.history-item.event .history-outcome{color:var(--violet)}
+.empty{margin:0;padding:24px;color:var(--muted);font-size:12px;text-align:center}
+.cache-entry{
+  padding:10px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#09161b;
+}
+.cache-entry.expired{opacity:.58}
+.cache-entry.fenced{border-style:dashed;opacity:.58}
+.cache-top{display:flex;justify-content:space-between;gap:8px;align-items:start}
+.cache-top b{font-size:11px}
+.cache-top span{color:var(--muted);font:750 9px ui-monospace,SFMono-Regular,Consolas,monospace}
+.cache-entry p{margin:7px 0;color:#d6e7e8;font-size:11px;overflow-wrap:anywhere}
+.cache-foot{display:flex;flex-wrap:wrap;gap:5px}
+.model{margin-top:14px}
+.model-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:16px;padding:16px}
+.formula{
+  margin:0;
+  padding:15px;
+  border:1px solid #31505a;
+  border-radius:11px;
+  color:#dffbfb;
+  background:#061116;
+  font:800 13px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace;
+  overflow-wrap:anywhere;
+}
+.formula .token{color:var(--cyan)}
+.formula .order{color:var(--blue)}
+.formula .chars{color:var(--violet)}
+.formula .penalty{color:var(--red)}
+.model-copy p{margin:0 0 10px;color:var(--muted);font-size:12px}
+.model-copy strong{color:var(--text)}
+.weights{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.footer{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  padding:18px 3px 0;
+  color:var(--muted);
+  font-size:10px;
+}
+.footer p{margin:0}
+.sr-only{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  padding:0!important;
+  margin:-1px!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;
+  border:0!important;
+}
+[hidden]{display:none!important}
+@media(max-width:1120px){
+  .workspace{grid-template-columns:310px minmax(0,1fr)}
+  .metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .detail{grid-template-columns:1fr}
+}
+@media(max-width:860px){
+  .hero{grid-template-columns:1fr}.proofs{grid-template-columns:repeat(3,minmax(0,1fr));min-width:0}
+  .workspace{grid-template-columns:1fr}.controls{position:static}
+  .controls-body{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .run-row,.purge-row,.tenant-lock{grid-column:1/-1}
+  .lower,.model-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .shell{width:min(100% - 20px,1480px);padding-top:14px}
+  .hero{gap:17px;padding-bottom:17px}.proofs{grid-template-columns:1fr}
+  .controls-body{grid-template-columns:1fr}.run-row,.purge-row,.tenant-lock{grid-column:auto}
+  .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .observatory-top{align-items:flex-start;flex-direction:column}
+  .flow{min-width:900px}
+  .detail{padding:9px}.answer-grid{grid-template-columns:1fr}.answer+.answer{border-left:0;border-top:1px solid var(--line)}
+  .scoreline{grid-template-columns:auto 1fr}.scoreline small{grid-column:1/-1}
+  .history-item{grid-template-columns:46px minmax(0,1fr)}.history-outcome{grid-column:2;text-align:left;max-width:none}
+  .footer{display:block}.footer p+p{margin-top:9px}
+}
+@media(max-width:390px){
+  .shell{width:min(100% - 14px,1480px)}
+  h1{font-size:35px}
+  .panel{border-radius:13px}
+  .panel-head{padding-inline:13px}
+  .controls-body{padding:12px}
+  .metric{padding:11px 9px}.metric strong{font-size:20px}
+  .choices{grid-template-columns:1fr}
+  .preset-row{grid-template-columns:1fr 1fr 1fr}
+  .run-row{grid-template-columns:1fr 1fr}.run-row #reset{grid-column:1/-1}
+  .candidate-meta{grid-template-columns:1fr}
+  .model-grid{padding:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  button:active{transform:none}
+  .flow .signal{filter:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#controls-title">Skip to cache controls</a>
+<div class="shell">
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Seed SC-364 · deterministic local simulation</p>
+      <h1>Semantic Cache <span>Observatory</span></h1>
+      <p class="lede">Tune speed against wrong answers. Every cache decision is replayable, every similarity point has a receipt, and every tenant boundary is enforced before a candidate can be compared.</p>
+    </div>
+    <div class="proofs" aria-label="Simulation guarantees">
+      <div class="proof">No network or hosted model</div>
+      <div class="proof">Tenant isolation is mandatory</div>
+      <div class="proof warning">Wrong hits count against precision</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="workspace">
+      <section class="panel controls" aria-labelledby="controls-title">
+        <div class="panel-head">
+          <div>
+            <h2 id="controls-title">Cache policy</h2>
+            <p>Policy changes restart the same seeded workload.</p>
+          </div>
+          <span class="tag">SC-364</span>
+        </div>
+        <div class="controls-body">
+          <fieldset class="control-group">
+            <legend>Lookup mode</legend>
+            <div class="choices">
+              <div class="choice"><input type="radio" name="mode" id="mode-exact" value="exact"><label for="mode-exact">Exact</label></div>
+              <div class="choice"><input type="radio" name="mode" id="mode-hybrid" value="hybrid" checked><label for="mode-hybrid">Exact → semantic</label></div>
+              <div class="choice"><input type="radio" name="mode" id="mode-semantic" value="semantic"><label for="mode-semantic">Semantic</label></div>
+            </div>
+          </fieldset>
+
+          <div class="control-group">
+            <label class="control-label" for="threshold"><span>Similarity threshold</span><output id="threshold-value" for="threshold">0.76</output></label>
+            <input id="threshold" type="range" min="0.50" max="0.98" value="0.76" step="0.01">
+            <p class="hint">Higher rejects more paraphrases; lower admits more near-misses.</p>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="ttl"><span>TTL</span><output id="ttl-value" for="ttl">90 s</output></label>
+            <input id="ttl" type="range" min="15" max="180" value="90" step="15">
+            <p class="hint">Entries remain inspectable after expiry but cannot serve.</p>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="context-key">Context-key strategy</label>
+            <select id="context-key">
+              <option value="tenant">Tenant only</option>
+              <option value="locale" selected>Tenant + locale</option>
+              <option value="strict">Tenant + locale + plan</option>
+            </select>
+          </div>
+
+          <div class="tenant-lock">
+            <span aria-hidden="true">🔒</span>
+            <span><b>Tenant is not optional.</b> It is checked before exact keys, context keys, or similarity. No preset can remove it.</span>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="invalidation">On fact change</label>
+            <select id="invalidation">
+              <option value="none">Do nothing</option>
+              <option value="fact" selected>Purge changed fact</option>
+              <option value="tag">Purge fact tag</option>
+              <option value="namespace">Bump tenant namespace</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <span class="control-label">Presets</span>
+            <div class="preset-row">
+              <button type="button" class="preset" id="preset-safe" aria-pressed="false">Safe</button>
+              <button type="button" class="preset active" id="preset-balanced" aria-pressed="true">Balanced</button>
+              <button type="button" class="preset" id="preset-fast" aria-pressed="false">Speed</button>
+            </div>
+          </div>
+
+          <div class="run-row" aria-label="Workload controls">
+            <button type="button" id="step">Step <span class="sr-only">one workload item</span></button>
+            <button type="button" id="play" aria-pressed="false">Play</button>
+            <button type="button" id="reset">Reset</button>
+          </div>
+
+          <div class="purge-row">
+            <select id="purge-tenant" aria-label="Tenant to invalidate">
+              <option value="Acme">Acme tenant</option>
+              <option value="Nova">Nova tenant</option>
+            </select>
+            <button type="button" id="purge">Purge now</button>
+          </div>
+
+          <p class="hint">Keyboard: <span class="kbd">→</span> step, <span class="kbd">Space</span> play/pause, <span class="kbd">R</span> reset, <span class="kbd">1</span>–<span class="kbd">3</span> presets.</p>
+        </div>
+      </section>
+
+      <div class="dashboard">
+        <section class="metrics" aria-label="Cache metrics">
+          <div class="metric good"><span>Hit rate</span><strong id="metric-hit">—</strong><small id="metric-hit-note">0 of 0 requests</small></div>
+          <div class="metric good"><span>Hit precision</span><strong id="metric-precision">—</strong><small id="metric-precision-note">correct hits / all hits</small></div>
+          <div class="metric bad"><span>Contamination</span><strong id="metric-contam">0</strong><small>wrong context or intent</small></div>
+          <div class="metric warn"><span>Stale hits</span><strong id="metric-stale">0</strong><small>old fact version served</small></div>
+          <div class="metric good"><span>Latency saved</span><strong id="metric-latency">0 ms</strong><small id="metric-latency-note">trusted / 0 ms gross</small></div>
+          <div class="metric good"><span>Cost saved</span><strong id="metric-cost">$0.000</strong><small id="metric-cost-note">trusted / $0.000 gross</small></div>
+        </section>
+
+        <section class="panel observatory" aria-labelledby="observatory-title">
+          <div class="observatory-top">
+            <div class="progress-copy"><b id="observatory-title">Decision telescope</b> · <span id="progress">0 / 20 workload items</span></div>
+            <div class="invariant" id="isolation-badge">Isolation pass · 0 blocked</div>
+          </div>
+
+          <div class="flow-wrap" tabindex="0" aria-label="Scrollable cache decision flow">
+            <svg id="cache-flow" class="flow" viewBox="0 0 1000 180" role="img" aria-labelledby="flow-title flow-desc">
+              <title id="flow-title">Current semantic cache decision flow</title>
+              <desc id="flow-desc">The request passes through an immutable tenant guard, a configurable context key, an exact or semantic comparison, and then either cache or origin.</desc>
+              <path class="rail" d="M105 90H895"></path>
+              <rect class="box" x="18" y="44" width="174" height="92" rx="13"></rect>
+              <text class="box-label" x="34" y="69">REQUEST</text>
+              <text class="box-value" id="flow-request" x="34" y="99">READY</text>
+              <text class="box-label" id="flow-time" x="34" y="121">SEED SC-364</text>
+
+              <rect class="box" x="218" y="44" width="174" height="92" rx="13"></rect>
+              <text class="box-label" x="234" y="69">TENANT GUARD</text>
+              <text class="box-value" id="flow-tenant" x="234" y="99">MANDATORY</text>
+              <text class="box-label" id="flow-blocked" x="234" y="121">0 BLOCKED</text>
+
+              <rect class="box" x="418" y="44" width="174" height="92" rx="13"></rect>
+              <text class="box-label" x="434" y="69">CONTEXT KEY</text>
+              <text class="box-value" id="flow-context" x="434" y="99">TENANT + LOCALE</text>
+              <text class="box-label" id="flow-key-note" x="434" y="121">0 EXCLUDED</text>
+
+              <rect class="box" x="618" y="44" width="174" height="92" rx="13"></rect>
+              <text class="box-label" id="flow-lookup-label" x="634" y="69">HYBRID LOOKUP</text>
+              <text class="box-value" id="flow-score" x="634" y="99">NO CANDIDATE</text>
+              <text class="box-label" id="flow-threshold" x="634" y="121">THRESHOLD 0.76</text>
+
+              <rect class="box decision-box" x="818" y="44" width="164" height="92" rx="13"></rect>
+              <text class="box-label" x="834" y="69">DECISION</text>
+              <text class="box-value decision-value" id="flow-decision" x="834" y="99">READY</text>
+              <text class="box-label" id="flow-latency" x="834" y="121">STEP TO BEGIN</text>
+              <circle class="signal" id="signal" cx="105" cy="90" r="7"></circle>
+            </svg>
+          </div>
+
+          <div class="detail">
+            <article class="request-card">
+              <div class="card-title">
+                <span>Current request</span>
+                <span class="status-chip" id="status-chip">Ready</span>
+              </div>
+              <p class="prompt" id="current-prompt">Step or play the seeded workload to inspect the first decision.</p>
+              <div class="meta-line" id="current-meta">
+                <span class="tag">18 requests</span><span class="tag">2 fact changes</span><span class="tag">2 tenants</span>
+              </div>
+              <div class="answer-grid">
+                <div class="answer returned"><b>Returned answer</b><p id="returned-answer">No response yet.</p></div>
+                <div class="answer"><b>Expected answer</b><p id="expected-answer">Ground truth is attached to every seeded request.</p></div>
+              </div>
+              <p class="why" id="why-text">A miss calls the simulated origin and writes its known-good answer. A hit is judged against that same ground truth, so speed cannot hide an incorrect response.</p>
+            </article>
+
+            <aside class="candidate-card" id="candidate-card" aria-labelledby="candidate-title">
+              <div class="card-title">
+                <span id="candidate-title">Closest eligible candidate</span>
+                <span id="candidate-mode">diagnostic</span>
+              </div>
+              <div class="candidate-body">
+                <p class="candidate-prompt" id="candidate-prompt">No cache entries yet.</p>
+                <div class="scoreline">
+                  <strong id="candidate-score">—</strong>
+                  <svg class="score-track" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true">
+                    <rect class="score-bg" x="0" y="0" width="100" height="8"></rect>
+                    <rect class="score-fill" id="score-fill" x="0" y="0" width="0" height="8"></rect>
+                  </svg>
+                  <small id="candidate-threshold">threshold 0.76</small>
+                </div>
+                <div class="candidate-meta">
+                  <div class="mini"><b>Request tokens</b><span id="request-tokens">—</span></div>
+                  <div class="mini"><b>Candidate tokens</b><span id="candidate-tokens">—</span></div>
+                  <div class="mini"><b>Context key</b><span id="candidate-key">—</span></div>
+                  <div class="mini"><b>Age / TTL</b><span id="candidate-age">—</span></div>
+                </div>
+                <ul class="breakdown" id="score-breakdown">
+                  <li><span>Weighted token Jaccard</span><b>60% of score</b></li>
+                  <li><span>Ordered-bigram Dice</span><b>25% of score</b></li>
+                  <li><span>Character-trigram Dice</span><b>15% of score</b></li>
+                </ul>
+                <p class="tenant-note" id="tenant-note">Cross-tenant entries are discarded before this model runs.</p>
+              </div>
+            </aside>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="lower">
+      <section class="panel" aria-labelledby="history-title">
+        <div class="panel-head">
+          <div><h2 id="history-title">Decision log</h2><p>Select any row to restore its complete explanation.</p></div>
+          <span class="tag" id="request-count">0 requests</span>
+        </div>
+        <div class="history-list" id="history-list">
+          <p class="empty">The deterministic replay is ready.</p>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="cache-title">
+        <div class="panel-head">
+          <div><h2 id="cache-title">Cache contents</h2><p>Expired and namespace-fenced entries remain visible.</p></div>
+          <span class="tag" id="cache-count">0 entries</span>
+        </div>
+        <div class="cache-list" id="cache-list">
+          <p class="empty">Origin misses will populate the cache.</p>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel model" aria-labelledby="model-title">
+      <div class="panel-head">
+        <div><h2 id="model-title">The local model, without the magic trick</h2><p>This is a lexical teaching model, not an embedding service.</p></div>
+        <span class="tag">No vectors · no API</span>
+      </div>
+      <div class="model-grid">
+        <p class="formula">
+          score = clamp(<span class="token">0.60 × weighted-token-Jaccard</span>
+          + <span class="order">0.25 × ordered-bigram-Dice</span>
+          + <span class="chars">0.15 × character-trigram-Dice</span>
+          − <span class="penalty">number / negation / contrast penalties</span>)
+        </p>
+        <div class="model-copy">
+          <p><strong>Semantic normalization is deterministic:</strong> Unicode accent folding, lowercase, apostrophe/dash/punctuation folding, a fixed synonym/phrase map, stop-word removal, then fixed token weights. Numbers weigh 2.4×, negations 2×, contrast words 1.8×, domain terms 1.35×, and other tokens of at least nine characters 1.2×.</p>
+          <p><strong>Exact mode is stricter:</strong> it uses Unicode accent folding, lowercase, apostrophe/punctuation folding, and whitespace collapse — but no synonym map or stop-word removal. Semantic scores are still shown as diagnostics when exact mode misses.</p>
+          <div class="weights" aria-label="Mismatch penalties">
+            <span class="tag">different numbers −0.18</span>
+            <span class="tag">one-sided number −0.09</span>
+            <span class="tag">negation mismatch −0.12</span>
+            <span class="tag">contrast mismatch −0.10…0.16</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p id="live-status" role="status" aria-live="polite">Ready. Balanced preset loaded.</p>
+    <p>Trusted savings exclude stale and contaminated hits; gross savings remain visible for comparison.</p>
+  </footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = id => document.getElementById(id);
+  const SEED = "SC-364";
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const stopWords = new Set([
+    "a","an","the","is","are","was","were","do","does","did","i","we","you","our","my",
+    "to","of","for","on","in","at","by","please","tell","me","have","has","can","could",
+    "would","should","workspace","current","now","get","getting","make","how","many","request"
+  ]);
+  const aliases = {
+    "hours":"hour","hrs":"hour","when":"hour",
+    "open":"available","opened":"available","availability":"available",
+    "weekdays":"weekday","weeks":"week","weekends":"weekend",
+    "refunds":"refund","refunded":"refund","window":"period","long":"period",
+    "retained":"retention","retain":"retention","retains":"retention",
+    "exports":"export","exported":"export",
+    "includes":"include","included":"include","including":"include",
+    "excludes":"exclude","excluded":"exclude","excluding":"exclude",
+    "projects":"project","archives":"archived","deleted":"deleted",
+    "limits":"limit","requests":"request","seats":"seat",
+    "calling":"phone_support","call":"phone_support",
+    "week":"weekday","weekdays":"weekday"
+  };
+  const phraseRules = [
+    [/\bphone support\b/g, " phone_support "],
+    [/\bsupport line\b/g, " phone_support "],
+    [/\bduring the week\b/g, " weekday "],
+    [/\bweek days?\b/g, " weekday "],
+    [/\bhow long\b/g, " period "],
+    [/\bmoney back\b/g, " refund "],
+    [/\brequests? per minute\b/g, " rate_limit "],
+    [/\brate limits?\b/g, " rate_limit "],
+    [/\bten seats?\b/g, " 10 seat "],
+    [/\bone hundred seats?\b/g, " 100 seat "]
+  ];
+  const contrastGroups = [
+    {tokens:["weekday","weekend"], penalty:0.10},
+    {tokens:["include","exclude"], penalty:0.16},
+    {tokens:["active","archived","deleted"], penalty:0.12},
+    {tokens:["enable","disable"], penalty:0.16}
+  ];
+  const domainTokens = new Set([
+    "phone_support","refund","retention","export","rate_limit","invoice","support","history","project"
+  ]);
+  const negations = new Set(["no","not","never","without"]);
+
+  const WORKLOAD = [
+    {
+      type:"request",id:"R01",at:0,tenant:"Acme",locale:"US",plan:"Pro",
+      fact:"support-hours",version:1,tag:"support",
+      prompt:"What hours is phone support open on weekdays?",
+      answerKey:"acme-support-us-v1",
+      answer:"Weekday phone support is open from 9:00 AM to 5:00 PM ET.",
+      latency:910,cost:0.0042
+    },
+    {
+      type:"request",id:"R02",at:8,tenant:"Acme",locale:"US",plan:"Pro",
+      fact:"support-hours",version:1,tag:"support",
+      prompt:"When is phone support available on weekdays?",
+      answerKey:"acme-support-us-v1",
+      answer:"Weekday phone support is open from 9:00 AM to 5:00 PM ET.",
+      latency:860,cost:0.0040
+    },
+    {
+      type:"request",id:"R03",at:16,tenant:"Acme",locale:"US",plan:"Pro",
+      fact:"weekend-support",version:1,tag:"support",
+      prompt:"What hours is phone support open on weekends?",
+      answerKey:"acme-weekend-closed",
+      answer:"Phone support is closed on weekends; emergency chat remains available.",
+      latency:940,cost:0.0044
+    },
+    {
+      type:"request",id:"R04",at:24,tenant:"Nova",locale:"US",plan:"Pro",
+      fact:"support-hours",version:1,tag:"support",
+      prompt:"What hours is phone support open on weekdays?",
+      answerKey:"nova-support-us-v1",
+      answer:"Phone support is open from 8:00 AM to 6:00 PM PT, Monday through Saturday.",
+      latency:990,cost:0.0046
+    },
+    {
+      type:"request",id:"R05",at:32,tenant:"Acme",locale:"US",plan:"Pro",
+      fact:"refund-us",version:1,tag:"billing",
+      prompt:"How long do I have to request a refund?",
+      answerKey:"acme-refund-us-v1",
+      answer:"US subscriptions can be refunded within 30 days of purchase.",
+      latency:1080,cost:0.0051
+    },
+    {
+      type:"request",id:"R06",at:41,tenant:"Acme",locale:"US",plan:"Pro",
+      fact:"refund-us",version:1,tag:"billing",
+      prompt:"How long is the refund window?",
+      answerKey:"acme-refund-us-v1",
+      answer:"US subscriptions can be refunded within 30 days of purchase.",
+      latency:1010,cost:0.0049
+    },
+    {
+      type:"mutation",id:"E01",at:50,tenant:"Acme",fact:"refund-us",tag:"billing",newVersion:2,
+      message:"Acme US refund policy changed from 30 days to 7 days."
+    },
+    {
+      type:"request",id:"R07",at:56,tenant:"Acme",locale:"US",plan:"Pro",
+      fact:"refund-us",version:2,tag:"billing",
+      prompt:"How long do I have to request a refund?",
+      answerKey:"acme-refund-us-v2",
+      answer:"US subscriptions can now be refunded within 7 days of purchase.",
+      latency:1120,cost:0.0052
+    },
+    {
+      type:"request",id:"R08",at:64,tenant:"Acme",locale:"US",plan:"Pro",
+      fact:"refund-us",version:2,tag:"billing",
+      prompt:"How long is the current refund period?",
+      answerKey:"acme-refund-us-v2",
+      answer:"US subscriptions can now be refunded within 7 days of purchase.",
+      latency:1040,cost:0.0048
+    },
+    {
+      type:"request",id:"R09",at:72,tenant:"Acme",locale:"GB",plan:"Pro",
+      fact:"refund-gb",version:1,tag:"billing",
+      prompt:"How long do I have to request a refund?",
+      answerKey:"acme-refund-gb-v1",
+      answer:"UK subscriptions have a 14-day cancellation and refund window.",
+      latency:1060,cost:0.0050
+    },
+    {
+      type:"request",id:"R10",at:81,tenant:"Acme",locale:"US",plan:"Starter",
+      fact:"retention-starter",version:1,tag:"privacy",
+      prompt:"How long is chat history retained?",
+      answerKey:"acme-retention-starter",
+      answer:"Starter workspaces retain chat history for 30 days.",
+      latency:880,cost:0.0041
+    },
+    {
+      type:"request",id:"R11",at:89,tenant:"Acme",locale:"US",plan:"Enterprise",
+      fact:"retention-enterprise",version:1,tag:"privacy",
+      prompt:"How long is chat history retained?",
+      answerKey:"acme-retention-enterprise",
+      answer:"Enterprise workspaces retain chat history for 365 days.",
+      latency:900,cost:0.0042
+    },
+    {
+      type:"request",id:"R12",at:98,tenant:"Acme",locale:"US",plan:"Pro",
+      fact:"export-archived",version:1,tag:"export",
+      prompt:"Does a workspace export include archived projects?",
+      answerKey:"acme-export-archived",
+      answer:"Yes. Workspace exports include archived projects.",
+      latency:970,cost:0.0045
+    },
+    {
+      type:"request",id:"R13",at:106,tenant:"Acme",locale:"US",plan:"Pro",
+      fact:"export-deleted",version:1,tag:"export",
+      prompt:"Does a workspace export include deleted projects?",
+      answerKey:"acme-export-deleted",
+      answer:"No. Permanently deleted projects are excluded from exports.",
+      latency:980,cost:0.0046
+    },
+    {
+      type:"request",id:"R14",at:114,tenant:"Acme",locale:"US",plan:"Pro",
+      fact:"rate-10",version:1,tag:"api",
+      prompt:"What is the API rate limit for 10 seats?",
+      answerKey:"acme-rate-10",
+      answer:"A 10-seat workspace can make 120 API requests per minute.",
+      latency:820,cost:0.0038
+    },
+    {
+      type:"request",id:"R15",at:122,tenant:"Acme",locale:"US",plan:"Pro",
+      fact:"rate-100",version:1,tag:"api",
+      prompt:"What is the API rate limit for 100 seats?",
+      answerKey:"acme-rate-100",
+      answer:"A 100-seat workspace can make 600 API requests per minute.",
+      latency:840,cost:0.0039
+    },
+    {
+      type:"request",id:"R16",at:130,tenant:"Acme",locale:"US",plan:"Pro",
+      fact:"rate-10",version:1,tag:"api",
+      prompt:"How many requests per minute can a ten-seat workspace make?",
+      answerKey:"acme-rate-10",
+      answer:"A 10-seat workspace can make 120 API requests per minute.",
+      latency:850,cost:0.0040
+    },
+    {
+      type:"mutation",id:"E02",at:138,tenant:"Nova",fact:"support-hours",tag:"support",newVersion:2,
+      message:"Nova moved phone support from business hours to 24/7 coverage."
+    },
+    {
+      type:"request",id:"R17",at:145,tenant:"Nova",locale:"US",plan:"Pro",
+      fact:"support-hours",version:2,tag:"support",
+      prompt:"When is phone support available on weekdays?",
+      answerKey:"nova-support-us-v2",
+      answer:"Nova phone support is now available 24 hours a day, 7 days a week.",
+      latency:1030,cost:0.0048
+    },
+    {
+      type:"request",id:"R18",at:154,tenant:"Acme",locale:"US",plan:"Pro",
+      fact:"support-hours",version:1,tag:"support",
+      prompt:"What hours is phone support open on weekdays?",
+      answerKey:"acme-support-us-v1",
+      answer:"Weekday phone support is open from 9:00 AM to 5:00 PM ET.",
+      latency:920,cost:0.0042
+    }
+  ];
+
+  const PRESETS = {
+    safe:{threshold:0.86,ttl:45,context:"strict",mode:"hybrid",invalidation:"fact"},
+    balanced:{threshold:0.76,ttl:90,context:"locale",mode:"hybrid",invalidation:"fact"},
+    fast:{threshold:0.54,ttl:180,context:"tenant",mode:"semantic",invalidation:"none"}
+  };
+
+  let cache = [];
+  let history = [];
+  let currentIndex = 0;
+  let simTime = 0;
+  let playing = false;
+  let paused = true;
+  let timer = 0;
+  let selectedResult = null;
+  let manualSequence = 0;
+  let cacheSequence = 0;
+  let tenantGeneration = {Acme:0,Nova:0};
+  let isolationViolations = 0;
+  let isolationBlocked = 0;
+  let animationFrame = 0;
+  let metrics = freshMetrics();
+
+  function freshMetrics(){
+    return {
+      requests:0,hits:0,correctHits:0,wrongHits:0,contamination:0,stale:0,misses:0,
+      grossLatency:0,trustedLatency:0,grossCost:0,trustedCost:0
+    };
+  }
+
+  function clamp(value,min=0,max=1){
+    return Math.max(min,Math.min(max,value));
+  }
+
+  function foldText(text){
+    return text.normalize("NFKD")
+      .replace(/[\u0300-\u036f]/g,"")
+      .toLowerCase()
+      .replace(/[’']/g,"")
+      .replace(/[-–—]/g," ");
+  }
+
+  function literalNormalize(text){
+    return foldText(text).replace(/[^a-z0-9]+/g," ").trim().replace(/\s+/g," ");
+  }
+
+  function semanticNormalize(text){
+    let folded = foldText(text);
+    phraseRules.forEach(rule => { folded = folded.replace(rule[0],rule[1]); });
+    const raw = folded.match(/[a-z0-9_]+/g) || [];
+    const tokens = raw
+      .map(token => aliases[token] || token)
+      .filter(token => !stopWords.has(token));
+    return {
+      sequence:tokens.join(" "),
+      tokens,
+      unique:new Set(tokens),
+      numbers:new Set(tokens.filter(token => /^\d+$/.test(token))),
+      negated:tokens.some(token => negations.has(token))
+    };
+  }
+
+  function tokenWeight(token){
+    if(/^\d+$/.test(token)) return 2.4;
+    if(negations.has(token)) return 2;
+    if(contrastGroups.some(group => group.tokens.includes(token))) return 1.8;
+    if(domainTokens.has(token)) return 1.35;
+    if(token.length >= 9) return 1.2;
+    return 1;
+  }
+
+  function weightedJaccard(a,b){
+    const union = new Set([...a.unique,...b.unique]);
+    if(!union.size) return 1;
+    let intersectionWeight = 0;
+    let unionWeight = 0;
+    union.forEach(token => {
+      const weight = tokenWeight(token);
+      unionWeight += weight;
+      if(a.unique.has(token) && b.unique.has(token)) intersectionWeight += weight;
+    });
+    return unionWeight ? intersectionWeight / unionWeight : 0;
+  }
+
+  function bigramSet(tokens){
+    const result = new Set();
+    for(let index=0;index<tokens.length-1;index+=1){
+      result.add(tokens[index] + "→" + tokens[index+1]);
+    }
+    return result;
+  }
+
+  function diceSets(a,b){
+    if(!a.size && !b.size) return 1;
+    let overlap = 0;
+    a.forEach(value => { if(b.has(value)) overlap += 1; });
+    return (2 * overlap) / (a.size + b.size);
+  }
+
+  function trigramSet(sequence){
+    const source = "  " + sequence.replace(/_/g," ") + "  ";
+    const result = new Set();
+    for(let index=0;index<source.length-2;index+=1){
+      result.add(source.slice(index,index+3));
+    }
+    return result;
+  }
+
+  function sameSet(a,b){
+    return a.size === b.size && [...a].every(value => b.has(value));
+  }
+
+  function similarity(leftText,rightText){
+    const left = semanticNormalize(leftText);
+    const right = semanticNormalize(rightText);
+    const tokenBase = weightedJaccard(left,right);
+    const orderBase = diceSets(bigramSet(left.tokens),bigramSet(right.tokens));
+    const charBase = diceSets(trigramSet(left.sequence),trigramSet(right.sequence));
+    let numberPenalty = 0;
+    if((left.numbers.size || right.numbers.size) && !sameSet(left.numbers,right.numbers)){
+      numberPenalty = left.numbers.size && right.numbers.size ? 0.18 : 0.09;
+    }
+    const negationPenalty = left.negated !== right.negated ? 0.12 : 0;
+    let contrastPenalty = 0;
+    contrastGroups.forEach(group => {
+      const leftValues = group.tokens.filter(token => left.unique.has(token));
+      const rightValues = group.tokens.filter(token => right.unique.has(token));
+      if(leftValues.length && rightValues.length && !leftValues.some(token => rightValues.includes(token))){
+        contrastPenalty = Math.max(contrastPenalty,group.penalty);
+      }
+    });
+    const tokenContribution = tokenBase * 0.60;
+    const orderContribution = orderBase * 0.25;
+    const charContribution = charBase * 0.15;
+    const score = clamp(tokenContribution + orderContribution + charContribution - numberPenalty - negationPenalty - contrastPenalty);
+    return {
+      score,left,right,tokenBase,orderBase,charBase,tokenContribution,orderContribution,charContribution,
+      numberPenalty,negationPenalty,contrastPenalty
+    };
+  }
+
+  function currentConfig(){
+    const selectedMode = document.querySelector('input[name="mode"]:checked');
+    return {
+      threshold:Number($("threshold").value),
+      ttl:Number($("ttl").value),
+      context:$("context-key").value,
+      mode:selectedMode ? selectedMode.value : "hybrid",
+      invalidation:$("invalidation").value
+    };
+  }
+
+  function contextLabel(strategy){
+    if(strategy === "strict") return "tenant + locale + plan";
+    if(strategy === "locale") return "tenant + locale";
+    return "tenant only";
+  }
+
+  function contextSignature(item,config,generation){
+    const parts = [item.tenant];
+    if(config.context === "locale" || config.context === "strict") parts.push(item.locale);
+    if(config.context === "strict") parts.push(item.plan);
+    if(config.invalidation === "namespace") parts.push("ns" + generation);
+    return parts.join(" · ");
+  }
+
+  function sameContext(entry,request,config){
+    if(config.context === "locale" || config.context === "strict"){
+      if(entry.locale !== request.locale) return false;
+    }
+    if(config.context === "strict" && entry.plan !== request.plan) return false;
+    if(config.invalidation === "namespace" && entry.generation !== tenantGeneration[request.tenant]) return false;
+    return true;
+  }
+
+  function inspectCandidates(request,config){
+    const fresh = [];
+    const expired = [];
+    let blockedTenant = 0;
+    let keyBlocked = 0;
+    let scored = 0;
+    cache.forEach(entry => {
+      if(entry.tenant !== request.tenant){
+        blockedTenant += 1;
+        return;
+      }
+      if(!sameContext(entry,request,config)){
+        keyBlocked += 1;
+        return;
+      }
+      if(entry.tenant !== request.tenant){
+        isolationViolations += 1;
+        throw new Error("Tenant isolation invariant violated");
+      }
+      const model = similarity(request.prompt,entry.prompt);
+      const age = Math.max(0,request.at-entry.createdAt);
+      const record = {
+        entry,model,age,
+        exact:entry.literal === literalNormalize(request.prompt),
+        fresh:age <= config.ttl
+      };
+      scored += 1;
+      (record.fresh ? fresh : expired).push(record);
+    });
+    const sorter = (a,b) => b.model.score-a.model.score || b.entry.createdAt-a.entry.createdAt;
+    fresh.sort(sorter);
+    expired.sort(sorter);
+    isolationBlocked += blockedTenant;
+    return {fresh,expired,blockedTenant,keyBlocked,scored};
+  }
+
+  function pickDecision(request,config,ranking){
+    let match = null;
+    let kind = "";
+    if(config.mode === "exact" || config.mode === "hybrid"){
+      match = ranking.fresh.find(record => record.exact) || null;
+      if(match) kind = "exact";
+    }
+    if(!match && (config.mode === "semantic" || config.mode === "hybrid")){
+      const top = ranking.fresh[0] || null;
+      if(top && top.model.score >= config.threshold){
+        match = top;
+        kind = "semantic";
+      }
+    }
+    let candidate = match;
+    if(!candidate){
+      if(config.mode === "exact"){
+        candidate = ranking.fresh[0] || ranking.expired.find(record => record.exact) || ranking.expired[0] || null;
+      }else{
+        candidate = ranking.fresh[0] || ranking.expired[0] || null;
+      }
+    }
+    return {match,kind,candidate};
+  }
+
+  function missReason(config,ranking,decision){
+    const exactExpired = ranking.expired.some(record => record.exact);
+    if((config.mode === "exact" || config.mode === "hybrid") && exactExpired){
+      return "The normalized exact key exists, but its age exceeds the selected TTL.";
+    }
+    if(config.mode !== "exact" && ranking.expired[0] && ranking.expired[0].model.score >= config.threshold && !ranking.fresh.length){
+      return "The closest semantic candidate clears the threshold, but it is expired.";
+    }
+    if(config.mode !== "exact" && ranking.fresh[0] && ranking.fresh[0].model.score < config.threshold){
+      return "The closest fresh candidate scored below the selected similarity threshold.";
+    }
+    if(config.mode === "exact" && ranking.fresh.length){
+      return "Fresh entries exist, but none has the same normalized literal prompt.";
+    }
+    if(ranking.keyBlocked){
+      return "Same-tenant entries exist, but the selected locale/plan/namespace key excludes them.";
+    }
+    if(ranking.blockedTenant){
+      return "Only cross-tenant entries were nearby; the tenant guard rejected them before comparison.";
+    }
+    if(decision.candidate && !decision.candidate.fresh){
+      return "The closest eligible entry is expired.";
+    }
+    return "No eligible cache entry exists, so the simulated origin supplies ground truth.";
+  }
+
+  function insertCache(request,config){
+    cacheSequence += 1;
+    cache.push({
+      cacheId:"C" + String(cacheSequence).padStart(2,"0"),
+      tenant:request.tenant,
+      locale:request.locale,
+      plan:request.plan,
+      fact:request.fact,
+      version:request.version,
+      tag:request.tag,
+      prompt:request.prompt,
+      literal:literalNormalize(request.prompt),
+      semantic:semanticNormalize(request.prompt),
+      answerKey:request.answerKey,
+      answer:request.answer,
+      createdAt:request.at,
+      generation:tenantGeneration[request.tenant],
+      context:contextSignature(request,config,tenantGeneration[request.tenant])
+    });
+  }
+
+  function processRequest(request){
+    const config = currentConfig();
+    const requestContext = contextSignature(request,config,tenantGeneration[request.tenant]);
+    const ranking = inspectCandidates(request,config);
+    const decision = pickDecision(request,config,ranking);
+    const match = decision.match;
+    metrics.requests += 1;
+    let classification;
+    let returned;
+    let why;
+    let latency;
+    let grossLatency = 0;
+    let grossCost = 0;
+    let correct = false;
+    let stale = false;
+    let contaminated = false;
+
+    if(match){
+      metrics.hits += 1;
+      returned = match.entry.answer;
+      correct = match.entry.answerKey === request.answerKey;
+      stale = !correct && match.entry.fact === request.fact && match.entry.version !== request.version;
+      contaminated = !correct && !stale;
+      latency = decision.kind === "exact" ? 7 : 12 + Math.min(20,ranking.scored*2);
+      grossLatency = Math.max(0,request.latency-latency);
+      grossCost = Math.max(0,request.cost-(decision.kind === "exact" ? 0.00001 : 0.00003));
+      metrics.grossLatency += grossLatency;
+      metrics.grossCost += grossCost;
+      if(correct){
+        metrics.correctHits += 1;
+        metrics.trustedLatency += grossLatency;
+        metrics.trustedCost += grossCost;
+        classification = decision.kind === "exact" ? "CORRECT EXACT HIT" : "CORRECT SEMANTIC HIT";
+        why = decision.kind === "exact"
+          ? "The tenant and context keys matched, then the normalized literal prompt matched exactly."
+          : "The tenant and context keys matched, and the best fresh candidate cleared the threshold with the correct ground-truth answer.";
+      }else{
+        metrics.wrongHits += 1;
+        if(stale){
+          metrics.stale += 1;
+          classification = "STALE WRONG HIT";
+          why = "The cache reused the same fact from an older version. Its apparent speed is excluded from trusted savings.";
+        }else{
+          metrics.contamination += 1;
+          classification = "CONTAMINATED WRONG HIT";
+          why = "The cache reused a different intent or context whose text looked similar enough. Its apparent speed is excluded from trusted savings.";
+        }
+      }
+    }else{
+      metrics.misses += 1;
+      returned = request.answer;
+      latency = request.latency;
+      classification = "MISS → ORIGIN";
+      why = missReason(config,ranking,decision);
+      insertCache(request,config);
+    }
+
+    return {
+      type:"request",
+      id:request.id,
+      request,
+      requestContext,
+      config:{...config},
+      ranking,
+      decision,
+      classification,
+      returned,
+      correct,
+      stale,
+      contaminated,
+      why,
+      latency,
+      grossLatency,
+      grossCost,
+      time:request.at
+    };
+  }
+
+  function applyMutation(event){
+    const config = currentConfig();
+    const before = cache.length;
+    let affected = 0;
+    let action = "";
+    if(config.invalidation === "fact"){
+      cache = cache.filter(entry => !(entry.tenant === event.tenant && entry.fact === event.fact));
+      affected = before-cache.length;
+      action = affected + " matching fact entr" + (affected === 1 ? "y" : "ies") + " purged";
+    }else if(config.invalidation === "tag"){
+      cache = cache.filter(entry => !(entry.tenant === event.tenant && entry.tag === event.tag));
+      affected = before-cache.length;
+      action = affected + " `" + event.tag + "` tag entr" + (affected === 1 ? "y" : "ies") + " purged";
+    }else if(config.invalidation === "namespace"){
+      affected = cache.filter(entry => entry.tenant === event.tenant && entry.generation === tenantGeneration[event.tenant]).length;
+      tenantGeneration[event.tenant] += 1;
+      action = "namespace bumped; " + affected + " entr" + (affected === 1 ? "y" : "ies") + " fenced";
+    }else{
+      action = "no invalidation; prior answers remain eligible until TTL expiry";
+    }
+    return {
+      type:"event",
+      id:event.id,
+      event,
+      config:{...config},
+      classification:"FACT CHANGED",
+      why:event.message + " Policy result: " + action + ".",
+      affected,
+      policyEffect:action,
+      time:event.at
+    };
+  }
+
+  function advance(){
+    if(currentIndex >= WORKLOAD.length){
+      stopPlaying("Replay complete. Reset or choose another preset to compare.");
+      return;
+    }
+    const item = WORKLOAD[currentIndex];
+    currentIndex += 1;
+    simTime = item.at;
+    const result = item.type === "request" ? processRequest(item) : applyMutation(item);
+    history.push(result);
+    selectedResult = result;
+    renderAll();
+    announce(
+      item.type === "request"
+        ? item.id + ": " + result.classification.toLowerCase() + "."
+        : item.id + ": fact changed; " + result.policyEffect + "."
+    );
+    if(currentIndex >= WORKLOAD.length) stopPlaying("Replay complete. Inspect the log or reset to compare.");
+  }
+
+  function resetSimulation(message="Simulation reset. The seeded workload is ready."){
+    stopPlaying("");
+    cache = [];
+    history = [];
+    currentIndex = 0;
+    simTime = 0;
+    selectedResult = null;
+    manualSequence = 0;
+    cacheSequence = 0;
+    tenantGeneration = {Acme:0,Nova:0};
+    isolationViolations = 0;
+    isolationBlocked = 0;
+    metrics = freshMetrics();
+    renderAll();
+    announce(message);
+  }
+
+  function togglePlay(){
+    if(playing){
+      stopPlaying("Playback paused.");
+      return;
+    }
+    if(currentIndex >= WORKLOAD.length) resetSimulation("Replay restarted.");
+    playing = true;
+    paused = false;
+    $("play").setAttribute("aria-pressed","true");
+    $("play").textContent = "Pause";
+    document.body.classList.add("playing");
+    announce("Playback running.");
+    advance();
+    if(currentIndex < WORKLOAD.length){
+      startSignalAnimation();
+      timer = window.setInterval(advance,reducedMotion ? 1150 : 760);
+    }
+  }
+
+  function stopPlaying(message){
+    if(timer) window.clearInterval(timer);
+    timer = 0;
+    playing = false;
+    paused = true;
+    if(animationFrame){
+      window.cancelAnimationFrame(animationFrame);
+      animationFrame = 0;
+    }
+    $("signal").setAttribute("cx","105");
+    $("play").setAttribute("aria-pressed","false");
+    $("play").textContent = "Play";
+    document.body.classList.remove("playing");
+    if(message) announce(message);
+  }
+
+  function manualPurge(){
+    const tenant = $("purge-tenant").value;
+    const before = cache.length;
+    cache = cache.filter(entry => entry.tenant !== tenant);
+    const affected = before-cache.length;
+    manualSequence += 1;
+    const result = {
+      type:"event",
+      id:"M" + String(manualSequence).padStart(2,"0"),
+      event:{tenant,message:"Manual tenant purge"},
+      config:{...currentConfig()},
+      classification:"MANUAL PURGE",
+      why:"Manual purge removed " + affected + " entr" + (affected === 1 ? "y" : "ies") + " belonging to " + tenant + ". Other tenants were untouched.",
+      affected,
+      policyEffect:affected + " entries purged",
+      time:simTime
+    };
+    history.push(result);
+    selectedResult = result;
+    renderAll();
+    announce(tenant + " purge removed " + affected + " cache entries.");
+  }
+
+  function percent(numerator,denominator){
+    return denominator ? Math.round((numerator/denominator)*100) + "%" : "—";
+  }
+
+  function money(value){
+    return "$" + value.toFixed(value < 0.01 ? 4 : 3);
+  }
+
+  function duration(value){
+    if(value >= 1000) return (value/1000).toFixed(value >= 10000 ? 1 : 2) + " s";
+    return Math.round(value) + " ms";
+  }
+
+  function renderMetrics(){
+    $("metric-hit").textContent = percent(metrics.hits,metrics.requests);
+    $("metric-hit-note").textContent = metrics.hits + " of " + metrics.requests + " requests";
+    $("metric-precision").textContent = percent(metrics.correctHits,metrics.hits);
+    $("metric-precision-note").textContent = metrics.correctHits + " correct / " + metrics.hits + " hits";
+    $("metric-contam").textContent = String(metrics.contamination);
+    $("metric-stale").textContent = String(metrics.stale);
+    $("metric-latency").textContent = duration(metrics.trustedLatency);
+    $("metric-latency-note").textContent = "trusted / " + duration(metrics.grossLatency) + " gross";
+    $("metric-cost").textContent = money(metrics.trustedCost);
+    $("metric-cost-note").textContent = "trusted / " + money(metrics.grossCost) + " gross";
+    $("request-count").textContent = metrics.requests + " request" + (metrics.requests === 1 ? "" : "s");
+  }
+
+  function outcomeClass(result){
+    if(result.type === "event") return "event";
+    if(!result.decision.match) return "miss";
+    return result.correct ? "correct" : "wrong";
+  }
+
+  function renderFlow(result){
+    const config = result ? result.config : currentConfig();
+    const flow = $("cache-flow");
+    const kind = result ? outcomeClass(result) : "";
+    flow.setAttribute("class","flow" + (kind ? " " + kind : ""));
+    $("flow-context").textContent = contextLabel(config.context).toUpperCase();
+    $("flow-lookup-label").textContent = config.mode.toUpperCase() + " LOOKUP";
+    $("flow-threshold").textContent = "THRESHOLD " + config.threshold.toFixed(2);
+    if(!result){
+      $("flow-request").textContent = "READY";
+      $("flow-time").textContent = "SEED " + SEED;
+      $("flow-tenant").textContent = "MANDATORY";
+      $("flow-blocked").textContent = "0 BLOCKED";
+      $("flow-key-note").textContent = "0 EXCLUDED";
+      $("flow-score").textContent = "NO CANDIDATE";
+      $("flow-decision").textContent = "READY";
+      $("flow-latency").textContent = "STEP TO BEGIN";
+      return;
+    }
+    if(result.type === "event"){
+      $("flow-request").textContent = result.id + " · EVENT";
+      $("flow-time").textContent = "T+" + result.time + " SECONDS";
+      $("flow-tenant").textContent = result.event.tenant.toUpperCase();
+      $("flow-blocked").textContent = "GUARD ACTIVE";
+      $("flow-key-note").textContent = config.invalidation.toUpperCase();
+      $("flow-score").textContent = result.affected + " AFFECTED";
+      $("flow-decision").textContent = "INVALIDATE";
+      $("flow-latency").textContent = result.policyEffect.toUpperCase().slice(0,22);
+      return;
+    }
+    const candidate = result.decision.candidate;
+    $("flow-request").textContent = result.id + " · " + result.request.tenant.toUpperCase();
+    $("flow-time").textContent = "T+" + result.time + " SECONDS";
+    $("flow-tenant").textContent = "PASS · " + result.request.tenant.toUpperCase();
+    $("flow-blocked").textContent = result.ranking.blockedTenant + " BLOCKED";
+    $("flow-key-note").textContent = result.ranking.keyBlocked + " EXCLUDED";
+    $("flow-score").textContent = candidate ? candidate.model.score.toFixed(3) : "NO CANDIDATE";
+    $("flow-decision").textContent = result.decision.match ? (result.correct ? "HIT · RIGHT" : "HIT · WRONG") : "MISS · ORIGIN";
+    $("flow-latency").textContent = result.latency + " MS";
+  }
+
+  function setTags(container,values){
+    container.textContent = "";
+    values.forEach(value => {
+      const span = document.createElement("span");
+      span.className = "tag";
+      span.textContent = value;
+      container.appendChild(span);
+    });
+  }
+
+  function breakdownRows(model){
+    return [
+      ["Weighted tokens","0.60 × " + model.tokenBase.toFixed(3) + " = +" + model.tokenContribution.toFixed(3)],
+      ["Ordered bigrams","0.25 × " + model.orderBase.toFixed(3) + " = +" + model.orderContribution.toFixed(3)],
+      ["Character trigrams","0.15 × " + model.charBase.toFixed(3) + " = +" + model.charContribution.toFixed(3)],
+      ["Number mismatch","−" + model.numberPenalty.toFixed(3)],
+      ["Negation mismatch","−" + model.negationPenalty.toFixed(3)],
+      ["Contrast mismatch","−" + model.contrastPenalty.toFixed(3)],
+      ["Final score",model.score.toFixed(3)]
+    ];
+  }
+
+  function renderDetail(result){
+    if(!result){
+      $("status-chip").className = "status-chip";
+      $("status-chip").textContent = "Ready";
+      $("current-prompt").textContent = "Step or play the seeded workload to inspect the first decision.";
+      setTags($("current-meta"),["18 requests","2 fact changes","2 tenants"]);
+      $("returned-answer").textContent = "No response yet.";
+      $("expected-answer").textContent = "Ground truth is attached to every seeded request.";
+      $("why-text").textContent = "A miss calls the simulated origin and writes its known-good answer. A hit is judged against that same ground truth, so speed cannot hide an incorrect response.";
+      $("candidate-title").textContent = "Closest eligible candidate";
+      $("candidate-mode").textContent = "diagnostic";
+      $("candidate-prompt").textContent = "No cache entries yet.";
+      $("candidate-score").textContent = "—";
+      $("score-fill").setAttribute("width","0");
+      $("candidate-threshold").textContent = "threshold " + currentConfig().threshold.toFixed(2);
+      $("request-tokens").textContent = "—";
+      $("candidate-tokens").textContent = "—";
+      $("candidate-key").textContent = "—";
+      $("candidate-age").textContent = "—";
+      $("score-breakdown").textContent = "";
+      [["Weighted token Jaccard","60% of score"],["Ordered-bigram Dice","25% of score"],["Character-trigram Dice","15% of score"]].forEach(row => appendBreakdown(row));
+      $("tenant-note").textContent = "Cross-tenant entries are discarded before this model runs.";
+      return;
+    }
+    const kind = outcomeClass(result);
+    $("status-chip").className = "status-chip " + kind;
+    $("status-chip").textContent = result.classification;
+    if(result.type === "event"){
+      $("current-prompt").textContent = result.event.message;
+      setTags($("current-meta"),[result.id,result.event.tenant,"T+" + result.time + "s",result.config.invalidation + " invalidation"]);
+      $("returned-answer").textContent = result.policyEffect;
+      $("expected-answer").textContent = "Changed facts should not reuse an older answer.";
+      $("why-text").textContent = result.why;
+      $("candidate-title").textContent = "Invalidation result";
+      $("candidate-mode").textContent = "policy event";
+      $("candidate-prompt").textContent = result.policyEffect;
+      $("candidate-score").textContent = "—";
+      $("score-fill").setAttribute("width","0");
+      $("candidate-threshold").textContent = "no similarity lookup";
+      $("request-tokens").textContent = result.event.fact || "manual";
+      $("candidate-tokens").textContent = result.event.tag || "tenant-wide";
+      $("candidate-key").textContent = result.event.tenant;
+      $("candidate-age").textContent = result.affected + " affected";
+      $("score-breakdown").textContent = "";
+      appendBreakdown(["Policy",result.config.invalidation]);
+      appendBreakdown(["Result",result.policyEffect]);
+      $("tenant-note").textContent = "Invalidation is scoped to " + result.event.tenant + "; no other tenant is touched.";
+      return;
+    }
+    const request = result.request;
+    const candidate = result.decision.candidate;
+    $("current-prompt").textContent = request.prompt;
+    setTags($("current-meta"),[
+      request.id,
+      request.tenant,
+      request.locale,
+      request.plan,
+      request.fact + " v" + request.version,
+      "T+" + request.at + "s"
+    ]);
+    $("returned-answer").textContent = result.returned;
+    $("expected-answer").textContent = request.answer;
+    $("why-text").textContent = result.why;
+    $("candidate-title").textContent = result.decision.match ? "Matched cache candidate" : "Closest eligible candidate";
+    $("candidate-mode").textContent = result.decision.match ? result.decision.kind + " decision" : (result.config.mode === "exact" ? "semantic diagnostic only" : "decision candidate");
+    $("request-tokens").textContent = semanticNormalize(request.prompt).sequence || "∅";
+    $("candidate-threshold").textContent = "threshold " + result.config.threshold.toFixed(2);
+    if(candidate){
+      $("candidate-prompt").textContent = candidate.entry.prompt;
+      $("candidate-score").textContent = candidate.model.score.toFixed(3);
+      $("score-fill").setAttribute("width",String(Math.round(candidate.model.score*100)));
+      $("candidate-tokens").textContent = candidate.entry.semantic.sequence || "∅";
+      $("candidate-key").textContent = candidate.entry.context;
+      $("candidate-age").textContent = candidate.age + "s / " + result.config.ttl + "s" + (candidate.fresh ? " · fresh" : " · expired");
+      $("score-breakdown").textContent = "";
+      breakdownRows(candidate.model).forEach(appendBreakdown);
+    }else{
+      $("candidate-prompt").textContent = "No same-tenant, context-eligible entry existed before this request.";
+      $("candidate-score").textContent = "—";
+      $("score-fill").setAttribute("width","0");
+      $("candidate-tokens").textContent = "—";
+      $("candidate-key").textContent = result.requestContext;
+      $("candidate-age").textContent = "—";
+      $("score-breakdown").textContent = "";
+      appendBreakdown(["Candidate set","empty"]);
+    }
+    $("tenant-note").textContent =
+      "Tenant guard discarded " + result.ranking.blockedTenant + " entr" + (result.ranking.blockedTenant === 1 ? "y" : "ies") +
+      " before similarity; the selected context key excluded " + result.ranking.keyBlocked + " more.";
+  }
+
+  function appendBreakdown(row){
+    const li = document.createElement("li");
+    const span = document.createElement("span");
+    const bold = document.createElement("b");
+    span.textContent = row[0];
+    bold.textContent = row[1];
+    li.append(span,bold);
+    $("score-breakdown").appendChild(li);
+  }
+
+  function renderHistory(){
+    const list = $("history-list");
+    list.textContent = "";
+    if(!history.length){
+      const empty = document.createElement("p");
+      empty.className = "empty";
+      empty.textContent = "The deterministic replay is ready.";
+      list.appendChild(empty);
+      return;
+    }
+    [...history].reverse().forEach(result => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "history-item " + outcomeClass(result);
+      button.dataset.resultId = result.id;
+      button.setAttribute("aria-label","Inspect " + result.id + ": " + result.classification);
+      const code = document.createElement("span");
+      code.className = "history-code";
+      code.textContent = result.id;
+      const main = document.createElement("span");
+      main.className = "history-main";
+      const title = document.createElement("b");
+      const note = document.createElement("small");
+      if(result.type === "request"){
+        title.textContent = result.request.prompt;
+        const candidate = result.decision.candidate;
+        note.textContent = result.request.tenant + " · T+" + result.time + "s · " + (candidate ? "score " + candidate.model.score.toFixed(3) : "no candidate");
+      }else{
+        title.textContent = result.event.message;
+        note.textContent = result.event.tenant + " · T+" + result.time + "s · " + result.policyEffect;
+      }
+      main.append(title,note);
+      const outcome = document.createElement("span");
+      outcome.className = "history-outcome";
+      outcome.textContent = result.classification;
+      button.append(code,main,outcome);
+      list.appendChild(button);
+    });
+  }
+
+  function renderCache(){
+    const list = $("cache-list");
+    list.textContent = "";
+    $("cache-count").textContent = cache.length + " entr" + (cache.length === 1 ? "y" : "ies");
+    if(!cache.length){
+      const empty = document.createElement("p");
+      empty.className = "empty";
+      empty.textContent = "Origin misses will populate the cache.";
+      list.appendChild(empty);
+      return;
+    }
+    const config = currentConfig();
+    [...cache].reverse().forEach(entry => {
+      const age = Math.max(0,simTime-entry.createdAt);
+      const expired = age > config.ttl;
+      const fenced = config.invalidation === "namespace" && entry.generation !== tenantGeneration[entry.tenant];
+      const article = document.createElement("article");
+      article.className = "cache-entry" + (expired ? " expired" : "") + (fenced ? " fenced" : "");
+      const top = document.createElement("div");
+      top.className = "cache-top";
+      const name = document.createElement("b");
+      name.textContent = entry.cacheId + " · " + entry.tenant + " · " + entry.fact + " v" + entry.version;
+      const state = document.createElement("span");
+      state.textContent = fenced ? "FENCED" : expired ? "EXPIRED" : age + "s OLD";
+      top.append(name,state);
+      const prompt = document.createElement("p");
+      prompt.textContent = entry.prompt;
+      const foot = document.createElement("div");
+      foot.className = "cache-foot";
+      [entry.locale,entry.plan,entry.tag,"ns" + entry.generation].forEach(value => {
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = value;
+        foot.appendChild(tag);
+      });
+      article.append(top,prompt,foot);
+      list.appendChild(article);
+    });
+  }
+
+  function renderInvariant(){
+    const badge = $("isolation-badge");
+    const pass = isolationViolations === 0;
+    badge.className = "invariant" + (pass ? "" : " fail");
+    badge.textContent = pass
+      ? "Isolation pass · " + isolationBlocked + " blocked"
+      : "Isolation failure · " + isolationViolations;
+  }
+
+  function renderAll(){
+    $("progress").textContent = currentIndex + " / " + WORKLOAD.length + " workload items";
+    $("step").disabled = currentIndex >= WORKLOAD.length;
+    $("threshold-value").textContent = Number($("threshold").value).toFixed(2);
+    $("ttl-value").textContent = $("ttl").value + " s";
+    renderMetrics();
+    renderFlow(selectedResult);
+    renderDetail(selectedResult);
+    renderHistory();
+    renderCache();
+    renderInvariant();
+  }
+
+  function announce(message){
+    $("live-status").textContent = message;
+  }
+
+  function chooseMode(mode){
+    const input = $("mode-" + mode);
+    if(input) input.checked = true;
+  }
+
+  function applyPreset(name){
+    const preset = PRESETS[name];
+    $("threshold").value = String(preset.threshold);
+    $("ttl").value = String(preset.ttl);
+    $("context-key").value = preset.context;
+    $("invalidation").value = preset.invalidation;
+    chooseMode(preset.mode);
+    document.querySelectorAll(".preset").forEach(button => {
+      const active = button.id === "preset-" + name;
+      button.classList.toggle("active",active);
+      button.setAttribute("aria-pressed",String(active));
+    });
+    resetSimulation(name.charAt(0).toUpperCase() + name.slice(1) + " preset loaded. Seeded workload reset.");
+  }
+
+  function policyChanged(label){
+    document.querySelectorAll(".preset").forEach(button => {
+      button.classList.remove("active");
+      button.setAttribute("aria-pressed","false");
+    });
+    resetSimulation(label + " changed. Seeded workload reset for a fair comparison.");
+  }
+
+  $("step").addEventListener("click",advance);
+  $("play").addEventListener("click",togglePlay);
+  $("reset").addEventListener("click",() => resetSimulation());
+  $("purge").addEventListener("click",manualPurge);
+  $("preset-safe").addEventListener("click",() => applyPreset("safe"));
+  $("preset-balanced").addEventListener("click",() => applyPreset("balanced"));
+  $("preset-fast").addEventListener("click",() => applyPreset("fast"));
+  $("threshold").addEventListener("input",() => {
+    $("threshold-value").textContent = Number($("threshold").value).toFixed(2);
+    $("candidate-threshold").textContent = "threshold " + Number($("threshold").value).toFixed(2);
+    $("flow-threshold").textContent = "THRESHOLD " + Number($("threshold").value).toFixed(2);
+  });
+  $("threshold").addEventListener("change",() => policyChanged("Similarity threshold"));
+  $("ttl").addEventListener("input",() => { $("ttl-value").textContent = $("ttl").value + " s"; });
+  $("ttl").addEventListener("change",() => policyChanged("TTL"));
+  $("context-key").addEventListener("change",() => policyChanged("Context-key strategy"));
+  $("invalidation").addEventListener("change",() => policyChanged("Invalidation policy"));
+  document.querySelectorAll('input[name="mode"]').forEach(input => {
+    input.addEventListener("change",() => policyChanged("Lookup mode"));
+  });
+  $("history-list").addEventListener("click",event => {
+    const button = event.target.closest("[data-result-id]");
+    if(!button) return;
+    const found = [...history].reverse().find(result => result.id === button.dataset.resultId);
+    if(found){
+      selectedResult = found;
+      renderFlow(found);
+      renderDetail(found);
+      announce("Inspecting " + found.id + ": " + found.classification.toLowerCase() + ".");
+    }
+  });
+
+  document.addEventListener("keydown",event => {
+    const target = event.target;
+    if(target && target.closest && target.closest("input,select,button,a,summary,.flow-wrap")) return;
+    if(event.key === " "){
+      event.preventDefault();
+      togglePlay();
+    }else if(event.key === "ArrowRight" || event.key.toLowerCase() === "s"){
+      event.preventDefault();
+      advance();
+    }else if(event.key.toLowerCase() === "r"){
+      event.preventDefault();
+      resetSimulation();
+    }else if(event.key === "1"){
+      applyPreset("safe");
+    }else if(event.key === "2"){
+      applyPreset("balanced");
+    }else if(event.key === "3"){
+      applyPreset("fast");
+    }
+  });
+
+  document.addEventListener("visibilitychange",() => {
+    if(document.hidden && playing) stopPlaying("Playback paused because the tab is hidden.");
+  });
+
+  let animationStart = performance.now();
+  function startSignalAnimation(){
+    if(reducedMotion || !playing || paused || document.hidden || animationFrame) return;
+    animationStart = performance.now();
+    animationFrame = window.requestAnimationFrame(animate);
+  }
+
+  function animate(now){
+    if(paused || !playing || reducedMotion || document.hidden){
+      animationFrame = 0;
+      $("signal").setAttribute("cx","105");
+      return;
+    }
+    const phase = ((now-animationStart)%1500)/1500;
+    $("signal").setAttribute("cx",(105+phase*790).toFixed(1));
+    animationFrame = window.requestAnimationFrame(animate);
+  }
+
+  renderAll();
+})();
+</script>
+</body>
+</html>
