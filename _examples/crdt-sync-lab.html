@@ -1,0 +1,53 @@
+---
+title: "CRDT Constellation — Three Offline Editors, One Convergent Document"
+slug: crdt-sync-lab
+order: 349
+tagline: "Partition three replicas, type three realities, then watch immutable operations settle into one deterministic document."
+category: simulator
+difficulty: advanced
+status: live
+tags:
+  - crdt
+  - local-first
+  - distributed-systems
+  - offline-first
+  - convergence
+stack:
+  - "Vanilla JavaScript"
+  - "RGA-style sequence CRDT"
+  - "Inline CSS and SVG"
+  - "Deterministic seeded simulation"
+demo: "/learnwithkody/demos/355-crdt-sync-lab.html"
+repo: "https://github.com/kody-w/kody-w.github.io/blob/master/learnwithkody/demos/355-crdt-sync-lab.html"
+highlights:
+  - "The three text areas are independent replicas, not mirrored inputs: every keystroke becomes immutable insert or tombstone operations that can arrive in any order."
+  - "Concurrent inserts share an anchor and resolve through one visible total order: descending Lamport clock, then device ID, then local sequence."
+  - "The seeded conflict preset edits the same word on three isolated devices, shuffles message delivery deterministically, and still converges without a central winner."
+  - "A replica hash covers the canonical operation set and rendered text, while a boot-time check proves four delivery schedules plus delete-before-insert produce the same result."
+prompt: |
+  Build “CRDT Constellation — Three Offline Editors, One Convergent Document,” an educational, visually polished, single-file interactive demo. Show three simulated devices editing the same document. Users can partition/reconnect devices, type divergent changes, inspect queued operations, step or play message delivery, run a conflict preset, and see a convergence hash/invariant. Implement a real deterministic convergence strategy (not a fake animation), make reconnect converge all replicas, and explain the operation ordering in the UI. Include reset, pause/play, deterministic seed/preset, keyboard and pointer/touch usability, responsive 390px layout with no horizontal overflow, and prefers-reduced-motion behavior. One self-contained HTML file only: inline CSS/JS, no external assets, no CDN, no fetch/network calls, no build tooling; target <=160KB.
+lessons:
+  - "A sequence CRDT can preserve cursor-relative intent by anchoring each inserted atom to its predecessor, while tombstones keep those anchors valid after deletion."
+  - "Convergence needs a total sibling order, not arrival order: the same Lamport, device, and sequence tuple must be compared identically on every replica."
+  - "A meaningful convergence indicator hashes canonical operations as well as visible text, because equal text can temporarily hide unequal replica state."
+---
+
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>A hands-on sequence-CRDT simulator with three genuinely independent browser-side replicas. Isolate Atlas, Beacon, or Cygnus; type a different document on each; inspect the resulting insert and delete operations; then deliver those messages one at a time or let the network play.</p>
+  <p>The model is deterministic. Inserts reference an immutable predecessor, concurrent siblings use a Lamport-clock and device-ID total order, and deletes leave tombstones instead of shifting indexes. Operations may arrive before their anchors and safely wait. The visible convergence hash only turns green when every replica has the same complete operation set and renders the same text.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>There is no master copy and no last writer quietly erasing the others. The conflict preset changes the same word on three partitioned devices, then shuffles the delivery schedule from a repeatable seed. All three alternatives survive, every replica independently computes the same order, and reconnecting drains the queue into one byte-for-byte result.</p>
+  <p>That is the central CRDT promise made visible: agreement comes from the algebra of the operations, not from a server deciding whose version wins. The hash is proof of shared state, while the operation inspector shows exactly why each character occupies its final position.</p>
+</section>
+
+<aside class="lwk-try-embed">
+  <div class="lwk-try-embed-head">
+    <span class="lwk-try-embed-label">Live demo</span>
+    <a href="/learnwithkody/demos/355-crdt-sync-lab.html" target="_blank" rel="noopener" class="lwk-try-embed-open">Open in new tab &#8599;</a>
+  </div>
+  <iframe src="/learnwithkody/demos/355-crdt-sync-lab.html" title="CRDT Constellation — live demo" loading="lazy" sandbox="allow-scripts allow-same-origin"></iframe>
+</aside>
