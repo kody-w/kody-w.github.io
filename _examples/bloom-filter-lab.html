@@ -1,0 +1,54 @@
+---
+title: "Bloom Filter X-Ray — Watch False Positives Appear"
+slug: "bloom-filter-lab"
+order: 354
+tagline: "See every salted hash strike the bit array, then run a deterministic experiment until a value that was never added lights up as “maybe present.”"
+category: "simulator"
+difficulty: "intermediate"
+status: "live"
+tags:
+  - "bloom-filter"
+  - "probabilistic-data-structures"
+  - "hashing"
+  - "false-positives"
+stack:
+  - "HTML"
+  - "CSS"
+  - "JavaScript"
+  - "SVG"
+demo: "/learnwithkody/demos/360-bloom-filter-lab.html"
+repo: "https://github.com/kody-w/kody-w.github.io/blob/master/learnwithkody/demos/360-bloom-filter-lab.html"
+highlights:
+  - "Uses deterministic, independently salted 32-bit FNV-1a hashes with an avalanche mix, while exposing every hash-to-bit landing and intra-value collision."
+  - "Separates exact membership from Bloom-filter output so true positives, true negatives, false positives, and invariant-breaking false negatives are classified correctly."
+  - "Measures false-positive rate only across known-absent probes, then compares it with (1 - exp(-kn/m))^k and reports absolute percentage-point error."
+  - "Preserves the no-false-negative invariant by resetting on m, k, or seed changes, and shows occupancy, n/m, and the ideal k = (m/n) ln 2."
+prompt: |
+  Build “Bloom Filter X-Ray — Watch False Positives Appear,” an accurate, polished, single-file probabilistic-data-structure lab. Visualize the bit array and each hash landing position. Let users choose bit count and hash count, add/query values, generate deterministic datasets, run an experiment, and compare measured false-positive rate with the theoretical estimate (1 - exp(-kn/m))^k. Clearly distinguish true positive, true negative, false positive, and explain why false negatives should be zero. Show occupancy, n/m, optimal k, measured/theoretical error, and an event trace. Include reset, deterministic seed, autoplay/pause/step experiment, keyboard/touch/accessibility, responsive phone layout, reduced motion. Inline HTML/CSS/JS only, no external assets/deps/network/build, <=160KB.
+lessons:
+  - "A Bloom filter’s “no” is stronger than its “yes”: one zero landing proves absence, while all-one landings only establish possible membership."
+  - "Measured false-positive rate is meaningful only when its denominator contains known-absent queries and the filter population stays fixed for the run."
+  - "The theoretical curve assumes uniform independent hashes; an X-ray of actual landings makes collisions, occupancy, and finite-sample error impossible to hand-wave."
+---
+
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p><strong>Bloom Filter X-Ray</strong> is a deterministic, single-file lab for seeing a probabilistic membership test from the inside. Choose the bit count and hash count, load a seeded dataset or add your own values, and watch every salted hash land on the array. Queries are checked against a private exact ledger only so the lab can label the filter’s answer as a true positive, true negative, false positive, or an invariant-breaking false negative.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>A Bloom filter never stores the values it answers questions about. It stores only shared bits, yet one zero can prove a value was never added. Increase occupancy and unrelated values begin covering one another’s landing positions until an absent probe looks present. The experiment counts only known-absent probes, compares the measured collision rate with <code>(1 - exp(-kn/m))^k</code>, and makes the gap between a mathematical expectation and a finite deterministic run visible.</p>
+</section>
+
+<aside class="lwk-try-embed">
+  <div class="lwk-try-embed-head">
+    <span class="lwk-try-embed-label">Live demo</span>
+    <a href="/learnwithkody/demos/360-bloom-filter-lab.html" target="_blank" rel="noopener" class="lwk-try-embed-open">Open in new tab ↗</a>
+  </div>
+  <iframe
+    src="/learnwithkody/demos/360-bloom-filter-lab.html"
+    title="Bloom Filter X-Ray — Watch False Positives Appear — live demo"
+    loading="lazy"
+    sandbox="allow-scripts allow-same-origin"></iframe>
+</aside>
