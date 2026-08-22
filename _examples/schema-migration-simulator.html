@@ -1,0 +1,53 @@
+---
+title: "Migration Flight Simulator — Change a Live Schema Without Downtime"
+slug: "schema-migration-simulator"
+order: 357
+tagline: "A deterministic cockpit for the expand/migrate/contract pattern: old and new clients keep sending live reads and writes while one customer-name field becomes a normalized shape. Advance or roll back each stage, change the fleet mix and traffic, reorder non-atomic dual writes, stall the worker, break the target, and watch request errors, stale reads, replica mismatches, backfill lag, acknowledged-value loss, compatibility, and the destructive contract gate react."
+category: "simulator"
+difficulty: "advanced"
+status: "live"
+tags:
+  - "schema-migration"
+  - "expand-contract"
+  - "zero-downtime"
+  - "dual-write"
+  - "data-integrity"
+stack:
+  - "Deterministic fixed-timestep traffic with a seeded PRNG"
+  - "Versioned legacy and normalized replicas under live reads and writes"
+  - "Explicit expand, dual-write, backfill, read-switch, write-fence, and contract state machine"
+  - "Inline HTML, CSS, SVG, and JavaScript with no network or build step"
+demo: "/learnwithkody/demos/363-schema-migration-simulator.html"
+repo: "https://github.com/kody-w/kody-w.github.io/blob/master/learnwithkody/demos/363-schema-migration-simulator.html"
+highlights:
+  - "THE CONTRACT BUTTON IS A DESTRUCTIVE-CHANGE GATE, NOT A NEXT-STEP BUTTON. It calculates the exact rows whose last acknowledged value would disappear if `full_name` were dropped, verifies normalized-first reads, requires the configured old-client share to be zero, rejects active failures, and enforces a write-fence soak. The rushed preset reaches contract with traffic still on v1 and target rows behind; the simulator refuses the DDL and lists every blocker."
+  - "WRITE ORDER AND READ ORDER ARE COUPLED. During non-atomic dual write, a timeout after leg one leaves that first copy visible even though the request failed. Persisting the current read source first can leak an unacknowledged value into successful reads; persisting it last keeps the partial write off the primary path. The safe preset flips write order when reads flip. The rushed preset deliberately does not."
+  - "THE METRICS CHECK USER-VISIBLE TRUTH, NOT JUST COLUMN POPULATION. Every row carries the last acknowledged value as a simulator oracle, so a populated target can still be stale, two populated replicas can still disagree, and a 200 response can still return the wrong name. Error rate, stale responses, mismatches, target lag, live-copy loss, compatibility, and five invariants update independently."
+  - "THE TWO PRESETS ARE REPRODUCIBLE FLIGHT RECORDERS. Both use fixed one-second simulation ticks and seeded pseudo-random traffic. Safe waits for zero lag, switches reads, drains v1, soaks the fence, and contracts cleanly. Rushed deploys v2 too early, advances without waiting, injects a second-leg timeout, selects the dangerous order, and stops at a deterministic rejected contract."
+prompt: "Build “Migration Flight Simulator — Change a Live Schema Without Downtime,” a polished, accurate, single-file expand/migrate/contract simulation. Simulate live traffic from old and new clients over records moving from a legacy field to a new normalized shape. Users advance or roll back explicit stages (expand schema, dual write, backfill, switch reads, stop old writes, contract), adjust old/new client mix and traffic, inject a failure, pause/step/play, and run deterministic safe/rushed presets. Track requests, error rate, stale/mismatched records, backfill lag, data-loss/invariant checks, and compatibility matrix. Prevent unsafe contract or clearly fail it with an explanation. Demonstrate why dual-write/read order matters. Responsive 390px, accessible keyboard/touch, reduced motion. One inline HTML/CSS/JS file, no external resources/network/build, <=160KB."
+lessons:
+  - "Why expand/migrate/contract is a compatibility protocol rather than a sequence of DDL statements: the safe contract condition is about every live reader, writer, and acknowledged row, not whether the replacement columns exist"
+  - "How non-atomic dual-write order interacts with read preference: writing the primary read source first can expose a mutation from a request that ultimately failed, while writing it last contains the partial result on the secondary path"
+  - "Why backfill completion, replica equality, stale-read rate, live-copy loss, and client compatibility are separate signals, and why a destructive migration gate must evaluate all of them"
+---
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p>A live schema-migration cockpit. Forty-eight records begin with one legacy <code>full_name</code> field while old v1 and new v2 clients continuously read and mutate them. You fly the system through additive expansion, non-atomic dual write, version-aware backfill, a normalized-first read cutover, an old-write fence, and final contract.</p>
+  <p>Every control changes the running model: client rollout, requests per minute, worker batch size, read order, write order, and three failure modes. Pause, single-step, roll a stage back, or run the seeded safe and rushed flight plans to compare the same migration discipline against the same kind of live traffic.</p>
+</section>
+
+<aside class="lwk-try-embed">
+  <div class="lwk-try-embed-head">
+    <span class="lwk-try-embed-label">Live demo</span>
+    <a href="/learnwithkody/demos/363-schema-migration-simulator.html" target="_blank" rel="noopener" class="lwk-try-embed-open">Open in new tab &#8599;</a>
+  </div>
+  <iframe src="/learnwithkody/demos/363-schema-migration-simulator.html" title="Migration Flight Simulator — live demo" loading="lazy" sandbox="allow-scripts allow-same-origin"></iframe>
+</aside>
+
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>The dangerous moment is not adding a column. It is believing that a populated column means the migration is safe.</p>
+  <p>This simulator tracks the last value each successful request actually acknowledged. That makes several failures visible at once: a request can return an error after its first write leg persisted, both shapes can be populated but disagree, a read can return 200 with stale data, and dropping the legacy field can erase the only live copy of an acknowledged value.</p>
+  <p>The order controls make the subtle failure concrete. If a non-atomic dual write persists the current read source first, a timeout before leg two can leak an unacknowledged mutation into successful reads. The safe flight writes the secondary representation first and the active read source last, then flips that order when normalized reads become primary. The rushed flight keeps the dangerous order and injects the timeout.</p>
+  <p>Then it tries to contract. The simulator does not reward forward motion: it refuses the destructive change, identifies the rows that would be lost, points to the old clients still in flight, reports the incomplete soak and active fault, and leaves the system inspectable. Zero downtime is not a brave click. It is a proof that the old shape has become irrelevant.</p>
+</section>
