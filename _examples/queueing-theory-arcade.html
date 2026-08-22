@@ -1,0 +1,45 @@
+---
+title: "Backpressure Arcade — Keep a Queue Alive Under Load"
+slug: "queueing-theory-arcade"
+order: 355
+tagline: "Drive a finite queue through calm traffic, a load spike, and a retry storm—then use admission control and delayed autoscaling to recover without pretending overload is harmless."
+category: "simulator"
+difficulty: "intermediate"
+status: "live"
+tags: ["queueing-theory", "backpressure", "retries", "distributed-systems", "simulation"]
+stack: ["HTML", "CSS", "JavaScript", "Canvas", "SVG"]
+demo: "/learnwithkody/demos/361-queueing-theory-arcade.html"
+repo: "https://github.com/kody-w/kody-w.github.io/blob/master/learnwithkody/demos/361-queueing-theory-arcade.html"
+highlights:
+  - "finite queue"
+  - "retry amplification"
+  - "Little’s Law"
+prompt: |
+  Build “Backpressure Arcade — Keep a Queue Alive Under Load,” a visually compelling, accurate single-file queueing simulation/game. Model arrivals, finite queue, worker service times, completions, timeouts/retries, and overload. Let users tune arrival rate, worker count/service rate, queue cap, retry policy, admission/backpressure, and autoscaling; provide deterministic normal/spike/retry-storm presets, pause/step/play/reset. Show throughput, utilization, queue depth, drops, retry amplification, p50/p95 wait, SLA, score, and a measured Little’s Law comparison L≈λW from the actual simulation. Make overload and recovery behavior real, not decorative. Keyboard/pointer/touch accessible, responsive 390px, reduced motion. Inline HTML/CSS/JS only; no external resources/network/build; <=160KB.
+lessons:
+  - "A queue can hide overload for a while, but it cannot create capacity; once waiting time crosses the client timeout, retries turn delayed work into extra offered load."
+  - "Backpressure deliberately trades some admissions for lower latency and a higher useful-completion rate, which is often better than accepting work that will finish too late to matter."
+  - "Little’s Law becomes operational when L, λ, and W are measured from the same system boundary; the remaining gap exposes transient work still inside the queue."
+---
+
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p><strong>Backpressure Arcade</strong> is a deterministic, event-driven queue simulator disguised as a neon operations game. Every arrival, exponential service time, finite-buffer rejection, timeout, retry, late completion, scale-up delay, and scale-down decision changes the system users can see. The three presets replay the same seeded traffic, while live controls let users test whether capacity, admission control, retry discipline, or autoscaling actually restores service.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>Overload is not a red filter painted over a healthy animation. A short spike grows the real FIFO queue; longer waits cross real deadlines; those deadlines schedule real retries; the retries consume real worker time even when their original callers have already given up. Recovery only appears when completions outrun admitted attempts. The measured Little’s Law panel then compares time-averaged work in the system with observed departure rate times observed sojourn time, including the honest transient gap from requests still trapped inside.</p>
+</section>
+
+<aside class="lwk-try-embed">
+  <div class="lwk-try-embed-head">
+    <span class="lwk-try-embed-label">Live demo</span>
+    <a href="/learnwithkody/demos/361-queueing-theory-arcade.html" target="_blank" rel="noopener" class="lwk-try-embed-open">Open in new tab ↗</a>
+  </div>
+  <iframe
+    src="/learnwithkody/demos/361-queueing-theory-arcade.html"
+    title="Backpressure Arcade — live demo"
+    loading="lazy"
+    sandbox="allow-scripts allow-same-origin"></iframe>
+</aside>
