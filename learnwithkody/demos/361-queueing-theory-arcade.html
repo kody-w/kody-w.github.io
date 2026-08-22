@@ -1,0 +1,2055 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071018">
+<meta name="color-scheme" content="dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; script-src-attr 'none'; style-src 'unsafe-inline'; style-src-attr 'none'; img-src 'none'; connect-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Backpressure Arcade — Keep a Queue Alive Under Load</title>
+<style>
+:root{
+  color-scheme:dark;
+  --void:#05090f;
+  --deep:#071018;
+  --panel:#0b1722e8;
+  --panel-solid:#0b1722;
+  --ink:#ecfbff;
+  --muted:#8da8b5;
+  --line:#213847;
+  --cyan:#50e6ff;
+  --mint:#69f6bd;
+  --violet:#b18cff;
+  --amber:#ffc857;
+  --hot:#ff647c;
+  --blue:#55a7ff;
+  --focus:#f4ff69;
+  --shadow:0 22px 70px #0009;
+  --radius:18px;
+}
+*{box-sizing:border-box}
+html{background:var(--void);scroll-behavior:smooth}
+body{
+  min-width:300px;
+  margin:0;
+  overflow-x:hidden;
+  background:
+    radial-gradient(circle at 15% -8%,#163b4e 0,transparent 34rem),
+    radial-gradient(circle at 95% 9%,#2a1d4a88 0,transparent 31rem),
+    linear-gradient(180deg,#071018 0,#05090f 55%,#03070b 100%);
+  color:var(--ink);
+  font:15px/1.5 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+body::before{
+  position:fixed;
+  z-index:-1;
+  inset:0;
+  background-image:
+    linear-gradient(#d9f7ff08 1px,transparent 1px),
+    linear-gradient(90deg,#d9f7ff08 1px,transparent 1px);
+  background-size:36px 36px;
+  content:"";
+  mask-image:linear-gradient(to bottom,#000,transparent 86%);
+}
+button,input,select,output{font:inherit}
+button,select,input{color:inherit}
+button{cursor:pointer}
+button,input,select{touch-action:manipulation}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{
+  outline:3px solid var(--focus);
+  outline-offset:3px;
+}
+.skip-link{
+  position:fixed;
+  z-index:100;
+  top:.65rem;
+  left:.65rem;
+  padding:.7rem .9rem;
+  border-radius:.55rem;
+  background:var(--ink);
+  color:var(--void);
+  transform:translateY(-180%);
+}
+.skip-link:focus{transform:none}
+.app{width:min(1460px,100%);margin:auto;padding:clamp(.7rem,2vw,1.4rem)}
+.hero{
+  position:relative;
+  overflow:hidden;
+  padding:clamp(1.05rem,3vw,2rem);
+  border:1px solid var(--line);
+  border-radius:calc(var(--radius) + 4px);
+  background:
+    linear-gradient(115deg,#ffffff0b,transparent 28%),
+    linear-gradient(135deg,#0b1d2aee,#0a111ced);
+  box-shadow:var(--shadow);
+}
+.hero::after{
+  position:absolute;
+  right:-7rem;
+  bottom:-11rem;
+  width:28rem;
+  height:28rem;
+  border:1px solid #50e6ff33;
+  border-radius:50%;
+  box-shadow:0 0 0 2rem #50e6ff09,0 0 0 5rem #b18cff08;
+  content:"";
+  pointer-events:none;
+}
+.hero-top,.transport,.preset-group,.run-group,.arena-head,.phase-line,.legend,.metric-head,.law-grid,.chart-legend,.control-line,.worker-readout,.footer-row{
+  display:flex;
+  gap:.65rem;
+  align-items:center;
+}
+.hero-top{position:relative;z-index:2;justify-content:space-between;align-items:flex-start}
+.brand-block{min-width:0}
+.eyebrow{
+  margin:0 0 .45rem;
+  color:var(--cyan);
+  font:800 .72rem/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+h1{
+  max-width:900px;
+  margin:0;
+  font-size:clamp(2.25rem,6.5vw,5.7rem);
+  font-weight:900;
+  letter-spacing:-.065em;
+  line-height:.88;
+}
+h1 span{
+  display:block;
+  color:transparent;
+  background:linear-gradient(90deg,var(--ink),var(--cyan) 48%,var(--violet));
+  background-clip:text;
+  -webkit-background-clip:text;
+}
+.dek{max-width:760px;margin:.9rem 0 0;color:#aec3cc;font-size:clamp(.9rem,1.5vw,1.08rem)}
+.system-state{
+  position:relative;
+  z-index:2;
+  display:grid;
+  min-width:12.5rem;
+  gap:.28rem;
+  justify-items:end;
+  padding:.75rem .9rem;
+  border:1px solid #69f6bd55;
+  border-radius:14px;
+  background:#061019cc;
+  text-align:right;
+}
+.system-state small,.mono-label{
+  color:var(--muted);
+  font:700 .65rem/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.system-state strong{color:var(--mint);font-size:1.05rem;letter-spacing:.06em}
+.system-state[data-tone="pressure"]{border-color:#ffc85766}
+.system-state[data-tone="pressure"] strong{color:var(--amber)}
+.system-state[data-tone="overload"]{border-color:#ff647c88;box-shadow:0 0 25px #ff647c18}
+.system-state[data-tone="overload"] strong{color:var(--hot)}
+.system-state[data-tone="recovering"]{border-color:#55a7ff77}
+.system-state[data-tone="recovering"] strong{color:var(--blue)}
+.transport{
+  position:relative;
+  z-index:2;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  margin-top:1.35rem;
+  padding-top:1rem;
+  border-top:1px solid var(--line);
+}
+.preset-group,.run-group{flex-wrap:wrap}
+.button,.select-compact{
+  min-height:44px;
+  border:1px solid #365464;
+  border-radius:10px;
+  background:#0b1822;
+  padding:.6rem .82rem;
+  font-weight:800;
+}
+.button:hover{border-color:var(--cyan);background:#102534}
+.button.primary{border-color:#50e6ff88;background:#0d2b36;color:#c9f9ff}
+.button.danger{border-color:#ff647c66;color:#ffb3bf}
+.button[aria-pressed="true"]{
+  border-color:var(--violet);
+  background:#231a38;
+  box-shadow:inset 0 0 0 1px #b18cff44;
+}
+.button:disabled{cursor:not-allowed;opacity:.42}
+.select-wrap{display:flex;gap:.45rem;align-items:center;color:var(--muted);font-size:.75rem}
+.select-compact{min-height:40px;padding:.4rem .6rem}
+kbd{
+  min-width:1.45rem;
+  padding:.12rem .32rem;
+  border:1px solid #476170;
+  border-bottom-width:2px;
+  border-radius:5px;
+  background:#07121a;
+  color:#d8edf3;
+  font:700 .66rem/1.35 ui-monospace,SFMono-Regular,Consolas,monospace;
+  text-align:center;
+}
+.layout{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(300px,350px);
+  gap:1rem;
+  margin-top:1rem;
+  align-items:start;
+}
+.main-column{display:grid;gap:1rem;min-width:0}
+.card{
+  min-width:0;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:
+    linear-gradient(145deg,#ffffff08,transparent 24%),
+    var(--panel);
+  box-shadow:0 16px 50px #0005;
+}
+.arena-card{overflow:hidden}
+.arena-head{justify-content:space-between;padding:1rem 1rem .75rem}
+.arena-head h2,.analysis-card h2,.log-card h2{margin:0;font-size:1rem;letter-spacing:.02em}
+.arena-meta{text-align:right}
+.arena-meta strong{display:block;color:var(--cyan);font:800 .82rem/1.25 ui-monospace,SFMono-Regular,Consolas,monospace}
+.arena-meta small{color:var(--muted)}
+.canvas-wrap{position:relative;border-block:1px solid var(--line);background:#050b11}
+#queueCanvas{
+  display:block;
+  width:100%;
+  height:clamp(285px,31vw,390px);
+  touch-action:manipulation;
+}
+.canvas-badge{
+  position:absolute;
+  top:.65rem;
+  left:.65rem;
+  padding:.28rem .48rem;
+  border:1px solid #50e6ff55;
+  border-radius:6px;
+  background:#061019d9;
+  color:#b8f5ff;
+  font:700 .62rem/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  pointer-events:none;
+}
+.phase-strip{padding:.8rem 1rem 1rem}
+.phase-line{justify-content:space-between;margin-bottom:.45rem}
+.phase-line strong{color:var(--amber);font-size:.82rem}
+.phase-line span{color:var(--muted);font:700 .68rem/1.2 ui-monospace,SFMono-Regular,Consolas,monospace}
+progress,meter{width:100%;height:.7rem;accent-color:var(--cyan)}
+.legend{flex-wrap:wrap;margin-top:.65rem;color:var(--muted);font-size:.69rem}
+.legend span{display:inline-flex;gap:.35rem;align-items:center}
+.dot{width:.55rem;height:.55rem;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px currentColor}
+.dot.wait{background:var(--violet)}.dot.late{background:var(--hot)}.dot.done{background:var(--mint)}.dot.boot{background:var(--amber)}
+.metrics{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:.7rem;
+}
+.metric{
+  min-width:0;
+  padding:.8rem;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:#09141dee;
+}
+.metric.score{border-color:#b18cff55;background:linear-gradient(145deg,#211633,#0a151f)}
+.metric-head{justify-content:space-between}
+.metric h3{margin:0;color:var(--muted);font-size:.65rem;letter-spacing:.09em;text-transform:uppercase}
+.metric .value{
+  display:block;
+  margin:.35rem 0 .16rem;
+  color:var(--ink);
+  font:850 clamp(1.25rem,2vw,1.75rem)/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:-.045em;
+}
+.metric.score .value{color:#d9c7ff}
+.metric small{display:block;min-height:2.1em;color:#718d9a;font-size:.64rem;line-height:1.25}
+.analysis-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(280px,.7fr);gap:1rem}
+.analysis-card{padding:1rem}
+.analysis-head{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;margin-bottom:.65rem}
+.analysis-head p{margin:.22rem 0 0;color:var(--muted);font-size:.72rem}
+.chart-legend{flex-wrap:wrap;justify-content:flex-end;color:var(--muted);font-size:.64rem}
+.swatch{width:1.2rem;height:2px;background:var(--cyan)}
+.swatch.queue{background:var(--violet)}.swatch.capacity{background:var(--mint)}
+#historyChart{
+  display:block;
+  width:100%;
+  height:180px;
+  border:1px solid #1a303d;
+  border-radius:12px;
+  background:#061018;
+}
+.grid-line{stroke:#17303d;stroke-width:1}
+.chart-line{fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+#queuePath{stroke:var(--violet)}
+#throughputPath{stroke:var(--cyan)}
+#capacityPath{stroke:var(--mint);stroke-width:2;stroke-dasharray:6 5;opacity:.8}
+.axis-label{fill:#6f8a97;font:10px ui-monospace,SFMono-Regular,Consolas,monospace}
+.law-card{border-color:#50e6ff3d}
+.formula{
+  margin:.65rem 0;
+  padding:.8rem;
+  border:1px solid #244757;
+  border-radius:12px;
+  background:#06121a;
+  color:#c9f8ff;
+  font:800 clamp(1rem,2vw,1.35rem)/1.25 ui-monospace,SFMono-Regular,Consolas,monospace;
+  text-align:center;
+}
+.law-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.55rem}
+.law-stat{padding:.58rem;border:1px solid #203744;border-radius:9px;background:#08141c}
+.law-stat small,.law-stat strong{display:block}
+.law-stat small{color:var(--muted);font-size:.62rem}
+.law-stat strong{margin-top:.2rem;color:var(--ink);font:800 1rem/1 ui-monospace,SFMono-Regular,Consolas,monospace}
+.gap-line{margin:.7rem 0 .35rem;color:var(--muted);font-size:.7rem}
+.gap-line strong{color:var(--amber)}
+.law-note{margin:.55rem 0 0;color:#78939f;font-size:.66rem;line-height:1.35}
+.log-card{padding:1rem}
+.log-card ol{display:grid;gap:.42rem;margin:.65rem 0 0;padding:0;list-style:none}
+.log-card li{
+  display:grid;
+  grid-template-columns:4.7rem 1fr;
+  gap:.55rem;
+  padding:.47rem .55rem;
+  border-left:2px solid #31505f;
+  background:#07121a;
+  color:#abc0c9;
+  font-size:.7rem;
+}
+.log-card time{color:var(--cyan);font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.log-card li[data-tone="hot"]{border-color:var(--hot)}
+.log-card li[data-tone="good"]{border-color:var(--mint)}
+.log-card li[data-tone="scale"]{border-color:var(--amber)}
+.control-panel{position:sticky;top:.7rem;overflow:hidden}
+.control-title{padding:1rem;border-bottom:1px solid var(--line)}
+.control-title h2{margin:0;font-size:1.05rem}
+.control-title p{margin:.28rem 0 0;color:var(--muted);font-size:.72rem}
+details{border-bottom:1px solid var(--line)}
+details:last-child{border-bottom:0}
+summary{
+  min-height:46px;
+  padding:.85rem 1rem;
+  cursor:pointer;
+  color:#dcecf2;
+  font-weight:850;
+  font-size:.78rem;
+  letter-spacing:.04em;
+}
+summary::marker{color:var(--cyan)}
+.control-body{display:grid;gap:.9rem;padding:0 1rem 1rem}
+.field{display:grid;gap:.38rem}
+.control-line{justify-content:space-between}
+.control-line label{color:#b8cad1;font-size:.72rem;font-weight:750}
+.control-line output{
+  min-width:4.4rem;
+  color:var(--cyan);
+  font:800 .72rem/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+  text-align:right;
+}
+.field input[type="range"]{width:100%;min-height:28px;accent-color:var(--cyan)}
+.field select{
+  width:100%;
+  min-height:44px;
+  border:1px solid #36505d;
+  border-radius:9px;
+  background:#07131b;
+  padding:.58rem .65rem;
+}
+.field small{color:#708c98;font-size:.63rem;line-height:1.35}
+.check-row{
+  display:grid;
+  grid-template-columns:1.2rem 1fr;
+  gap:.65rem;
+  align-items:start;
+  min-height:44px;
+  padding:.65rem;
+  border:1px solid #2a424f;
+  border-radius:10px;
+  background:#07131b;
+}
+.check-row input{width:1.1rem;height:1.1rem;margin:.12rem 0 0;accent-color:var(--mint)}
+.check-row strong,.check-row small{display:block}
+.check-row strong{font-size:.75rem}.check-row small{margin-top:.16rem;color:var(--muted);font-size:.62rem}
+.worker-readout{justify-content:space-between;padding:.55rem .65rem;border:1px solid #29414e;border-radius:9px;background:#07131b}
+.worker-readout span{color:var(--muted);font-size:.68rem}
+.worker-readout strong{color:var(--mint);font:800 .76rem/1.2 ui-monospace,SFMono-Regular,Consolas,monospace}
+.footer-row{
+  justify-content:space-between;
+  flex-wrap:wrap;
+  padding:1rem .35rem .2rem;
+  color:#6f8995;
+  font-size:.67rem;
+}
+.key-list{display:flex;gap:.45rem;align-items:center;flex-wrap:wrap}
+.sr-only{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  padding:0!important;
+  margin:-1px!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;
+  border:0!important;
+}
+body.paused .canvas-badge{border-color:#ffc85766;color:#ffe1a0}
+@media(max-width:1120px){
+  .layout{grid-template-columns:minmax(0,1fr) 315px}
+  .metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .analysis-grid{grid-template-columns:1fr}
+}
+@media(max-width:850px){
+  .hero-top{display:grid}
+  .system-state{justify-self:start;justify-items:start;text-align:left}
+  .layout{grid-template-columns:1fr}
+  .control-panel{position:static}
+  .control-panel details{display:inline-block;width:50%;vertical-align:top;border-right:1px solid var(--line)}
+  .control-title{grid-column:1/-1}
+}
+@media(max-width:600px){
+  .app{padding:.55rem}
+  .hero{padding:1rem}
+  .transport{align-items:stretch}
+  .preset-group,.run-group{width:100%;display:grid;grid-template-columns:repeat(4,1fr);gap:.38rem}
+  .preset-group{grid-template-columns:repeat(3,1fr)}
+  .button{min-width:0;padding:.55rem .35rem;font-size:.7rem}
+  .select-wrap{width:100%;justify-content:space-between}
+  .metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}
+  .metric{padding:.7rem}
+  .metric.score{grid-column:span 2}
+  .analysis-card,.log-card{padding:.8rem}
+  .analysis-head{display:grid}
+  .chart-legend{justify-content:flex-start}
+  .control-panel details{display:block;width:100%;border-right:0}
+  .footer-row{display:grid}
+  .key-list{display:none}
+}
+@media(max-width:390px){
+  h1{font-size:2.15rem}
+  .dek{font-size:.82rem}
+  .system-state{width:100%;min-width:0}
+  #queueCanvas{height:300px}
+  .arena-head{align-items:flex-start}
+  .arena-meta small{display:none}
+  .phase-line{align-items:flex-start}
+  .legend{gap:.4rem}
+  .metric .value{font-size:1.2rem}
+  .law-grid{grid-template-columns:1fr 1fr}
+  .log-card li{grid-template-columns:3.8rem 1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  body::before{opacity:.5}
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#controls">Skip simulation display and go to controls</a>
+<div class="app">
+  <header class="hero">
+    <div class="hero-top">
+      <div class="brand-block">
+        <p class="eyebrow">Queue operations / deterministic seed 361</p>
+        <h1>Backpressure <span>Arcade</span></h1>
+        <p class="dek">Keep a finite queue useful while Poisson arrivals, exponential service, client deadlines, retries, and delayed workers all compete for the same capacity.</p>
+      </div>
+      <div class="system-state" id="systemState" data-tone="stable" aria-live="polite">
+        <small>System state</small>
+        <strong id="stateLabel">STABLE</strong>
+        <span id="stateDetail">Capacity is ahead of admitted load.</span>
+      </div>
+    </div>
+    <div class="transport">
+      <div class="preset-group" role="group" aria-label="Deterministic traffic presets">
+        <button class="button" id="normalPreset" type="button" aria-pressed="true"><kbd>1</kbd> Normal</button>
+        <button class="button" id="spikePreset" type="button" aria-pressed="false"><kbd>2</kbd> Spike</button>
+        <button class="button" id="stormPreset" type="button" aria-pressed="false"><kbd>3</kbd> Retry storm</button>
+      </div>
+      <div class="run-group" role="group" aria-label="Simulation transport">
+        <button class="button primary" id="playButton" type="button">▶ Play</button>
+        <button class="button" id="pauseButton" type="button">Ⅱ Pause</button>
+        <button class="button" id="stepButton" type="button">＋ Step</button>
+        <button class="button danger" id="resetButton" type="button">↺ Reset</button>
+      </div>
+      <label class="select-wrap" for="speedSelect">Clock
+        <select class="select-compact" id="speedSelect">
+          <option value="1">1×</option>
+          <option value="2">2×</option>
+          <option value="4" selected>4×</option>
+          <option value="8">8×</option>
+        </select>
+      </label>
+    </div>
+  </header>
+
+  <div class="layout">
+    <main class="main-column">
+      <section class="card arena-card" aria-labelledby="arenaTitle">
+        <div class="arena-head">
+          <div>
+            <p class="eyebrow">Live system boundary</p>
+            <h2 id="arenaTitle">Arrival gate → finite FIFO → worker pool</h2>
+          </div>
+          <div class="arena-meta">
+            <strong id="simClock">T+00:00.0</strong>
+            <small id="loadReadout">6.0 offered/s · 8.4 capacity/s</small>
+          </div>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="queueCanvas" width="1200" height="390" role="img" aria-label="Live queue with arriving requests, finite waiting slots, and worker service progress">
+            The live queue visualization requires canvas. All measured values are also available in the metric cards below.
+          </canvas>
+          <span class="canvas-badge" id="canvasBadge">running / seeded</span>
+        </div>
+        <div class="phase-strip">
+          <div class="phase-line">
+            <strong id="phaseLabel">Steady load</strong>
+            <span id="phaseCountdown">constant profile</span>
+          </div>
+          <progress id="phaseProgress" max="1" value="0" aria-label="Current traffic phase progress"></progress>
+          <div class="legend" aria-label="Visualization legend">
+            <span><i class="dot"></i>arrival</span>
+            <span><i class="dot wait"></i>waiting</span>
+            <span><i class="dot late"></i>timed out work</span>
+            <span><i class="dot done"></i>completion</span>
+            <span><i class="dot boot"></i>worker booting</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="metrics" aria-label="Queue performance metrics">
+        <article class="metric">
+          <div class="metric-head"><h3>Throughput</h3><span aria-hidden="true">⇥</span></div>
+          <strong class="value" id="throughputValue">0.00/s</strong>
+          <small id="throughputNote">server completions, trailing 10s</small>
+        </article>
+        <article class="metric">
+          <div class="metric-head"><h3>Utilization</h3><span aria-hidden="true">◫</span></div>
+          <strong class="value" id="utilValue">0%</strong>
+          <small id="utilNote">busy worker-time / ready worker-time</small>
+        </article>
+        <article class="metric">
+          <div class="metric-head"><h3>Queue depth</h3><span aria-hidden="true">▤</span></div>
+          <strong class="value" id="queueValue">0 / 32</strong>
+          <small id="queueNote">FIFO waiting only; service is separate</small>
+        </article>
+        <article class="metric">
+          <div class="metric-head"><h3>Drops</h3><span aria-hidden="true">⊘</span></div>
+          <strong class="value" id="dropValue">0</strong>
+          <small id="dropNote">0.0% of offered attempts</small>
+        </article>
+        <article class="metric">
+          <div class="metric-head"><h3>Retry amplification</h3><span aria-hidden="true">⟳</span></div>
+          <strong class="value" id="ampValue">1.00×</strong>
+          <small id="ampNote">attempts created / original requests</small>
+        </article>
+        <article class="metric">
+          <div class="metric-head"><h3>p50 wait</h3><span aria-hidden="true">◷</span></div>
+          <strong class="value" id="p50Value">0 ms</strong>
+          <small>queue admission to service start, trailing 60s</small>
+        </article>
+        <article class="metric">
+          <div class="metric-head"><h3>p95 wait</h3><span aria-hidden="true">⌛</span></div>
+          <strong class="value" id="p95Value">0 ms</strong>
+          <small id="p95Note">tail queue wait, trailing 60s</small>
+        </article>
+        <article class="metric">
+          <div class="metric-head"><h3>SLA</h3><span aria-hidden="true">✓</span></div>
+          <strong class="value" id="slaValue">100%</strong>
+          <small id="slaNote">logical requests within original deadline</small>
+        </article>
+        <article class="metric">
+          <div class="metric-head"><h3>Workers</h3><span aria-hidden="true">⚙</span></div>
+          <strong class="value" id="workersValue">4 / 4</strong>
+          <small id="workersNote">ready / desired; booting and draining are real</small>
+        </article>
+        <article class="metric score">
+          <div class="metric-head"><h3>Arcade score</h3><span aria-hidden="true">◆</span></div>
+          <strong class="value" id="scoreValue">1000</strong>
+          <small id="scoreNote">SLA + useful work − drops, retries, and tail wait</small>
+        </article>
+      </section>
+
+      <section class="analysis-grid">
+        <article class="card analysis-card" aria-labelledby="historyTitle">
+          <div class="analysis-head">
+            <div>
+              <h2 id="historyTitle">Pressure trace</h2>
+              <p>Actual samples from the last 60 simulated seconds.</p>
+            </div>
+            <div class="chart-legend" aria-label="Chart legend">
+              <span class="swatch queue"></span> queue
+              <span class="swatch"></span> throughput
+              <span class="swatch capacity"></span> capacity
+            </div>
+          </div>
+          <svg id="historyChart" viewBox="0 0 620 180" role="img" aria-labelledby="chartTitle chartDesc">
+            <title id="chartTitle">Queue depth, throughput, and service capacity history</title>
+            <desc id="chartDesc">A sixty-second trace generated from the running simulation.</desc>
+            <path class="grid-line" d="M40 25H605M40 70H605M40 115H605M40 160H605"></path>
+            <path class="grid-line" d="M40 20V160M180 20V160M320 20V160M460 20V160M605 20V160"></path>
+            <text class="axis-label" x="7" y="29">high</text>
+            <text class="axis-label" x="13" y="163">zero</text>
+            <text class="axis-label" x="40" y="175">−60s</text>
+            <text class="axis-label" x="575" y="175">now</text>
+            <path class="chart-line" id="queuePath" d=""></path>
+            <path class="chart-line" id="throughputPath" d=""></path>
+            <path class="chart-line" id="capacityPath" d=""></path>
+          </svg>
+        </article>
+
+        <article class="card analysis-card law-card" aria-labelledby="lawTitle">
+          <div class="analysis-head">
+            <div>
+              <h2 id="lawTitle">Measured Little’s Law</h2>
+              <p>Same boundary, since reset.</p>
+            </div>
+          </div>
+          <div class="formula"><span id="lawL">0.00</span> ≈ <span id="lawLambda">0.00</span> × <span id="lawW">0.00</span> = <span id="lawProduct">0.00</span></div>
+          <div class="law-grid">
+            <div class="law-stat"><small>L̄: mean in system</small><strong id="lawLStat">0.00 jobs</strong></div>
+            <div class="law-stat"><small>λ: departure rate</small><strong id="lawLambdaStat">0.00 /s</strong></div>
+            <div class="law-stat"><small>W̄: mean sojourn</small><strong id="lawWStat">0.00 s</strong></div>
+            <div class="law-stat"><small>Completed cohort</small><strong id="lawCohort">0 jobs</strong></div>
+          </div>
+          <p class="gap-line">Boundary gap: <strong id="lawGap">0.0%</strong></p>
+          <meter id="lawMeter" min="0" max="1" value="1" low=".75" high=".92" optimum="1" aria-label="Little's Law agreement"></meter>
+          <p class="law-note">The gap is expected during transients: L̄ includes work still inside at the right boundary, while W̄ is only known for completed attempts. It should tighten in a stable, long-running system.</p>
+        </article>
+      </section>
+
+      <section class="card log-card" aria-labelledby="logTitle">
+        <h2 id="logTitle">Operations feed</h2>
+        <ol id="eventLog">
+          <li data-tone="good"><time>T+00:00</time><span>Normal preset armed with deterministic seed 36101.</span></li>
+        </ol>
+      </section>
+    </main>
+
+    <aside class="card control-panel" id="controls" aria-labelledby="controlsTitle">
+      <div class="control-title">
+        <h2 id="controlsTitle">Operator console</h2>
+        <p>Changes affect new arrivals or new service starts. Reset replays the same seeded traffic.</p>
+      </div>
+      <details open>
+        <summary>Load &amp; capacity</summary>
+        <div class="control-body">
+          <div class="field">
+            <div class="control-line"><label for="arrivalRate">Base arrival rate</label><output id="arrivalOutput" for="arrivalRate">6.0 /s</output></div>
+            <input id="arrivalRate" type="range" min="1" max="30" step=".5" value="6">
+            <small>The spike and storm presets multiply this base rate during their scripted phases.</small>
+          </div>
+          <div class="field">
+            <div class="control-line"><label for="workerCount">Minimum workers</label><output id="workerOutput" for="workerCount">4</output></div>
+            <input id="workerCount" type="range" min="1" max="12" step="1" value="4">
+          </div>
+          <div class="field">
+            <div class="control-line"><label for="serviceRate">Service rate per worker</label><output id="serviceOutput" for="serviceRate">2.1 /s</output></div>
+            <input id="serviceRate" type="range" min=".5" max="5" step=".1" value="2.1">
+            <small>Each newly started job draws an exponential service time with mean 1/μ.</small>
+          </div>
+          <div class="worker-readout"><span>Nominal minimum capacity</span><strong id="capacityOutput">8.4 /s</strong></div>
+        </div>
+      </details>
+
+      <details open>
+        <summary>Finite queue &amp; admission</summary>
+        <div class="control-body">
+          <div class="field">
+            <div class="control-line"><label for="queueCap">Waiting-room cap</label><output id="capOutput" for="queueCap">32</output></div>
+            <input id="queueCap" type="range" min="4" max="80" step="2" value="32">
+            <small>Lowering the cap never deletes accepted work; it blocks new waiting work until the queue drains below the new limit.</small>
+          </div>
+          <div class="field">
+            <label for="admissionMode">Admission / backpressure</label>
+            <select id="admissionMode">
+              <option value="open">Open until full</option>
+              <option value="guard" selected>Queue guard</option>
+              <option value="token">Capacity token gate</option>
+            </select>
+          </div>
+          <div class="field">
+            <div class="control-line"><label for="guardThreshold">Guard threshold</label><output id="guardOutput" for="guardThreshold">90%</output></div>
+            <input id="guardThreshold" type="range" min="30" max="100" step="5" value="90">
+            <small>Queue guard rejects new attempts at this occupancy. The token gate shapes admissions near 88% of ready service capacity.</small>
+          </div>
+        </div>
+      </details>
+
+      <details open>
+        <summary>Timeouts &amp; retry policy</summary>
+        <div class="control-body">
+          <div class="field">
+            <div class="control-line"><label for="timeoutValue">Client timeout</label><output id="timeoutOutput" for="timeoutValue">3.0 s</output></div>
+            <input id="timeoutValue" type="range" min=".5" max="6" step=".1" value="3">
+            <small>A timed-out job remains in queue or service. That uncancelled work is what makes retries dangerous.</small>
+          </div>
+          <div class="field">
+            <div class="control-line"><label for="retryCount">Maximum retries</label><output id="retryOutput" for="retryCount">1</output></div>
+            <input id="retryCount" type="range" min="0" max="4" step="1" value="1">
+          </div>
+          <div class="field">
+            <label for="backoffMode">Backoff policy</label>
+            <select id="backoffMode">
+              <option value="fixed">Fixed</option>
+              <option value="exponential">Exponential</option>
+              <option value="jitter" selected>Exponential + jitter</option>
+            </select>
+          </div>
+          <div class="field">
+            <div class="control-line"><label for="backoffBase">Base backoff</label><output id="backoffOutput" for="backoffBase">0.70 s</output></div>
+            <input id="backoffBase" type="range" min=".05" max="2" step=".05" value=".7">
+          </div>
+        </div>
+      </details>
+
+      <details open>
+        <summary>Autoscaling</summary>
+        <div class="control-body">
+          <label class="check-row" for="autoscaleEnabled">
+            <input id="autoscaleEnabled" type="checkbox">
+            <span><strong>Enable delayed autoscaling</strong><small>Scale-up decisions wait 2.5 simulated seconds; quiet scale-down waits 8 seconds.</small></span>
+          </label>
+          <div class="field">
+            <div class="control-line"><label for="maxWorkers">Maximum workers</label><output id="maxWorkerOutput" for="maxWorkers">8</output></div>
+            <input id="maxWorkers" type="range" min="2" max="16" step="1" value="8">
+          </div>
+          <div class="worker-readout"><span>Autoscaler decision</span><strong id="scaleDecision">disabled</strong></div>
+        </div>
+      </details>
+    </aside>
+  </div>
+
+  <footer class="footer-row">
+    <span>All traffic, service, retry, and scale decisions run locally from a seeded event stream.</span>
+    <span class="key-list"><kbd>Space</kbd> play/pause <kbd>.</kbd> step <kbd>R</kbd> reset <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> presets</span>
+  </footer>
+  <p class="sr-only" id="liveStatus" role="status" aria-live="polite" aria-atomic="true"></p>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  const EPSILON = 1e-7;
+  const HISTORY_SECONDS = 60;
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const presets = {
+    normal: {
+      seed: 36101,
+      scenario: "normal",
+      arrival: 6,
+      workers: 4,
+      service: 2.1,
+      cap: 32,
+      timeout: 3,
+      retries: 1,
+      backoff: .7,
+      backoffMode: "jitter",
+      admission: "guard",
+      guard: 90,
+      autoscale: false,
+      maxWorkers: 8
+    },
+    spike: {
+      seed: 36102,
+      scenario: "spike",
+      arrival: 6.2,
+      workers: 4,
+      service: 1.9,
+      cap: 42,
+      timeout: 2.4,
+      retries: 1,
+      backoff: .65,
+      backoffMode: "jitter",
+      admission: "guard",
+      guard: 82,
+      autoscale: true,
+      maxWorkers: 10
+    },
+    storm: {
+      seed: 36103,
+      scenario: "storm",
+      arrival: 6.5,
+      workers: 4,
+      service: 1.8,
+      cap: 48,
+      timeout: .9,
+      retries: 3,
+      backoff: .12,
+      backoffMode: "fixed",
+      admission: "open",
+      guard: 95,
+      autoscale: false,
+      maxWorkers: 12
+    }
+  };
+
+  const elements = {};
+  [
+    "systemState","stateLabel","stateDetail","normalPreset","spikePreset","stormPreset",
+    "playButton","pauseButton","stepButton","resetButton","speedSelect","queueCanvas",
+    "canvasBadge","simClock","loadReadout","phaseLabel","phaseCountdown","phaseProgress",
+    "throughputValue","throughputNote","utilValue","utilNote","queueValue","queueNote",
+    "dropValue","dropNote","ampValue","ampNote","p50Value","p95Value","p95Note",
+    "slaValue","slaNote","workersValue","workersNote","scoreValue","scoreNote",
+    "historyChart","queuePath","throughputPath","capacityPath","lawL","lawLambda",
+    "lawW","lawProduct","lawLStat","lawLambdaStat","lawWStat","lawCohort","lawGap",
+    "lawMeter","eventLog","arrivalRate","arrivalOutput","workerCount","workerOutput",
+    "serviceRate","serviceOutput","capacityOutput","queueCap","capOutput","admissionMode",
+    "guardThreshold","guardOutput","timeoutValue","timeoutOutput","retryCount",
+    "retryOutput","backoffMode","backoffBase","backoffOutput","autoscaleEnabled",
+    "maxWorkers","maxWorkerOutput","scaleDecision","liveStatus"
+  ].forEach(function (id) {
+    elements[id] = document.getElementById(id);
+  });
+
+  const canvas = elements.queueCanvas;
+  const context = canvas.getContext("2d");
+  let config = {};
+  let state = null;
+  let randomState = 1;
+  let currentPreset = "normal";
+  let rootSequence = 0;
+  let attemptSequence = 0;
+  let workerSequence = 0;
+  let lastFrameTime = performance.now();
+  let lastPaintTime = 0;
+  let lastAnnouncedState = "";
+  let lastLogSignature = "";
+
+  function seedRandom(seed) {
+    randomState = seed >>> 0;
+    if (!randomState) randomState = 1;
+  }
+
+  function random() {
+    randomState = (randomState + 0x6D2B79F5) >>> 0;
+    let value = randomState;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  }
+
+  function exponential(rate) {
+    if (!(rate > 0)) return Infinity;
+    return -Math.log(Math.max(1e-12, 1 - random())) / rate;
+  }
+
+  function clamp(value, minimum, maximum) {
+    return Math.max(minimum, Math.min(maximum, value));
+  }
+
+  function formatClock(time) {
+    const minutes = Math.floor(time / 60);
+    const seconds = time - minutes * 60;
+    return "T+" + String(minutes).padStart(2, "0") + ":" + seconds.toFixed(1).padStart(4, "0");
+  }
+
+  function formatDuration(seconds) {
+    if (!Number.isFinite(seconds) || seconds <= 0) return "0 ms";
+    if (seconds < 1) return Math.round(seconds * 1000) + " ms";
+    return seconds.toFixed(seconds < 10 ? 2 : 1) + " s";
+  }
+
+  function phaseFor(time) {
+    if (config.scenario === "normal") {
+      return { label: "Steady load", multiplier: 1, start: 0, next: Infinity, cycle: Infinity };
+    }
+    const cycle = config.scenario === "spike" ? 60 : 50;
+    const adjusted = time + EPSILON;
+    const cycleStart = Math.floor(adjusted / cycle) * cycle;
+    const within = adjusted - cycleStart;
+    const phases = config.scenario === "spike"
+      ? [
+          { end: 10, label: "Baseline approach", multiplier: 1 },
+          { end: 25, label: "Traffic spike", multiplier: 3.05 },
+          { end: 36, label: "Spike tail", multiplier: 1.3 },
+          { end: 60, label: "Recovery window", multiplier: .65 }
+        ]
+      : [
+          { end: 8, label: "Quiet edge", multiplier: 1 },
+          { end: 15, label: "Timeout trigger", multiplier: 1.65 },
+          { end: 30, label: "Retry echo", multiplier: 1 },
+          { end: 50, label: "Recovery window", multiplier: .72 }
+        ];
+    let start = 0;
+    for (let index = 0; index < phases.length; index += 1) {
+      const phase = phases[index];
+      if (within < phase.end - EPSILON) {
+        return {
+          label: phase.label,
+          multiplier: phase.multiplier,
+          start: cycleStart + start,
+          next: cycleStart + phase.end,
+          cycle: cycle
+        };
+      }
+      start = phase.end;
+    }
+    return {
+      label: phases[0].label,
+      multiplier: phases[0].multiplier,
+      start: cycleStart + cycle,
+      next: cycleStart + cycle + phases[0].end,
+      cycle: cycle
+    };
+  }
+
+  function offeredRate() {
+    return config.arrival * phaseFor(state.time).multiplier;
+  }
+
+  function scheduleExternalArrival() {
+    const phase = phaseFor(state.time);
+    state.phase = phase;
+    state.nextPhaseAt = phase.next;
+    const candidate = state.time + exponential(config.arrival * phase.multiplier);
+    state.nextExternalAt = candidate < phase.next - EPSILON ? candidate : Infinity;
+  }
+
+  function createWorker(bootDelay) {
+    return {
+      id: ++workerSequence,
+      bootUntil: state.time + Math.max(0, bootDelay || 0),
+      job: null,
+      endAt: Infinity,
+      duration: 0,
+      retire: false
+    };
+  }
+
+  function reconcileWorkers(desired, bootDelay) {
+    state.desiredWorkers = clamp(Math.round(desired), 1, config.maxWorkers);
+    while (state.workers.length < state.desiredWorkers) {
+      state.workers.push(createWorker(bootDelay));
+    }
+    state.workers.sort(function (left, right) { return left.id - right.id; });
+    state.workers.forEach(function (worker, index) {
+      worker.retire = index >= state.desiredWorkers;
+    });
+    state.workers = state.workers.filter(function (worker) {
+      return !(worker.retire && !worker.job && worker.bootUntil <= state.time + EPSILON);
+    });
+  }
+
+  function readyWorkers() {
+    return state.workers.filter(function (worker) {
+      return worker.bootUntil <= state.time + EPSILON && (!worker.retire || worker.job);
+    });
+  }
+
+  function busyWorkers() {
+    return state.workers.filter(function (worker) { return Boolean(worker.job); });
+  }
+
+  function idleWorkers() {
+    return state.workers.filter(function (worker) {
+      return !worker.job && !worker.retire && worker.bootUntil <= state.time + EPSILON;
+    });
+  }
+
+  function tokenCapacity() {
+    return Math.max(2, readyWorkers().length * 2);
+  }
+
+  function systemCount() {
+    return state.queue.length + busyWorkers().length;
+  }
+
+  function integrate(duration) {
+    if (!(duration > 0)) return;
+    const ready = readyWorkers().length;
+    const busy = busyWorkers().length;
+    state.stats.areaSystem += systemCount() * duration;
+    state.stats.areaBusy += busy * duration;
+    state.stats.areaCapacity += ready * duration;
+    const tokenRate = Math.max(.5, ready * config.service * .88);
+    state.tokens = Math.min(tokenCapacity(), state.tokens + duration * tokenRate);
+  }
+
+  function addPulse(kind, lane) {
+    if (reducedMotion.matches) return;
+    state.pulses.push({ kind: kind, lane: lane || 0, start: state.time });
+    if (state.pulses.length > 90) state.pulses.splice(0, state.pulses.length - 90);
+  }
+
+  function logEvent(message, tone) {
+    const previous = state.logs[0];
+    if (previous && previous.message === message && state.time - previous.time < 2) return;
+    state.logs.unshift({ time: state.time, message: message, tone: tone || "neutral" });
+    state.logs = state.logs.slice(0, 7);
+  }
+
+  function recordOutcome(root, ok, latency) {
+    if (root.outcomeRecorded) return;
+    root.outcomeRecorded = true;
+    state.outcomes.push({ time: state.time, ok: ok, latency: latency });
+    if (ok) state.stats.slaGood += 1;
+    else state.stats.slaMiss += 1;
+  }
+
+  function finalizeFailure(root, cause) {
+    if (root.resolved || root.finalized) return;
+    root.finalized = true;
+    state.stats.failedRoots += 1;
+    recordOutcome(root, false, state.time - root.createdAt);
+    if (cause === "timeout") addPulse("timeout", root.id % 5);
+  }
+
+  function retryDelay(nextAttemptNumber) {
+    const scale = Math.pow(2, Math.max(0, nextAttemptNumber - 1));
+    if (config.backoffMode === "fixed") return config.backoff;
+    if (config.backoffMode === "exponential") return config.backoff * scale;
+    return config.backoff * scale * (.5 + random());
+  }
+
+  function scheduleRetry(attempt, cause) {
+    const root = attempt.root;
+    if (root.resolved || root.finalized || attempt.retryScheduled) return;
+    attempt.retryScheduled = true;
+    if (attempt.number >= config.retries) {
+      finalizeFailure(root, cause);
+      return;
+    }
+    const nextNumber = attempt.number + 1;
+    state.retryEvents.push({
+      due: state.time + retryDelay(nextNumber),
+      root: root,
+      number: nextNumber,
+      cause: cause
+    });
+    state.retryEvents.sort(function (left, right) {
+      return (left.due - right.due) || (left.root.id - right.root.id);
+    });
+    state.stats.retriesScheduled += 1;
+  }
+
+  function admissionDecision() {
+    const idle = idleWorkers().length > 0;
+    if (!idle && state.queue.length >= config.cap) return { accept: false, reason: "full" };
+    if (!idle && config.admission === "guard" && state.queue.length / config.cap >= config.guard / 100) {
+      return { accept: false, reason: "guard" };
+    }
+    if (config.admission === "token") {
+      if (state.tokens < 1) return { accept: false, reason: "token" };
+      state.tokens -= 1;
+    }
+    return { accept: true, reason: "accepted" };
+  }
+
+  function createAttempt(root, number, source) {
+    if (root.resolved || root.finalized) return;
+    const attempt = {
+      id: ++attemptSequence,
+      root: root,
+      number: number,
+      source: source,
+      bornAt: state.time,
+      admittedAt: null,
+      serviceAt: null,
+      deadline: state.time + config.timeout,
+      timedOut: false,
+      retryScheduled: false,
+      state: "offered"
+    };
+    root.attempts += 1;
+    state.stats.attempts += 1;
+    state.attemptTimes.push(state.time);
+    addPulse(number ? "retry" : "arrival", root.id % 5);
+
+    const decision = admissionDecision();
+    if (!decision.accept) {
+      attempt.state = "dropped";
+      state.stats.drops += 1;
+      state.dropTimes.push(state.time);
+      state.dropReasons[decision.reason] += 1;
+      addPulse("drop", root.id % 5);
+      scheduleRetry(attempt, "drop");
+      if (state.time - state.lastDropLog > 3) {
+        const label = decision.reason === "full"
+          ? "Finite queue is full; the attempt was rejected."
+          : decision.reason === "guard"
+            ? "Queue guard shed an attempt before the buffer filled."
+            : "Capacity token gate applied backpressure.";
+        logEvent(label, "hot");
+        state.lastDropLog = state.time;
+      }
+      return;
+    }
+
+    attempt.state = "queued";
+    attempt.admittedAt = state.time;
+    state.stats.admitted += 1;
+    state.queue.push(attempt);
+    dispatch();
+  }
+
+  function createOriginal() {
+    const root = {
+      id: ++rootSequence,
+      createdAt: state.time,
+      slaTarget: config.timeout,
+      attempts: 0,
+      resolved: false,
+      finalized: false,
+      outcomeRecorded: false
+    };
+    state.roots.set(root.id, root);
+    state.stats.originals += 1;
+    state.originalTimes.push(state.time);
+    createAttempt(root, 0, "external");
+  }
+
+  function dispatch() {
+    const available = idleWorkers();
+    while (state.queue.length && available.length) {
+      const worker = available.shift();
+      const attempt = state.queue.shift();
+      attempt.state = "service";
+      attempt.serviceAt = state.time;
+      state.waits.push({ time: state.time, value: state.time - attempt.admittedAt });
+      const duration = exponential(config.service);
+      worker.job = attempt;
+      worker.duration = duration;
+      worker.endAt = state.time + duration;
+    }
+  }
+
+  function completeDueWorkers() {
+    let completed = false;
+    state.workers.forEach(function (worker) {
+      if (!worker.job || worker.endAt > state.time + EPSILON) return;
+      const attempt = worker.job;
+      worker.job = null;
+      worker.endAt = Infinity;
+      worker.duration = 0;
+      attempt.state = "completed";
+      const sojourn = state.time - attempt.admittedAt;
+      state.stats.completions += 1;
+      state.stats.sojournSum += sojourn;
+      state.completionTimes.push(state.time);
+      addPulse(attempt.timedOut ? "late" : "completion", attempt.root.id % 5);
+
+      if (attempt.timedOut) {
+        state.stats.lateCompletions += 1;
+      } else if (!attempt.root.resolved && !attempt.root.finalized) {
+        attempt.root.resolved = true;
+        state.stats.usefulCompletions += 1;
+        state.usefulTimes.push(state.time);
+        const latency = state.time - attempt.root.createdAt;
+        recordOutcome(attempt.root, latency <= attempt.root.slaTarget + EPSILON, latency);
+      }
+      completed = true;
+    });
+    state.workers = state.workers.filter(function (worker) {
+      return !(worker.retire && !worker.job);
+    });
+    if (completed) dispatch();
+    return completed;
+  }
+
+  function allLiveAttempts() {
+    const attempts = state.queue.slice();
+    state.workers.forEach(function (worker) {
+      if (worker.job) attempts.push(worker.job);
+    });
+    return attempts;
+  }
+
+  function processDueTimeouts() {
+    let timedOut = false;
+    allLiveAttempts().forEach(function (attempt) {
+      if (attempt.timedOut || attempt.deadline > state.time + EPSILON) return;
+      attempt.timedOut = true;
+      state.stats.timeouts += 1;
+      state.timeoutTimes.push(state.time);
+      scheduleRetry(attempt, "timeout");
+      timedOut = true;
+    });
+    if (timedOut && state.time - state.lastTimeoutLog > 3) {
+      logEvent("Client deadlines crossed; retries are now adding offered work.", "hot");
+      state.lastTimeoutLog = state.time;
+    }
+    return timedOut;
+  }
+
+  function processDueRetries() {
+    let processed = false;
+    while (state.retryEvents.length && state.retryEvents[0].due <= state.time + EPSILON) {
+      const retry = state.retryEvents.shift();
+      if (!retry.root.resolved && !retry.root.finalized) {
+        createAttempt(retry.root, retry.number, retry.cause);
+      }
+      processed = true;
+    }
+    return processed;
+  }
+
+  function recentCount(times, seconds) {
+    const cutoff = state.time - seconds;
+    let count = 0;
+    for (let index = times.length - 1; index >= 0; index -= 1) {
+      if (times[index] < cutoff) break;
+      count += 1;
+    }
+    return count;
+  }
+
+  function recentRate(times, seconds) {
+    const denominator = Math.max(1, Math.min(seconds, state.time || 1));
+    return recentCount(times, seconds) / denominator;
+  }
+
+  function recentUtilization(seconds) {
+    if (!state.history.length) {
+      return state.stats.areaCapacity ? state.stats.areaBusy / state.stats.areaCapacity : 0;
+    }
+    const cutoff = state.time - seconds;
+    let baseline = state.history[0];
+    for (let index = 0; index < state.history.length; index += 1) {
+      if (state.history[index].time >= cutoff) {
+        baseline = state.history[index];
+        break;
+      }
+    }
+    const busy = state.stats.areaBusy - baseline.areaBusy;
+    const capacity = state.stats.areaCapacity - baseline.areaCapacity;
+    return capacity > 0 ? busy / capacity : 0;
+  }
+
+  function evaluateAutoscaler() {
+    if (!config.autoscale) {
+      state.pendingScale = null;
+      state.quietSince = null;
+      if (state.desiredWorkers !== config.workers) reconcileWorkers(config.workers, .6);
+      return;
+    }
+    const attemptRate = recentRate(state.attemptTimes, 8);
+    const targetFromRate = Math.ceil(attemptRate / Math.max(.1, config.service * .78));
+    const pressure = Math.ceil(state.queue.length / Math.max(6, config.cap * .3));
+    const wanted = clamp(Math.max(config.workers, targetFromRate + pressure), config.workers, config.maxWorkers);
+    state.autoscaleWanted = wanted;
+
+    if (wanted > state.desiredWorkers) {
+      state.quietSince = null;
+      if (!state.pendingScale || state.pendingScale.direction !== "up") {
+        state.pendingScale = { direction: "up", target: wanted, due: state.time + 2.5 };
+        logEvent("Autoscaler observed sustained pressure; scale-up enters a 2.5s provisioning delay.", "scale");
+      } else {
+        state.pendingScale.target = Math.max(state.pendingScale.target, wanted);
+      }
+    } else if (wanted < state.desiredWorkers && state.queue.length === 0 && recentUtilization(6) < .45) {
+      if (state.quietSince === null) state.quietSince = state.time;
+      if (state.time - state.quietSince >= 8) {
+        reconcileWorkers(state.desiredWorkers - 1, 0);
+        state.quietSince = state.time;
+        logEvent("Quiet window held for 8s; one worker begins draining.", "scale");
+      }
+    } else {
+      state.quietSince = null;
+    }
+  }
+
+  function processPendingScale() {
+    if (!state.pendingScale || state.pendingScale.due > state.time + EPSILON) return false;
+    if (config.autoscale && state.pendingScale.direction === "up") {
+      const previousDesired = state.desiredWorkers;
+      const next = Math.min(state.pendingScale.target, state.desiredWorkers + 2, config.maxWorkers);
+      reconcileWorkers(next, .8);
+      logEvent("Provisioning finished; " + (state.desiredWorkers - previousDesired) + " worker slots were requested.", "scale");
+    }
+    state.pendingScale = null;
+    return true;
+  }
+
+  function sampleHistory() {
+    const ready = readyWorkers().length;
+    state.history.push({
+      time: state.time,
+      queue: state.queue.length,
+      throughput: recentRate(state.completionTimes, 5),
+      capacity: ready * config.service,
+      arrivals: recentRate(state.attemptTimes, 5),
+      areaBusy: state.stats.areaBusy,
+      areaCapacity: state.stats.areaCapacity
+    });
+    const cutoff = state.time - HISTORY_SECONDS - 2;
+    while (state.history.length > 2 && state.history[1].time < cutoff) state.history.shift();
+  }
+
+  function nearestCompletion() {
+    let next = Infinity;
+    state.workers.forEach(function (worker) {
+      if (worker.job) next = Math.min(next, worker.endAt);
+    });
+    return next;
+  }
+
+  function nearestDeadline() {
+    let next = Infinity;
+    allLiveAttempts().forEach(function (attempt) {
+      if (!attempt.timedOut) next = Math.min(next, attempt.deadline);
+    });
+    return next;
+  }
+
+  function nearestBoot() {
+    let next = Infinity;
+    state.workers.forEach(function (worker) {
+      if (!worker.job && !worker.retire && worker.bootUntil > state.time + EPSILON) {
+        next = Math.min(next, worker.bootUntil);
+      }
+    });
+    return next;
+  }
+
+  function advance(seconds) {
+    const target = state.time + Math.max(0, seconds);
+    let safety = 0;
+    while (state.time < target - EPSILON && safety < 30000) {
+      safety += 1;
+      const retryAt = state.retryEvents.length ? state.retryEvents[0].due : Infinity;
+      const pendingScaleAt = state.pendingScale ? state.pendingScale.due : Infinity;
+      const completionAt = nearestCompletion();
+      const deadlineAt = nearestDeadline();
+      const bootAt = nearestBoot();
+      const next = Math.min(
+        target,
+        state.nextExternalAt,
+        state.nextPhaseAt,
+        retryAt,
+        completionAt,
+        deadlineAt,
+        bootAt,
+        state.nextScaleCheck,
+        state.nextSampleAt,
+        pendingScaleAt
+      );
+      if (next > state.time + EPSILON) integrate(next - state.time);
+      state.time = next;
+
+      let didWork = false;
+      if (completeDueWorkers()) didWork = true;
+      if (processDueTimeouts()) didWork = true;
+
+      if (state.nextPhaseAt <= state.time + EPSILON) {
+        const oldLabel = state.phase.label;
+        scheduleExternalArrival();
+        if (state.phase.label !== oldLabel) {
+          logEvent("Traffic phase changed to " + state.phase.label.toLowerCase() + ".", state.phase.multiplier > 1.5 ? "hot" : "good");
+        }
+        didWork = true;
+      }
+
+      if (processPendingScale()) didWork = true;
+      if (processDueRetries()) didWork = true;
+      if (bootAt <= state.time + EPSILON) didWork = true;
+
+      if (state.nextExternalAt <= state.time + EPSILON) {
+        createOriginal();
+        scheduleExternalArrival();
+        didWork = true;
+      }
+
+      while (state.nextScaleCheck <= state.time + EPSILON) {
+        evaluateAutoscaler();
+        state.nextScaleCheck += 1;
+        didWork = true;
+      }
+
+      while (state.nextSampleAt <= state.time + EPSILON) {
+        sampleHistory();
+        state.nextSampleAt += .5;
+        didWork = true;
+      }
+
+      dispatch();
+      if (next >= target - EPSILON) break;
+      if (!didWork && next <= state.time + EPSILON) {
+        state.time = Math.min(target, state.time + .0001);
+      }
+    }
+    if (safety >= 30000) {
+      setPaused(true);
+      logEvent("Simulation safety stop: too many simultaneous events. Apply backpressure, then reset.", "hot");
+    }
+  }
+
+  function quantile(records, q) {
+    if (!records.length) return 0;
+    const values = records.map(function (record) { return record.value; }).sort(function (a, b) { return a - b; });
+    const position = (values.length - 1) * q;
+    const lower = Math.floor(position);
+    const upper = Math.ceil(position);
+    if (lower === upper) return values[lower];
+    return values[lower] + (values[upper] - values[lower]) * (position - lower);
+  }
+
+  function trimMeasurements() {
+    const cutoff = state.time - 65;
+    ["attemptTimes","originalTimes","completionTimes","usefulTimes","dropTimes","timeoutTimes"].forEach(function (key) {
+      while (state[key].length && state[key][0] < cutoff) state[key].shift();
+    });
+    while (state.waits.length && state.waits[0].time < cutoff) state.waits.shift();
+    while (state.outcomes.length && state.outcomes[0].time < cutoff) state.outcomes.shift();
+    state.pulses = state.pulses.filter(function (pulse) { return state.time - pulse.start < 1.4; });
+  }
+
+  function statusMetrics() {
+    const queueRatio = state.queue.length / Math.max(1, config.cap);
+    const utilization = recentUtilization(8);
+    const recentDrops = recentCount(state.dropTimes, 4);
+    const recentTimeouts = recentCount(state.timeoutTimes, 4);
+    const history = state.history;
+    const oldQueue = history.length > 8 ? history[Math.max(0, history.length - 9)].queue : 0;
+    const draining = state.queue.length < oldQueue;
+    const overloaded = queueRatio >= .75 || recentTimeouts >= 3 || (recentDrops > 0 && utilization > .82);
+    if (overloaded) {
+      state.lastOverload = state.time;
+      return {
+        key: "overload",
+        label: "OVERLOAD",
+        detail: "Deadlines, drops, or the finite buffer are now binding."
+      };
+    }
+    if (state.lastOverload >= 0 && state.time - state.lastOverload < 10 && (state.queue.length > 0 || draining)) {
+      return {
+        key: "recovering",
+        label: "RECOVERING",
+        detail: "Completions are draining work faster than it is admitted."
+      };
+    }
+    if (queueRatio >= .3 || utilization >= .82) {
+      return {
+        key: "pressure",
+        label: "PRESSURE",
+        detail: "Headroom is thin; watch tail wait and client deadlines."
+      };
+    }
+    return {
+      key: "stable",
+      label: "STABLE",
+      detail: "Capacity is ahead of admitted load."
+    };
+  }
+
+  function scoreMetrics(p95, sla, dropRate, amplification) {
+    const efficiency = state.stats.completions
+      ? state.stats.usefulCompletions / state.stats.completions
+      : 1;
+    const latencyPenalty = clamp(p95 / Math.max(.1, config.timeout * 1.5), 0, 1);
+    const raw = .42 * sla + .22 * efficiency + .2 * (1 - dropRate) + .16 * (1 - latencyPenalty);
+    return Math.round(clamp(1000 * raw / Math.max(1, .68 + .32 * amplification), 0, 1000));
+  }
+
+  function updateMetrics() {
+    trimMeasurements();
+    const throughput = recentRate(state.completionTimes, 10);
+    const usefulThroughput = recentRate(state.usefulTimes, 10);
+    const utilization = recentUtilization(10);
+    const dropRate = state.stats.attempts ? state.stats.drops / state.stats.attempts : 0;
+    const amplification = state.stats.originals ? state.stats.attempts / state.stats.originals : 1;
+    const recentWaits = state.waits.filter(function (record) { return record.time >= state.time - 60; });
+    const p50 = quantile(recentWaits, .5);
+    const p95 = quantile(recentWaits, .95);
+    const recentOutcomes = state.outcomes.filter(function (outcome) { return outcome.time >= state.time - 60; });
+    const slaGood = recentOutcomes.filter(function (outcome) { return outcome.ok; }).length;
+    const sla = recentOutcomes.length ? slaGood / recentOutcomes.length : 1;
+    const ready = readyWorkers().length;
+    const booting = state.workers.filter(function (worker) { return worker.bootUntil > state.time + EPSILON; }).length;
+    const draining = state.workers.filter(function (worker) { return worker.retire; }).length;
+    const score = scoreMetrics(p95, sla, dropRate, amplification);
+
+    elements.throughputValue.textContent = throughput.toFixed(2) + "/s";
+    elements.throughputNote.textContent = usefulThroughput.toFixed(2) + "/s useful · " + state.stats.lateCompletions + " late completions";
+    elements.utilValue.textContent = Math.round(utilization * 100) + "%";
+    elements.utilNote.textContent = busyWorkers().length + " busy now · trailing 10s worker-time";
+    elements.queueValue.textContent = state.queue.length + " / " + config.cap;
+    elements.queueNote.textContent = systemCount() + " total in system · " + state.stats.timeouts + " timeouts";
+    elements.dropValue.textContent = String(state.stats.drops);
+    elements.dropNote.textContent = (dropRate * 100).toFixed(1) + "% offered · " + state.stats.dropReasons.full + " full / " + (state.stats.dropReasons.guard + state.stats.dropReasons.token) + " shed";
+    elements.ampValue.textContent = amplification.toFixed(2) + "×";
+    elements.ampNote.textContent = state.stats.retriesScheduled + " retries scheduled from " + state.stats.originals + " originals";
+    elements.p50Value.textContent = formatDuration(p50);
+    elements.p95Value.textContent = formatDuration(p95);
+    elements.p95Note.textContent = p95 > config.timeout ? "tail wait alone exceeds the current timeout" : "tail queue wait, trailing 60s";
+    elements.slaValue.textContent = Math.round(sla * 100) + "%";
+    elements.slaNote.textContent = slaGood + " / " + recentOutcomes.length + " resolved or exhausted logical requests";
+    elements.workersValue.textContent = ready + " / " + state.desiredWorkers;
+    elements.workersNote.textContent = booting + " booting · " + draining + " draining · max " + config.maxWorkers;
+    elements.scoreValue.textContent = String(score);
+
+    const elapsed = Math.max(EPSILON, state.time);
+    const lawL = state.stats.areaSystem / elapsed;
+    const lawLambda = state.stats.completions / elapsed;
+    const lawW = state.stats.completions ? state.stats.sojournSum / state.stats.completions : 0;
+    const lawProduct = lawLambda * lawW;
+    const lawGap = lawL > .01 ? Math.abs(lawL - lawProduct) / lawL : 0;
+    const agreement = clamp(1 - lawGap, 0, 1);
+    elements.lawL.textContent = lawL.toFixed(2);
+    elements.lawLambda.textContent = lawLambda.toFixed(2);
+    elements.lawW.textContent = lawW.toFixed(2);
+    elements.lawProduct.textContent = lawProduct.toFixed(2);
+    elements.lawLStat.textContent = lawL.toFixed(2) + " jobs";
+    elements.lawLambdaStat.textContent = lawLambda.toFixed(2) + " /s";
+    elements.lawWStat.textContent = lawW.toFixed(2) + " s";
+    elements.lawCohort.textContent = state.stats.completions + " jobs";
+    elements.lawGap.textContent = (lawGap * 100).toFixed(1) + "%";
+    elements.lawMeter.value = agreement;
+
+    const status = statusMetrics();
+    elements.systemState.dataset.tone = status.key;
+    elements.stateLabel.textContent = status.label;
+    elements.stateDetail.textContent = status.detail;
+    if (status.key !== lastAnnouncedState) {
+      elements.liveStatus.textContent = "System state changed to " + status.label + ". " + status.detail;
+      lastAnnouncedState = status.key;
+    }
+  }
+
+  function pathFromHistory(key, maximum) {
+    if (state.history.length < 2) return "";
+    const start = Math.max(0, state.time - HISTORY_SECONDS);
+    const width = 565;
+    return state.history.map(function (sample, index) {
+      const x = 40 + clamp((sample.time - start) / HISTORY_SECONDS, 0, 1) * width;
+      const y = 160 - clamp(sample[key] / Math.max(.01, maximum), 0, 1) * 135;
+      return (index ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1);
+    }).join(" ");
+  }
+
+  function updateChart() {
+    let maxRate = 1;
+    state.history.forEach(function (sample) {
+      maxRate = Math.max(maxRate, sample.throughput, sample.capacity, sample.arrivals);
+    });
+    elements.queuePath.setAttribute("d", pathFromHistory("queue", Math.max(1, config.cap)));
+    elements.throughputPath.setAttribute("d", pathFromHistory("throughput", maxRate));
+    elements.capacityPath.setAttribute("d", pathFromHistory("capacity", maxRate));
+  }
+
+  function resizeCanvas() {
+    const rectangle = canvas.getBoundingClientRect();
+    const ratio = Math.min(2, window.devicePixelRatio || 1);
+    const width = Math.max(300, Math.round(rectangle.width * ratio));
+    const height = Math.max(240, Math.round(rectangle.height * ratio));
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+    }
+    context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    return { width: width / ratio, height: height / ratio };
+  }
+
+  function roundedRect(ctx, x, y, width, height, radius) {
+    const r = Math.min(radius, width / 2, height / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + width, y, x + width, y + height, r);
+    ctx.arcTo(x + width, y + height, x, y + height, r);
+    ctx.arcTo(x, y + height, x, y, r);
+    ctx.arcTo(x, y, x + width, y, r);
+    ctx.closePath();
+  }
+
+  function drawArena() {
+    const size = resizeCanvas();
+    const width = size.width;
+    const height = size.height;
+    const compact = width < 560;
+    context.clearRect(0, 0, width, height);
+    const gradient = context.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, "#07131d");
+    gradient.addColorStop(.55, "#061018");
+    gradient.addColorStop(1, "#0b0d19");
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, width, height);
+
+    context.strokeStyle = "#16303d";
+    context.lineWidth = 1;
+    for (let x = 0; x < width; x += 34) {
+      context.beginPath();
+      context.moveTo(x, 0);
+      context.lineTo(x, height);
+      context.stroke();
+    }
+    for (let y = 0; y < height; y += 34) {
+      context.beginPath();
+      context.moveTo(0, y);
+      context.lineTo(width, y);
+      context.stroke();
+    }
+
+    const gateX = compact ? 34 : 54;
+    const gateY = compact ? 67 : height * .48;
+    const workerAreaX = compact ? 16 : width * .77;
+    const queueStart = compact ? 72 : 120;
+    const queueEnd = compact ? width - 24 : workerAreaX - 28;
+    const queueY = compact ? 102 : height * .48;
+    const queueHeight = compact ? 72 : 92;
+    const availableQueueWidth = Math.max(80, queueEnd - queueStart);
+    const visibleSlots = clamp(Math.floor(availableQueueWidth / (compact ? 17 : 23)), 5, 28);
+    const slotGap = 3;
+    const slotWidth = (availableQueueWidth - slotGap * (visibleSlots - 1)) / visibleSlots;
+
+    context.fillStyle = "#8ba8b5";
+    context.font = "700 10px ui-monospace, monospace";
+    context.textAlign = "left";
+    context.fillText("ARRIVAL GATE", 12, 22);
+    context.fillText("FINITE FIFO  " + state.queue.length + " / " + config.cap, queueStart, compact ? 91 : queueY - 62);
+    context.fillText("WORKERS  " + readyWorkers().length + " READY", workerAreaX, compact ? 189 : 22);
+
+    context.strokeStyle = "#50e6ff";
+    context.lineWidth = 2;
+    context.beginPath();
+    context.arc(gateX, gateY, compact ? 18 : 24, 0, Math.PI * 2);
+    context.stroke();
+    context.fillStyle = "#50e6ff22";
+    context.fill();
+    context.fillStyle = "#bdf7ff";
+    context.textAlign = "center";
+    context.font = "800 11px ui-monospace, monospace";
+    context.fillText(offeredRate().toFixed(1), gateX, gateY + 4);
+
+    context.strokeStyle = "#335161";
+    context.lineWidth = 2;
+    context.beginPath();
+    context.moveTo(gateX + 25, gateY);
+    context.lineTo(queueStart - 7, queueY);
+    context.stroke();
+
+    for (let index = 0; index < visibleSlots; index += 1) {
+      const x = queueStart + index * (slotWidth + slotGap);
+      const representedStart = Math.floor(index * state.queue.length / visibleSlots);
+      const representedEnd = Math.floor((index + 1) * state.queue.length / visibleSlots);
+      const represented = state.queue.slice(representedStart, Math.max(representedStart + 1, representedEnd));
+      const occupied = state.queue.length > index || represented.length && representedStart < state.queue.length;
+      const timedOut = represented.some(function (attempt) { return attempt.timedOut; });
+      roundedRect(context, x, queueY - queueHeight / 2, slotWidth, queueHeight, 5);
+      context.fillStyle = occupied ? (timedOut ? "#ff647cbb" : "#b18cffaa") : "#0a1821";
+      context.fill();
+      context.strokeStyle = occupied ? (timedOut ? "#ff9aab" : "#d4bfff") : "#244250";
+      context.lineWidth = 1;
+      context.stroke();
+      if (occupied) {
+        context.fillStyle = "#ffffffaa";
+        context.fillRect(x + 3, queueY + queueHeight / 2 - 8, Math.max(2, slotWidth - 6), 3);
+      }
+    }
+
+    if (state.queue.length > visibleSlots) {
+      context.fillStyle = "#d9c7ff";
+      context.font = "800 11px ui-monospace, monospace";
+      context.textAlign = "right";
+      context.fillText("density view ×" + (state.queue.length / visibleSlots).toFixed(1), queueEnd, queueY + queueHeight / 2 + 17);
+    }
+
+    const workerColumns = compact ? (width < 340 ? 6 : 8) : 3;
+    const workerStartY = compact ? 202 : 54;
+    const workerWidth = compact ? (width - workerAreaX - 18) / workerColumns : (width - workerAreaX - 20) / workerColumns;
+    const workerHeight = compact ? 42 : 66;
+    state.workers.slice(0, 16).forEach(function (worker, index) {
+      const column = index % workerColumns;
+      const row = Math.floor(index / workerColumns);
+      const x = workerAreaX + column * workerWidth;
+      const y = workerStartY + row * (workerHeight + 7);
+      const cellWidth = Math.max(33, workerWidth - 6);
+      roundedRect(context, x, y, cellWidth, workerHeight, 8);
+      const booting = worker.bootUntil > state.time + EPSILON;
+      context.fillStyle = booting ? "#2b2415" : worker.retire ? "#20151c" : worker.job ? "#102b2a" : "#0a1821";
+      context.fill();
+      context.strokeStyle = booting ? "#ffc857" : worker.retire ? "#ff647c" : worker.job ? "#69f6bd" : "#31505e";
+      context.lineWidth = 1.3;
+      context.stroke();
+      context.fillStyle = "#9fb8c2";
+      context.textAlign = "left";
+      context.font = "700 9px ui-monospace, monospace";
+      context.fillText("W" + worker.id, x + 6, y + 13);
+      if (booting) {
+        context.fillStyle = "#ffc857";
+        context.fillText("BOOT", x + 6, y + 31);
+      } else if (worker.job) {
+        const progress = clamp(1 - (worker.endAt - state.time) / Math.max(EPSILON, worker.duration), 0, 1);
+        context.fillStyle = worker.job.timedOut ? "#ff647c" : "#69f6bd";
+        context.fillRect(x + 6, y + workerHeight - 12, Math.max(2, (cellWidth - 12) * progress), 5);
+        context.fillStyle = "#dcecf2";
+        context.fillText(worker.job.timedOut ? "LATE" : Math.round(progress * 100) + "%", x + 6, y + 31);
+      } else {
+        context.fillStyle = "#708b96";
+        context.fillText(worker.retire ? "DRAIN" : "IDLE", x + 6, y + 31);
+      }
+    });
+
+    state.pulses.forEach(function (pulse) {
+      const age = clamp((state.time - pulse.start) / 1.2, 0, 1);
+      let x = gateX;
+      let y = gateY + (pulse.lane - 2) * 7;
+      let color = "#50e6ff";
+      if (pulse.kind === "arrival" || pulse.kind === "retry") {
+        x = gateX + (queueStart - gateX) * age;
+        color = pulse.kind === "retry" ? "#ffc857" : "#50e6ff";
+      } else if (pulse.kind === "drop" || pulse.kind === "timeout") {
+        x = gateX + Math.sin(age * Math.PI) * 18;
+        y = gateY + age * (compact ? 88 : 125);
+        color = "#ff647c";
+      } else {
+        x = workerAreaX + age * Math.max(28, width - workerAreaX - 16);
+        y = compact ? 212 : height - 24 - pulse.lane * 8;
+        color = pulse.kind === "late" ? "#ff647c" : "#69f6bd";
+      }
+      context.beginPath();
+      context.arc(x, y, pulse.kind === "retry" ? 4 : 3.5, 0, Math.PI * 2);
+      context.fillStyle = color;
+      context.shadowColor = color;
+      context.shadowBlur = 12;
+      context.fill();
+      context.shadowBlur = 0;
+    });
+
+    const queueRatio = state.queue.length / Math.max(1, config.cap);
+    context.fillStyle = "#7894a0";
+    context.font = "700 9px ui-monospace, monospace";
+    context.textAlign = "left";
+    context.fillText("OCCUPANCY", 12, height - 18);
+    context.fillStyle = queueRatio > .75 ? "#ff647c" : queueRatio > .4 ? "#ffc857" : "#69f6bd";
+    context.fillRect(82, height - 25, Math.max(2, (width - 102) * clamp(queueRatio, 0, 1)), 8);
+    context.strokeStyle = "#2a4655";
+    context.strokeRect(82, height - 25, width - 102, 8);
+
+    canvas.setAttribute(
+      "aria-label",
+      "Live finite queue: " + state.queue.length + " waiting of " + config.cap +
+      ", " + busyWorkers().length + " workers busy, " + state.stats.drops +
+      " attempts dropped, system state " + elements.stateLabel.textContent.toLowerCase() + "."
+    );
+  }
+
+  function updatePhase() {
+    const phase = phaseFor(state.time);
+    const rate = config.arrival * phase.multiplier;
+    const readyCapacity = readyWorkers().length * config.service;
+    elements.simClock.textContent = formatClock(state.time);
+    elements.loadReadout.textContent = rate.toFixed(1) + " offered/s · " + readyCapacity.toFixed(1) + " ready capacity/s";
+    elements.phaseLabel.textContent = phase.label + " · " + phase.multiplier.toFixed(2) + "× base";
+    if (Number.isFinite(phase.next)) {
+      const duration = phase.next - phase.start;
+      const progress = clamp((state.time - phase.start) / Math.max(EPSILON, duration), 0, 1);
+      elements.phaseProgress.value = progress;
+      elements.phaseCountdown.textContent = Math.max(0, phase.next - state.time).toFixed(1) + "s to next phase";
+    } else {
+      elements.phaseProgress.value = 0;
+      elements.phaseCountdown.textContent = "constant profile";
+    }
+  }
+
+  function updateEventLog() {
+    const signature = state.logs.map(function (entry) {
+      return entry.time.toFixed(3) + "|" + entry.tone + "|" + entry.message;
+    }).join("\n");
+    if (signature === lastLogSignature) return;
+    lastLogSignature = signature;
+    elements.eventLog.replaceChildren();
+    state.logs.forEach(function (entry) {
+      const item = document.createElement("li");
+      item.dataset.tone = entry.tone;
+      const time = document.createElement("time");
+      time.textContent = formatClock(entry.time).replace(".0", "");
+      const message = document.createElement("span");
+      message.textContent = entry.message;
+      item.append(time, message);
+      elements.eventLog.append(item);
+    });
+  }
+
+  function updateScaleDecision() {
+    if (!config.autoscale) {
+      elements.scaleDecision.textContent = "disabled";
+    } else if (state.pendingScale) {
+      elements.scaleDecision.textContent = "up to " + state.pendingScale.target + " in " + Math.max(0, state.pendingScale.due - state.time).toFixed(1) + "s";
+    } else if (state.quietSince !== null) {
+      elements.scaleDecision.textContent = "quiet " + Math.max(0, state.time - state.quietSince).toFixed(1) + " / 8s";
+    } else {
+      elements.scaleDecision.textContent = "target " + (state.autoscaleWanted || config.workers);
+    }
+  }
+
+  function render() {
+    updateMetrics();
+    updateChart();
+    updatePhase();
+    updateScaleDecision();
+    updateEventLog();
+    drawArena();
+    elements.canvasBadge.textContent = state.paused ? "paused / seeded" : "running / seeded";
+    elements.playButton.disabled = !state.paused;
+    elements.pauseButton.disabled = state.paused;
+  }
+
+  function updateControlOutputs() {
+    elements.arrivalOutput.textContent = Number(elements.arrivalRate.value).toFixed(1) + " /s";
+    elements.workerOutput.textContent = elements.workerCount.value;
+    elements.serviceOutput.textContent = Number(elements.serviceRate.value).toFixed(1) + " /s";
+    elements.capacityOutput.textContent = (Number(elements.workerCount.value) * Number(elements.serviceRate.value)).toFixed(1) + " /s";
+    elements.capOutput.textContent = elements.queueCap.value;
+    elements.guardOutput.textContent = elements.guardThreshold.value + "%";
+    elements.timeoutOutput.textContent = Number(elements.timeoutValue.value).toFixed(1) + " s";
+    elements.retryOutput.textContent = elements.retryCount.value;
+    elements.backoffOutput.textContent = Number(elements.backoffBase.value).toFixed(2) + " s";
+    elements.maxWorkerOutput.textContent = elements.maxWorkers.value;
+  }
+
+  function readControls() {
+    const workers = Number(elements.workerCount.value);
+    let maxWorkers = Number(elements.maxWorkers.value);
+    if (maxWorkers < workers) {
+      maxWorkers = workers;
+      elements.maxWorkers.value = String(maxWorkers);
+    }
+    return {
+      seed: config.seed || presets[currentPreset].seed,
+      scenario: currentPreset,
+      arrival: Number(elements.arrivalRate.value),
+      workers: workers,
+      service: Number(elements.serviceRate.value),
+      cap: Number(elements.queueCap.value),
+      timeout: Number(elements.timeoutValue.value),
+      retries: Number(elements.retryCount.value),
+      backoff: Number(elements.backoffBase.value),
+      backoffMode: elements.backoffMode.value,
+      admission: elements.admissionMode.value,
+      guard: Number(elements.guardThreshold.value),
+      autoscale: elements.autoscaleEnabled.checked,
+      maxWorkers: maxWorkers
+    };
+  }
+
+  function writeControls(preset) {
+    elements.arrivalRate.value = String(preset.arrival);
+    elements.workerCount.value = String(preset.workers);
+    elements.serviceRate.value = String(preset.service);
+    elements.queueCap.value = String(preset.cap);
+    elements.timeoutValue.value = String(preset.timeout);
+    elements.retryCount.value = String(preset.retries);
+    elements.backoffBase.value = String(preset.backoff);
+    elements.backoffMode.value = preset.backoffMode;
+    elements.admissionMode.value = preset.admission;
+    elements.guardThreshold.value = String(preset.guard);
+    elements.autoscaleEnabled.checked = preset.autoscale;
+    elements.maxWorkers.value = String(preset.maxWorkers);
+    updateControlOutputs();
+  }
+
+  function resetSimulation(shouldPlay) {
+    rootSequence = 0;
+    attemptSequence = 0;
+    workerSequence = 0;
+    seedRandom(config.seed);
+    state = {
+      time: 0,
+      paused: !shouldPlay,
+      accumulator: 0,
+      phase: null,
+      nextExternalAt: Infinity,
+      nextPhaseAt: Infinity,
+      nextScaleCheck: 1,
+      nextSampleAt: .5,
+      desiredWorkers: config.workers,
+      autoscaleWanted: config.workers,
+      pendingScale: null,
+      quietSince: null,
+      lastOverload: -Infinity,
+      lastDropLog: -Infinity,
+      lastTimeoutLog: -Infinity,
+      queue: [],
+      workers: [],
+      roots: new Map(),
+      retryEvents: [],
+      pulses: [],
+      history: [],
+      waits: [],
+      outcomes: [],
+      attemptTimes: [],
+      originalTimes: [],
+      completionTimes: [],
+      usefulTimes: [],
+      dropTimes: [],
+      timeoutTimes: [],
+      logs: [],
+      tokens: config.workers * 2,
+      stats: {
+        originals: 0,
+        attempts: 0,
+        admitted: 0,
+        completions: 0,
+        usefulCompletions: 0,
+        lateCompletions: 0,
+        drops: 0,
+        timeouts: 0,
+        retriesScheduled: 0,
+        failedRoots: 0,
+        slaGood: 0,
+        slaMiss: 0,
+        areaSystem: 0,
+        areaBusy: 0,
+        areaCapacity: 0,
+        sojournSum: 0,
+        dropReasons: { full: 0, guard: 0, token: 0 }
+      }
+    };
+    for (let index = 0; index < config.workers; index += 1) state.workers.push(createWorker(0));
+    scheduleExternalArrival();
+    sampleHistory();
+    logEvent(
+      (currentPreset === "normal" ? "Normal" : currentPreset === "spike" ? "Spike" : "Retry-storm") +
+      " preset armed with deterministic seed " + config.seed + ".",
+      "good"
+    );
+    document.body.classList.toggle("paused", state.paused);
+    lastAnnouncedState = "";
+    lastLogSignature = "";
+    render();
+  }
+
+  function setPaused(paused) {
+    state.paused = Boolean(paused);
+    state.accumulator = 0;
+    document.body.classList.toggle("paused", state.paused);
+    elements.liveStatus.textContent = state.paused ? "Simulation paused." : "Simulation playing.";
+    render();
+  }
+
+  function applyPreset(name, shouldPlay) {
+    currentPreset = name;
+    const preset = presets[name];
+    writeControls(preset);
+    config = Object.assign({}, preset);
+    ["normal","spike","storm"].forEach(function (key) {
+      elements[key + "Preset"].setAttribute("aria-pressed", String(key === name));
+    });
+    resetSimulation(shouldPlay);
+  }
+
+  function controlsChanged(event) {
+    const previous = config;
+    config = readControls();
+    config.seed = previous.seed;
+    config.scenario = currentPreset;
+    updateControlOutputs();
+    if (!state) return;
+    if (config.arrival !== previous.arrival) scheduleExternalArrival();
+    if (config.maxWorkers < state.desiredWorkers) reconcileWorkers(config.maxWorkers, 0);
+    if (!config.autoscale) {
+      state.pendingScale = null;
+      reconcileWorkers(config.workers, .6);
+    } else if (config.workers > state.desiredWorkers) {
+      reconcileWorkers(config.workers, .6);
+    }
+    if (config.admission === "token" && previous.admission !== "token") {
+      state.tokens = tokenCapacity();
+    }
+    if (event && event.target) {
+      const label = event.target.id.replace(/([A-Z])/g, " $1").toLowerCase();
+      elements.liveStatus.textContent = label + " changed. New work uses the updated setting.";
+    }
+    render();
+  }
+
+  [
+    "arrivalRate","workerCount","serviceRate","queueCap","guardThreshold",
+    "timeoutValue","retryCount","backoffBase","maxWorkers"
+  ].forEach(function (id) {
+    elements[id].addEventListener("input", controlsChanged);
+  });
+  ["admissionMode","backoffMode","autoscaleEnabled"].forEach(function (id) {
+    elements[id].addEventListener("change", controlsChanged);
+  });
+
+  elements.normalPreset.addEventListener("click", function () { applyPreset("normal", true); });
+  elements.spikePreset.addEventListener("click", function () { applyPreset("spike", true); });
+  elements.stormPreset.addEventListener("click", function () { applyPreset("storm", true); });
+  elements.playButton.addEventListener("click", function () { setPaused(false); });
+  elements.pauseButton.addEventListener("click", function () { setPaused(true); });
+  elements.stepButton.addEventListener("click", function () {
+    setPaused(true);
+    advance(.25);
+    render();
+  });
+  elements.resetButton.addEventListener("click", function () {
+    resetSimulation(!state.paused);
+  });
+  elements.speedSelect.addEventListener("change", function () {
+    elements.liveStatus.textContent = "Simulation clock set to " + elements.speedSelect.value + " times speed.";
+  });
+
+  document.addEventListener("keydown", function (event) {
+    const target = event.target;
+    if (target && (target.matches("input,select,button,textarea") || target.isContentEditable)) return;
+    if (event.key === " ") {
+      event.preventDefault();
+      setPaused(!state.paused);
+    } else if (event.key === ".") {
+      event.preventDefault();
+      setPaused(true);
+      advance(.25);
+      render();
+    } else if (event.key.toLowerCase() === "r") {
+      event.preventDefault();
+      resetSimulation(!state.paused);
+    } else if (event.key === "1") {
+      applyPreset("normal", true);
+    } else if (event.key === "2") {
+      applyPreset("spike", true);
+    } else if (event.key === "3") {
+      applyPreset("storm", true);
+    }
+  });
+
+  canvas.addEventListener("pointerdown", function () {
+    elements.liveStatus.textContent = "Queue display: " + state.queue.length + " waiting, " + busyWorkers().length + " busy, " + state.stats.drops + " dropped.";
+  });
+
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden && state && !state.paused) {
+      setPaused(true);
+      elements.liveStatus.textContent = "Simulation paused because the document became hidden.";
+    }
+  });
+
+  if (typeof reducedMotion.addEventListener === "function") {
+    reducedMotion.addEventListener("change", function () {
+      if (reducedMotion.matches) state.pulses = [];
+      render();
+    });
+  }
+
+  function frame(now) {
+    const elapsed = Math.min(.12, Math.max(0, (now - lastFrameTime) / 1000));
+    lastFrameTime = now;
+    if (state && !state.paused && !document.hidden) {
+      state.accumulator += elapsed * Number(elements.speedSelect.value);
+      const slice = Math.min(state.accumulator, 1);
+      if (slice > 0) {
+        advance(slice);
+        state.accumulator -= slice;
+      }
+    }
+    const paintInterval = reducedMotion.matches ? 180 : 34;
+    if (now - lastPaintTime >= paintInterval) {
+      render();
+      lastPaintTime = now;
+    }
+    requestAnimationFrame(frame);
+  }
+
+  applyPreset("normal", !reducedMotion.matches);
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
