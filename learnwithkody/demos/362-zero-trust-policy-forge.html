@@ -1,0 +1,3363 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; script-src-attr 'none'; style-src 'unsafe-inline'; style-src-attr 'none'; img-src 'none'; connect-src 'none'; font-src 'none'; frame-src 'none'; child-src 'none'; worker-src 'none'; manifest-src 'none'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Zero-Trust Policy Forge — Make Least Privilege Executable</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #edf7f4;
+      --muted: #94aaa6;
+      --dim: #657a77;
+      --bg: #07100f;
+      --panel: #0b1715;
+      --panel-2: #10201d;
+      --line: #24413b;
+      --line-hot: #3d665e;
+      --mint: #72f3bd;
+      --mint-2: #27c889;
+      --cyan: #6edcf2;
+      --amber: #ffc76b;
+      --red: #ff7f89;
+      --violet: #ba9cff;
+      --shadow: 0 24px 80px rgba(0, 0, 0, .34);
+      --radius: 18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { min-width: 320px; scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 16% -10%, rgba(39, 200, 137, .14), transparent 34rem),
+        radial-gradient(circle at 88% 8%, rgba(110, 220, 242, .10), transparent 30rem),
+        linear-gradient(180deg, #07100f, #050a09 72%);
+      font-family: var(--sans);
+      line-height: 1.5;
+    }
+
+    body::before {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      content: "";
+      opacity: .22;
+      background-image:
+        linear-gradient(rgba(114, 243, 189, .035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(114, 243, 189, .035) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(to bottom, black, transparent 78%);
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button, select, input[type="range"], input[type="file"] { touch-action: manipulation; }
+    button { color: inherit; }
+    a { color: var(--cyan); }
+    [hidden] { display: none !important; }
+
+    .skip-link {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 100;
+      padding: 10px 14px;
+      color: #03100a;
+      background: var(--mint);
+      border-radius: 10px;
+      transform: translateY(-160%);
+      transition: transform .18s ease;
+    }
+    .skip-link:focus { transform: translateY(0); }
+
+    .shell {
+      width: min(1540px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 22px 0 30px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background:
+        linear-gradient(135deg, rgba(114, 243, 189, .08), transparent 40%),
+        linear-gradient(180deg, rgba(17, 35, 31, .98), rgba(8, 19, 17, .98));
+      box-shadow: var(--shadow);
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 2;
+      max-width: 880px;
+      padding: 30px 32px 20px;
+    }
+
+    .eyebrow, .section-kicker, .micro-label {
+      margin: 0;
+      color: var(--mint);
+      font: 700 11px/1.2 var(--mono);
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { overflow-wrap: anywhere; }
+    h1 {
+      max-width: 850px;
+      margin: 8px 0 7px;
+      font-size: clamp(2rem, 4vw, 4.3rem);
+      line-height: .98;
+      letter-spacing: -.055em;
+    }
+    h1 span { color: var(--mint); }
+    .hero-copy > p:not(.eyebrow) {
+      max-width: 760px;
+      margin: 0;
+      color: #b9cbc7;
+      font-size: clamp(.96rem, 1.5vw, 1.12rem);
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 17px;
+    }
+
+    .badge {
+      display: inline-flex;
+      min-height: 30px;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 9px;
+      border: 1px solid var(--line-hot);
+      border-radius: 999px;
+      color: #cfe4df;
+      background: rgba(5, 14, 12, .68);
+      font: 700 10px/1 var(--mono);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .badge::before {
+      width: 7px;
+      height: 7px;
+      content: "";
+      border-radius: 50%;
+      background: var(--mint);
+      box-shadow: 0 0 12px rgba(114, 243, 189, .7);
+    }
+    .badge.amber::before { background: var(--amber); box-shadow: 0 0 12px rgba(255, 199, 107, .65); }
+    .badge.cyan::before { background: var(--cyan); box-shadow: 0 0 12px rgba(110, 220, 242, .65); }
+
+    .map-wrap {
+      position: relative;
+      min-height: 184px;
+      border-top: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(4, 12, 10, .3), rgba(3, 8, 7, .78));
+    }
+    #policyMap {
+      display: block;
+      width: 100%;
+      height: 184px;
+    }
+    .map-caption {
+      position: absolute;
+      right: 14px;
+      bottom: 10px;
+      margin: 0;
+      padding: 4px 7px;
+      color: var(--muted);
+      background: rgba(4, 10, 9, .72);
+      border-radius: 6px;
+      font: 10px/1.3 var(--mono);
+      pointer-events: none;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(280px, .92fr) minmax(390px, 1.35fr) minmax(300px, 1fr);
+      gap: 14px;
+      align-items: start;
+      margin-top: 14px;
+    }
+
+    .panel {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(14, 29, 26, .98), rgba(8, 19, 17, .98));
+      box-shadow: 0 15px 50px rgba(0, 0, 0, .19);
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 19px 19px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .panel-head h2 {
+      margin: 3px 0 0;
+      font-size: 1.15rem;
+      line-height: 1.2;
+      letter-spacing: -.02em;
+    }
+    .panel-count {
+      flex: 0 0 auto;
+      padding: 5px 8px;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font: 700 10px/1 var(--mono);
+    }
+    .panel-body { padding: 16px 18px 19px; }
+
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .scenario {
+      min-height: 60px;
+      padding: 9px 10px;
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: #0b1816;
+      cursor: pointer;
+      transition: border-color .16s ease, background .16s ease, transform .16s ease;
+    }
+    .scenario:hover { border-color: var(--line-hot); transform: translateY(-1px); }
+    .scenario[aria-pressed="true"] {
+      border-color: var(--mint-2);
+      background: rgba(39, 200, 137, .10);
+      box-shadow: inset 0 0 0 1px rgba(114, 243, 189, .12);
+    }
+    .scenario strong, .scenario span { display: block; }
+    .scenario strong { font-size: .78rem; line-height: 1.25; }
+    .scenario span { margin-top: 3px; color: var(--muted); font: 10px/1.25 var(--mono); }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px;
+    }
+    .field { min-width: 0; }
+    .field.wide { grid-column: 1 / -1; }
+    .field label, .field-label {
+      display: block;
+      margin: 0 0 5px;
+      color: #c5d7d2;
+      font: 700 11px/1.25 var(--mono);
+      letter-spacing: .025em;
+    }
+    .field small {
+      display: block;
+      margin-top: 5px;
+      color: var(--dim);
+      font-size: .72rem;
+    }
+
+    select, input[type="text"], input[type="number"], textarea {
+      width: 100%;
+      min-height: 44px;
+      padding: 9px 10px;
+      color: var(--ink);
+      border: 1px solid #315049;
+      border-radius: 9px;
+      outline: 0;
+      background: #07110f;
+    }
+    textarea {
+      min-height: 128px;
+      resize: vertical;
+      font: 12px/1.45 var(--mono);
+    }
+    select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-visible, summary:focus-visible {
+      outline: 3px solid rgba(110, 220, 242, .38);
+      outline-offset: 2px;
+      border-color: var(--cyan);
+    }
+    input[type="range"] {
+      width: 100%;
+      min-height: 44px;
+      accent-color: var(--mint);
+    }
+    input[type="checkbox"] {
+      width: 19px;
+      height: 19px;
+      margin: 0;
+      accent-color: var(--mint);
+    }
+
+    .range-head, .inline-row, .toolbar, .rule-actions, .dialog-actions, .transfer-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .range-head { justify-content: space-between; }
+    .range-head output { color: var(--mint); font: 700 12px/1 var(--mono); }
+    .inline-row { flex-wrap: wrap; }
+    .toolbar { flex-wrap: wrap; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+
+    .btn, .icon-btn {
+      min-height: 44px;
+      border: 1px solid #36574f;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #142a25, #0d1c19);
+      cursor: pointer;
+      transition: border-color .15s ease, transform .15s ease, background .15s ease;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 9px 12px;
+      font-weight: 750;
+      font-size: .79rem;
+    }
+    .btn:hover, .icon-btn:hover { border-color: var(--mint-2); transform: translateY(-1px); }
+    .btn.primary {
+      color: #03120c;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--mint), #4ddca1);
+    }
+    .btn.danger { color: #ffdadd; border-color: rgba(255, 127, 137, .45); }
+    .btn.ghost { background: #091411; }
+    .btn:disabled, .icon-btn:disabled { opacity: .42; cursor: not-allowed; transform: none; }
+    .icon-btn {
+      min-width: 44px;
+      padding: 7px 9px;
+      color: #bcd0ca;
+      font: 700 12px/1 var(--mono);
+    }
+
+    .evaluate-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .decision {
+      position: relative;
+      overflow: hidden;
+      margin-top: 14px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #081310;
+    }
+    .decision::after {
+      position: absolute;
+      top: -45px;
+      right: -42px;
+      width: 130px;
+      height: 130px;
+      content: "";
+      border-radius: 50%;
+      background: currentColor;
+      opacity: .045;
+    }
+    .decision.allow { color: var(--mint); border-color: rgba(114, 243, 189, .42); }
+    .decision.deny { color: var(--red); border-color: rgba(255, 127, 137, .44); }
+    .decision-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .decision-word {
+      font: 900 clamp(1.7rem, 4vw, 2.55rem)/.95 var(--mono);
+      letter-spacing: -.06em;
+    }
+    .decision-source {
+      max-width: 190px;
+      color: #c5d5d1;
+      text-align: right;
+      font: 11px/1.35 var(--mono);
+    }
+    .decision p { margin: 10px 0 0; color: #adc0bb; font-size: .83rem; }
+
+    .trace-wrap { margin-top: 15px; }
+    .trace-wrap h3, .inventory h3, .corpus-head h3, .diagnostics h3 {
+      margin: 0;
+      font-size: .88rem;
+      letter-spacing: -.01em;
+    }
+    .trace {
+      display: grid;
+      gap: 7px;
+      margin: 9px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .trace-item {
+      display: grid;
+      grid-template-columns: 27px minmax(0, 1fr);
+      gap: 8px;
+      padding: 9px;
+      border: 1px solid #203b35;
+      border-radius: 9px;
+      background: rgba(4, 12, 10, .7);
+    }
+    .trace-index {
+      display: grid;
+      width: 27px;
+      height: 27px;
+      place-items: center;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      font: 700 10px/1 var(--mono);
+    }
+    .trace-item.decisive { border-color: rgba(114, 243, 189, .45); background: rgba(39, 200, 137, .07); }
+    .trace-item.decisive.deny-trace { border-color: rgba(255, 127, 137, .45); background: rgba(255, 127, 137, .055); }
+    .trace-item.default-trace { border-style: dashed; }
+    .trace-item.not-reached { opacity: .56; }
+    .trace-name { display: flex; justify-content: space-between; gap: 8px; font-size: .76rem; font-weight: 800; }
+    .trace-state { flex: 0 0 auto; color: var(--muted); font: 700 9px/1.35 var(--mono); text-transform: uppercase; }
+    .trace-reason { margin: 3px 0 0; color: var(--muted); font-size: .7rem; line-height: 1.35; }
+
+    details.inventory, details.formula, details.shortcuts {
+      margin-top: 15px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: rgba(6, 15, 13, .72);
+    }
+    summary {
+      min-height: 44px;
+      padding: 11px 12px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: .78rem;
+    }
+    .inventory-inner, .formula-inner, .shortcuts-inner { padding: 0 11px 12px; }
+    .inventory-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 5px;
+      margin-bottom: 9px;
+    }
+    .tab-btn {
+      min-height: 44px;
+      padding: 6px 4px;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #091411;
+      cursor: pointer;
+      font: 700 9px/1 var(--mono);
+    }
+    .tab-btn[aria-selected="true"] { color: #06130e; border-color: var(--mint); background: var(--mint); }
+    .entity-list { display: grid; gap: 6px; }
+    .entity {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 9px;
+      border: 1px solid #203a34;
+      border-radius: 8px;
+      background: #08120f;
+    }
+    .entity strong, .entity small { display: block; }
+    .entity strong { font-size: .73rem; }
+    .entity small { color: var(--muted); font: 9px/1.35 var(--mono); }
+    .inventory-add { width: 100%; margin-top: 8px; }
+
+    .policy-panel { overflow: hidden; }
+    .policy-list {
+      display: grid;
+      gap: 8px;
+      max-height: 940px;
+      padding: 13px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+    .rule-card {
+      min-width: 0;
+      border: 1px solid #29463f;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #0d1d1a, #091411);
+      transition: border-color .15s ease, box-shadow .15s ease, opacity .15s ease;
+    }
+    .rule-card.selected {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 2px rgba(110, 220, 242, .11);
+    }
+    .rule-card.disabled { opacity: .55; }
+    .rule-select {
+      display: grid;
+      width: 100%;
+      min-height: 64px;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: start;
+      padding: 11px;
+      color: inherit;
+      text-align: left;
+      border: 0;
+      border-radius: 11px 11px 0 0;
+      background: transparent;
+      cursor: pointer;
+    }
+    .rule-number {
+      display: grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      font: 700 10px/1 var(--mono);
+    }
+    .rule-title strong, .rule-title small { display: block; }
+    .rule-title strong { font-size: .82rem; line-height: 1.28; }
+    .rule-title small { margin-top: 3px; color: var(--muted); font: 9px/1.35 var(--mono); }
+    .effect {
+      min-width: 52px;
+      padding: 5px 7px;
+      border-radius: 999px;
+      text-align: center;
+      font: 800 9px/1 var(--mono);
+      letter-spacing: .05em;
+    }
+    .effect.allow { color: var(--mint); background: rgba(114, 243, 189, .09); border: 1px solid rgba(114, 243, 189, .33); }
+    .effect.deny { color: var(--red); background: rgba(255, 127, 137, .08); border: 1px solid rgba(255, 127, 137, .32); }
+    .condition-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      padding: 0 11px 10px 49px;
+    }
+    .condition {
+      max-width: 100%;
+      padding: 4px 6px;
+      color: #a9bdb8;
+      border: 1px solid #263f39;
+      border-radius: 6px;
+      background: #07110f;
+      font: 9px/1.25 var(--mono);
+      overflow-wrap: anywhere;
+    }
+    .rule-actions {
+      flex-wrap: wrap;
+      padding: 8px 10px;
+      border-top: 1px solid #203a34;
+    }
+    .rule-actions .btn { min-width: 44px; min-height: 44px; padding: 6px 9px; font-size: .68rem; }
+    .default-rule {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin: 0 13px 14px;
+      padding: 12px;
+      border: 1px dashed rgba(255, 127, 137, .45);
+      border-radius: 11px;
+      background: rgba(255, 127, 137, .045);
+    }
+    .default-rule strong, .default-rule span { display: block; }
+    .default-rule strong { font-size: .78rem; }
+    .default-rule span { color: var(--muted); font-size: .68rem; }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .metric {
+      min-width: 0;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: #081310;
+    }
+    .metric-label { display: block; color: var(--muted); font: 700 9px/1.25 var(--mono); text-transform: uppercase; letter-spacing: .07em; }
+    .metric-value { display: block; margin-top: 3px; font: 850 1.45rem/1 var(--mono); letter-spacing: -.06em; }
+    .metric-value.good { color: var(--mint); }
+    .metric-value.warn { color: var(--amber); }
+    .metric-value.bad { color: var(--red); }
+    .metric-note { display: block; margin-top: 5px; color: var(--dim); font-size: .65rem; }
+
+    .score-block {
+      margin-bottom: 10px;
+      padding: 14px;
+      border: 1px solid rgba(114, 243, 189, .31);
+      border-radius: 13px;
+      background: linear-gradient(135deg, rgba(39, 200, 137, .10), rgba(7, 17, 15, .7));
+    }
+    .score-top { display: flex; align-items: end; justify-content: space-between; gap: 12px; }
+    .score-top strong { font: 900 2.25rem/1 var(--mono); color: var(--mint); letter-spacing: -.08em; }
+    .score-top span { color: #c8d9d4; font-size: .76rem; font-weight: 800; }
+    meter {
+      width: 100%;
+      height: 12px;
+      margin-top: 11px;
+      border: 0;
+      border-radius: 999px;
+      background: #07110f;
+    }
+    meter::-webkit-meter-bar { background: #07110f; border-radius: 999px; }
+    meter::-webkit-meter-optimum-value { background: linear-gradient(90deg, var(--mint-2), var(--mint)); border-radius: 999px; }
+    meter::-moz-meter-bar { background: linear-gradient(90deg, var(--mint-2), var(--mint)); border-radius: 999px; }
+    .score-block p { margin: 8px 0 0; color: var(--muted); font-size: .69rem; }
+
+    .corpus { margin-top: 16px; }
+    .corpus-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 9px;
+      margin-bottom: 8px;
+    }
+    .corpus-summary { margin: 0 0 9px; color: var(--muted); font-size: .72rem; }
+    .table-wrap {
+      max-height: 380px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: .7rem; }
+    th, td { padding: 8px 7px; text-align: left; border-bottom: 1px solid #1d342f; }
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      color: #bcd0cb;
+      background: #0e1e1a;
+      font: 700 9px/1.25 var(--mono);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    tr:last-child td { border-bottom: 0; }
+    tr.over td { background: rgba(255, 127, 137, .075); }
+    tr.under td { background: rgba(255, 199, 107, .07); }
+    .outcome { font: 800 9px/1 var(--mono); }
+    .outcome.allow { color: var(--mint); }
+    .outcome.deny { color: var(--red); }
+
+    .diagnostics { margin-top: 16px; }
+    .diagnostic-list {
+      display: grid;
+      gap: 7px;
+      margin: 8px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .diagnostic {
+      width: 100%;
+      min-height: 46px;
+      padding: 9px 10px;
+      color: #c7d7d3;
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #081310;
+      font-size: .7rem;
+    }
+    button.diagnostic { cursor: pointer; }
+    .diagnostic strong { color: var(--amber); }
+    .diagnostic.ok strong { color: var(--mint); }
+
+    .formula-inner p, .shortcuts-inner p { margin: 3px 0 8px; color: var(--muted); font-size: .7rem; }
+    .formula-code {
+      display: block;
+      padding: 9px;
+      color: #cde1db;
+      border: 1px solid #223b35;
+      border-radius: 7px;
+      background: #06100d;
+      font: 10px/1.5 var(--mono);
+      white-space: normal;
+    }
+    kbd {
+      display: inline-block;
+      min-width: 24px;
+      margin: 2px;
+      padding: 3px 5px;
+      color: #d9ebe6;
+      border: 1px solid #3a5a52;
+      border-bottom-width: 2px;
+      border-radius: 5px;
+      background: #10231e;
+      text-align: center;
+      font: 700 10px/1 var(--mono);
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin-top: 13px;
+      padding: 12px 4px;
+      color: var(--dim);
+      font: 10px/1.45 var(--mono);
+    }
+
+    .sr-only {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+
+    dialog {
+      width: min(760px, calc(100% - 24px));
+      max-height: calc(100vh - 28px);
+      padding: 0;
+      color: var(--ink);
+      border: 1px solid var(--line-hot);
+      border-radius: 17px;
+      background: #0b1815;
+      box-shadow: 0 30px 100px rgba(0, 0, 0, .72);
+    }
+    dialog::backdrop { background: rgba(1, 5, 4, .78); backdrop-filter: blur(4px); }
+    .dialog-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 18px 19px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .dialog-head h2 { margin: 2px 0 0; font-size: 1.2rem; }
+    .dialog-body { padding: 17px 19px; }
+    .dialog-actions {
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      padding: 13px 19px;
+      border-top: 1px solid var(--line);
+    }
+    .dialog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 11px;
+    }
+    .dialog-grid .span-2 { grid-column: span 2; }
+    .dialog-grid .span-3 { grid-column: 1 / -1; }
+    .check-field {
+      display: flex;
+      min-height: 44px;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 10px;
+      border: 1px solid #315049;
+      border-radius: 9px;
+      background: #07110f;
+    }
+    .check-field label { margin: 0; font-size: .76rem; font-weight: 700; }
+    .form-error {
+      min-height: 20px;
+      margin: 10px 0 0;
+      color: var(--red);
+      font-size: .75rem;
+    }
+    .transfer-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 13px;
+    }
+    .transfer-pane {
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: #081310;
+    }
+    .transfer-pane h3 { margin: 0 0 5px; font-size: .9rem; }
+    .transfer-pane p { margin: 0 0 9px; color: var(--muted); font-size: .7rem; }
+    .transfer-actions { flex-wrap: wrap; margin-top: 8px; }
+    #exportText { min-height: 260px; }
+    #importText { min-height: 190px; }
+
+    @media (max-width: 1180px) {
+      .workspace { grid-template-columns: minmax(280px, .9fr) minmax(390px, 1.25fr); }
+      .assurance-panel { grid-column: 1 / -1; }
+      .assurance-panel .panel-body {
+        display: grid;
+        grid-template-columns: minmax(260px, .8fr) minmax(380px, 1.2fr);
+        gap: 16px;
+      }
+      .assurance-primary, .assurance-secondary { min-width: 0; }
+      .corpus { margin-top: 0; }
+    }
+
+    @media (max-width: 780px) {
+      .shell { width: min(100% - 16px, 720px); padding-top: 8px; }
+      .hero-copy { padding: 22px 19px 16px; }
+      .map-wrap, #policyMap { min-height: 150px; height: 150px; }
+      .workspace { grid-template-columns: 1fr; }
+      .assurance-panel { grid-column: auto; }
+      .assurance-panel .panel-body { display: block; }
+      .corpus { margin-top: 16px; }
+      .policy-list { max-height: none; overflow: visible; }
+      .dialog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .dialog-grid .span-3 { grid-column: 1 / -1; }
+      .transfer-grid { grid-template-columns: 1fr; }
+      .footer { flex-direction: column; }
+    }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 2.18rem; }
+      .scenario-grid, .form-grid, .metrics { grid-template-columns: 1fr; }
+      .field.wide { grid-column: auto; }
+      .evaluate-row { grid-template-columns: 1fr; }
+      .dialog-grid { grid-template-columns: 1fr; }
+      .dialog-grid .span-2, .dialog-grid .span-3 { grid-column: auto; }
+      .inventory-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .rule-select { grid-template-columns: auto minmax(0, 1fr); }
+      .rule-select .effect { grid-column: 2; justify-self: start; }
+      .condition-chips { padding-left: 11px; }
+      .toolbar .btn { flex: 1 1 125px; }
+      .decision-top { align-items: flex-start; flex-direction: column; }
+      .decision-source { max-width: none; text-align: left; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+      }
+      .scenario:hover, .btn:hover, .icon-btn:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#request-title">Skip to request composer</a>
+  <div class="shell">
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Local policy laboratory · defensive only</p>
+        <h1>Zero-Trust <span>Policy Forge</span></h1>
+        <p>Turn identity, posture, context, and ordered rules into an inspectable answer. Every request is verified. Every unmatched request is denied. Every score can be traced back to a modeled decision.</p>
+        <div class="hero-badges" aria-label="Safety and runtime properties">
+          <span class="badge">Default deny</span>
+          <span class="badge cyan">No network or storage</span>
+          <span class="badge amber">Deterministic corpus</span>
+        </div>
+      </div>
+      <div class="map-wrap">
+        <canvas id="policyMap" role="img" aria-label="Policy flow map awaiting its first evaluation"></canvas>
+        <p class="map-caption">request → ordered rules → first match → default deny</p>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="panel request-panel" aria-labelledby="request-title">
+        <div class="panel-head">
+          <div>
+            <p class="section-kicker">01 · Request</p>
+            <h2 id="request-title">Compose an access request</h2>
+          </div>
+          <span class="panel-count" id="scenarioCount">5 scenarios</span>
+        </div>
+        <div class="panel-body">
+          <div class="scenario-grid" id="scenarioGrid" aria-label="Deterministic request scenarios"></div>
+
+          <form id="requestForm">
+            <div class="form-grid">
+              <div class="field">
+                <label for="requestIdentity">Identity</label>
+                <select id="requestIdentity"></select>
+              </div>
+              <div class="field">
+                <label for="requestDevice">Device</label>
+                <select id="requestDevice"></select>
+              </div>
+              <div class="field">
+                <label for="requestResource">Resource</label>
+                <select id="requestResource"></select>
+              </div>
+              <div class="field">
+                <label for="requestAction">Action</label>
+                <select id="requestAction"></select>
+              </div>
+              <div class="field">
+                <label for="requestNetwork">Network</label>
+                <select id="requestNetwork">
+                  <option value="corporate">Corporate</option>
+                  <option value="internet">Public internet</option>
+                  <option value="service-mesh">Service mesh</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="requestRisk">Risk signal</label>
+                <select id="requestRisk">
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+              <div class="field wide">
+                <div class="range-head">
+                  <label for="requestHour">Request time</label>
+                  <output id="hourOutput" for="requestHour">10:00</output>
+                </div>
+                <input id="requestHour" type="range" min="0" max="23" step="1" value="10">
+              </div>
+              <div class="field">
+                <label for="requestSession">Session age (minutes)</label>
+                <input id="requestSession" type="number" min="0" max="1440" step="1" value="30" inputmode="numeric">
+              </div>
+              <div class="field">
+                <label for="requestMfa">Fresh MFA</label>
+                <select id="requestMfa">
+                  <option value="true">Verified</option>
+                  <option value="false">Not verified</option>
+                </select>
+              </div>
+            </div>
+            <div class="evaluate-row">
+              <button class="btn primary" id="evaluateButton" type="submit">Evaluate request</button>
+              <button class="btn ghost" id="loadNormalButton" type="button">Load baseline</button>
+            </div>
+          </form>
+
+          <section class="decision deny" id="decisionCard" aria-labelledby="decisionWord">
+            <div class="decision-top">
+              <strong class="decision-word" id="decisionWord">DENY</strong>
+              <span class="decision-source" id="decisionSource">Default deny</span>
+            </div>
+            <p id="decisionExplanation">No rule has been evaluated yet.</p>
+          </section>
+
+          <section class="trace-wrap" aria-labelledby="trace-title">
+            <h3 id="trace-title">Visible decision trace</h3>
+            <ol class="trace" id="decisionTrace"></ol>
+          </section>
+
+          <details class="inventory" id="inventoryDetails">
+            <summary>Model inventory — define identities, devices, resources, and actions</summary>
+            <div class="inventory-inner">
+              <div class="inventory-tabs" role="tablist" aria-label="Model entity types">
+                <button class="tab-btn" id="tabIdentities" type="button" role="tab" aria-selected="true" aria-controls="entityList" data-entity-tab="identities">Identities</button>
+                <button class="tab-btn" id="tabDevices" type="button" role="tab" aria-selected="false" aria-controls="entityList" data-entity-tab="devices">Devices</button>
+                <button class="tab-btn" id="tabResources" type="button" role="tab" aria-selected="false" aria-controls="entityList" data-entity-tab="resources">Resources</button>
+                <button class="tab-btn" id="tabActions" type="button" role="tab" aria-selected="false" aria-controls="entityList" data-entity-tab="actions">Actions</button>
+              </div>
+              <div class="entity-list" id="entityList" role="tabpanel" aria-labelledby="tabIdentities"></div>
+              <button class="btn ghost inventory-add" id="addEntityButton" type="button">Add identity</button>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section class="panel policy-panel" aria-labelledby="policy-title">
+        <div class="panel-head">
+          <div>
+            <p class="section-kicker">02 · Policy</p>
+            <h2 id="policy-title">Ordered first-match rule stack</h2>
+          </div>
+          <span class="panel-count" id="ruleCount">8 rules</span>
+        </div>
+        <div class="toolbar" aria-label="Policy controls">
+          <button class="btn primary" id="addRuleButton" type="button">＋ New rule</button>
+          <button class="btn ghost" id="tightenButton" type="button">Tighten selected</button>
+          <button class="btn ghost" id="widenButton" type="button">Widen selected</button>
+          <button class="btn ghost" id="transferButton" type="button">Export / import</button>
+          <button class="btn danger" id="resetButton" type="button">Reset</button>
+        </div>
+        <div class="policy-list" id="policyList" aria-label="Ordered policy rules"></div>
+        <div class="default-rule" aria-label="Implicit final rule: deny every unmatched request">
+          <span class="rule-number">∞</span>
+          <div>
+            <strong>Implicit default deny</strong>
+            <span>Executed only when no enabled rule matches.</span>
+          </div>
+          <span class="effect deny">DENY</span>
+        </div>
+      </section>
+
+      <section class="panel assurance-panel" aria-labelledby="assurance-title">
+        <div class="panel-head">
+          <div>
+            <p class="section-kicker">03 · Assurance</p>
+            <h2 id="assurance-title">Least-privilege evidence</h2>
+          </div>
+          <span class="panel-count">lower blast is better</span>
+        </div>
+        <div class="panel-body">
+          <div class="assurance-primary">
+            <section class="score-block" aria-label="Least-privilege score">
+              <div class="score-top">
+                <span>Least-privilege score</span>
+                <strong id="scoreValue">—</strong>
+              </div>
+              <meter id="scoreMeter" min="0" max="100" low="60" high="85" optimum="100" value="0">0 out of 100</meter>
+              <p id="scoreNote">Run the deterministic corpus to measure correctness, reachability, and modeled exposure.</p>
+            </section>
+
+            <div class="metrics">
+              <div class="metric">
+                <span class="metric-label">Blast radius</span>
+                <strong class="metric-value" id="blastValue">—</strong>
+                <span class="metric-note" id="blastNote">modeled exposure</span>
+              </div>
+              <div class="metric">
+                <span class="metric-label">Corpus accuracy</span>
+                <strong class="metric-value" id="accuracyValue">—</strong>
+                <span class="metric-note">expected vs actual</span>
+              </div>
+              <div class="metric">
+                <span class="metric-label">Over-permission</span>
+                <strong class="metric-value" id="overValue">—</strong>
+                <span class="metric-note">denied by need, allowed by policy</span>
+              </div>
+              <div class="metric">
+                <span class="metric-label">Under-permission</span>
+                <strong class="metric-value" id="underValue">—</strong>
+                <span class="metric-note">needed, but denied by policy</span>
+              </div>
+              <div class="metric">
+                <span class="metric-label">Unreachable rules</span>
+                <strong class="metric-value" id="unreachableValue">—</strong>
+                <span class="metric-note">match no modeled request</span>
+              </div>
+              <div class="metric">
+                <span class="metric-label">Shadowed rules</span>
+                <strong class="metric-value" id="shadowedValue">—</strong>
+                <span class="metric-note">always preempted earlier</span>
+              </div>
+            </div>
+
+            <section class="diagnostics" aria-labelledby="diagnostics-title">
+              <h3 id="diagnostics-title">Rule diagnostics</h3>
+              <ul class="diagnostic-list" id="diagnosticList"></ul>
+            </section>
+
+            <details class="formula">
+              <summary>How the scores are calculated</summary>
+              <div class="formula-inner">
+                <p>The bounded universe combines every modeled identity, device, resource, action, and seven deterministic contexts. First-match evaluation is identical everywhere.</p>
+                <code class="formula-code">blast = weighted allowed scope ÷ weighted modeled scope × 600, capped at 100<br>least privilege = 100 − 12×over − 8×under − .35×blast − 4×unreachable − 6×shadowed − 5×broad allow</code>
+              </div>
+            </details>
+          </div>
+
+          <div class="assurance-secondary">
+            <section class="corpus" aria-labelledby="corpus-title">
+              <div class="corpus-head">
+                <h3 id="corpus-title">Deterministic request corpus</h3>
+                <button class="btn ghost" id="runCorpusButton" type="button">Run 16 cases</button>
+              </div>
+              <p class="corpus-summary" id="corpusSummary">Not run yet.</p>
+              <div class="table-wrap" tabindex="0" aria-label="Corpus result table, horizontally scrollable when needed">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">Case</th>
+                      <th scope="col">Need</th>
+                      <th scope="col">Policy</th>
+                      <th scope="col">Class</th>
+                    </tr>
+                  </thead>
+                  <tbody id="corpusBody"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <details class="shortcuts">
+              <summary>Keyboard controls</summary>
+              <div class="shortcuts-inner">
+                <p><kbd>E</kbd> evaluate · <kbd>C</kbd> run corpus · <kbd>N</kbd> new rule · <kbd>[</kbd>/<kbd>]</kbd> select rule · <kbd>Alt</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd> reorder · <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>S</kbd> export/import.</p>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Everything executes in this tab. Imported JSON is parsed as data, validated against an exact schema, and rendered as text.</span>
+      <span>Zero trust is not “trust nobody.” It is “make every trust decision explicit.”</span>
+    </footer>
+  </div>
+
+  <p class="sr-only" id="liveStatus" role="status" aria-live="polite" aria-atomic="true"></p>
+
+  <dialog id="ruleDialog" aria-labelledby="ruleDialogTitle">
+    <div class="dialog-head">
+      <div>
+        <p class="micro-label">Policy rule editor</p>
+        <h2 id="ruleDialogTitle">New rule</h2>
+      </div>
+      <button class="icon-btn" id="closeRuleDialog" type="button" aria-label="Close rule editor">✕</button>
+    </div>
+    <form id="ruleForm">
+      <div class="dialog-body">
+        <div class="dialog-grid">
+          <div class="field span-2">
+            <label for="ruleName">Rule name</label>
+            <input id="ruleName" type="text" maxlength="60" required>
+          </div>
+          <div class="field">
+            <label for="ruleEffect">Effect</label>
+            <select id="ruleEffect">
+              <option value="deny">Deny</option>
+              <option value="allow">Allow</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ruleIdentity">Identity</label>
+            <select id="ruleIdentity"></select>
+          </div>
+          <div class="field">
+            <label for="ruleIdentityType">Identity type</label>
+            <select id="ruleIdentityType">
+              <option value="">Any</option>
+              <option value="human">Human</option>
+              <option value="service">Service</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ruleRole">Role</label>
+            <select id="ruleRole">
+              <option value="">Any</option>
+              <option value="employee">Employee</option>
+              <option value="manager">Manager</option>
+              <option value="admin">Admin</option>
+              <option value="service">Service</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ruleDevice">Device</label>
+            <select id="ruleDevice"></select>
+          </div>
+          <div class="field">
+            <label for="ruleDeviceKind">Device kind</label>
+            <select id="ruleDeviceKind">
+              <option value="">Any</option>
+              <option value="endpoint">Endpoint</option>
+              <option value="workload">Workload</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ruleManaged">Managed posture</label>
+            <select id="ruleManaged">
+              <option value="">Any</option>
+              <option value="true">Managed</option>
+              <option value="false">Unmanaged</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ruleCompliant">Compliance</label>
+            <select id="ruleCompliant">
+              <option value="">Any</option>
+              <option value="true">Compliant</option>
+              <option value="false">Non-compliant</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ruleAttested">Attestation</label>
+            <select id="ruleAttested">
+              <option value="">Any</option>
+              <option value="true">Attested</option>
+              <option value="false">Not attested</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ruleResource">Resource</label>
+            <select id="ruleResource"></select>
+          </div>
+          <div class="field">
+            <label for="ruleSensitivity">Minimum sensitivity</label>
+            <select id="ruleSensitivity">
+              <option value="">Any</option>
+              <option value="public">Public or higher</option>
+              <option value="internal">Internal or higher</option>
+              <option value="restricted">Restricted only</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ruleAction">Action</label>
+            <select id="ruleAction"></select>
+          </div>
+          <div class="field">
+            <label for="ruleNetwork">Network</label>
+            <select id="ruleNetwork">
+              <option value="">Any</option>
+              <option value="corporate">Corporate</option>
+              <option value="internet">Public internet</option>
+              <option value="service-mesh">Service mesh</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ruleMfa">Fresh MFA</label>
+            <select id="ruleMfa">
+              <option value="">Any</option>
+              <option value="true">Required</option>
+              <option value="false">Must be absent</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ruleRiskMin">Minimum risk</label>
+            <select id="ruleRiskMin">
+              <option value="">Any</option>
+              <option value="low">Low or higher</option>
+              <option value="medium">Medium or higher</option>
+              <option value="high">High only</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ruleRiskMax">Maximum risk</label>
+            <select id="ruleRiskMax">
+              <option value="">Any</option>
+              <option value="low">Low only</option>
+              <option value="medium">Medium or lower</option>
+              <option value="high">High or lower</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ruleSessionMin">Minimum session age</label>
+            <input id="ruleSessionMin" type="number" min="0" max="1440" step="1" inputmode="numeric" placeholder="Any">
+          </div>
+          <div class="field">
+            <label for="ruleSessionMax">Maximum session age</label>
+            <input id="ruleSessionMax" type="number" min="0" max="1440" step="1" inputmode="numeric" placeholder="Any">
+          </div>
+          <div class="field">
+            <label for="ruleTimeMode">Time window</label>
+            <select id="ruleTimeMode">
+              <option value="">Any time</option>
+              <option value="inside">Inside window</option>
+              <option value="outside">Outside window</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ruleStartHour">Window starts</label>
+            <input id="ruleStartHour" type="number" min="0" max="23" step="1" value="8" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label for="ruleEndHour">Window ends</label>
+            <input id="ruleEndHour" type="number" min="0" max="23" step="1" value="18" inputmode="numeric">
+          </div>
+          <div class="field">
+            <span class="field-label">Ownership</span>
+            <div class="check-field">
+              <input id="ruleDepartmentMatch" type="checkbox">
+              <label for="ruleDepartmentMatch">Identity department must own resource</label>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-label">Runtime</span>
+            <div class="check-field">
+              <input id="ruleEnabled" type="checkbox" checked>
+              <label for="ruleEnabled">Rule enabled</label>
+            </div>
+          </div>
+        </div>
+        <p class="form-error" id="ruleError" role="alert"></p>
+      </div>
+      <div class="dialog-actions">
+        <button class="btn ghost" id="cancelRuleButton" type="button">Cancel</button>
+        <button class="btn primary" type="submit">Save rule</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="entityDialog" aria-labelledby="entityDialogTitle">
+    <div class="dialog-head">
+      <div>
+        <p class="micro-label">Trust model editor</p>
+        <h2 id="entityDialogTitle">Add identity</h2>
+      </div>
+      <button class="icon-btn" id="closeEntityDialog" type="button" aria-label="Close model editor">✕</button>
+    </div>
+    <form id="entityForm">
+      <div class="dialog-body">
+        <div class="dialog-grid">
+          <div class="field">
+            <label for="entityType">Entity type</label>
+            <select id="entityType">
+              <option value="identities">Identity</option>
+              <option value="devices">Device</option>
+              <option value="resources">Resource</option>
+              <option value="actions">Action</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="entityId">Stable ID</label>
+            <input id="entityId" type="text" maxlength="32" pattern="[a-z][a-z0-9-]{1,31}" required>
+          </div>
+          <div class="field">
+            <label for="entityLabel">Display name</label>
+            <input id="entityLabel" type="text" maxlength="60" required>
+          </div>
+
+          <div class="field entity-group identity-field">
+            <label for="identityType">Identity kind</label>
+            <select id="identityType">
+              <option value="human">Human</option>
+              <option value="service">Service</option>
+            </select>
+          </div>
+          <div class="field entity-group identity-field">
+            <label for="identityRole">Role</label>
+            <select id="identityRole">
+              <option value="employee">Employee</option>
+              <option value="manager">Manager</option>
+              <option value="admin">Admin</option>
+              <option value="service">Service</option>
+            </select>
+          </div>
+          <div class="field entity-group identity-field">
+            <label for="identityDepartment">Department</label>
+            <input id="identityDepartment" type="text" maxlength="24" value="finance">
+          </div>
+
+          <div class="field entity-group device-field" hidden>
+            <label for="deviceKind">Device kind</label>
+            <select id="deviceKind">
+              <option value="endpoint">Endpoint</option>
+              <option value="workload">Workload</option>
+            </select>
+          </div>
+          <div class="field entity-group device-field" hidden>
+            <span class="field-label">Managed</span>
+            <div class="check-field">
+              <input id="deviceManaged" type="checkbox" checked>
+              <label for="deviceManaged">Under management</label>
+            </div>
+          </div>
+          <div class="field entity-group device-field" hidden>
+            <span class="field-label">Compliant</span>
+            <div class="check-field">
+              <input id="deviceCompliant" type="checkbox" checked>
+              <label for="deviceCompliant">Meets posture baseline</label>
+            </div>
+          </div>
+          <div class="field entity-group device-field" hidden>
+            <span class="field-label">Attested</span>
+            <div class="check-field">
+              <input id="deviceAttested" type="checkbox">
+              <label for="deviceAttested">Cryptographically attested</label>
+            </div>
+          </div>
+
+          <div class="field entity-group resource-field" hidden>
+            <label for="resourceKind">Resource kind</label>
+            <select id="resourceKind">
+              <option value="app">Application</option>
+              <option value="api">API</option>
+              <option value="admin">Admin surface</option>
+              <option value="data">Data store</option>
+            </select>
+          </div>
+          <div class="field entity-group resource-field" hidden>
+            <label for="resourceSensitivity">Sensitivity</label>
+            <select id="resourceSensitivity">
+              <option value="public">Public</option>
+              <option value="internal">Internal</option>
+              <option value="restricted">Restricted</option>
+            </select>
+          </div>
+          <div class="field entity-group resource-field" hidden>
+            <label for="resourceOwner">Owner department</label>
+            <input id="resourceOwner" type="text" maxlength="24" value="finance">
+          </div>
+
+          <div class="field entity-group action-field" hidden>
+            <label for="actionPrivilege">Privilege weight (1–5)</label>
+            <input id="actionPrivilege" type="number" min="1" max="5" step="1" value="1" inputmode="numeric">
+          </div>
+        </div>
+        <p class="form-error" id="entityError" role="alert"></p>
+      </div>
+      <div class="dialog-actions">
+        <button class="btn ghost" id="cancelEntityButton" type="button">Cancel</button>
+        <button class="btn primary" type="submit">Save entity</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="transferDialog" aria-labelledby="transferDialogTitle">
+    <div class="dialog-head">
+      <div>
+        <p class="micro-label">Portable policy data</p>
+        <h2 id="transferDialogTitle">Export / import</h2>
+      </div>
+      <button class="icon-btn" id="closeTransferDialog" type="button" aria-label="Close export and import">✕</button>
+    </div>
+    <div class="dialog-body">
+      <div class="transfer-grid">
+        <section class="transfer-pane" aria-labelledby="exportTitle">
+          <h3 id="exportTitle">Export validated JSON</h3>
+          <p>Deterministic text only: no timestamps, code, credentials, or hidden state.</p>
+          <label class="sr-only" for="exportText">Exported policy JSON</label>
+          <textarea id="exportText" readonly spellcheck="false"></textarea>
+          <div class="transfer-actions">
+            <button class="btn primary" id="copyExportButton" type="button">Copy JSON</button>
+            <button class="btn ghost" id="selectExportButton" type="button">Select all</button>
+          </div>
+        </section>
+        <section class="transfer-pane" aria-labelledby="importTitle">
+          <h3 id="importTitle">Import with strict validation</h3>
+          <p>Exact schema, known enums, bounded arrays, referential integrity, safe keys, and a 160KB limit.</p>
+          <label class="field-label" for="importFile">Choose a JSON file</label>
+          <input id="importFile" type="file" accept="application/json,.json">
+          <label class="field-label" for="importText">Or paste JSON</label>
+          <textarea id="importText" spellcheck="false" placeholder="{ &quot;app&quot;: &quot;zero-trust-policy-forge&quot;, ... }"></textarea>
+          <p class="form-error" id="importError" role="alert"></p>
+          <div class="transfer-actions">
+            <button class="btn primary" id="applyImportButton" type="button">Validate and apply</button>
+            <button class="btn ghost" id="clearImportButton" type="button">Clear</button>
+          </div>
+        </section>
+      </div>
+    </div>
+    <div class="dialog-actions">
+      <button class="btn ghost" id="doneTransferButton" type="button">Done</button>
+    </div>
+  </dialog>
+
+  <script>
+  (() => {
+    "use strict";
+
+    const MAX_IMPORT_BYTES = 160 * 1024;
+    const MAX_ENTITIES = 10;
+    const MAX_ACTIONS = 8;
+    const MAX_RULES = 24;
+    const ID_PATTERN = /^[a-z][a-z0-9-]{1,31}$/;
+    const DEPARTMENT_PATTERN = /^[a-z][a-z0-9-]{1,23}$/;
+    const CONTROL_PATTERN = /[\u0000-\u001f\u007f]/;
+    const RISK_RANK = { low: 0, medium: 1, high: 2 };
+    const SENSITIVITY_RANK = { public: 0, internal: 1, restricted: 2 };
+    const COLLECTION_LABELS = {
+      identities: "identity",
+      devices: "device",
+      resources: "resource",
+      actions: "action"
+    };
+    const CONDITION_KEYS = [
+      "identityId", "identityType", "role", "deviceId", "deviceKind",
+      "managed", "compliant", "attested", "resourceId",
+      "sensitivityAtLeast", "actionId", "network", "mfa",
+      "riskMin", "riskMax", "sessionAgeMin", "sessionAgeMax",
+      "timeMode", "startHour", "endHour", "departmentMatches"
+    ];
+    const CORE_IDS = {
+      identities: ["ava", "marcus", "nora-admin", "billing-svc"],
+      devices: ["managed-laptop", "personal-tablet", "prod-workload"],
+      resources: ["expense-ledger", "admin-console", "billing-api"],
+      actions: ["read", "submit", "approve", "administer", "invoke"]
+    };
+
+    function blankConditions(overrides) {
+      return Object.assign({
+        identityId: null,
+        identityType: null,
+        role: null,
+        deviceId: null,
+        deviceKind: null,
+        managed: null,
+        compliant: null,
+        attested: null,
+        resourceId: null,
+        sensitivityAtLeast: null,
+        actionId: null,
+        network: null,
+        mfa: null,
+        riskMin: null,
+        riskMax: null,
+        sessionAgeMin: null,
+        sessionAgeMax: null,
+        timeMode: null,
+        startHour: 8,
+        endHour: 18,
+        departmentMatches: null
+      }, overrides || {});
+    }
+
+    const DEFAULT_CONFIG = {
+      identities: [
+        { id: "ava", label: "Ava Chen", type: "human", role: "employee", department: "finance" },
+        { id: "marcus", label: "Marcus Reed", type: "human", role: "manager", department: "finance" },
+        { id: "nora-admin", label: "Nora Silva", type: "human", role: "admin", department: "platform" },
+        { id: "billing-svc", label: "Billing Worker", type: "service", role: "service", department: "payments" }
+      ],
+      devices: [
+        { id: "managed-laptop", label: "Managed laptop", kind: "endpoint", managed: true, compliant: true, attested: true },
+        { id: "personal-tablet", label: "Personal tablet", kind: "endpoint", managed: false, compliant: false, attested: false },
+        { id: "prod-workload", label: "Production workload", kind: "workload", managed: true, compliant: true, attested: true }
+      ],
+      resources: [
+        { id: "expense-ledger", label: "Expense ledger", kind: "app", sensitivity: "internal", ownerDepartment: "finance" },
+        { id: "admin-console", label: "Admin console", kind: "admin", sensitivity: "restricted", ownerDepartment: "platform" },
+        { id: "billing-api", label: "Billing API", kind: "api", sensitivity: "restricted", ownerDepartment: "payments" }
+      ],
+      actions: [
+        { id: "read", label: "Read", privilege: 1 },
+        { id: "submit", label: "Submit", privilege: 2 },
+        { id: "approve", label: "Approve", privilege: 3 },
+        { id: "administer", label: "Administer", privilege: 5 },
+        { id: "invoke", label: "Invoke", privilege: 3 }
+      ],
+      rules: [
+        {
+          id: "deny-expired-human-sessions",
+          name: "Deny expired human sessions",
+          effect: "deny",
+          enabled: true,
+          conditions: blankConditions({ identityType: "human", sessionAgeMin: 481 })
+        },
+        {
+          id: "deny-high-risk-signals",
+          name: "Deny high-risk signals",
+          effect: "deny",
+          enabled: true,
+          conditions: blankConditions({ riskMin: "high" })
+        },
+        {
+          id: "deny-unmanaged-sensitive",
+          name: "Deny unmanaged access to sensitive resources",
+          effect: "deny",
+          enabled: true,
+          conditions: blankConditions({ identityType: "human", managed: false, sensitivityAtLeast: "internal" })
+        },
+        {
+          id: "allow-billing-workload",
+          name: "Allow attested billing workload",
+          effect: "allow",
+          enabled: true,
+          conditions: blankConditions({
+            identityId: "billing-svc",
+            deviceId: "prod-workload",
+            attested: true,
+            resourceId: "billing-api",
+            actionId: "invoke",
+            network: "service-mesh",
+            riskMax: "low"
+          })
+        },
+        {
+          id: "allow-admin-office-hours",
+          name: "Allow admin console in office hours",
+          effect: "allow",
+          enabled: true,
+          conditions: blankConditions({
+            role: "admin",
+            deviceId: "managed-laptop",
+            compliant: true,
+            resourceId: "admin-console",
+            actionId: "administer",
+            network: "corporate",
+            mfa: true,
+            riskMax: "low",
+            sessionAgeMax: 120,
+            timeMode: "inside",
+            startHour: 8,
+            endHour: 18
+          })
+        },
+        {
+          id: "allow-finance-read",
+          name: "Allow finance to read its ledger",
+          effect: "allow",
+          enabled: true,
+          conditions: blankConditions({
+            identityType: "human",
+            deviceId: "managed-laptop",
+            compliant: true,
+            resourceId: "expense-ledger",
+            actionId: "read",
+            network: "corporate",
+            riskMax: "medium",
+            sessionAgeMax: 240,
+            departmentMatches: true
+          })
+        },
+        {
+          id: "allow-finance-submit",
+          name: "Allow finance to submit expenses",
+          effect: "allow",
+          enabled: true,
+          conditions: blankConditions({
+            identityType: "human",
+            deviceId: "managed-laptop",
+            compliant: true,
+            resourceId: "expense-ledger",
+            actionId: "submit",
+            network: "corporate",
+            riskMax: "low",
+            sessionAgeMax: 120,
+            departmentMatches: true
+          })
+        },
+        {
+          id: "allow-manager-approve",
+          name: "Allow manager approval with fresh MFA",
+          effect: "allow",
+          enabled: true,
+          conditions: blankConditions({
+            role: "manager",
+            deviceId: "managed-laptop",
+            compliant: true,
+            resourceId: "expense-ledger",
+            actionId: "approve",
+            network: "corporate",
+            mfa: true,
+            riskMax: "low",
+            sessionAgeMax: 120,
+            timeMode: "inside",
+            startHour: 8,
+            endHour: 18,
+            departmentMatches: true
+          })
+        }
+      ]
+    };
+
+    const SCENARIOS = [
+      {
+        id: "normal",
+        label: "Normal employee",
+        hint: "managed · fresh · office",
+        request: { identityId: "ava", deviceId: "managed-laptop", resourceId: "expense-ledger", actionId: "read", network: "corporate", hour: 10, sessionAge: 30, mfa: true, risk: "low" }
+      },
+      {
+        id: "unmanaged",
+        label: "Unmanaged device",
+        hint: "personal · sensitive data",
+        request: { identityId: "ava", deviceId: "personal-tablet", resourceId: "expense-ledger", actionId: "read", network: "internet", hour: 10, sessionAge: 30, mfa: true, risk: "low" }
+      },
+      {
+        id: "expired",
+        label: "Expired session",
+        hint: "600 min · otherwise normal",
+        request: { identityId: "ava", deviceId: "managed-laptop", resourceId: "expense-ledger", actionId: "read", network: "corporate", hour: 10, sessionAge: 600, mfa: true, risk: "low" }
+      },
+      {
+        id: "off-hours-admin",
+        label: "Off-hours admin",
+        hint: "22:00 · restricted console",
+        request: { identityId: "nora-admin", deviceId: "managed-laptop", resourceId: "admin-console", actionId: "administer", network: "corporate", hour: 22, sessionAge: 20, mfa: true, risk: "low" }
+      },
+      {
+        id: "service",
+        label: "Service to service",
+        hint: "attested · mesh · invoke",
+        request: { identityId: "billing-svc", deviceId: "prod-workload", resourceId: "billing-api", actionId: "invoke", network: "service-mesh", hour: 3, sessionAge: 5, mfa: false, risk: "low" }
+      }
+    ];
+
+    const CORPUS = [
+      { name: "Employee reads ledger", expected: "allow", request: SCENARIOS[0].request },
+      { name: "Employee submits expense", expected: "allow", request: { identityId: "ava", deviceId: "managed-laptop", resourceId: "expense-ledger", actionId: "submit", network: "corporate", hour: 11, sessionAge: 35, mfa: false, risk: "low" } },
+      { name: "Manager reads ledger", expected: "allow", request: { identityId: "marcus", deviceId: "managed-laptop", resourceId: "expense-ledger", actionId: "read", network: "corporate", hour: 14, sessionAge: 90, mfa: true, risk: "medium" } },
+      { name: "Manager approves expense", expected: "allow", request: { identityId: "marcus", deviceId: "managed-laptop", resourceId: "expense-ledger", actionId: "approve", network: "corporate", hour: 14, sessionAge: 45, mfa: true, risk: "low" } },
+      { name: "Employee attempts approval", expected: "deny", request: { identityId: "ava", deviceId: "managed-laptop", resourceId: "expense-ledger", actionId: "approve", network: "corporate", hour: 11, sessionAge: 35, mfa: true, risk: "low" } },
+      { name: "Unmanaged employee device", expected: "deny", request: SCENARIOS[1].request },
+      { name: "Expired employee session", expected: "deny", request: SCENARIOS[2].request },
+      { name: "High-risk employee read", expected: "deny", request: { identityId: "ava", deviceId: "managed-laptop", resourceId: "expense-ledger", actionId: "read", network: "corporate", hour: 10, sessionAge: 30, mfa: true, risk: "high" } },
+      { name: "Admin in office hours", expected: "allow", request: { identityId: "nora-admin", deviceId: "managed-laptop", resourceId: "admin-console", actionId: "administer", network: "corporate", hour: 10, sessionAge: 20, mfa: true, risk: "low" } },
+      { name: "Admin after hours", expected: "deny", request: SCENARIOS[3].request },
+      { name: "Admin without MFA", expected: "deny", request: { identityId: "nora-admin", deviceId: "managed-laptop", resourceId: "admin-console", actionId: "administer", network: "corporate", hour: 10, sessionAge: 20, mfa: false, risk: "low" } },
+      { name: "Admin stale session", expected: "deny", request: { identityId: "nora-admin", deviceId: "managed-laptop", resourceId: "admin-console", actionId: "administer", network: "corporate", hour: 10, sessionAge: 180, mfa: true, risk: "low" } },
+      { name: "Billing service on mesh", expected: "allow", request: SCENARIOS[4].request },
+      { name: "Billing service on internet", expected: "deny", request: { identityId: "billing-svc", deviceId: "prod-workload", resourceId: "billing-api", actionId: "invoke", network: "internet", hour: 3, sessionAge: 5, mfa: false, risk: "low" } },
+      { name: "Service from personal tablet", expected: "deny", request: { identityId: "billing-svc", deviceId: "personal-tablet", resourceId: "billing-api", actionId: "invoke", network: "service-mesh", hour: 3, sessionAge: 5, mfa: false, risk: "low" } },
+      { name: "Human invokes billing API", expected: "deny", request: { identityId: "ava", deviceId: "managed-laptop", resourceId: "billing-api", actionId: "invoke", network: "corporate", hour: 10, sessionAge: 20, mfa: true, risk: "low" } }
+    ];
+
+    const ANALYSIS_CONTEXTS = [
+      { network: "corporate", hour: 10, sessionAge: 30, mfa: true, risk: "low" },
+      { network: "corporate", hour: 14, sessionAge: 180, mfa: false, risk: "medium" },
+      { network: "corporate", hour: 22, sessionAge: 30, mfa: true, risk: "low" },
+      { network: "internet", hour: 10, sessionAge: 30, mfa: false, risk: "low" },
+      { network: "internet", hour: 22, sessionAge: 120, mfa: true, risk: "medium" },
+      { network: "service-mesh", hour: 3, sessionAge: 5, mfa: false, risk: "low" },
+      { network: "service-mesh", hour: 2, sessionAge: 600, mfa: false, risk: "high" }
+    ];
+
+    const dom = {};
+    [
+      "policyMap", "scenarioGrid", "scenarioCount", "requestForm", "requestIdentity",
+      "requestDevice", "requestResource", "requestAction", "requestNetwork",
+      "requestRisk", "requestHour", "requestSession", "requestMfa", "hourOutput",
+      "evaluateButton", "loadNormalButton", "decisionCard", "decisionWord",
+      "decisionSource", "decisionExplanation", "decisionTrace", "entityList",
+      "addEntityButton", "policyList", "ruleCount", "addRuleButton", "tightenButton",
+      "widenButton", "transferButton", "resetButton", "scoreValue", "scoreMeter",
+      "scoreNote", "blastValue", "blastNote", "accuracyValue", "overValue",
+      "underValue", "unreachableValue", "shadowedValue", "diagnosticList",
+      "runCorpusButton", "corpusSummary", "corpusBody", "liveStatus", "ruleDialog",
+      "ruleDialogTitle", "closeRuleDialog", "ruleForm", "ruleName", "ruleEffect",
+      "ruleIdentity", "ruleIdentityType", "ruleRole", "ruleDevice", "ruleDeviceKind",
+      "ruleManaged", "ruleCompliant", "ruleAttested", "ruleResource",
+      "ruleSensitivity", "ruleAction", "ruleNetwork", "ruleMfa", "ruleRiskMin",
+      "ruleRiskMax", "ruleSessionMin", "ruleSessionMax", "ruleTimeMode",
+      "ruleStartHour", "ruleEndHour", "ruleDepartmentMatch", "ruleEnabled",
+      "ruleError", "cancelRuleButton", "entityDialog", "entityDialogTitle",
+      "closeEntityDialog", "entityForm", "entityType", "entityId", "entityLabel",
+      "identityType", "identityRole", "identityDepartment", "deviceKind",
+      "deviceManaged", "deviceCompliant", "deviceAttested", "resourceKind",
+      "resourceSensitivity", "resourceOwner", "actionPrivilege", "entityError",
+      "cancelEntityButton", "transferDialog", "closeTransferDialog", "exportText",
+      "copyExportButton", "selectExportButton", "importFile", "importText",
+      "importError", "applyImportButton", "clearImportButton", "doneTransferButton"
+    ].forEach((id) => { dom[id] = document.getElementById(id); });
+
+    const state = {
+      config: clone(DEFAULT_CONFIG),
+      selectedRuleId: DEFAULT_CONFIG.rules[0].id,
+      activeEntityTab: "identities",
+      editingRuleId: null,
+      editingEntity: null,
+      activeScenarioId: "normal",
+      currentRequest: clone(SCENARIOS[0].request),
+      lastDecision: null,
+      metrics: null,
+      resetArmedUntil: 0,
+      deleteArmedId: null,
+      deleteTimer: 0,
+      animation: {
+        paused: false,
+        raf: 0,
+        startedAt: performance.now()
+      }
+    };
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const canvasContext = dom.policyMap.getContext("2d");
+
+    function clone(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function byId(collection, id) {
+      return state.config[collection].find((item) => item.id === id) || null;
+    }
+
+    function isCoreEntity(collection, id) {
+      return CORE_IDS[collection].includes(id);
+    }
+
+    function make(tag, className, text) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    }
+
+    function setClassByValue(node, value, goodThreshold, warnThreshold, invert) {
+      node.classList.remove("good", "warn", "bad");
+      if (invert) {
+        node.classList.add(value <= goodThreshold ? "good" : value <= warnThreshold ? "warn" : "bad");
+      } else {
+        node.classList.add(value >= goodThreshold ? "good" : value >= warnThreshold ? "warn" : "bad");
+      }
+    }
+
+    function announce(message) {
+      dom.liveStatus.textContent = "";
+      window.setTimeout(() => { dom.liveStatus.textContent = message; }, 20);
+    }
+
+    function openDialog(dialog) {
+      if (typeof dialog.showModal === "function") dialog.showModal();
+      else dialog.setAttribute("open", "");
+    }
+
+    function closeDialog(dialog) {
+      if (typeof dialog.close === "function") dialog.close();
+      else dialog.removeAttribute("open");
+    }
+
+    function formatHour(hour) {
+      return String(hour).padStart(2, "0") + ":00";
+    }
+
+    function labelFor(collection, id) {
+      const item = byId(collection, id);
+      return item ? item.label : id;
+    }
+
+    function populateSelect(select, items, includeAny, current, anyLabel) {
+      select.textContent = "";
+      if (includeAny) {
+        const anyOption = document.createElement("option");
+        anyOption.value = "";
+        anyOption.textContent = anyLabel || "Any";
+        select.appendChild(anyOption);
+      }
+      items.forEach((item) => {
+        const option = document.createElement("option");
+        option.value = item.id;
+        option.textContent = item.label + " · " + item.id;
+        select.appendChild(option);
+      });
+      const desired = current == null ? "" : current;
+      if ([...select.options].some((option) => option.value === desired)) select.value = desired;
+    }
+
+    function refreshEntitySelects() {
+      const requestValues = {
+        identity: dom.requestIdentity.value || state.currentRequest.identityId,
+        device: dom.requestDevice.value || state.currentRequest.deviceId,
+        resource: dom.requestResource.value || state.currentRequest.resourceId,
+        actionId: dom.requestAction.value || state.currentRequest.actionId
+      };
+      populateSelect(dom.requestIdentity, state.config.identities, false, requestValues.identity);
+      populateSelect(dom.requestDevice, state.config.devices, false, requestValues.device);
+      populateSelect(dom.requestResource, state.config.resources, false, requestValues.resource);
+      populateSelect(dom.requestAction, state.config.actions, false, requestValues.actionId);
+      populateSelect(dom.ruleIdentity, state.config.identities, true, dom.ruleIdentity.value, "Any identity");
+      populateSelect(dom.ruleDevice, state.config.devices, true, dom.ruleDevice.value, "Any device");
+      populateSelect(dom.ruleResource, state.config.resources, true, dom.ruleResource.value, "Any resource");
+      populateSelect(dom.ruleAction, state.config.actions, true, dom.ruleAction.value, "Any action");
+    }
+
+    function writeRequestForm(request) {
+      state.currentRequest = clone(request);
+      refreshEntitySelects();
+      dom.requestIdentity.value = request.identityId;
+      dom.requestDevice.value = request.deviceId;
+      dom.requestResource.value = request.resourceId;
+      dom.requestAction.value = request.actionId;
+      dom.requestNetwork.value = request.network;
+      dom.requestRisk.value = request.risk;
+      dom.requestHour.value = String(request.hour);
+      dom.requestSession.value = String(request.sessionAge);
+      dom.requestMfa.value = String(request.mfa);
+      dom.hourOutput.textContent = formatHour(request.hour);
+      renderScenarioButtons();
+    }
+
+    function readRequestForm() {
+      const sessionAge = Number(dom.requestSession.value);
+      return {
+        identityId: dom.requestIdentity.value,
+        deviceId: dom.requestDevice.value,
+        resourceId: dom.requestResource.value,
+        actionId: dom.requestAction.value,
+        network: dom.requestNetwork.value,
+        hour: Number(dom.requestHour.value),
+        sessionAge: Number.isInteger(sessionAge) ? Math.max(0, Math.min(1440, sessionAge)) : 0,
+        mfa: dom.requestMfa.value === "true",
+        risk: dom.requestRisk.value
+      };
+    }
+
+    function requestsEqual(left, right) {
+      return Object.keys(left).every((key) => left[key] === right[key]);
+    }
+
+    function detectScenario(request) {
+      const scenario = SCENARIOS.find((item) => requestsEqual(item.request, request));
+      state.activeScenarioId = scenario ? scenario.id : null;
+    }
+
+    function renderScenarioButtons() {
+      dom.scenarioGrid.textContent = "";
+      SCENARIOS.forEach((scenario) => {
+        const button = make("button", "scenario");
+        button.type = "button";
+        button.setAttribute("aria-pressed", String(state.activeScenarioId === scenario.id));
+        const title = make("strong", "", scenario.label);
+        const hint = make("span", "", scenario.hint);
+        button.append(title, hint);
+        button.addEventListener("click", () => {
+          state.activeScenarioId = scenario.id;
+          writeRequestForm(scenario.request);
+          evaluateCurrent(true);
+        });
+        dom.scenarioGrid.appendChild(button);
+      });
+      dom.scenarioCount.textContent = SCENARIOS.length + " scenarios";
+    }
+
+    function insideWindow(hour, start, end) {
+      if (start < end) return hour >= start && hour < end;
+      return hour >= start || hour < end;
+    }
+
+    function testRule(rule, request) {
+      const identity = byId("identities", request.identityId);
+      const device = byId("devices", request.deviceId);
+      const resource = byId("resources", request.resourceId);
+      const action = byId("actions", request.actionId);
+      const failures = [];
+      if (!identity) failures.push("identity is not modeled");
+      if (!device) failures.push("device is not modeled");
+      if (!resource) failures.push("resource is not modeled");
+      if (!action) failures.push("action is not modeled");
+      if (failures.length) return { matched: false, failures, checks: 0 };
+
+      const c = rule.conditions;
+      let checks = 0;
+      function expect(active, passes, failure) {
+        if (!active) return;
+        checks += 1;
+        if (!passes) failures.push(failure);
+      }
+
+      expect(c.identityId !== null, request.identityId === c.identityId, "identity is not " + labelFor("identities", c.identityId));
+      expect(c.identityType !== null, identity.type === c.identityType, "identity type is " + identity.type + ", not " + c.identityType);
+      expect(c.role !== null, identity.role === c.role, "role is " + identity.role + ", not " + c.role);
+      expect(c.deviceId !== null, request.deviceId === c.deviceId, "device is not " + labelFor("devices", c.deviceId));
+      expect(c.deviceKind !== null, device.kind === c.deviceKind, "device kind is " + device.kind + ", not " + c.deviceKind);
+      expect(c.managed !== null, device.managed === c.managed, "managed posture is " + String(device.managed));
+      expect(c.compliant !== null, device.compliant === c.compliant, "compliance is " + String(device.compliant));
+      expect(c.attested !== null, device.attested === c.attested, "attestation is " + String(device.attested));
+      expect(c.resourceId !== null, request.resourceId === c.resourceId, "resource is not " + labelFor("resources", c.resourceId));
+      expect(
+        c.sensitivityAtLeast !== null,
+        SENSITIVITY_RANK[resource.sensitivity] >= SENSITIVITY_RANK[c.sensitivityAtLeast],
+        "resource sensitivity " + resource.sensitivity + " is below " + c.sensitivityAtLeast
+      );
+      expect(c.actionId !== null, request.actionId === c.actionId, "action is not " + labelFor("actions", c.actionId));
+      expect(c.network !== null, request.network === c.network, "network is " + request.network + ", not " + c.network);
+      expect(c.mfa !== null, request.mfa === c.mfa, "fresh MFA is " + String(request.mfa));
+      expect(c.riskMin !== null, RISK_RANK[request.risk] >= RISK_RANK[c.riskMin], "risk " + request.risk + " is below " + c.riskMin);
+      expect(c.riskMax !== null, RISK_RANK[request.risk] <= RISK_RANK[c.riskMax], "risk " + request.risk + " exceeds " + c.riskMax);
+      expect(c.sessionAgeMin !== null, request.sessionAge >= c.sessionAgeMin, "session age " + request.sessionAge + " is below " + c.sessionAgeMin);
+      expect(c.sessionAgeMax !== null, request.sessionAge <= c.sessionAgeMax, "session age " + request.sessionAge + " exceeds " + c.sessionAgeMax);
+      if (c.timeMode !== null) {
+        const inside = insideWindow(request.hour, c.startHour, c.endHour);
+        expect(
+          true,
+          c.timeMode === "inside" ? inside : !inside,
+          formatHour(request.hour) + " is not " + c.timeMode + " " + formatHour(c.startHour) + "–" + formatHour(c.endHour)
+        );
+      }
+      expect(
+        c.departmentMatches === true,
+        identity.department === resource.ownerDepartment,
+        identity.department + " does not own " + resource.ownerDepartment + " resource"
+      );
+      return { matched: failures.length === 0, failures, checks };
+    }
+
+    function evaluateRequest(request, includeTrace) {
+      const trace = [];
+      let decision = null;
+      let decisiveIndex = -1;
+      state.config.rules.forEach((rule, index) => {
+        if (!rule.enabled) {
+          if (includeTrace) trace.push({ index, rule, status: "disabled", failures: ["rule is disabled"], checks: 0 });
+          return;
+        }
+        if (decision !== null) {
+          if (includeTrace) trace.push({ index, rule, status: "not-reached", failures: ["an earlier rule already decided"], checks: 0 });
+          return;
+        }
+        const result = testRule(rule, request);
+        if (result.matched) {
+          decision = rule.effect;
+          decisiveIndex = index;
+          if (includeTrace) trace.push({ index, rule, status: "decisive", failures: [], checks: result.checks });
+        } else if (includeTrace) {
+          trace.push({ index, rule, status: "miss", failures: result.failures, checks: result.checks });
+        }
+      });
+      if (decision === null) decision = "deny";
+      return {
+        decision,
+        decisiveIndex,
+        source: decisiveIndex >= 0 ? state.config.rules[decisiveIndex].name : "Implicit default deny",
+        trace,
+        defaulted: decisiveIndex < 0
+      };
+    }
+
+    function renderDecision(result) {
+      dom.decisionCard.classList.toggle("allow", result.decision === "allow");
+      dom.decisionCard.classList.toggle("deny", result.decision === "deny");
+      dom.decisionWord.textContent = result.decision.toUpperCase();
+      dom.decisionSource.textContent = result.source;
+      dom.decisionExplanation.textContent = result.defaulted
+        ? "No enabled rule matched. The policy closed the gap with default deny."
+        : "Rule " + (result.decisiveIndex + 1) + " was the first match, so later rules were not evaluated.";
+      dom.decisionTrace.textContent = "";
+
+      result.trace.forEach((entry) => {
+        const item = make("li", "trace-item");
+        if (entry.status === "decisive") {
+          item.classList.add("decisive");
+          if (entry.rule.effect === "deny") item.classList.add("deny-trace");
+        }
+        if (entry.status === "not-reached" || entry.status === "disabled") item.classList.add("not-reached");
+        const number = make("span", "trace-index", String(entry.index + 1));
+        const body = make("div");
+        const nameRow = make("div", "trace-name");
+        nameRow.append(
+          make("span", "", entry.rule.name),
+          make("span", "trace-state", entry.status === "miss" ? "no match" : entry.status.replace("-", " "))
+        );
+        let reasonText;
+        if (entry.status === "decisive") {
+          reasonText = "Matched all " + entry.checks + " active constraints → " + entry.rule.effect.toUpperCase();
+        } else {
+          reasonText = entry.failures.slice(0, 2).join(" · ");
+          if (entry.failures.length > 2) reasonText += " · +" + (entry.failures.length - 2) + " more";
+        }
+        body.append(nameRow, make("p", "trace-reason", reasonText));
+        item.append(number, body);
+        dom.decisionTrace.appendChild(item);
+      });
+
+      if (result.defaulted) {
+        const item = make("li", "trace-item decisive deny-trace default-trace");
+        item.append(make("span", "trace-index", "∞"));
+        const body = make("div");
+        const nameRow = make("div", "trace-name");
+        nameRow.append(make("span", "", "Implicit default deny"), make("span", "trace-state", "decisive"));
+        body.append(nameRow, make("p", "trace-reason", "No rule matched → DENY"));
+        item.appendChild(body);
+        dom.decisionTrace.appendChild(item);
+      }
+    }
+
+    function evaluateCurrent(withAnnouncement) {
+      const request = readRequestForm();
+      state.currentRequest = request;
+      detectScenario(request);
+      renderScenarioButtons();
+      const result = evaluateRequest(request, true);
+      state.lastDecision = result;
+      state.animation.startedAt = performance.now();
+      renderDecision(result);
+      restartAnimation();
+      if (withAnnouncement) announce(result.decision.toUpperCase() + ". " + result.source + ".");
+    }
+
+    function conditionDescriptions(rule) {
+      const c = rule.conditions;
+      const descriptions = [];
+      if (c.identityId) descriptions.push("identity = " + labelFor("identities", c.identityId));
+      if (c.identityType) descriptions.push("type = " + c.identityType);
+      if (c.role) descriptions.push("role = " + c.role);
+      if (c.deviceId) descriptions.push("device = " + labelFor("devices", c.deviceId));
+      if (c.deviceKind) descriptions.push("device kind = " + c.deviceKind);
+      if (c.managed !== null) descriptions.push(c.managed ? "managed" : "unmanaged");
+      if (c.compliant !== null) descriptions.push(c.compliant ? "compliant" : "non-compliant");
+      if (c.attested !== null) descriptions.push(c.attested ? "attested" : "not attested");
+      if (c.resourceId) descriptions.push("resource = " + labelFor("resources", c.resourceId));
+      if (c.sensitivityAtLeast) descriptions.push("sensitivity ≥ " + c.sensitivityAtLeast);
+      if (c.actionId) descriptions.push("action = " + labelFor("actions", c.actionId));
+      if (c.network) descriptions.push("network = " + c.network);
+      if (c.mfa !== null) descriptions.push(c.mfa ? "fresh MFA" : "no MFA");
+      if (c.riskMin) descriptions.push("risk ≥ " + c.riskMin);
+      if (c.riskMax) descriptions.push("risk ≤ " + c.riskMax);
+      if (c.sessionAgeMin !== null) descriptions.push("session ≥ " + c.sessionAgeMin + "m");
+      if (c.sessionAgeMax !== null) descriptions.push("session ≤ " + c.sessionAgeMax + "m");
+      if (c.timeMode) descriptions.push(c.timeMode + " " + formatHour(c.startHour) + "–" + formatHour(c.endHour));
+      if (c.departmentMatches) descriptions.push("department owns resource");
+      return descriptions.length ? descriptions : ["matches every request"];
+    }
+
+    function selectedRuleIndex() {
+      return state.config.rules.findIndex((rule) => rule.id === state.selectedRuleId);
+    }
+
+    function selectRule(id, focusCard) {
+      state.selectedRuleId = id;
+      renderRuleList();
+      if (focusCard) {
+        const target = dom.policyList.querySelector('[data-rule-id="' + id + '"] .rule-select');
+        if (target) target.focus();
+      }
+    }
+
+    function renderRuleList() {
+      dom.policyList.textContent = "";
+      state.config.rules.forEach((rule, index) => {
+        const card = make("article", "rule-card");
+        card.dataset.ruleId = rule.id;
+        if (rule.id === state.selectedRuleId) card.classList.add("selected");
+        if (!rule.enabled) card.classList.add("disabled");
+
+        const selectButton = make("button", "rule-select");
+        selectButton.type = "button";
+        selectButton.setAttribute("aria-pressed", String(rule.id === state.selectedRuleId));
+        selectButton.setAttribute("aria-label", "Select rule " + (index + 1) + ": " + rule.name);
+        selectButton.append(make("span", "rule-number", String(index + 1)));
+        const title = make("span", "rule-title");
+        title.append(make("strong", "", rule.name), make("small", "", rule.enabled ? "enabled · first-match order " + (index + 1) : "disabled"));
+        selectButton.append(title, make("span", "effect " + rule.effect, rule.effect.toUpperCase()));
+        selectButton.addEventListener("click", () => selectRule(rule.id, false));
+        card.appendChild(selectButton);
+
+        const chips = make("div", "condition-chips");
+        conditionDescriptions(rule).forEach((description) => chips.appendChild(make("span", "condition", description)));
+        card.appendChild(chips);
+
+        const actions = make("div", "rule-actions");
+        const up = make("button", "btn ghost", "↑ Up");
+        up.type = "button";
+        up.disabled = index === 0;
+        up.addEventListener("click", () => moveRule(index, -1));
+        const down = make("button", "btn ghost", "↓ Down");
+        down.type = "button";
+        down.disabled = index === state.config.rules.length - 1;
+        down.addEventListener("click", () => moveRule(index, 1));
+        const edit = make("button", "btn ghost", "Edit");
+        edit.type = "button";
+        edit.addEventListener("click", () => openRuleEditor(rule.id));
+        const toggle = make("button", "btn ghost", rule.enabled ? "Disable" : "Enable");
+        toggle.type = "button";
+        toggle.addEventListener("click", () => {
+          rule.enabled = !rule.enabled;
+          recomputePolicy((rule.enabled ? "Enabled " : "Disabled ") + rule.name + ".");
+        });
+        const duplicate = make("button", "btn ghost", "Duplicate");
+        duplicate.type = "button";
+        duplicate.addEventListener("click", () => duplicateRule(index));
+        const remove = make("button", "btn danger", state.deleteArmedId === rule.id ? "Confirm delete" : "Delete");
+        remove.type = "button";
+        remove.addEventListener("click", () => armDelete(rule.id));
+        actions.append(up, down, edit, toggle, duplicate, remove);
+        card.appendChild(actions);
+        dom.policyList.appendChild(card);
+      });
+      dom.ruleCount.textContent = state.config.rules.length + (state.config.rules.length === 1 ? " rule" : " rules");
+      const hasSelection = selectedRuleIndex() >= 0;
+      dom.tightenButton.disabled = !hasSelection;
+      dom.widenButton.disabled = !hasSelection;
+    }
+
+    function moveRule(index, delta) {
+      const next = index + delta;
+      if (next < 0 || next >= state.config.rules.length) return;
+      const moved = state.config.rules.splice(index, 1)[0];
+      state.config.rules.splice(next, 0, moved);
+      state.selectedRuleId = moved.id;
+      recomputePolicy("Moved " + moved.name + " to position " + (next + 1) + ".");
+    }
+
+    function nextRuleId(base) {
+      let index = 1;
+      let candidate = base + "-" + index;
+      const ids = new Set(state.config.rules.map((rule) => rule.id));
+      while (ids.has(candidate)) {
+        index += 1;
+        candidate = base + "-" + index;
+      }
+      return candidate;
+    }
+
+    function duplicateRule(index) {
+      if (state.config.rules.length >= MAX_RULES) {
+        announce("Rule limit reached.");
+        return;
+      }
+      const copy = clone(state.config.rules[index]);
+      copy.id = nextRuleId("rule-copy");
+      copy.name = copy.name.slice(0, 51) + " · copy";
+      state.config.rules.splice(index + 1, 0, copy);
+      state.selectedRuleId = copy.id;
+      recomputePolicy("Duplicated rule. The analyzer will detect if the copy is shadowed.");
+    }
+
+    function armDelete(id) {
+      if (state.deleteArmedId === id) {
+        const index = state.config.rules.findIndex((rule) => rule.id === id);
+        if (index >= 0) {
+          const removed = state.config.rules.splice(index, 1)[0];
+          state.selectedRuleId = state.config.rules[Math.min(index, state.config.rules.length - 1)]?.id || null;
+          state.deleteArmedId = null;
+          recomputePolicy("Deleted " + removed.name + ".");
+        }
+        return;
+      }
+      state.deleteArmedId = id;
+      window.clearTimeout(state.deleteTimer);
+      state.deleteTimer = window.setTimeout(() => {
+        state.deleteArmedId = null;
+        renderRuleList();
+      }, 3500);
+      renderRuleList();
+      announce("Delete armed. Activate Confirm delete within 3.5 seconds.");
+    }
+
+    function specificityCount(rule) {
+      const c = rule.conditions;
+      let count = 0;
+      CONDITION_KEYS.forEach((key) => {
+        if (key === "startHour" || key === "endHour") return;
+        if (c[key] !== null) count += 1;
+      });
+      return count;
+    }
+
+    function tightenSelected() {
+      const index = selectedRuleIndex();
+      if (index < 0) return;
+      const rule = state.config.rules[index];
+      const c = rule.conditions;
+      const request = state.currentRequest;
+      const identity = byId("identities", request.identityId);
+      const device = byId("devices", request.deviceId);
+      const changes = [
+        ["network", request.network, "network = " + request.network],
+        ["deviceKind", device?.kind, "device kind = " + (device?.kind || "")],
+        ["managed", device?.managed, "managed posture = " + String(device?.managed)],
+        ["compliant", device?.compliant, "compliance = " + String(device?.compliant)],
+        ["actionId", request.actionId, "action = " + labelFor("actions", request.actionId)],
+        ["resourceId", request.resourceId, "resource = " + labelFor("resources", request.resourceId)],
+        ["identityType", identity?.type, "identity type = " + (identity?.type || "")],
+        ["role", identity?.role, "role = " + (identity?.role || "")],
+        ["identityId", request.identityId, "identity = " + labelFor("identities", request.identityId)],
+        ["mfa", request.mfa, "MFA = " + String(request.mfa)]
+      ];
+      const change = changes.find(([key, value]) => c[key] === null && value !== undefined);
+      if (change) {
+        c[change[0]] = change[1];
+        recomputePolicy("Tightened " + rule.name + ": " + change[2] + ".");
+        return;
+      }
+      if (c.sessionAgeMax === null) {
+        c.sessionAgeMax = Math.min(1440, request.sessionAge + 30);
+        recomputePolicy("Tightened " + rule.name + ": session age ≤ " + c.sessionAgeMax + " minutes.");
+        return;
+      }
+      announce("Selected rule is already fully constrained by the current request.");
+    }
+
+    function widenSelected() {
+      const index = selectedRuleIndex();
+      if (index < 0) return;
+      const rule = state.config.rules[index];
+      const c = rule.conditions;
+      const order = [
+        "identityId", "resourceId", "actionId", "deviceId", "role",
+        "identityType", "network", "deviceKind", "mfa", "attested",
+        "compliant", "managed", "departmentMatches", "sessionAgeMax",
+        "sessionAgeMin", "timeMode", "riskMax", "riskMin", "sensitivityAtLeast"
+      ];
+      const key = order.find((candidate) => c[candidate] !== null);
+      if (!key) {
+        announce("Selected rule already matches every request.");
+        return;
+      }
+      c[key] = null;
+      recomputePolicy("Widened " + rule.name + " by removing " + key + ". Review the corpus and blast radius.");
+    }
+
+    function openRuleEditor(id) {
+      state.editingRuleId = id || null;
+      const rule = id ? state.config.rules.find((item) => item.id === id) : null;
+      const c = rule ? rule.conditions : blankConditions();
+      dom.ruleDialogTitle.textContent = rule ? "Edit rule" : "New rule";
+      dom.ruleName.value = rule ? rule.name : "Deny unverified request";
+      dom.ruleEffect.value = rule ? rule.effect : "deny";
+      refreshEntitySelects();
+      dom.ruleIdentity.value = c.identityId || "";
+      dom.ruleIdentityType.value = c.identityType || "";
+      dom.ruleRole.value = c.role || "";
+      dom.ruleDevice.value = c.deviceId || "";
+      dom.ruleDeviceKind.value = c.deviceKind || "";
+      dom.ruleManaged.value = c.managed === null ? "" : String(c.managed);
+      dom.ruleCompliant.value = c.compliant === null ? "" : String(c.compliant);
+      dom.ruleAttested.value = c.attested === null ? "" : String(c.attested);
+      dom.ruleResource.value = c.resourceId || "";
+      dom.ruleSensitivity.value = c.sensitivityAtLeast || "";
+      dom.ruleAction.value = c.actionId || "";
+      dom.ruleNetwork.value = c.network || "";
+      dom.ruleMfa.value = c.mfa === null ? "" : String(c.mfa);
+      dom.ruleRiskMin.value = c.riskMin || "";
+      dom.ruleRiskMax.value = c.riskMax || "";
+      dom.ruleSessionMin.value = c.sessionAgeMin === null ? "" : String(c.sessionAgeMin);
+      dom.ruleSessionMax.value = c.sessionAgeMax === null ? "" : String(c.sessionAgeMax);
+      dom.ruleTimeMode.value = c.timeMode || "";
+      dom.ruleStartHour.value = String(c.startHour);
+      dom.ruleEndHour.value = String(c.endHour);
+      dom.ruleDepartmentMatch.checked = c.departmentMatches === true;
+      dom.ruleEnabled.checked = rule ? rule.enabled : true;
+      dom.ruleError.textContent = "";
+      openDialog(dom.ruleDialog);
+      window.setTimeout(() => dom.ruleName.focus(), 0);
+    }
+
+    function nullableBoolean(value) {
+      return value === "" ? null : value === "true";
+    }
+
+    function nullableInteger(value) {
+      if (value === "") return null;
+      const number = Number(value);
+      return Number.isInteger(number) ? number : NaN;
+    }
+
+    function saveRule(event) {
+      event.preventDefault();
+      dom.ruleError.textContent = "";
+      const name = dom.ruleName.value.trim();
+      const sessionMin = nullableInteger(dom.ruleSessionMin.value);
+      const sessionMax = nullableInteger(dom.ruleSessionMax.value);
+      const startHour = Number(dom.ruleStartHour.value);
+      const endHour = Number(dom.ruleEndHour.value);
+      if (!validLabel(name, 60)) {
+        dom.ruleError.textContent = "Rule name must be 1–60 printable characters.";
+        return;
+      }
+      if (
+        Number.isNaN(sessionMin) || Number.isNaN(sessionMax) ||
+        (sessionMin !== null && (sessionMin < 0 || sessionMin > 1440)) ||
+        (sessionMax !== null && (sessionMax < 0 || sessionMax > 1440))
+      ) {
+        dom.ruleError.textContent = "Session bounds must be whole minutes from 0 to 1440.";
+        return;
+      }
+      if (sessionMin !== null && sessionMax !== null && sessionMin > sessionMax) {
+        dom.ruleError.textContent = "Minimum session age cannot exceed maximum session age.";
+        return;
+      }
+      if (!Number.isInteger(startHour) || !Number.isInteger(endHour) || startHour < 0 || startHour > 23 || endHour < 0 || endHour > 23) {
+        dom.ruleError.textContent = "Time window hours must be whole numbers from 0 to 23.";
+        return;
+      }
+      if (dom.ruleTimeMode.value && startHour === endHour) {
+        dom.ruleError.textContent = "A time window needs different start and end hours.";
+        return;
+      }
+      if (
+        dom.ruleRiskMin.value && dom.ruleRiskMax.value &&
+        RISK_RANK[dom.ruleRiskMin.value] > RISK_RANK[dom.ruleRiskMax.value]
+      ) {
+        dom.ruleError.textContent = "Minimum risk cannot exceed maximum risk.";
+        return;
+      }
+
+      const conditions = blankConditions({
+        identityId: dom.ruleIdentity.value || null,
+        identityType: dom.ruleIdentityType.value || null,
+        role: dom.ruleRole.value || null,
+        deviceId: dom.ruleDevice.value || null,
+        deviceKind: dom.ruleDeviceKind.value || null,
+        managed: nullableBoolean(dom.ruleManaged.value),
+        compliant: nullableBoolean(dom.ruleCompliant.value),
+        attested: nullableBoolean(dom.ruleAttested.value),
+        resourceId: dom.ruleResource.value || null,
+        sensitivityAtLeast: dom.ruleSensitivity.value || null,
+        actionId: dom.ruleAction.value || null,
+        network: dom.ruleNetwork.value || null,
+        mfa: nullableBoolean(dom.ruleMfa.value),
+        riskMin: dom.ruleRiskMin.value || null,
+        riskMax: dom.ruleRiskMax.value || null,
+        sessionAgeMin: sessionMin,
+        sessionAgeMax: sessionMax,
+        timeMode: dom.ruleTimeMode.value || null,
+        startHour,
+        endHour,
+        departmentMatches: dom.ruleDepartmentMatch.checked ? true : null
+      });
+
+      if (state.editingRuleId) {
+        const rule = state.config.rules.find((item) => item.id === state.editingRuleId);
+        if (!rule) return;
+        rule.name = name;
+        rule.effect = dom.ruleEffect.value;
+        rule.enabled = dom.ruleEnabled.checked;
+        rule.conditions = conditions;
+        state.selectedRuleId = rule.id;
+      } else {
+        if (state.config.rules.length >= MAX_RULES) {
+          dom.ruleError.textContent = "This simulator supports at most " + MAX_RULES + " rules.";
+          return;
+        }
+        const rule = {
+          id: nextRuleId("rule-custom"),
+          name,
+          effect: dom.ruleEffect.value,
+          enabled: dom.ruleEnabled.checked,
+          conditions
+        };
+        state.config.rules.push(rule);
+        state.selectedRuleId = rule.id;
+      }
+      closeDialog(dom.ruleDialog);
+      recomputePolicy((state.editingRuleId ? "Updated " : "Added ") + name + ".");
+    }
+
+    function entityDetail(collection, item) {
+      if (collection === "identities") return item.type + " · " + item.role + " · " + item.department;
+      if (collection === "devices") return item.kind + " · " + (item.managed ? "managed" : "unmanaged") + " · " + (item.compliant ? "compliant" : "non-compliant") + " · " + (item.attested ? "attested" : "not attested");
+      if (collection === "resources") return item.kind + " · " + item.sensitivity + " · owner " + item.ownerDepartment;
+      return "privilege weight " + item.privilege;
+    }
+
+    function renderInventory() {
+      document.querySelectorAll("[data-entity-tab]").forEach((button) => {
+        const active = button.dataset.entityTab === state.activeEntityTab;
+        button.setAttribute("aria-selected", String(active));
+        button.tabIndex = active ? 0 : -1;
+      });
+      const activeTab = document.querySelector('[data-entity-tab="' + state.activeEntityTab + '"]');
+      if (activeTab) dom.entityList.setAttribute("aria-labelledby", activeTab.id);
+      dom.entityList.textContent = "";
+      state.config[state.activeEntityTab].forEach((item) => {
+        const row = make("div", "entity");
+        const copy = make("div");
+        const core = isCoreEntity(state.activeEntityTab, item.id);
+        copy.append(
+          make("strong", "", item.label),
+          make("small", "", item.id + " · " + entityDetail(state.activeEntityTab, item) + (core ? " · corpus fixture" : ""))
+        );
+        const edit = make("button", "icon-btn", core ? "Built-in" : "Edit");
+        edit.type = "button";
+        edit.disabled = core;
+        edit.setAttribute("aria-label", core ? item.label + " is a locked corpus fixture" : "Edit " + item.label);
+        edit.addEventListener("click", () => openEntityEditor(state.activeEntityTab, item.id));
+        row.append(copy, edit);
+        dom.entityList.appendChild(row);
+      });
+      dom.addEntityButton.textContent = "Add " + COLLECTION_LABELS[state.activeEntityTab];
+    }
+
+    function showEntityFields(collection) {
+      document.querySelectorAll(".entity-group").forEach((field) => { field.hidden = true; });
+      const selector = collection === "identities"
+        ? ".identity-field"
+        : collection === "devices"
+          ? ".device-field"
+          : collection === "resources"
+            ? ".resource-field"
+            : ".action-field";
+      document.querySelectorAll(selector).forEach((field) => { field.hidden = false; });
+    }
+
+    function openEntityEditor(collection, id) {
+      if (id && isCoreEntity(collection, id)) {
+        announce("Built-in corpus fixtures are locked so deterministic scenario meaning cannot drift.");
+        return;
+      }
+      const item = id ? byId(collection, id) : null;
+      state.editingEntity = item ? { collection, id } : null;
+      dom.entityDialogTitle.textContent = (item ? "Edit " : "Add ") + COLLECTION_LABELS[collection];
+      dom.entityType.value = collection;
+      dom.entityType.disabled = Boolean(item);
+      dom.entityId.disabled = Boolean(item);
+      dom.entityId.value = item ? item.id : "";
+      dom.entityLabel.value = item ? item.label : "";
+      showEntityFields(collection);
+      if (collection === "identities") {
+        dom.identityType.value = item ? item.type : "human";
+        dom.identityRole.value = item ? item.role : "employee";
+        dom.identityDepartment.value = item ? item.department : "finance";
+      } else if (collection === "devices") {
+        dom.deviceKind.value = item ? item.kind : "endpoint";
+        dom.deviceManaged.checked = item ? item.managed : true;
+        dom.deviceCompliant.checked = item ? item.compliant : true;
+        dom.deviceAttested.checked = item ? item.attested : false;
+      } else if (collection === "resources") {
+        dom.resourceKind.value = item ? item.kind : "app";
+        dom.resourceSensitivity.value = item ? item.sensitivity : "internal";
+        dom.resourceOwner.value = item ? item.ownerDepartment : "finance";
+      } else {
+        dom.actionPrivilege.value = item ? String(item.privilege) : "1";
+      }
+      dom.entityError.textContent = "";
+      openDialog(dom.entityDialog);
+      window.setTimeout(() => (item ? dom.entityLabel : dom.entityId).focus(), 0);
+    }
+
+    function saveEntity(event) {
+      event.preventDefault();
+      dom.entityError.textContent = "";
+      const collection = dom.entityType.value;
+      const id = dom.entityId.value.trim();
+      const label = dom.entityLabel.value.trim();
+      if (!ID_PATTERN.test(id)) {
+        dom.entityError.textContent = "ID must be 2–32 lowercase letters, numbers, or hyphens, starting with a letter.";
+        return;
+      }
+      if (!validLabel(label, 60)) {
+        dom.entityError.textContent = "Display name must be 1–60 printable characters.";
+        return;
+      }
+      if (!state.editingEntity && state.config[collection].some((item) => item.id === id)) {
+        dom.entityError.textContent = "That ID already exists in this entity type.";
+        return;
+      }
+      if (state.editingEntity && isCoreEntity(collection, state.editingEntity.id)) {
+        dom.entityError.textContent = "Built-in corpus fixtures cannot be edited.";
+        return;
+      }
+      const limit = collection === "actions" ? MAX_ACTIONS : MAX_ENTITIES;
+      if (!state.editingEntity && state.config[collection].length >= limit) {
+        dom.entityError.textContent = "This simulator supports at most " + limit + " " + collection + ".";
+        return;
+      }
+
+      let value;
+      if (collection === "identities") {
+        const department = dom.identityDepartment.value.trim();
+        if (!DEPARTMENT_PATTERN.test(department)) {
+          dom.entityError.textContent = "Department must be a lowercase slug from 2–24 characters.";
+          return;
+        }
+        if (
+          (dom.identityType.value === "service" && dom.identityRole.value !== "service") ||
+          (dom.identityType.value === "human" && dom.identityRole.value === "service")
+        ) {
+          dom.entityError.textContent = "Service identities use the service role; human identities use a human role.";
+          return;
+        }
+        value = { id, label, type: dom.identityType.value, role: dom.identityRole.value, department };
+      } else if (collection === "devices") {
+        value = {
+          id,
+          label,
+          kind: dom.deviceKind.value,
+          managed: dom.deviceManaged.checked,
+          compliant: dom.deviceCompliant.checked,
+          attested: dom.deviceAttested.checked
+        };
+      } else if (collection === "resources") {
+        const ownerDepartment = dom.resourceOwner.value.trim();
+        if (!DEPARTMENT_PATTERN.test(ownerDepartment)) {
+          dom.entityError.textContent = "Owner department must be a lowercase slug from 2–24 characters.";
+          return;
+        }
+        value = {
+          id,
+          label,
+          kind: dom.resourceKind.value,
+          sensitivity: dom.resourceSensitivity.value,
+          ownerDepartment
+        };
+      } else {
+        const privilege = Number(dom.actionPrivilege.value);
+        if (!Number.isInteger(privilege) || privilege < 1 || privilege > 5) {
+          dom.entityError.textContent = "Privilege weight must be a whole number from 1 to 5.";
+          return;
+        }
+        value = { id, label, privilege };
+      }
+
+      if (state.editingEntity) {
+        const index = state.config[collection].findIndex((item) => item.id === state.editingEntity.id);
+        if (index >= 0) state.config[collection][index] = value;
+      } else {
+        state.config[collection].push(value);
+      }
+      closeDialog(dom.entityDialog);
+      refreshEntitySelects();
+      writeRequestForm(state.currentRequest);
+      renderInventory();
+      recomputePolicy((state.editingEntity ? "Updated " : "Added ") + label + ".");
+    }
+
+    function enumerateUniverse(visitor) {
+      state.config.identities.forEach((identity) => {
+        state.config.devices.forEach((device) => {
+          state.config.resources.forEach((resource) => {
+            state.config.actions.forEach((action) => {
+              ANALYSIS_CONTEXTS.forEach((context) => {
+                visitor(Object.assign({
+                  identityId: identity.id,
+                  deviceId: device.id,
+                  resourceId: resource.id,
+                  actionId: action.id
+                }, context), resource, action);
+              });
+            });
+          });
+        });
+      });
+    }
+
+    function analyzePolicy() {
+      const matchCounts = state.config.rules.map(() => 0);
+      const decisiveCounts = state.config.rules.map(() => 0);
+      let modeled = 0;
+      let allowed = 0;
+      let totalWeight = 0;
+      let allowedWeight = 0;
+      enumerateUniverse((request, resource, action) => {
+        modeled += 1;
+        const weight = (SENSITIVITY_RANK[resource.sensitivity] + 1) * action.privilege;
+        totalWeight += weight;
+        let first = -1;
+        state.config.rules.forEach((rule, index) => {
+          if (!rule.enabled) return;
+          if (testRule(rule, request).matched) {
+            matchCounts[index] += 1;
+            if (first < 0) first = index;
+          }
+        });
+        if (first >= 0) {
+          decisiveCounts[first] += 1;
+          if (state.config.rules[first].effect === "allow") {
+            allowed += 1;
+            allowedWeight += weight;
+          }
+        }
+      });
+      const unreachable = [];
+      const shadowed = [];
+      const partial = [];
+      const broadAllows = [];
+      state.config.rules.forEach((rule, index) => {
+        if (!rule.enabled) return;
+        if (matchCounts[index] === 0) unreachable.push(index);
+        else if (decisiveCounts[index] === 0) shadowed.push(index);
+        else if (decisiveCounts[index] < matchCounts[index]) partial.push(index);
+        if (rule.effect === "allow" && decisiveCounts[index] > 0 && specificityCount(rule) <= 3) broadAllows.push(index);
+      });
+      const rawExposure = totalWeight ? allowedWeight / totalWeight : 0;
+      const blast = Math.min(100, Math.round(rawExposure * 600));
+      return {
+        modeled,
+        allowed,
+        totalWeight,
+        allowedWeight,
+        blast,
+        matchCounts,
+        decisiveCounts,
+        unreachable,
+        shadowed,
+        partial,
+        broadAllows
+      };
+    }
+
+    function runCorpus(withAnnouncement) {
+      const rows = CORPUS.map((test) => {
+        const result = evaluateRequest(test.request, false);
+        const classification = result.decision === test.expected
+          ? "correct"
+          : test.expected === "deny"
+            ? "over"
+            : "under";
+        return { test, result, classification };
+      });
+      const over = rows.filter((row) => row.classification === "over").length;
+      const under = rows.filter((row) => row.classification === "under").length;
+      const correct = rows.length - over - under;
+      const analysis = analyzePolicy();
+      const score = Math.max(0, Math.round(
+        100 -
+        over * 12 -
+        under * 8 -
+        analysis.blast * .35 -
+        analysis.unreachable.length * 4 -
+        analysis.shadowed.length * 6 -
+        analysis.broadAllows.length * 5
+      ));
+      state.metrics = { rows, over, under, correct, analysis, score };
+      renderMetrics();
+      renderCorpus();
+      renderDiagnostics();
+      restartAnimation();
+      if (withAnnouncement) {
+        announce(
+          "Corpus complete. " + correct + " of " + rows.length + " correct, " +
+          over + " over-permission, " + under + " under-permission. Least-privilege score " + score + "."
+        );
+      }
+    }
+
+    function renderMetrics() {
+      const metrics = state.metrics;
+      if (!metrics) return;
+      const accuracy = Math.round(metrics.correct / metrics.rows.length * 100);
+      dom.scoreValue.textContent = String(metrics.score);
+      dom.scoreMeter.value = metrics.score;
+      dom.scoreMeter.textContent = metrics.score + " out of 100";
+      dom.scoreNote.textContent =
+        metrics.over === 0 && metrics.under === 0
+          ? "The corpus matches intent. Remaining deductions come from modeled exposure and rule quality."
+          : "Corpus mismatches are weighted heavily because executable policy must match business need.";
+      dom.blastValue.textContent = metrics.analysis.blast + " / 100";
+      dom.blastNote.textContent = metrics.analysis.allowed + " of " + metrics.analysis.modeled + " modeled combinations allowed";
+      dom.accuracyValue.textContent = accuracy + "%";
+      dom.overValue.textContent = String(metrics.over);
+      dom.underValue.textContent = String(metrics.under);
+      dom.unreachableValue.textContent = String(metrics.analysis.unreachable.length);
+      dom.shadowedValue.textContent = String(metrics.analysis.shadowed.length);
+      setClassByValue(dom.scoreValue, metrics.score, 85, 65, false);
+      setClassByValue(dom.accuracyValue, accuracy, 95, 80, false);
+      setClassByValue(dom.blastValue, metrics.analysis.blast, 10, 35, true);
+      setClassByValue(dom.overValue, metrics.over, 0, 1, true);
+      setClassByValue(dom.underValue, metrics.under, 0, 1, true);
+      setClassByValue(dom.unreachableValue, metrics.analysis.unreachable.length, 0, 1, true);
+      setClassByValue(dom.shadowedValue, metrics.analysis.shadowed.length, 0, 1, true);
+    }
+
+    function renderCorpus() {
+      const metrics = state.metrics;
+      if (!metrics) return;
+      dom.corpusBody.textContent = "";
+      metrics.rows.forEach((row) => {
+        const tr = document.createElement("tr");
+        if (row.classification !== "correct") tr.classList.add(row.classification);
+        const caseCell = make("td", "", row.test.name);
+        const expectedCell = make("td");
+        expectedCell.appendChild(make("span", "outcome " + row.test.expected, row.test.expected.toUpperCase()));
+        const actualCell = make("td");
+        actualCell.appendChild(make("span", "outcome " + row.result.decision, row.result.decision.toUpperCase()));
+        const classCell = make(
+          "td",
+          "",
+          row.classification === "correct"
+            ? "correct"
+            : row.classification === "over"
+              ? "over-permission"
+              : "under-permission"
+        );
+        tr.append(caseCell, expectedCell, actualCell, classCell);
+        dom.corpusBody.appendChild(tr);
+      });
+      dom.corpusSummary.textContent =
+        state.metrics.correct + "/" + state.metrics.rows.length + " aligned · " +
+        state.metrics.over + " over-permission · " + state.metrics.under + " under-permission.";
+    }
+
+    function appendRuleDiagnostic(index, label, detail) {
+      const rule = state.config.rules[index];
+      const item = document.createElement("li");
+      const button = make("button", "diagnostic");
+      button.type = "button";
+      const strong = make("strong", "", label + ": ");
+      button.append(strong, document.createTextNode(rule.name + " — " + detail));
+      button.addEventListener("click", () => selectRule(rule.id, true));
+      item.appendChild(button);
+      dom.diagnosticList.appendChild(item);
+    }
+
+    function renderDiagnostics() {
+      const analysis = state.metrics?.analysis;
+      if (!analysis) return;
+      dom.diagnosticList.textContent = "";
+      analysis.unreachable.forEach((index) => appendRuleDiagnostic(index, "Unreachable", "matches no request in the bounded model"));
+      analysis.shadowed.forEach((index) => appendRuleDiagnostic(index, "Shadowed", "every match is preempted by an earlier rule"));
+      analysis.broadAllows.forEach((index) => appendRuleDiagnostic(index, "Broad allow", "three or fewer active constraints create a large grant"));
+      if (!analysis.unreachable.length && !analysis.shadowed.length && !analysis.broadAllows.length) {
+        const item = document.createElement("li");
+        const message = make("div", "diagnostic ok");
+        message.append(make("strong", "", "Healthy: "), document.createTextNode("no unreachable, fully shadowed, or broad allow rules in the modeled universe. Default deny remains active."));
+        item.appendChild(message);
+        dom.diagnosticList.appendChild(item);
+      }
+      if (analysis.partial.length) {
+        const item = document.createElement("li");
+        const message = make("div", "diagnostic");
+        message.append(
+          make("strong", "", "Overlap: "),
+          document.createTextNode(analysis.partial.length + " rule" + (analysis.partial.length === 1 ? " is" : "s are") + " partially preempted. This is legal first-match behavior, not full shadowing.")
+        );
+        item.appendChild(message);
+        dom.diagnosticList.appendChild(item);
+      }
+    }
+
+    function recomputePolicy(message) {
+      renderRuleList();
+      renderInventory();
+      evaluateCurrent(false);
+      runCorpus(false);
+      if (message) announce(message);
+    }
+
+    function validLabel(value, maxLength) {
+      return typeof value === "string" &&
+        value.length >= 1 &&
+        value.length <= maxLength &&
+        value === value.trim() &&
+        !CONTROL_PATTERN.test(value);
+    }
+
+    function exactKeys(object, expected, path) {
+      if (!object || typeof object !== "object" || Array.isArray(object) || Object.getPrototypeOf(object) !== Object.prototype) {
+        throw new Error(path + " must be an object.");
+      }
+      const actual = Object.keys(object).sort();
+      const wanted = expected.slice().sort();
+      if (actual.length !== wanted.length || actual.some((key, index) => key !== wanted[index])) {
+        throw new Error(path + " must contain exactly: " + expected.join(", ") + ".");
+      }
+    }
+
+    function rejectDangerousKeys(value, path) {
+      if (!value || typeof value !== "object") return;
+      Object.keys(value).forEach((key) => {
+        if (key === "__proto__" || key === "prototype" || key === "constructor") {
+          throw new Error(path + " contains a forbidden key.");
+        }
+        rejectDangerousKeys(value[key], path + "." + key);
+      });
+    }
+
+    function requireArray(value, path, max, allowEmpty) {
+      if (!Array.isArray(value)) throw new Error(path + " must be an array.");
+      if (!allowEmpty && value.length === 0) throw new Error(path + " cannot be empty.");
+      if (value.length > max) throw new Error(path + " exceeds the limit of " + max + ".");
+    }
+
+    function requireEnum(value, choices, path, nullable) {
+      if (nullable && value === null) return;
+      if (!choices.includes(value)) throw new Error(path + " must be one of: " + choices.join(", ") + ".");
+    }
+
+    function requireBoolean(value, path, nullable) {
+      if (nullable && value === null) return;
+      if (typeof value !== "boolean") throw new Error(path + " must be a boolean" + (nullable ? " or null" : "") + ".");
+    }
+
+    function requireInteger(value, min, max, path, nullable) {
+      if (nullable && value === null) return;
+      if (!Number.isInteger(value) || value < min || value > max) {
+        throw new Error(path + " must be a whole number from " + min + " to " + max + (nullable ? ", or null" : "") + ".");
+      }
+    }
+
+    function validateId(value, path) {
+      if (typeof value !== "string" || !ID_PATTERN.test(value)) throw new Error(path + " has an invalid ID.");
+    }
+
+    function validateText(value, max, path) {
+      if (!validLabel(value, max)) throw new Error(path + " must be 1–" + max + " printable characters with no surrounding whitespace.");
+    }
+
+    function validateUniqueIds(items, path) {
+      const seen = new Set();
+      items.forEach((item) => {
+        if (seen.has(item.id)) throw new Error(path + " contains duplicate ID " + item.id + ".");
+        seen.add(item.id);
+      });
+    }
+
+    function validateCoreEntities(config) {
+      Object.keys(CORE_IDS).forEach((collection) => {
+        CORE_IDS[collection].forEach((id) => {
+          const imported = config[collection].find((item) => item.id === id);
+          const expected = DEFAULT_CONFIG[collection].find((item) => item.id === id);
+          if (!imported) throw new Error(collection + " must retain built-in ID " + id + " so the deterministic corpus remains valid.");
+          const changed = Object.keys(expected).some((key) => imported[key] !== expected[key]);
+          if (changed) throw new Error(collection + "." + id + " is a locked corpus fixture and must retain its built-in properties.");
+        });
+      });
+    }
+
+    function validateImportedConfig(raw) {
+      if (typeof raw !== "string" || !raw.trim()) throw new Error("Paste or choose a JSON document first.");
+      const bytes = new TextEncoder().encode(raw).length;
+      if (bytes > MAX_IMPORT_BYTES) throw new Error("Import is " + bytes + " bytes; the limit is " + MAX_IMPORT_BYTES + ".");
+      let data;
+      try {
+        data = JSON.parse(raw);
+      } catch (error) {
+        throw new Error("JSON parse failed: " + error.message);
+      }
+      rejectDangerousKeys(data, "document");
+      exactKeys(data, ["app", "schemaVersion", "identities", "devices", "resources", "actions", "rules"], "document");
+      if (data.app !== "zero-trust-policy-forge") throw new Error("document.app must be zero-trust-policy-forge.");
+      if (data.schemaVersion !== 1) throw new Error("Only schemaVersion 1 is supported.");
+      requireArray(data.identities, "identities", MAX_ENTITIES, false);
+      requireArray(data.devices, "devices", MAX_ENTITIES, false);
+      requireArray(data.resources, "resources", MAX_ENTITIES, false);
+      requireArray(data.actions, "actions", MAX_ACTIONS, false);
+      requireArray(data.rules, "rules", MAX_RULES, true);
+
+      data.identities.forEach((item, index) => {
+        const path = "identities[" + index + "]";
+        exactKeys(item, ["id", "label", "type", "role", "department"], path);
+        validateId(item.id, path + ".id");
+        validateText(item.label, 60, path + ".label");
+        requireEnum(item.type, ["human", "service"], path + ".type", false);
+        requireEnum(item.role, ["employee", "manager", "admin", "service"], path + ".role", false);
+        if (!DEPARTMENT_PATTERN.test(item.department)) throw new Error(path + ".department must be a lowercase slug.");
+        if ((item.type === "service") !== (item.role === "service")) throw new Error(path + " must pair service type with service role.");
+      });
+      data.devices.forEach((item, index) => {
+        const path = "devices[" + index + "]";
+        exactKeys(item, ["id", "label", "kind", "managed", "compliant", "attested"], path);
+        validateId(item.id, path + ".id");
+        validateText(item.label, 60, path + ".label");
+        requireEnum(item.kind, ["endpoint", "workload"], path + ".kind", false);
+        requireBoolean(item.managed, path + ".managed", false);
+        requireBoolean(item.compliant, path + ".compliant", false);
+        requireBoolean(item.attested, path + ".attested", false);
+      });
+      data.resources.forEach((item, index) => {
+        const path = "resources[" + index + "]";
+        exactKeys(item, ["id", "label", "kind", "sensitivity", "ownerDepartment"], path);
+        validateId(item.id, path + ".id");
+        validateText(item.label, 60, path + ".label");
+        requireEnum(item.kind, ["app", "api", "admin", "data"], path + ".kind", false);
+        requireEnum(item.sensitivity, ["public", "internal", "restricted"], path + ".sensitivity", false);
+        if (!DEPARTMENT_PATTERN.test(item.ownerDepartment)) throw new Error(path + ".ownerDepartment must be a lowercase slug.");
+      });
+      data.actions.forEach((item, index) => {
+        const path = "actions[" + index + "]";
+        exactKeys(item, ["id", "label", "privilege"], path);
+        validateId(item.id, path + ".id");
+        validateText(item.label, 60, path + ".label");
+        requireInteger(item.privilege, 1, 5, path + ".privilege", false);
+      });
+      validateUniqueIds(data.identities, "identities");
+      validateUniqueIds(data.devices, "devices");
+      validateUniqueIds(data.resources, "resources");
+      validateUniqueIds(data.actions, "actions");
+      validateCoreEntities(data);
+
+      const refs = {
+        identities: new Set(data.identities.map((item) => item.id)),
+        devices: new Set(data.devices.map((item) => item.id)),
+        resources: new Set(data.resources.map((item) => item.id)),
+        actions: new Set(data.actions.map((item) => item.id))
+      };
+      data.rules.forEach((rule, index) => {
+        const path = "rules[" + index + "]";
+        exactKeys(rule, ["id", "name", "effect", "enabled", "conditions"], path);
+        validateId(rule.id, path + ".id");
+        validateText(rule.name, 60, path + ".name");
+        requireEnum(rule.effect, ["allow", "deny"], path + ".effect", false);
+        requireBoolean(rule.enabled, path + ".enabled", false);
+        exactKeys(rule.conditions, CONDITION_KEYS, path + ".conditions");
+        const c = rule.conditions;
+        [c.identityId, c.deviceId, c.resourceId, c.actionId].forEach((value, refIndex) => {
+          if (value !== null) validateId(value, path + ".conditions." + ["identityId", "deviceId", "resourceId", "actionId"][refIndex]);
+        });
+        if (c.identityId !== null && !refs.identities.has(c.identityId)) throw new Error(path + " references unknown identity " + c.identityId + ".");
+        if (c.deviceId !== null && !refs.devices.has(c.deviceId)) throw new Error(path + " references unknown device " + c.deviceId + ".");
+        if (c.resourceId !== null && !refs.resources.has(c.resourceId)) throw new Error(path + " references unknown resource " + c.resourceId + ".");
+        if (c.actionId !== null && !refs.actions.has(c.actionId)) throw new Error(path + " references unknown action " + c.actionId + ".");
+        requireEnum(c.identityType, ["human", "service"], path + ".conditions.identityType", true);
+        requireEnum(c.role, ["employee", "manager", "admin", "service"], path + ".conditions.role", true);
+        requireEnum(c.deviceKind, ["endpoint", "workload"], path + ".conditions.deviceKind", true);
+        requireBoolean(c.managed, path + ".conditions.managed", true);
+        requireBoolean(c.compliant, path + ".conditions.compliant", true);
+        requireBoolean(c.attested, path + ".conditions.attested", true);
+        requireEnum(c.sensitivityAtLeast, ["public", "internal", "restricted"], path + ".conditions.sensitivityAtLeast", true);
+        requireEnum(c.network, ["corporate", "internet", "service-mesh"], path + ".conditions.network", true);
+        requireBoolean(c.mfa, path + ".conditions.mfa", true);
+        requireEnum(c.riskMin, ["low", "medium", "high"], path + ".conditions.riskMin", true);
+        requireEnum(c.riskMax, ["low", "medium", "high"], path + ".conditions.riskMax", true);
+        requireInteger(c.sessionAgeMin, 0, 1440, path + ".conditions.sessionAgeMin", true);
+        requireInteger(c.sessionAgeMax, 0, 1440, path + ".conditions.sessionAgeMax", true);
+        requireEnum(c.timeMode, ["inside", "outside"], path + ".conditions.timeMode", true);
+        requireInteger(c.startHour, 0, 23, path + ".conditions.startHour", false);
+        requireInteger(c.endHour, 0, 23, path + ".conditions.endHour", false);
+        if (c.timeMode !== null && c.startHour === c.endHour) throw new Error(path + " has an empty time window.");
+        if (c.sessionAgeMin !== null && c.sessionAgeMax !== null && c.sessionAgeMin > c.sessionAgeMax) throw new Error(path + " has reversed session bounds.");
+        if (c.riskMin !== null && c.riskMax !== null && RISK_RANK[c.riskMin] > RISK_RANK[c.riskMax]) throw new Error(path + " has reversed risk bounds.");
+        if (c.departmentMatches !== null && c.departmentMatches !== true) throw new Error(path + ".conditions.departmentMatches must be true or null.");
+      });
+      validateUniqueIds(data.rules, "rules");
+      return {
+        identities: data.identities.map((item) => ({ id: item.id, label: item.label, type: item.type, role: item.role, department: item.department })),
+        devices: data.devices.map((item) => ({ id: item.id, label: item.label, kind: item.kind, managed: item.managed, compliant: item.compliant, attested: item.attested })),
+        resources: data.resources.map((item) => ({ id: item.id, label: item.label, kind: item.kind, sensitivity: item.sensitivity, ownerDepartment: item.ownerDepartment })),
+        actions: data.actions.map((item) => ({ id: item.id, label: item.label, privilege: item.privilege })),
+        rules: data.rules.map((rule) => ({
+          id: rule.id,
+          name: rule.name,
+          effect: rule.effect,
+          enabled: rule.enabled,
+          conditions: CONDITION_KEYS.reduce((copy, key) => {
+            copy[key] = rule.conditions[key];
+            return copy;
+          }, {})
+        }))
+      };
+    }
+
+    function exportDocument() {
+      return {
+        app: "zero-trust-policy-forge",
+        schemaVersion: 1,
+        identities: clone(state.config.identities),
+        devices: clone(state.config.devices),
+        resources: clone(state.config.resources),
+        actions: clone(state.config.actions),
+        rules: clone(state.config.rules)
+      };
+    }
+
+    function openTransfer() {
+      dom.exportText.value = JSON.stringify(exportDocument(), null, 2) + "\n";
+      dom.importError.textContent = "";
+      openDialog(dom.transferDialog);
+    }
+
+    function clearPendingDestructiveState() {
+      window.clearTimeout(state.deleteTimer);
+      state.deleteTimer = 0;
+      state.deleteArmedId = null;
+    }
+
+    async function copyExport() {
+      const text = dom.exportText.value;
+      let copied = false;
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+        try {
+          await navigator.clipboard.writeText(text);
+          copied = true;
+        } catch (error) {
+          copied = false;
+        }
+      }
+      if (!copied) {
+        dom.exportText.focus();
+        dom.exportText.select();
+        try { copied = document.execCommand("copy"); } catch (error) { copied = false; }
+      }
+      announce(copied ? "Policy JSON copied." : "Copy was blocked. The export text is selected for manual copy.");
+    }
+
+    function applyImport() {
+      dom.importError.textContent = "";
+      try {
+        const config = validateImportedConfig(dom.importText.value);
+        clearPendingDestructiveState();
+        state.config = config;
+        state.selectedRuleId = config.rules[0]?.id || null;
+        state.activeScenarioId = "normal";
+        state.currentRequest = clone(SCENARIOS[0].request);
+        closeDialog(dom.transferDialog);
+        refreshEntitySelects();
+        writeRequestForm(state.currentRequest);
+        renderInventory();
+        recomputePolicy("Import accepted. Exact schema and referential integrity passed.");
+      } catch (error) {
+        dom.importError.textContent = error.message;
+        announce("Import rejected. " + error.message);
+      }
+    }
+
+    function resetApplication() {
+      if (Date.now() > state.resetArmedUntil) {
+        state.resetArmedUntil = Date.now() + 4000;
+        dom.resetButton.textContent = "Reset? click again";
+        announce("Reset armed for four seconds.");
+        window.setTimeout(() => {
+          if (Date.now() > state.resetArmedUntil) dom.resetButton.textContent = "Reset";
+        }, 4100);
+        return;
+      }
+      clearPendingDestructiveState();
+      state.config = clone(DEFAULT_CONFIG);
+      state.selectedRuleId = state.config.rules[0].id;
+      state.activeEntityTab = "identities";
+      state.activeScenarioId = "normal";
+      state.currentRequest = clone(SCENARIOS[0].request);
+      state.resetArmedUntil = 0;
+      dom.resetButton.textContent = "Reset";
+      refreshEntitySelects();
+      writeRequestForm(state.currentRequest);
+      renderInventory();
+      recomputePolicy("Forge reset to the audited baseline.");
+    }
+
+    function drawPolicyMap(timestamp) {
+      const canvas = dom.policyMap;
+      const rect = canvas.getBoundingClientRect();
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      const width = Math.max(320, Math.round(rect.width));
+      const height = Math.max(120, Math.round(rect.height));
+      if (canvas.width !== Math.round(width * ratio) || canvas.height !== Math.round(height * ratio)) {
+        canvas.width = Math.round(width * ratio);
+        canvas.height = Math.round(height * ratio);
+      }
+      const ctx = canvasContext;
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      ctx.clearRect(0, 0, width, height);
+      const centerY = height * .52;
+      const left = 46;
+      const right = width - 50;
+      const rules = state.config.rules;
+      const nodeCount = rules.length + 2;
+      const step = (right - left) / Math.max(1, nodeCount - 1);
+      const result = state.lastDecision;
+
+      ctx.strokeStyle = "rgba(114,243,189,.07)";
+      ctx.lineWidth = 1;
+      for (let x = 0; x < width; x += 34) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+      for (let y = 0; y < height; y += 34) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = "rgba(110,220,242,.28)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(left, centerY);
+      ctx.lineTo(right, centerY);
+      ctx.stroke();
+
+      ctx.fillStyle = "#6edcf2";
+      ctx.shadowColor = "rgba(110,220,242,.8)";
+      ctx.shadowBlur = 16;
+      ctx.beginPath();
+      ctx.arc(left, centerY, 9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = "#9fb6b1";
+      ctx.font = "10px " + getComputedStyle(document.documentElement).getPropertyValue("--mono");
+      ctx.textAlign = "center";
+      ctx.fillText("REQUEST", left, centerY + 30);
+
+      rules.forEach((rule, index) => {
+        const x = left + step * (index + 1);
+        let fill = rule.enabled ? "#47645d" : "#263c37";
+        let radius = 6;
+        if (result) {
+          const trace = result.trace[index];
+          if (trace?.status === "miss") fill = "#6a827c";
+          if (trace?.status === "not-reached") fill = "#29423c";
+          if (trace?.status === "decisive") {
+            fill = rule.effect === "allow" ? "#72f3bd" : "#ff7f89";
+            radius = 10;
+          }
+        }
+        ctx.fillStyle = fill;
+        ctx.shadowColor = fill;
+        ctx.shadowBlur = radius > 6 ? 18 : 0;
+        ctx.beginPath();
+        ctx.arc(x, centerY, radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = "#89a19b";
+        ctx.font = "9px " + getComputedStyle(document.documentElement).getPropertyValue("--mono");
+        ctx.fillText("R" + (index + 1), x, centerY + (index % 2 ? -19 : 27));
+      });
+
+      const defaultX = right;
+      const defaultDecisive = result?.defaulted;
+      ctx.fillStyle = defaultDecisive ? "#ff7f89" : "#6b3f43";
+      ctx.shadowColor = "#ff7f89";
+      ctx.shadowBlur = defaultDecisive ? 18 : 0;
+      ctx.beginPath();
+      ctx.arc(defaultX, centerY, defaultDecisive ? 10 : 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = "#b89396";
+      ctx.fillText("DENY", defaultX, centerY + 30);
+
+      if (result) {
+        const decisivePosition = result.defaulted ? nodeCount - 1 : result.decisiveIndex + 1;
+        const destination = left + step * decisivePosition;
+        const elapsed = Math.max(0, timestamp - state.animation.startedAt);
+        const progress = reducedMotion.matches ? 1 : Math.min(1, elapsed / 850);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const pulseX = left + (destination - left) * eased;
+        ctx.fillStyle = result.decision === "allow" ? "#72f3bd" : "#ff7f89";
+        ctx.shadowColor = ctx.fillStyle;
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.arc(pulseX, centerY, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        ctx.textAlign = "left";
+        ctx.fillStyle = result.decision === "allow" ? "#72f3bd" : "#ff9aa2";
+        ctx.font = "700 12px " + getComputedStyle(document.documentElement).getPropertyValue("--mono");
+        ctx.fillText(result.decision.toUpperCase() + " · " + result.source, 18, 24);
+      }
+      canvas.setAttribute(
+        "aria-label",
+        result
+          ? "Policy flow map. The current request is " + result.decision + "ed by " + result.source + "."
+          : "Policy flow map awaiting evaluation."
+      );
+    }
+
+    function animate(timestamp) {
+      if (state.animation.paused) return;
+      drawPolicyMap(timestamp);
+      if (!reducedMotion.matches && timestamp - state.animation.startedAt < 1400) {
+        state.animation.raf = window.requestAnimationFrame(animate);
+      }
+    }
+
+    function restartAnimation() {
+      window.cancelAnimationFrame(state.animation.raf);
+      state.animation.paused = document.hidden;
+      if (!state.animation.paused) state.animation.raf = window.requestAnimationFrame(animate);
+    }
+
+    function selectAdjacentRule(delta) {
+      if (!state.config.rules.length) return;
+      let index = selectedRuleIndex();
+      if (index < 0) index = 0;
+      index = (index + delta + state.config.rules.length) % state.config.rules.length;
+      selectRule(state.config.rules[index].id, true);
+    }
+
+    function editableTarget(target) {
+      return target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement ||
+        target.isContentEditable;
+    }
+
+    dom.requestForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      evaluateCurrent(true);
+    });
+    dom.requestForm.addEventListener("change", () => {
+      state.currentRequest = readRequestForm();
+      detectScenario(state.currentRequest);
+      renderScenarioButtons();
+      evaluateCurrent(false);
+    });
+    dom.requestHour.addEventListener("input", () => {
+      dom.hourOutput.textContent = formatHour(Number(dom.requestHour.value));
+      state.currentRequest = readRequestForm();
+      detectScenario(state.currentRequest);
+      renderScenarioButtons();
+      evaluateCurrent(false);
+    });
+    dom.loadNormalButton.addEventListener("click", () => {
+      state.activeScenarioId = "normal";
+      writeRequestForm(SCENARIOS[0].request);
+      evaluateCurrent(true);
+    });
+    dom.addRuleButton.addEventListener("click", () => openRuleEditor(null));
+    dom.tightenButton.addEventListener("click", tightenSelected);
+    dom.widenButton.addEventListener("click", widenSelected);
+    dom.transferButton.addEventListener("click", openTransfer);
+    dom.resetButton.addEventListener("click", resetApplication);
+    dom.runCorpusButton.addEventListener("click", () => runCorpus(true));
+    dom.closeRuleDialog.addEventListener("click", () => closeDialog(dom.ruleDialog));
+    dom.cancelRuleButton.addEventListener("click", () => closeDialog(dom.ruleDialog));
+    dom.ruleForm.addEventListener("submit", saveRule);
+    dom.closeEntityDialog.addEventListener("click", () => closeDialog(dom.entityDialog));
+    dom.cancelEntityButton.addEventListener("click", () => closeDialog(dom.entityDialog));
+    dom.entityForm.addEventListener("submit", saveEntity);
+    dom.entityType.addEventListener("change", () => showEntityFields(dom.entityType.value));
+    dom.identityType.addEventListener("change", () => {
+      dom.identityRole.value = dom.identityType.value === "service" ? "service" : "employee";
+    });
+    dom.addEntityButton.addEventListener("click", () => openEntityEditor(state.activeEntityTab, null));
+    document.querySelectorAll("[data-entity-tab]").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.activeEntityTab = button.dataset.entityTab;
+        renderInventory();
+      });
+      button.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        const tabs = [...document.querySelectorAll("[data-entity-tab]")];
+        const current = tabs.indexOf(button);
+        const next = (current + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+        tabs[next].click();
+        tabs[next].focus();
+      });
+    });
+    dom.closeTransferDialog.addEventListener("click", () => closeDialog(dom.transferDialog));
+    dom.doneTransferButton.addEventListener("click", () => closeDialog(dom.transferDialog));
+    dom.copyExportButton.addEventListener("click", copyExport);
+    dom.selectExportButton.addEventListener("click", () => {
+      dom.exportText.focus();
+      dom.exportText.select();
+      announce("Export text selected.");
+    });
+    dom.applyImportButton.addEventListener("click", applyImport);
+    dom.clearImportButton.addEventListener("click", () => {
+      dom.importText.value = "";
+      dom.importFile.value = "";
+      dom.importError.textContent = "";
+      dom.importText.focus();
+    });
+    dom.importFile.addEventListener("change", () => {
+      const file = dom.importFile.files && dom.importFile.files[0];
+      if (!file) return;
+      if (file.size > MAX_IMPORT_BYTES) {
+        dom.importError.textContent = "File is " + file.size + " bytes; the limit is " + MAX_IMPORT_BYTES + ".";
+        return;
+      }
+      const reader = new FileReader();
+      reader.addEventListener("load", () => {
+        if (typeof reader.result !== "string") {
+          dom.importError.textContent = "The selected file could not be read as text.";
+          return;
+        }
+        dom.importText.value = reader.result;
+        dom.importError.textContent = "";
+        announce("File loaded. Activate Validate and apply to inspect it.");
+      });
+      reader.addEventListener("error", () => {
+        dom.importError.textContent = "The selected file could not be read.";
+      });
+      reader.readAsText(file, "utf-8");
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        [dom.ruleDialog, dom.entityDialog, dom.transferDialog].forEach((dialog) => {
+          if (dialog.hasAttribute("open")) closeDialog(dialog);
+        });
+        return;
+      }
+      if (editableTarget(event.target)) return;
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        openTransfer();
+        return;
+      }
+      if (event.altKey && (event.key === "ArrowUp" || event.key === "ArrowDown")) {
+        event.preventDefault();
+        const index = selectedRuleIndex();
+        if (index >= 0) moveRule(index, event.key === "ArrowUp" ? -1 : 1);
+        return;
+      }
+      const key = event.key.toLowerCase();
+      if (key === "e") {
+        event.preventDefault();
+        evaluateCurrent(true);
+      } else if (key === "c") {
+        event.preventDefault();
+        runCorpus(true);
+      } else if (key === "n") {
+        event.preventDefault();
+        openRuleEditor(null);
+      } else if (event.key === "[") {
+        event.preventDefault();
+        selectAdjacentRule(-1);
+      } else if (event.key === "]") {
+        event.preventDefault();
+        selectAdjacentRule(1);
+      }
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      state.animation.paused = document.hidden;
+      if (!document.hidden) restartAnimation();
+    });
+    window.addEventListener("resize", restartAnimation);
+    reducedMotion.addEventListener("change", restartAnimation);
+
+    refreshEntitySelects();
+    writeRequestForm(state.currentRequest);
+    renderInventory();
+    renderRuleList();
+    evaluateCurrent(false);
+    runCorpus(false);
+  })();
+  </script>
+</body>
+</html>

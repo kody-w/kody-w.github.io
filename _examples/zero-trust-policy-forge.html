@@ -1,0 +1,55 @@
+---
+title: "Zero-Trust Policy Forge — Make Least Privilege Executable"
+slug: "zero-trust-policy-forge"
+order: 356
+tagline: "Model identity, posture, context, and ordered rules; then watch default deny, corpus mismatches, shadowed policy, and blast radius become visible evidence instead of security folklore."
+category: "tool"
+difficulty: "intermediate"
+status: "live"
+tags:
+  - "zero-trust"
+  - "authorization"
+  - "least-privilege"
+  - "policy-as-code"
+  - "security"
+stack:
+  - "HTML"
+  - "CSS"
+  - "JavaScript"
+  - "Canvas"
+demo: "/learnwithkody/demos/362-zero-trust-policy-forge.html"
+repo: "https://github.com/kody-w/kody-w.github.io/blob/master/learnwithkody/demos/362-zero-trust-policy-forge.html"
+highlights:
+  - "visible decision trace"
+  - "default deny"
+  - "least-privilege score"
+  - "unreachable/shadowed rules"
+prompt: |
+  Build “Zero-Trust Policy Forge — Make Least Privilege Executable,” a safe defensive single-file policy simulator. Let users define/select identities, devices, resources, actions, context, and ordered policy rules; evaluate requests with a visible decision trace and default deny. Include deterministic scenarios such as normal employee access, unmanaged device, expired session, off-hours admin, and service-to-service request. Let users tighten/widen rules, run a request corpus, surface over-permission/under-permission counts, unreachable/shadowed rules, blast-radius score, and a least-privilege score. No offensive exploitation content. Include export/import with strict validation, reset, keyboard/touch/accessibility, phone layout, reduced motion. Inline HTML/CSS/JS, no dependencies/assets/network/build, <=160KB.
+lessons:
+  - "Default deny becomes trustworthy only when the interface shows every failed predicate and the exact first rule that made the decision."
+  - "A deterministic request corpus turns least privilege into a regression target: over-permission, under-permission, and blast radius move the moment a rule changes."
+  - "Enumerating a bounded policy universe is enough to expose unreachable and fully shadowed rules before dead configuration becomes operational ambiguity."
+---
+
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p><strong>Zero-Trust Policy Forge</strong> is a local-only authorization laboratory. Choose a deterministic request or compose your own from modeled identities, devices, resources, actions, and context; then walk the ordered policy stack predicate by predicate until the first match decides—or the implicit final rule denies it. Edit, reorder, duplicate, tighten, or widen rules and the sixteen-case corpus, rule reachability, weighted blast radius, and least-privilege score all recalculate from the same evaluator.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>Why this is mind-blowing</h2>
+  <p>“Least privilege” usually survives as a diagram and a promise. Here it is executable, falsifiable, and portable: an unmanaged tablet, stale session, off-hours administrator, or attested service call leaves a visible trace; a careless grant immediately becomes an over-permission count and a larger blast radius; a duplicated rule reveals itself as shadowed. The policy does not merely say what should happen—it proves what will happen.</p>
+</section>
+
+<aside class="lwk-try-embed">
+  <div class="lwk-try-embed-head">
+    <span class="lwk-try-embed-label">Live demo</span>
+    <a href="/learnwithkody/demos/362-zero-trust-policy-forge.html" target="_blank" rel="noopener" class="lwk-try-embed-open">Open in new tab ↗</a>
+  </div>
+  <iframe
+    src="/learnwithkody/demos/362-zero-trust-policy-forge.html"
+    title="Zero-Trust Policy Forge — live demo"
+    loading="lazy"
+    sandbox="allow-scripts allow-same-origin"></iframe>
+</aside>
