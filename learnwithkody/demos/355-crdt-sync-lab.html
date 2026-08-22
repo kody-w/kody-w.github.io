@@ -1,0 +1,2440 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#090d1d">
+  <meta name="description" content="A deterministic sequence-CRDT lab with three offline editors, inspectable operations, partitions, seeded conflicts, and convergence proofs.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; script-src-attr 'none'; style-src 'unsafe-inline'; style-src-attr 'none'; img-src 'none'; connect-src 'none'; font-src 'none'; frame-src 'none'; child-src 'none'; media-src 'none'; object-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>CRDT Constellation — Three Offline Editors, One Convergent Document</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #eef3ff;
+      --muted: #9ca8c7;
+      --panel: rgba(17, 23, 48, .82);
+      --panel-strong: #141b37;
+      --line: rgba(157, 177, 232, .19);
+      --line-strong: rgba(157, 177, 232, .34);
+      --a: #67e8f9;
+      --b: #c084fc;
+      --c: #fbbf24;
+      --good: #55e6a5;
+      --warn: #f8c65e;
+      --bad: #fb7185;
+      --focus: #fff4a8;
+      --shadow: 0 24px 70px rgba(0, 0, 0, .34);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 0;
+      max-width: 100%;
+      overflow-x: hidden;
+      background: #080b18;
+    }
+
+    body {
+      min-width: 0;
+      max-width: 100%;
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 14% 3%, rgba(74, 222, 228, .16), transparent 28rem),
+        radial-gradient(circle at 86% 10%, rgba(168, 85, 247, .15), transparent 30rem),
+        radial-gradient(circle at 50% 100%, rgba(251, 191, 36, .08), transparent 28rem),
+        linear-gradient(180deg, #090d1d 0%, #0b1024 50%, #080b18 100%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    body::before,
+    body::after {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      content: "";
+    }
+
+    body::before {
+      opacity: .42;
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, .72) 0 1px, transparent 1.5px),
+        radial-gradient(circle, rgba(103, 232, 249, .62) 0 1px, transparent 1.6px);
+      background-position: 0 0, 31px 47px;
+      background-size: 73px 73px, 109px 109px;
+      animation: star-drift 28s linear infinite alternate;
+    }
+
+    body::after {
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .018), transparent);
+      transform: translateX(-100%);
+      animation: sky-scan 14s ease-in-out infinite;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button,
+    select,
+    input {
+      min-height: 44px;
+    }
+
+    button {
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      padding: .7rem .9rem;
+      color: var(--ink);
+      background: rgba(25, 34, 68, .92);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, .16);
+      font-weight: 750;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: transform .16s ease, border-color .16s ease, background .16s ease;
+    }
+
+    button:hover:not(:disabled) {
+      border-color: rgba(196, 214, 255, .62);
+      background: rgba(37, 49, 93, .98);
+      transform: translateY(-1px);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .46;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: fixed;
+      top: .75rem;
+      left: .75rem;
+      z-index: 100;
+      padding: .65rem .85rem;
+      border-radius: 10px;
+      color: #090d1d;
+      background: var(--focus);
+      font-weight: 800;
+      transform: translateY(-180%);
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .app {
+      width: min(100%, 1380px);
+      min-width: 0;
+      margin: 0 auto;
+      padding: clamp(1rem, 3vw, 2.6rem);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 1.5rem;
+      align-items: end;
+      padding: clamp(1.1rem, 4vw, 3rem) 0 1.5rem;
+    }
+
+    .eyebrow {
+      margin: 0 0 .55rem;
+      color: var(--a);
+      font: 800 .75rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: .17em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      overflow-wrap: anywhere;
+    }
+
+    h1 {
+      max-width: 17ch;
+      margin: 0;
+      font-size: clamp(2.15rem, 7vw, 5.6rem);
+      line-height: .92;
+      letter-spacing: -.058em;
+    }
+
+    h1 span {
+      color: transparent;
+      background: linear-gradient(92deg, var(--a), #d7b8ff 52%, var(--c));
+      background-clip: text;
+      -webkit-background-clip: text;
+    }
+
+    .hero-copy {
+      max-width: 67ch;
+      margin: 1rem 0 0;
+      color: #bac5e4;
+      font-size: clamp(1rem, 2.4vw, 1.18rem);
+    }
+
+    .hero-badge {
+      display: grid;
+      min-width: 11rem;
+      gap: .28rem;
+      justify-items: end;
+      padding-bottom: .25rem;
+      color: var(--muted);
+      font: 700 .72rem/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: .08em;
+      text-align: right;
+      text-transform: uppercase;
+    }
+
+    .hero-badge strong {
+      color: var(--good);
+      font-size: .88rem;
+    }
+
+    .panel {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: linear-gradient(145deg, rgba(22, 29, 60, .88), rgba(12, 17, 38, .9));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .control-deck {
+      display: flex;
+      min-width: 0;
+      gap: .65rem;
+      align-items: center;
+      padding: .8rem;
+      overflow: hidden;
+      flex-wrap: wrap;
+    }
+
+    .control-deck .primary {
+      color: #061019;
+      border-color: transparent;
+      background: linear-gradient(135deg, #75f0e9, #7dd3fc);
+    }
+
+    .control-deck .preset {
+      border-color: rgba(192, 132, 252, .48);
+      background: rgba(89, 48, 137, .42);
+    }
+
+    .control-deck .heal {
+      border-color: rgba(85, 230, 165, .5);
+      background: rgba(24, 101, 73, .38);
+    }
+
+    .control-deck .spacer {
+      flex: 1 1 1rem;
+    }
+
+    .field-control {
+      display: flex;
+      min-width: 0;
+      gap: .5rem;
+      align-items: center;
+      color: var(--muted);
+      font-size: .82rem;
+      font-weight: 750;
+    }
+
+    .field-control input,
+    .field-control select {
+      max-width: 8.5rem;
+      min-width: 0;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      padding: .55rem .65rem;
+      color: var(--ink);
+      background: #0d1430;
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.42fr) minmax(17rem, .8fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .network-card,
+    .invariant-card,
+    .queue-card,
+    .order-card {
+      padding: clamp(1rem, 2.4vw, 1.45rem);
+    }
+
+    .panel-heading {
+      display: flex;
+      min-width: 0;
+      gap: 1rem;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: .8rem;
+    }
+
+    .panel-heading h2,
+    .panel-heading h3 {
+      margin: 0;
+      line-height: 1.12;
+    }
+
+    .panel-heading h2 {
+      font-size: clamp(1.1rem, 3vw, 1.45rem);
+    }
+
+    .panel-heading h3 {
+      font-size: 1rem;
+    }
+
+    .panel-heading p {
+      margin: .38rem 0 0;
+      color: var(--muted);
+      font-size: .86rem;
+    }
+
+    .count-badge,
+    .state-chip,
+    .mini-chip {
+      display: inline-flex;
+      min-height: 1.75rem;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      padding: .25rem .62rem;
+      color: #d9e4ff;
+      background: rgba(16, 23, 50, .88);
+      font: 800 .69rem/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .state-chip.good {
+      color: #b9fbd8;
+      border-color: rgba(85, 230, 165, .55);
+      background: rgba(21, 100, 70, .34);
+    }
+
+    .state-chip.warn {
+      color: #ffe4a3;
+      border-color: rgba(248, 198, 94, .52);
+      background: rgba(119, 77, 18, .35);
+    }
+
+    .state-chip.bad {
+      color: #ffc1cb;
+      border-color: rgba(251, 113, 133, .5);
+      background: rgba(117, 35, 52, .34);
+    }
+
+    .network-layout {
+      display: grid;
+      grid-template-columns: minmax(12rem, .78fr) minmax(14rem, 1.22fr);
+      gap: clamp(.8rem, 2.5vw, 1.5rem);
+      align-items: center;
+    }
+
+    #networkMap {
+      display: block;
+      width: 100%;
+      max-height: 17rem;
+      min-height: 13rem;
+      overflow: visible;
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(109, 94, 252, .12), transparent 42%),
+        linear-gradient(180deg, rgba(4, 8, 22, .4), rgba(14, 18, 42, .1));
+    }
+
+    .link-line {
+      stroke: rgba(151, 163, 204, .18);
+      stroke-width: 2;
+      stroke-dasharray: 4 7;
+      transition: stroke .2s ease, filter .2s ease;
+    }
+
+    .link-line.active {
+      stroke: rgba(119, 231, 230, .7);
+      stroke-dasharray: 2 5;
+      filter: drop-shadow(0 0 5px rgba(103, 232, 249, .55));
+      animation: route-flow 1.6s linear infinite;
+    }
+
+    .device-node circle {
+      stroke-width: 2.5;
+      transition: opacity .2s ease, filter .2s ease;
+    }
+
+    .device-node text {
+      fill: #f6f8ff;
+      font: 800 12px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      pointer-events: none;
+    }
+
+    .device-node.actor-a circle {
+      fill: #123b50;
+      stroke: var(--a);
+    }
+
+    .device-node.actor-b circle {
+      fill: #392250;
+      stroke: var(--b);
+    }
+
+    .device-node.actor-c circle {
+      fill: #4e3511;
+      stroke: var(--c);
+    }
+
+    .device-node.offline circle {
+      opacity: .36;
+      filter: grayscale(1);
+    }
+
+    #packetPulse {
+      fill: #fff6b4;
+      stroke: rgba(255, 255, 255, .8);
+      stroke-width: 1.5;
+      filter: drop-shadow(0 0 8px #fff6b4);
+    }
+
+    #packetPulse.hidden {
+      display: none;
+    }
+
+    .network-facts {
+      display: grid;
+      min-width: 0;
+      gap: .7rem;
+    }
+
+    .fact {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: .65rem;
+      align-items: start;
+      padding: .7rem;
+      border: 1px solid rgba(152, 170, 221, .13);
+      border-radius: 12px;
+      background: rgba(7, 11, 28, .36);
+    }
+
+    .fact-mark {
+      width: .72rem;
+      height: .72rem;
+      margin-top: .28rem;
+      border: 2px solid currentColor;
+      border-radius: 50%;
+    }
+
+    .fact strong {
+      display: block;
+      margin-bottom: .1rem;
+      font-size: .82rem;
+    }
+
+    .fact span {
+      color: var(--muted);
+      font-size: .78rem;
+    }
+
+    .fact-a {
+      color: var(--a);
+    }
+
+    .fact-b {
+      color: var(--b);
+    }
+
+    .fact-c {
+      color: var(--c);
+    }
+
+    .network-summary {
+      margin: .2rem 0 0;
+      color: #c7d2ef;
+      font: 700 .78rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .invariant-card {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+    }
+
+    .hash-display {
+      margin: .4rem 0 0;
+      color: #f8fbff;
+      font: 850 clamp(1.25rem, 5vw, 2rem)/1.1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: .03em;
+      word-break: break-all;
+    }
+
+    .hash-label {
+      margin-top: 1.2rem;
+      color: var(--muted);
+      font: 750 .67rem/1.3 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .invariant-copy {
+      margin: .7rem 0 0;
+      color: #bdc8e6;
+      font-size: .88rem;
+    }
+
+    .proof-line {
+      display: flex;
+      gap: .55rem;
+      align-items: flex-start;
+      margin-top: auto;
+      padding-top: 1rem;
+      color: var(--muted);
+      font: 700 .72rem/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .proof-dot {
+      flex: 0 0 auto;
+      width: .55rem;
+      height: .55rem;
+      margin-top: .2rem;
+      border-radius: 50%;
+      background: var(--good);
+      box-shadow: 0 0 10px rgba(85, 230, 165, .72);
+    }
+
+    .proof-dot.failed {
+      background: var(--bad);
+      box-shadow: 0 0 10px rgba(251, 113, 133, .72);
+    }
+
+    .editors-section {
+      min-width: 0;
+      margin-top: clamp(1.5rem, 4vw, 2.5rem);
+    }
+
+    .section-intro {
+      display: flex;
+      min-width: 0;
+      gap: 1rem;
+      align-items: end;
+      justify-content: space-between;
+      margin-bottom: .8rem;
+    }
+
+    .section-intro h2 {
+      margin: 0;
+      font-size: clamp(1.25rem, 4vw, 1.8rem);
+    }
+
+    .section-intro p {
+      max-width: 58ch;
+      margin: 0;
+      color: var(--muted);
+      font-size: .88rem;
+      text-align: right;
+    }
+
+    .editors-grid {
+      display: grid;
+      min-width: 0;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .device-card {
+      --accent: var(--a);
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+      border-color: color-mix(in srgb, var(--accent) 27%, transparent);
+      transition: opacity .18s ease, border-color .18s ease, transform .18s ease;
+    }
+
+    .device-card::before {
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 3px;
+      content: "";
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    .device-card[data-actor="B"] {
+      --accent: var(--b);
+    }
+
+    .device-card[data-actor="C"] {
+      --accent: var(--c);
+    }
+
+    .device-card.offline {
+      border-style: dashed;
+    }
+
+    .device-header {
+      display: flex;
+      min-width: 0;
+      gap: .75rem;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1rem .75rem;
+    }
+
+    .device-identity {
+      display: flex;
+      min-width: 0;
+      gap: .7rem;
+      align-items: center;
+    }
+
+    .device-glyph {
+      display: grid;
+      flex: 0 0 auto;
+      width: 2.45rem;
+      height: 2.45rem;
+      place-items: center;
+      border: 1px solid color-mix(in srgb, var(--accent) 48%, transparent);
+      border-radius: 12px;
+      color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 11%, transparent);
+      font: 900 .94rem/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .device-name {
+      min-width: 0;
+    }
+
+    .device-name strong,
+    .device-name span {
+      display: block;
+    }
+
+    .device-name strong {
+      font-size: .96rem;
+    }
+
+    .device-name span {
+      color: var(--muted);
+      font: 700 .68rem/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      text-transform: uppercase;
+    }
+
+    .link-toggle {
+      display: inline-flex;
+      flex: 0 0 auto;
+      min-width: 5.8rem;
+      gap: .4rem;
+      align-items: center;
+      justify-content: center;
+      padding: .55rem .65rem;
+      border-color: color-mix(in srgb, var(--accent) 38%, transparent);
+      color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 10%, #111731);
+      font-size: .76rem;
+    }
+
+    .link-toggle[aria-pressed="false"] {
+      color: #c7cce0;
+      border-style: dashed;
+      border-color: rgba(184, 192, 219, .26);
+      background: rgba(13, 18, 39, .7);
+    }
+
+    .link-dot {
+      width: .52rem;
+      height: .52rem;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 8px currentColor;
+    }
+
+    .editor-wrap {
+      min-width: 0;
+      padding: 0 1rem;
+    }
+
+    .editor-label {
+      display: flex;
+      gap: .5rem;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: .45rem;
+      color: #d7dff6;
+      font-size: .78rem;
+      font-weight: 780;
+    }
+
+    .editor-label span {
+      color: var(--muted);
+      font: 650 .67rem/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .replica-editor {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      min-height: 11.8rem;
+      max-width: 100%;
+      resize: vertical;
+      border: 1px solid rgba(171, 189, 235, .2);
+      border-radius: 13px;
+      padding: .9rem;
+      color: #f4f7ff;
+      caret-color: var(--accent);
+      background: rgba(5, 9, 24, .72);
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .18);
+      font: 500 .94rem/1.58 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      tab-size: 2;
+    }
+
+    .replica-editor:focus {
+      border-color: color-mix(in srgb, var(--accent) 65%, transparent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 13%, transparent);
+    }
+
+    .device-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: .5rem;
+      margin: .75rem 0 0;
+      padding: .8rem 1rem 1rem;
+      border-top: 1px solid rgba(157, 177, 232, .12);
+    }
+
+    .device-metrics div {
+      min-width: 0;
+    }
+
+    .device-metrics dt {
+      margin: 0 0 .18rem;
+      color: var(--muted);
+      font: 750 .61rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .device-metrics dd {
+      margin: 0;
+      overflow: hidden;
+      color: #eef3ff;
+      font: 800 .75rem/1.25 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .operations-grid {
+      display: grid;
+      min-width: 0;
+      grid-template-columns: minmax(0, 1.22fr) minmax(19rem, .78fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .queue-meta {
+      display: flex;
+      gap: .4rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .queue-list,
+    .history-list {
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .queue-list {
+      display: grid;
+      gap: .48rem;
+      max-height: 27rem;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-color: #45517c transparent;
+    }
+
+    .queue-op {
+      display: grid;
+      width: 100%;
+      min-width: 0;
+      min-height: 50px;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: .65rem;
+      align-items: center;
+      padding: .62rem .7rem;
+      border-color: rgba(157, 177, 232, .16);
+      border-radius: 11px;
+      text-align: left;
+      background: rgba(7, 11, 28, .48);
+      box-shadow: none;
+    }
+
+    .route {
+      color: #f3f6ff;
+      font: 850 .72rem/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: nowrap;
+    }
+
+    .op-copy {
+      min-width: 0;
+    }
+
+    .op-copy strong,
+    .op-copy span {
+      display: block;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .op-copy strong {
+      color: #e8edff;
+      font: 750 .72rem/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .op-copy span {
+      margin-top: .13rem;
+      color: var(--muted);
+      font-size: .69rem;
+    }
+
+    .route-state {
+      color: var(--good);
+      font: 850 .64rem/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .queue-op.blocked .route-state {
+      color: var(--warn);
+    }
+
+    .queue-empty {
+      display: grid;
+      min-height: 9rem;
+      place-items: center;
+      padding: 1.2rem;
+      border: 1px dashed rgba(157, 177, 232, .2);
+      border-radius: 13px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .queue-more {
+      padding: .55rem;
+      color: var(--muted);
+      font: 700 .7rem/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      text-align: center;
+    }
+
+    .ordering-rule {
+      display: grid;
+      gap: .55rem;
+      margin-bottom: .9rem;
+      padding: .8rem;
+      border: 1px solid rgba(192, 132, 252, .22);
+      border-radius: 13px;
+      background: rgba(72, 39, 102, .16);
+    }
+
+    .ordering-rule code {
+      display: block;
+      color: #e7d2ff;
+      font: 750 .74rem/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    .ordering-rule p {
+      margin: 0;
+      color: #b9c3df;
+      font-size: .78rem;
+    }
+
+    .inspector {
+      min-height: 9.4rem;
+      padding: .85rem;
+      border: 1px solid rgba(157, 177, 232, .16);
+      border-radius: 13px;
+      background: rgba(5, 9, 24, .54);
+    }
+
+    .inspector[hidden] {
+      display: none;
+    }
+
+    .inspector-kicker {
+      margin: 0 0 .35rem;
+      color: var(--a);
+      font: 800 .65rem/1.3 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .inspector h3 {
+      margin: 0 0 .45rem;
+      font-size: .98rem;
+    }
+
+    .inspector p {
+      margin: 0;
+      color: #b9c3df;
+      font-size: .78rem;
+    }
+
+    .inspect-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .55rem;
+      margin: .75rem 0 0;
+    }
+
+    .inspect-grid div {
+      min-width: 0;
+      padding: .5rem;
+      border-radius: 9px;
+      background: rgba(255, 255, 255, .035);
+    }
+
+    .inspect-grid dt {
+      color: var(--muted);
+      font: 750 .58rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      text-transform: uppercase;
+    }
+
+    .inspect-grid dd {
+      margin: .2rem 0 0;
+      overflow: hidden;
+      color: #eef3ff;
+      font: 750 .7rem/1.3 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .history-heading {
+      margin: 1rem 0 .45rem;
+      color: var(--muted);
+      font: 800 .65rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .history-list {
+      display: grid;
+      gap: .35rem;
+    }
+
+    .history-list li {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: .5rem;
+      align-items: baseline;
+      color: #aeb9d7;
+      font: 650 .68rem/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .history-list strong {
+      color: var(--good);
+      white-space: nowrap;
+    }
+
+    .footer-note {
+      display: flex;
+      min-width: 0;
+      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem .2rem .35rem;
+      color: var(--muted);
+      font-size: .76rem;
+    }
+
+    .shortcut-list {
+      display: flex;
+      gap: .45rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    kbd {
+      display: inline-flex;
+      min-width: 1.8rem;
+      min-height: 1.75rem;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(184, 198, 238, .32);
+      border-bottom-width: 2px;
+      border-radius: 7px;
+      padding: .2rem .42rem;
+      color: #e9eeff;
+      background: #111831;
+      font: 750 .67rem/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    @keyframes star-drift {
+      to {
+        transform: translate3d(12px, -16px, 0);
+      }
+    }
+
+    @keyframes sky-scan {
+      0%,
+      58% {
+        transform: translateX(-100%);
+      }
+      82%,
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
+    @keyframes route-flow {
+      to {
+        stroke-dashoffset: -14;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .overview-grid,
+      .operations-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .invariant-card {
+        min-height: 16rem;
+      }
+
+      .editors-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .device-card:last-child {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .app {
+        padding: .8rem;
+      }
+
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+        gap: .7rem;
+      }
+
+      .hero-badge {
+        justify-items: start;
+        text-align: left;
+      }
+
+      .control-deck {
+        gap: .5rem;
+      }
+
+      .control-deck button {
+        flex: 1 1 9.5rem;
+      }
+
+      .control-deck .spacer {
+        display: none;
+      }
+
+      .field-control {
+        flex: 1 1 10rem;
+      }
+
+      .field-control input,
+      .field-control select {
+        flex: 1 1 auto;
+        max-width: none;
+      }
+
+      .network-layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      #networkMap {
+        min-height: 11.5rem;
+      }
+
+      .section-intro {
+        display: block;
+      }
+
+      .section-intro p {
+        margin-top: .35rem;
+        text-align: left;
+      }
+
+      .editors-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .device-card:last-child {
+        grid-column: auto;
+      }
+
+      .footer-note {
+        display: grid;
+      }
+
+      .shortcut-list {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .app {
+        padding: .62rem;
+      }
+
+      .hero {
+        padding-top: 1.35rem;
+      }
+
+      h1 {
+        font-size: clamp(2rem, 14vw, 3.2rem);
+      }
+
+      .panel {
+        border-radius: 16px;
+      }
+
+      .control-deck {
+        padding: .62rem;
+      }
+
+      .control-deck button {
+        flex-basis: 100%;
+      }
+
+      .field-control {
+        width: 100%;
+        flex-basis: 100%;
+      }
+
+      .network-card,
+      .invariant-card,
+      .queue-card,
+      .order-card {
+        padding: .85rem;
+      }
+
+      .device-header {
+        align-items: flex-start;
+      }
+
+      .device-identity {
+        align-items: flex-start;
+      }
+
+      .link-toggle {
+        min-width: 44px;
+      }
+
+      .link-toggle .link-label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+      }
+
+      .replica-editor {
+        min-height: 10rem;
+      }
+
+      .queue-op {
+        grid-template-columns: auto minmax(0, 1fr);
+      }
+
+      .route-state {
+        grid-column: 2;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+      }
+
+      body::after {
+        display: none;
+      }
+
+      .link-line.active {
+        stroke-dasharray: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#editors">Skip to the three editors</a>
+  <main class="app">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Distributed systems, made tangible</p>
+        <h1>CRDT <span>Constellation</span></h1>
+        <p class="hero-copy">Three replicas can disappear offline, rewrite the same sentence, and return in any message order. No central winner. No fake merge animation. Every character is an immutable operation in a deterministic sequence CRDT.</p>
+      </div>
+      <div class="hero-badge" aria-label="Lab properties">
+        <strong>Local-first lab</strong>
+        <span>3 replicas · 0 servers</span>
+        <span>seeded · inspectable · replayable</span>
+      </div>
+    </header>
+
+    <section class="control-deck panel" aria-label="Simulation controls">
+      <button id="presetBtn" class="preset" type="button">Run conflict preset</button>
+      <button id="healBtn" class="heal" type="button">Reconnect + converge</button>
+      <button id="stepBtn" type="button">Step one message</button>
+      <button id="playBtn" class="primary" type="button" aria-pressed="false">Play delivery</button>
+      <button id="resetBtn" type="button">Reset</button>
+      <span class="spacer" aria-hidden="true"></span>
+      <label class="field-control" for="seedInput">
+        Seed
+        <input id="seedInput" type="number" min="0" max="4294967295" step="1" value="355" inputmode="numeric">
+      </label>
+      <label class="field-control" for="speedSelect">
+        Pace
+        <select id="speedSelect">
+          <option value="650">Slow</option>
+          <option value="220" selected>Readable</option>
+          <option value="70">Fast</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="overview-grid" aria-label="Network and convergence overview">
+      <article class="network-card panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Simulated network</h2>
+            <p>A route is usable only when both endpoint devices are online.</p>
+          </div>
+          <span id="networkState" class="count-badge">3 online</span>
+        </div>
+        <div class="network-layout">
+          <svg id="networkMap" viewBox="0 0 180 170" role="img" aria-labelledby="networkTitle networkDescription">
+            <title id="networkTitle">Network routes among Atlas, Beacon, and Cygnus</title>
+            <desc id="networkDescription">A triangular network. Bright lines are connected routes; dim dashed lines are partitioned routes.</desc>
+            <line id="linkAB" class="link-line active" x1="90" y1="28" x2="34" y2="135"></line>
+            <line id="linkBC" class="link-line active" x1="34" y1="135" x2="146" y2="135"></line>
+            <line id="linkCA" class="link-line active" x1="146" y1="135" x2="90" y2="28"></line>
+            <g id="nodeA" class="device-node actor-a" transform="translate(90 28)">
+              <circle r="19"></circle>
+              <text y="1">A</text>
+            </g>
+            <g id="nodeB" class="device-node actor-b" transform="translate(34 135)">
+              <circle r="19"></circle>
+              <text y="1">B</text>
+            </g>
+            <g id="nodeC" class="device-node actor-c" transform="translate(146 135)">
+              <circle r="19"></circle>
+              <text y="1">C</text>
+            </g>
+            <circle id="packetPulse" class="hidden" r="5" cx="90" cy="28"></circle>
+          </svg>
+          <div class="network-facts">
+            <div class="fact">
+              <span class="fact-mark fact-a" aria-hidden="true"></span>
+              <div><strong>Editing is always local</strong><span>Typing commits immediately to that device, even while isolated.</span></div>
+            </div>
+            <div class="fact">
+              <span class="fact-mark fact-b" aria-hidden="true"></span>
+              <div><strong>Delivery can be out of order</strong><span>Missing anchors wait safely until their insert operation arrives.</span></div>
+            </div>
+            <div class="fact">
+              <span class="fact-mark fact-c" aria-hidden="true"></span>
+              <div><strong>Reconnect exchanges every missing op</strong><span>Play drains all usable routes; the final state is schedule-independent.</span></div>
+            </div>
+            <p id="networkSummary" class="network-summary">No messages in flight.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="invariant-card panel" aria-labelledby="invariantTitle">
+        <div class="panel-heading">
+          <div>
+            <h2 id="invariantTitle">Convergence invariant</h2>
+            <p>Equal operation sets must produce equal visible text.</p>
+          </div>
+          <span id="convergenceChip" class="state-chip good">Converged</span>
+        </div>
+        <div class="hash-label">Replica state hash</div>
+        <output id="globalHash" class="hash-display" aria-live="polite">00000000</output>
+        <p id="invariantCopy" class="invariant-copy">All three replicas contain the same operations, resolve every anchor, and render the same document.</p>
+        <div class="proof-line">
+          <span id="proofDot" class="proof-dot" aria-hidden="true"></span>
+          <span id="selfTestResult">Boot-time algorithm check pending…</span>
+        </div>
+      </article>
+    </section>
+
+    <section id="editors" class="editors-section" aria-labelledby="editorsTitle">
+      <div class="section-intro">
+        <h2 id="editorsTitle">Three offline-capable editors</h2>
+        <p>Isolate any device, type directly into its document, then reconnect. Remote operations never overwrite local state; they join it.</p>
+      </div>
+      <div class="editors-grid">
+        <article id="cardA" class="device-card panel" data-actor="A">
+          <header class="device-header">
+            <div class="device-identity">
+              <span class="device-glyph" aria-hidden="true">A</span>
+              <div class="device-name"><strong>Atlas</strong><span>Replica A</span></div>
+            </div>
+            <button id="linkA" class="link-toggle" type="button" data-actor="A" aria-pressed="true" aria-label="Isolate Atlas from the network">
+              <span class="link-dot" aria-hidden="true"></span><span class="link-label">Online</span>
+            </button>
+          </header>
+          <div class="editor-wrap">
+            <label class="editor-label" for="editorA">Local document <span>type here</span></label>
+            <textarea id="editorA" class="replica-editor" maxlength="800" spellcheck="true" aria-describedby="editorHelp"></textarea>
+          </div>
+          <dl class="device-metrics">
+            <div><dt>Lamport</dt><dd id="clockA">0</dd></div>
+            <div><dt>Operations</dt><dd id="opsA">0</dd></div>
+            <div><dt>Hash</dt><dd id="hashA">00000000</dd></div>
+          </dl>
+        </article>
+
+        <article id="cardB" class="device-card panel" data-actor="B">
+          <header class="device-header">
+            <div class="device-identity">
+              <span class="device-glyph" aria-hidden="true">B</span>
+              <div class="device-name"><strong>Beacon</strong><span>Replica B</span></div>
+            </div>
+            <button id="linkB" class="link-toggle" type="button" data-actor="B" aria-pressed="true" aria-label="Isolate Beacon from the network">
+              <span class="link-dot" aria-hidden="true"></span><span class="link-label">Online</span>
+            </button>
+          </header>
+          <div class="editor-wrap">
+            <label class="editor-label" for="editorB">Local document <span>type here</span></label>
+            <textarea id="editorB" class="replica-editor" maxlength="800" spellcheck="true" aria-describedby="editorHelp"></textarea>
+          </div>
+          <dl class="device-metrics">
+            <div><dt>Lamport</dt><dd id="clockB">0</dd></div>
+            <div><dt>Operations</dt><dd id="opsB">0</dd></div>
+            <div><dt>Hash</dt><dd id="hashB">00000000</dd></div>
+          </dl>
+        </article>
+
+        <article id="cardC" class="device-card panel" data-actor="C">
+          <header class="device-header">
+            <div class="device-identity">
+              <span class="device-glyph" aria-hidden="true">C</span>
+              <div class="device-name"><strong>Cygnus</strong><span>Replica C</span></div>
+            </div>
+            <button id="linkC" class="link-toggle" type="button" data-actor="C" aria-pressed="true" aria-label="Isolate Cygnus from the network">
+              <span class="link-dot" aria-hidden="true"></span><span class="link-label">Online</span>
+            </button>
+          </header>
+          <div class="editor-wrap">
+            <label class="editor-label" for="editorC">Local document <span>type here</span></label>
+            <textarea id="editorC" class="replica-editor" maxlength="800" spellcheck="true" aria-describedby="editorHelp"></textarea>
+          </div>
+          <dl class="device-metrics">
+            <div><dt>Lamport</dt><dd id="clockC">0</dd></div>
+            <div><dt>Operations</dt><dd id="opsC">0</dd></div>
+            <div><dt>Hash</dt><dd id="hashC">00000000</dd></div>
+          </dl>
+        </article>
+      </div>
+      <p id="editorHelp" class="sr-only">Each editor changes only its own replica. Use the Online button to isolate or reconnect that device.</p>
+    </section>
+
+    <section class="operations-grid" aria-label="Operation queue and ordering details">
+      <article class="queue-card panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Message queue</h2>
+            <p>Select an operation to inspect its immutable ID, anchor, and ordering key.</p>
+          </div>
+          <div class="queue-meta">
+            <span id="queueCount" class="mini-chip">0 queued</span>
+            <span id="readyCount" class="mini-chip">0 ready</span>
+          </div>
+        </div>
+        <ol id="queueList" class="queue-list" aria-label="Queued operation deliveries"></ol>
+      </article>
+
+      <article class="order-card panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Why every replica agrees</h2>
+            <p>The sequence is a tree rooted at HEAD, rendered depth-first.</p>
+          </div>
+        </div>
+        <div class="ordering-rule">
+          <code>same anchor → Lamport clock ↓ → device ID ↓ → local sequence ↓</code>
+          <p>New text anchors to the visible character immediately before the cursor. Concurrent siblings use the total order above. Deletes leave tombstones, so later inserts never lose their anchor.</p>
+        </div>
+        <div id="inspectEmpty" class="inspector">
+          <p class="inspector-kicker">Operation inspector</p>
+          <h3>Choose a queued row</h3>
+          <p id="orderTrace">Reset installed the same base operations on all three replicas.</p>
+        </div>
+        <div id="inspectDetails" class="inspector" hidden>
+          <p id="inspectRoute" class="inspector-kicker">Message</p>
+          <h3 id="inspectTitle">Operation</h3>
+          <p id="inspectRule">Ordering explanation.</p>
+          <dl class="inspect-grid">
+            <div><dt>Operation ID</dt><dd id="inspectId">—</dd></div>
+            <div><dt>Lamport key</dt><dd id="inspectClock">—</dd></div>
+            <div><dt>Anchor / target</dt><dd id="inspectAnchor">—</dd></div>
+            <div><dt>Queue state</dt><dd id="inspectState">—</dd></div>
+          </dl>
+        </div>
+        <p class="history-heading">Recently delivered</p>
+        <ol id="historyList" class="history-list"></ol>
+      </article>
+    </section>
+
+    <footer class="footer-note">
+      <span>Tip: run the preset, inspect a few blocked messages, then reconnect and pause to step through the merge.</span>
+      <span class="shortcut-list" aria-label="Keyboard shortcuts">
+        <span><kbd>P</kbd> preset</span>
+        <span><kbd>H</kbd> heal</span>
+        <span><kbd>N</kbd> next</span>
+        <span><kbd>Space</kbd> play/pause</span>
+        <span><kbd>R</kbd> reset</span>
+      </span>
+    </footer>
+    <div id="liveAnnouncement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+  </main>
+
+  <script>
+    (function () {
+      "use strict";
+
+      const HEAD = "HEAD";
+      const BASE_TEXT = "Shared field note:\nSignal: calm";
+      const MAX_DOCUMENT_CHARS = 800;
+      const ACTORS = [
+        { id: "A", name: "Atlas" },
+        { id: "B", name: "Beacon" },
+        { id: "C", name: "Cygnus" }
+      ];
+      const NODE_POSITIONS = {
+        A: { x: 90, y: 28 },
+        B: { x: 34, y: 135 },
+        C: { x: 146, y: 135 }
+      };
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const $ = function (id) { return document.getElementById(id); };
+
+      function pad(value) {
+        return String(value).padStart(4, "0");
+      }
+
+      function compareAscending(a, b) {
+        if (a.clock !== b.clock) return a.clock - b.clock;
+        if (a.actor !== b.actor) return a.actor < b.actor ? -1 : 1;
+        return a.seq - b.seq;
+      }
+
+      function compareSiblings(a, b) {
+        if (a.clock !== b.clock) return b.clock - a.clock;
+        if (a.actor !== b.actor) return a.actor < b.actor ? 1 : -1;
+        return b.seq - a.seq;
+      }
+
+      function canonicalOperation(op) {
+        if (op.kind === "insert") {
+          return [op.oid, "i", op.actor, op.seq, op.clock, op.after, op.value]
+            .map(JSON.stringify).join(":");
+        }
+        return [op.oid, "d", op.actor, op.seq, op.clock, op.target]
+          .map(JSON.stringify).join(":");
+      }
+
+      function hashString(source) {
+        let hash = 0x811c9dc5;
+        for (let index = 0; index < source.length; index += 1) {
+          hash ^= source.charCodeAt(index);
+          hash = Math.imul(hash, 0x01000193);
+        }
+        return (hash >>> 0).toString(16).padStart(8, "0");
+      }
+
+      function printable(value) {
+        if (value === "\n") return "↵";
+        if (value === " ") return "␠";
+        if (value === "\t") return "⇥";
+        return value;
+      }
+
+      function shortId(value) {
+        if (!value || value === HEAD) return HEAD;
+        return value.length > 12 ? value.slice(0, 12) + "…" : value;
+      }
+
+      function makeBaseOperations(text) {
+        const operations = [];
+        let anchor = HEAD;
+        let sequence = 0;
+        for (const value of Array.from(text)) {
+          sequence += 1;
+          const oid = "S:" + pad(sequence);
+          const operation = Object.freeze({
+            oid: oid,
+            atom: oid,
+            actor: "S",
+            seq: sequence,
+            clock: sequence,
+            kind: "insert",
+            after: anchor,
+            value: value
+          });
+          operations.push(operation);
+          anchor = oid;
+        }
+        return operations;
+      }
+
+      class Replica {
+        constructor(actor, initialOperations) {
+          this.actor = actor;
+          this.localSeq = 0;
+          this.lamport = 0;
+          this.operations = new Map();
+          this.nodes = new Map();
+          this.unresolved = 0;
+          this.install(initialOperations || []);
+        }
+
+        install(operations) {
+          for (const operation of operations) {
+            this.operations.set(operation.oid, operation);
+            this.lamport = Math.max(this.lamport, operation.clock);
+          }
+          this.rebuild();
+        }
+
+        has(oid) {
+          return this.operations.has(oid);
+        }
+
+        createInsert(after, value) {
+          this.localSeq += 1;
+          this.lamport += 1;
+          const oid = this.actor + ":" + pad(this.localSeq);
+          return Object.freeze({
+            oid: oid,
+            atom: oid,
+            actor: this.actor,
+            seq: this.localSeq,
+            clock: this.lamport,
+            kind: "insert",
+            after: after,
+            value: value
+          });
+        }
+
+        createDelete(target) {
+          this.localSeq += 1;
+          this.lamport += 1;
+          return Object.freeze({
+            oid: this.actor + ":" + pad(this.localSeq),
+            actor: this.actor,
+            seq: this.localSeq,
+            clock: this.lamport,
+            kind: "delete",
+            target: target
+          });
+        }
+
+        addLocal(operations) {
+          for (const operation of operations) {
+            this.operations.set(operation.oid, operation);
+          }
+          this.rebuild();
+        }
+
+        receive(operation) {
+          if (this.operations.has(operation.oid)) return false;
+          this.operations.set(operation.oid, operation);
+          this.lamport = Math.max(this.lamport, operation.clock) + 1;
+          this.rebuild();
+          return true;
+        }
+
+        rebuild() {
+          const head = { id: HEAD, children: [], deleted: true };
+          const nodes = new Map([[HEAD, head]]);
+          let pending = Array.from(this.operations.values())
+            .filter(function (operation) { return operation.kind === "insert"; })
+            .sort(compareAscending);
+          let progressed = true;
+
+          while (pending.length && progressed) {
+            progressed = false;
+            const next = [];
+            for (const operation of pending) {
+              const parent = nodes.get(operation.after);
+              if (!parent) {
+                next.push(operation);
+                continue;
+              }
+              const node = {
+                id: operation.atom,
+                parent: operation.after,
+                value: operation.value,
+                actor: operation.actor,
+                seq: operation.seq,
+                clock: operation.clock,
+                deleted: false,
+                children: []
+              };
+              nodes.set(node.id, node);
+              parent.children.push(node);
+              progressed = true;
+            }
+            pending = next;
+          }
+
+          for (const node of nodes.values()) {
+            node.children.sort(compareSiblings);
+          }
+
+          let unresolvedDeletes = 0;
+          for (const operation of this.operations.values()) {
+            if (operation.kind !== "delete") continue;
+            const target = nodes.get(operation.target);
+            if (target) target.deleted = true;
+            else unresolvedDeletes += 1;
+          }
+
+          this.nodes = nodes;
+          this.unresolved = pending.length + unresolvedDeletes;
+        }
+
+        render() {
+          const text = [];
+          const ids = [];
+          const orderedNodes = [];
+          const head = this.nodes.get(HEAD);
+          const stack = head ? head.children.slice().reverse() : [];
+          while (stack.length) {
+            const node = stack.pop();
+            for (let index = node.children.length - 1; index >= 0; index -= 1) {
+              stack.push(node.children[index]);
+            }
+            if (!node.deleted) {
+              text.push(node.value);
+              ids.push(node.id);
+              orderedNodes.push(node);
+            }
+          }
+          return { text: text.join(""), ids: ids, nodes: orderedNodes };
+        }
+
+        stateHash() {
+          const canonical = Array.from(this.operations.values())
+            .sort(function (a, b) { return a.oid < b.oid ? -1 : a.oid > b.oid ? 1 : 0; })
+            .map(canonicalOperation)
+            .join("|");
+          return hashString(canonical + "\u241e" + this.render().text);
+        }
+      }
+
+      function makeEditBatch(replica, nextText) {
+        const snapshot = replica.render();
+        const before = Array.from(snapshot.text);
+        const after = Array.from(nextText);
+        let prefix = 0;
+        while (prefix < before.length && prefix < after.length && before[prefix] === after[prefix]) {
+          prefix += 1;
+        }
+
+        let suffix = 0;
+        while (
+          suffix < before.length - prefix &&
+          suffix < after.length - prefix &&
+          before[before.length - 1 - suffix] === after[after.length - 1 - suffix]
+        ) {
+          suffix += 1;
+        }
+
+        const operations = [];
+        const deleteEnd = before.length - suffix;
+        for (let index = prefix; index < deleteEnd; index += 1) {
+          operations.push(replica.createDelete(snapshot.ids[index]));
+        }
+
+        let anchor = prefix === 0 ? HEAD : snapshot.ids[prefix - 1];
+        const insertEnd = after.length - suffix;
+        for (let index = prefix; index < insertEnd; index += 1) {
+          const operation = replica.createInsert(anchor, after[index]);
+          operations.push(operation);
+          anchor = operation.atom;
+        }
+
+        if (operations.length) replica.addLocal(operations);
+        return operations;
+      }
+
+      function mulberry32(seed) {
+        let value = seed >>> 0;
+        return function () {
+          value += 0x6d2b79f5;
+          let mixed = value;
+          mixed = Math.imul(mixed ^ mixed >>> 15, mixed | 1);
+          mixed ^= mixed + Math.imul(mixed ^ mixed >>> 7, mixed | 61);
+          return ((mixed ^ mixed >>> 14) >>> 0) / 4294967296;
+        };
+      }
+
+      function shuffled(values, random) {
+        const copy = values.slice();
+        for (let index = copy.length - 1; index > 0; index -= 1) {
+          const other = Math.floor(random() * (index + 1));
+          const temporary = copy[index];
+          copy[index] = copy[other];
+          copy[other] = temporary;
+        }
+        return copy;
+      }
+
+      const state = {
+        replicas: {},
+        connected: { A: true, B: true, C: true },
+        registry: new Map(),
+        messages: [],
+        history: [],
+        messageSerial: 0,
+        playing: false,
+        isPaused: true,
+        deliveryTimer: 0,
+        seed: 355,
+        flight: null,
+        inspected: null,
+        composingActor: null,
+        selfTest: { ok: false, label: "Boot-time algorithm check pending…" }
+      };
+
+      function normalizeSeed() {
+        const parsed = Number.parseInt($("seedInput").value, 10);
+        const normalized = Number.isFinite(parsed) ? parsed >>> 0 : 355;
+        $("seedInput").value = String(normalized);
+        return normalized;
+      }
+
+      function actorName(actor) {
+        const found = ACTORS.find(function (item) { return item.id === actor; });
+        return found ? found.name : actor;
+      }
+
+      function isEligible(message) {
+        return Boolean(state.connected[message.from] && state.connected[message.to]);
+      }
+
+      function operationSummary(operation) {
+        if (operation.kind === "insert") {
+          return "INS “" + printable(operation.value) + "” after " + shortId(operation.after) + " · L" + operation.clock;
+        }
+        return "DEL " + shortId(operation.target) + " · L" + operation.clock;
+      }
+
+      function registerOperations(actor, operations) {
+        for (const operation of operations) {
+          state.registry.set(operation.oid, operation);
+          for (const target of ACTORS) {
+            if (target.id === actor) continue;
+            state.messageSerial += 1;
+            state.messages.push({
+              mid: "m" + pad(state.messageSerial),
+              from: actor,
+              to: target.id,
+              operation: operation
+            });
+          }
+        }
+      }
+
+      function queueMissingOperations() {
+        const existing = new Set(state.messages.map(function (message) {
+          return message.operation.oid + ">" + message.to;
+        }));
+        for (const operation of state.registry.values()) {
+          if (operation.actor === "S") continue;
+          for (const target of ACTORS) {
+            if (target.id === operation.actor) continue;
+            const key = operation.oid + ">" + target.id;
+            if (!state.replicas[target.id].has(operation.oid) && !existing.has(key)) {
+              state.messageSerial += 1;
+              state.messages.push({
+                mid: "m" + pad(state.messageSerial),
+                from: operation.actor,
+                to: target.id,
+                operation: operation
+              });
+              existing.add(key);
+            }
+          }
+        }
+      }
+
+      function applyText(actor, nextText, announceEdit) {
+        if (Array.from(nextText).length > MAX_DOCUMENT_CHARS) {
+          renderReplica(actor);
+          announce("Document limit is " + MAX_DOCUMENT_CHARS + " characters.");
+          return [];
+        }
+        const replica = state.replicas[actor];
+        const operations = makeEditBatch(replica, nextText);
+        if (!operations.length) return operations;
+        registerOperations(actor, operations);
+        const rendered = replica.render().text;
+        if (rendered !== nextText) {
+          state.selfTest = {
+            ok: false,
+            label: "Local edit invariant failed; reset the lab."
+          };
+        }
+        if (announceEdit) {
+          announce(actorName(actor) + " created " + operations.length + " local operations.");
+        }
+        renderAll();
+        if (state.playing) scheduleDelivery(0);
+        return operations;
+      }
+
+      function pausePlayback(shouldAnnounce) {
+        window.clearTimeout(state.deliveryTimer);
+        state.deliveryTimer = 0;
+        state.playing = false;
+        state.isPaused = true;
+        syncPlaybackControl();
+        if (shouldAnnounce) announce("Message delivery paused.");
+      }
+
+      function startPlayback(shouldAnnounce) {
+        if (!state.messages.length) {
+          pausePlayback(false);
+          if (shouldAnnounce) announce("No queued messages to deliver.");
+          return;
+        }
+        state.playing = true;
+        state.isPaused = false;
+        syncPlaybackControl();
+        scheduleDelivery(0);
+        if (shouldAnnounce) {
+          const ready = state.messages.filter(isEligible).length;
+          announce(ready ? "Message delivery playing." : "Delivery is waiting for a connected route.");
+        }
+      }
+
+      function togglePlayback() {
+        if (state.playing) pausePlayback(true);
+        else startPlayback(true);
+      }
+
+      function scheduleDelivery(delay) {
+        window.clearTimeout(state.deliveryTimer);
+        state.deliveryTimer = 0;
+        if (!state.playing || document.hidden) return;
+        if (!state.messages.some(isEligible)) {
+          syncPlaybackControl();
+          return;
+        }
+        state.deliveryTimer = window.setTimeout(function () {
+          const delivered = deliverNext(true);
+          if (!delivered) return;
+          if (!state.messages.length) {
+            pausePlayback(false);
+            announce("All queued operations delivered. Replicas converged.");
+            renderAll();
+            return;
+          }
+          scheduleDelivery(Number($("speedSelect").value));
+        }, delay);
+      }
+
+      function deliverNext(fromPlayback) {
+        const index = state.messages.findIndex(isEligible);
+        if (index < 0) {
+          if (!fromPlayback) announce("No message has a connected route yet.");
+          return false;
+        }
+        const message = state.messages.splice(index, 1)[0];
+        state.replicas[message.to].receive(message.operation);
+        state.history.unshift(message);
+        state.history = state.history.slice(0, 6);
+        state.inspected = message;
+        startFlight(message);
+        queueMissingOperations();
+        renderAll();
+        return true;
+      }
+
+      function stepDelivery() {
+        if (state.playing) pausePlayback(false);
+        const delivered = deliverNext(false);
+        if (delivered) {
+          announce("Delivered " + operationSummary(state.inspected.operation) + " from " + state.inspected.from + " to " + state.inspected.to + ".");
+        }
+      }
+
+      function resetSimulation(shouldAnnounce) {
+        pausePlayback(false);
+        state.seed = normalizeSeed();
+        const baseOperations = makeBaseOperations(BASE_TEXT);
+        state.registry = new Map(baseOperations.map(function (operation) {
+          return [operation.oid, operation];
+        }));
+        state.replicas = {};
+        for (const actor of ACTORS) {
+          state.replicas[actor.id] = new Replica(actor.id, baseOperations);
+        }
+        state.connected = { A: true, B: true, C: true };
+        state.messages = [];
+        state.history = [];
+        state.messageSerial = 0;
+        state.flight = null;
+        state.inspected = null;
+        $("packetPulse").classList.add("hidden");
+        $("orderTrace").textContent = "Reset installed the same base operations on all three replicas.";
+        renderAll();
+        if (shouldAnnounce) announce("Lab reset. All three replicas are online and converged.");
+      }
+
+      function runConflictPreset() {
+        resetSimulation(false);
+        pausePlayback(false);
+        state.connected = { A: false, B: false, C: false };
+        const random = mulberry32(state.seed);
+        const words = shuffled(
+          ["aurora", "comet", "eclipse", "nebula", "nova", "quasar", "solar", "violet", "zenith"],
+          random
+        ).slice(0, 3);
+
+        ACTORS.forEach(function (actor, index) {
+          const nextText = BASE_TEXT.replace("calm", "[" + actor.id + ":" + words[index] + "]");
+          applyText(actor.id, nextText, false);
+        });
+
+        state.messages = shuffled(state.messages, random);
+        $("orderTrace").textContent =
+          "Seed " + state.seed + " made three concurrent replacements of “calm” and shuffled " +
+          state.messages.length + " deliveries. All routes remain partitioned.";
+        renderAll();
+        announce("Conflict preset " + state.seed + " created three isolated versions and " + state.messages.length + " blocked deliveries.");
+      }
+
+      function reconnectAndConverge() {
+        state.connected = { A: true, B: true, C: true };
+        queueMissingOperations();
+        renderAll();
+        if (state.messages.length) {
+          startPlayback(false);
+          announce("All devices reconnected. Delivering every missing operation.");
+        } else {
+          announce("All devices are online. Nothing is missing.");
+        }
+      }
+
+      function toggleConnection(actor) {
+        state.connected[actor] = !state.connected[actor];
+        queueMissingOperations();
+        renderAll();
+        if (state.playing) scheduleDelivery(0);
+        announce(
+          actorName(actor) + (state.connected[actor]
+            ? " reconnected. Queued operations can now use its routes."
+            : " is isolated. Local editing still works.")
+        );
+      }
+
+      function convergenceStatus() {
+        const snapshots = ACTORS.map(function (actor) {
+          const replica = state.replicas[actor.id];
+          return {
+            actor: actor.id,
+            text: replica.render().text,
+            hash: replica.stateHash(),
+            opCount: replica.operations.size,
+            unresolved: replica.unresolved
+          };
+        });
+        const hashes = new Set(snapshots.map(function (snapshot) { return snapshot.hash; }));
+        const texts = new Set(snapshots.map(function (snapshot) { return snapshot.text; }));
+        const complete = snapshots.every(function (snapshot) {
+          return snapshot.opCount === state.registry.size && snapshot.unresolved === 0;
+        });
+        const converged = complete && hashes.size === 1 && texts.size === 1 && state.messages.length === 0;
+        return {
+          snapshots: snapshots,
+          hashes: hashes,
+          texts: texts,
+          complete: complete,
+          converged: converged
+        };
+      }
+
+      function renderReplica(actor) {
+        const replica = state.replicas[actor];
+        if (!replica) return;
+        const editor = $("editor" + actor);
+        const snapshot = replica.render();
+        if (editor.value !== snapshot.text && state.composingActor !== actor) {
+          const start = editor.selectionStart;
+          const end = editor.selectionEnd;
+          editor.value = snapshot.text;
+          if (document.activeElement === editor) {
+            editor.setSelectionRange(
+              Math.min(start, editor.value.length),
+              Math.min(end, editor.value.length)
+            );
+          }
+        }
+        $("clock" + actor).textContent = String(replica.lamport);
+        $("ops" + actor).textContent =
+          String(replica.operations.size) + (replica.unresolved ? " · " + replica.unresolved + " wait" : "");
+        $("hash" + actor).textContent = replica.stateHash();
+
+        const online = state.connected[actor];
+        const card = $("card" + actor);
+        const button = $("link" + actor);
+        card.classList.toggle("offline", !online);
+        button.setAttribute("aria-pressed", String(online));
+        button.setAttribute(
+          "aria-label",
+          online ? "Isolate " + actorName(actor) + " from the network" : "Reconnect " + actorName(actor) + " to the network"
+        );
+        button.querySelector(".link-label").textContent = online ? "Online" : "Isolated";
+      }
+
+      function renderNetwork() {
+        const links = [
+          { id: "linkAB", left: "A", right: "B" },
+          { id: "linkBC", left: "B", right: "C" },
+          { id: "linkCA", left: "C", right: "A" }
+        ];
+        links.forEach(function (link) {
+          $(link.id).classList.toggle("active", state.connected[link.left] && state.connected[link.right]);
+        });
+        ACTORS.forEach(function (actor) {
+          $("node" + actor.id).classList.toggle("offline", !state.connected[actor.id]);
+        });
+        const onlineCount = ACTORS.filter(function (actor) { return state.connected[actor.id]; }).length;
+        $("networkState").textContent = onlineCount + " online";
+        const ready = state.messages.filter(isEligible).length;
+        const blocked = state.messages.length - ready;
+        if (!state.messages.length) {
+          $("networkSummary").textContent = "No messages in flight.";
+        } else {
+          $("networkSummary").textContent =
+            state.messages.length + " queued · " + ready + " ready · " + blocked + " blocked";
+        }
+      }
+
+      function renderInvariant() {
+        const status = convergenceStatus();
+        const chip = $("convergenceChip");
+        chip.className = "state-chip";
+        if (status.converged) {
+          chip.classList.add("good");
+          chip.textContent = "Converged";
+          $("globalHash").textContent = status.snapshots[0].hash;
+          $("invariantCopy").textContent =
+            "All three replicas contain the same operations, resolve every anchor, and render the same document.";
+        } else if (status.texts.size === 1) {
+          chip.classList.add("warn");
+          chip.textContent = "In flight";
+          $("globalHash").textContent = status.snapshots.map(function (item) {
+            return item.actor + ":" + item.hash;
+          }).join(" · ");
+          $("invariantCopy").textContent =
+            "The visible text matches for now, but replica operation sets differ or messages are still queued.";
+        } else {
+          chip.classList.add("bad");
+          chip.textContent = "Diverged";
+          $("globalHash").textContent = status.snapshots.map(function (item) {
+            return item.actor + ":" + item.hash;
+          }).join(" · ");
+          $("invariantCopy").textContent =
+            "Offline edits are intentionally different. Deliver every queued operation to restore the invariant.";
+        }
+        $("selfTestResult").textContent = state.selfTest.label;
+        $("proofDot").classList.toggle("failed", !state.selfTest.ok);
+      }
+
+      function renderQueue() {
+        const list = $("queueList");
+        list.replaceChildren();
+        const ready = state.messages.filter(isEligible).length;
+        $("queueCount").textContent = state.messages.length + " queued";
+        $("readyCount").textContent = ready + " ready";
+
+        if (!state.messages.length) {
+          const empty = document.createElement("li");
+          empty.className = "queue-empty";
+          empty.textContent = "Queue empty. Isolate a device and type, or run the seeded conflict preset.";
+          list.appendChild(empty);
+          return;
+        }
+
+        const visible = state.messages.slice(0, 18);
+        visible.forEach(function (message) {
+          const item = document.createElement("li");
+          const button = document.createElement("button");
+          const route = document.createElement("span");
+          const copy = document.createElement("span");
+          const summary = document.createElement("strong");
+          const identity = document.createElement("span");
+          const routeState = document.createElement("span");
+          const eligible = isEligible(message);
+
+          button.type = "button";
+          button.className = "queue-op" + (eligible ? "" : " blocked");
+          button.dataset.mid = message.mid;
+          button.setAttribute("aria-label", "Inspect " + message.mid + ", " + message.from + " to " + message.to + ", " + operationSummary(message.operation));
+          route.className = "route";
+          route.textContent = message.from + " → " + message.to;
+          copy.className = "op-copy";
+          summary.textContent = operationSummary(message.operation);
+          identity.textContent = message.mid + " · " + message.operation.oid;
+          routeState.className = "route-state";
+          routeState.textContent = eligible ? "ready" : "blocked";
+          copy.append(summary, identity);
+          button.append(route, copy, routeState);
+          item.appendChild(button);
+          list.appendChild(item);
+        });
+
+        if (state.messages.length > visible.length) {
+          const more = document.createElement("li");
+          more.className = "queue-more";
+          more.textContent = "+" + (state.messages.length - visible.length) + " more deterministic deliveries";
+          list.appendChild(more);
+        }
+      }
+
+      function renderInspector() {
+        const message = state.inspected;
+        $("inspectEmpty").hidden = Boolean(message);
+        $("inspectDetails").hidden = !message;
+        if (!message) return;
+        const operation = message.operation;
+        const pendingMessage = state.messages.find(function (item) { return item.mid === message.mid; });
+        const stateLabel = pendingMessage ? (isEligible(pendingMessage) ? "ready" : "blocked") : "delivered";
+        $("inspectRoute").textContent = message.mid + " · " + message.from + " → " + message.to;
+        $("inspectTitle").textContent =
+          operation.kind === "insert"
+            ? "Insert “" + printable(operation.value) + "”"
+            : "Delete " + shortId(operation.target);
+        $("inspectRule").textContent =
+          operation.kind === "insert"
+            ? "This atom remains a child of " + shortId(operation.after) + ". Siblings at that anchor sort by the same descending tuple on every replica."
+            : "This operation tombstones its target. The atom stays in the tree, preserving anchors for inserts that may arrive later.";
+        $("inspectId").textContent = operation.oid;
+        $("inspectClock").textContent = "(" + operation.clock + ", " + operation.actor + ", " + operation.seq + ")";
+        $("inspectAnchor").textContent = operation.kind === "insert" ? operation.after : operation.target;
+        $("inspectState").textContent = stateLabel;
+      }
+
+      function renderHistory() {
+        const list = $("historyList");
+        list.replaceChildren();
+        if (!state.history.length) {
+          const empty = document.createElement("li");
+          const label = document.createElement("strong");
+          const copy = document.createElement("span");
+          label.textContent = "—";
+          copy.textContent = "No messages delivered yet.";
+          empty.append(label, copy);
+          list.appendChild(empty);
+          return;
+        }
+        state.history.forEach(function (message) {
+          const item = document.createElement("li");
+          const route = document.createElement("strong");
+          const copy = document.createElement("span");
+          route.textContent = message.from + "→" + message.to;
+          copy.textContent = operationSummary(message.operation);
+          item.append(route, copy);
+          list.appendChild(item);
+        });
+      }
+
+      function syncPlaybackControl() {
+        const button = $("playBtn");
+        button.setAttribute("aria-pressed", String(state.playing));
+        button.textContent = state.playing ? "Pause delivery" : "Play delivery";
+        button.disabled = !state.messages.length;
+        $("stepBtn").disabled = !state.messages.length;
+      }
+
+      function renderAll() {
+        ACTORS.forEach(function (actor) { renderReplica(actor.id); });
+        renderNetwork();
+        renderInvariant();
+        renderQueue();
+        renderInspector();
+        renderHistory();
+        syncPlaybackControl();
+      }
+
+      function announce(message) {
+        $("liveAnnouncement").textContent = "";
+        window.setTimeout(function () {
+          $("liveAnnouncement").textContent = message;
+        }, 20);
+      }
+
+      function startFlight(message) {
+        if (reduceMotion.matches) {
+          state.flight = null;
+          $("packetPulse").classList.add("hidden");
+          return;
+        }
+        state.flight = {
+          from: NODE_POSITIONS[message.from],
+          to: NODE_POSITIONS[message.to],
+          start: performance.now(),
+          duration: Math.max(300, Number($("speedSelect").value) * 1.25)
+        };
+        $("packetPulse").classList.remove("hidden");
+      }
+
+      function animate(timestamp) {
+        if (!document.hidden && state.flight) {
+          const elapsed = timestamp - state.flight.start;
+          const progress = Math.min(1, elapsed / state.flight.duration);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const x = state.flight.from.x + (state.flight.to.x - state.flight.from.x) * eased;
+          const y = state.flight.from.y + (state.flight.to.y - state.flight.from.y) * eased;
+          $("packetPulse").setAttribute("cx", String(x));
+          $("packetPulse").setAttribute("cy", String(y));
+          if (progress >= 1) {
+            state.flight = null;
+            $("packetPulse").classList.add("hidden");
+          }
+        }
+        window.requestAnimationFrame(animate);
+      }
+
+      function runAlgorithmSelfTest() {
+        try {
+          const base = makeBaseOperations("X");
+          const dynamic = [];
+          ACTORS.forEach(function (actor) {
+            const replica = new Replica(actor.id, base);
+            dynamic.push.apply(dynamic, makeEditBatch(replica, "[" + actor.id + "]"));
+          });
+          const allOperations = base.concat(dynamic);
+          const random = mulberry32(355);
+          const schedules = [
+            allOperations.slice(),
+            allOperations.slice().reverse(),
+            shuffled(allOperations, random),
+            allOperations.slice(2).concat(allOperations.slice(0, 2))
+          ];
+          const results = schedules.map(function (schedule) {
+            const replica = new Replica("T", []);
+            schedule.forEach(function (operation) { replica.receive(operation); });
+            return {
+              text: replica.render().text,
+              hash: replica.stateHash(),
+              unresolved: replica.unresolved
+            };
+          });
+          const sameText = new Set(results.map(function (result) { return result.text; })).size === 1;
+          const sameHash = new Set(results.map(function (result) { return result.hash; })).size === 1;
+          const resolved = results.every(function (result) { return result.unresolved === 0; });
+          const preservesAll = ["[A]", "[B]", "[C]"].every(function (value) {
+            return results[0].text.includes(value);
+          });
+
+          const origin = new Replica("A", []);
+          const insert = origin.createInsert(HEAD, "x");
+          origin.addLocal([insert]);
+          const remove = origin.createDelete(insert.atom);
+          origin.addLocal([remove]);
+          const receiver = new Replica("B", []);
+          receiver.receive(remove);
+          const waited = receiver.unresolved === 1;
+          receiver.receive(insert);
+          const deleteBeforeInsert = waited && receiver.unresolved === 0 && receiver.render().text === "";
+
+          if (!sameText || !sameHash || !resolved || !preservesAll || !deleteBeforeInsert) {
+            throw new Error("schedule invariant failed");
+          }
+          state.selfTest = {
+            ok: true,
+            label: "Self-check passed: 4 delivery schedules + delete-before-insert."
+          };
+        } catch (error) {
+          state.selfTest = {
+            ok: false,
+            label: "Self-check failed: " + error.message
+          };
+        }
+      }
+
+      ACTORS.forEach(function (actor) {
+        $("link" + actor.id).addEventListener("click", function () {
+          toggleConnection(actor.id);
+        });
+        const editor = $("editor" + actor.id);
+        editor.addEventListener("input", function (event) {
+          if (event.isComposing || state.composingActor === actor.id) return;
+          applyText(actor.id, editor.value, false);
+        });
+        editor.addEventListener("compositionstart", function () {
+          state.composingActor = actor.id;
+          if (state.playing) pausePlayback(false);
+        });
+        editor.addEventListener("compositionend", function () {
+          state.composingActor = null;
+          applyText(actor.id, editor.value, false);
+        });
+      });
+
+      $("queueList").addEventListener("click", function (event) {
+        const button = event.target.closest("button[data-mid]");
+        if (!button) return;
+        state.inspected = state.messages.find(function (message) {
+          return message.mid === button.dataset.mid;
+        }) || null;
+        renderInspector();
+      });
+
+      $("presetBtn").addEventListener("click", runConflictPreset);
+      $("healBtn").addEventListener("click", reconnectAndConverge);
+      $("stepBtn").addEventListener("click", stepDelivery);
+      $("playBtn").addEventListener("click", togglePlayback);
+      $("resetBtn").addEventListener("click", function () { resetSimulation(true); });
+      $("speedSelect").addEventListener("change", function () {
+        if (state.playing) scheduleDelivery(0);
+      });
+
+      document.addEventListener("keydown", function (event) {
+        const target = event.target;
+        const isTyping = target instanceof HTMLInputElement ||
+          target instanceof HTMLTextAreaElement ||
+          target instanceof HTMLSelectElement ||
+          target.isContentEditable;
+        if (isTyping) return;
+        const key = event.key.toLowerCase();
+        if (key === " " || key === "spacebar") {
+          event.preventDefault();
+          togglePlayback();
+        } else if (key === "n") {
+          event.preventDefault();
+          stepDelivery();
+        } else if (key === "p") {
+          event.preventDefault();
+          runConflictPreset();
+        } else if (key === "h") {
+          event.preventDefault();
+          reconnectAndConverge();
+        } else if (key === "r") {
+          event.preventDefault();
+          resetSimulation(true);
+        } else if (key === "escape" && state.playing) {
+          pausePlayback(true);
+        }
+      });
+
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden && state.playing) {
+          pausePlayback(false);
+          announce("Delivery paused because the page became hidden.");
+        }
+      });
+
+      if (typeof reduceMotion.addEventListener === "function") {
+        reduceMotion.addEventListener("change", function () {
+          if (reduceMotion.matches) {
+            state.flight = null;
+            $("packetPulse").classList.add("hidden");
+          }
+        });
+      }
+
+      resetSimulation(false);
+      runAlgorithmSelfTest();
+      renderAll();
+      window.requestAnimationFrame(animate);
+
+      window.__crdtConstellation = Object.freeze({
+        snapshot: function () {
+          return {
+            seed: state.seed,
+            connected: Object.assign({}, state.connected),
+            queued: state.messages.length,
+            playing: state.playing,
+            replicas: ACTORS.map(function (actor) {
+              const replica = state.replicas[actor.id];
+              return {
+                actor: actor.id,
+                text: replica.render().text,
+                hash: replica.stateHash(),
+                operations: replica.operations.size,
+                unresolved: replica.unresolved
+              };
+            })
+          };
+        },
+        step: stepDelivery,
+        preset: runConflictPreset,
+        reconnect: reconnectAndConverge,
+        reset: function () { resetSimulation(false); },
+        selfTest: function () { return Object.assign({}, state.selfTest); }
+      });
+    })();
+  </script>
+</body>
+</html>
