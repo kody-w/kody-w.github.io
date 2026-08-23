@@ -184,6 +184,93 @@ a:hover {
   line-height: 1.5;
 }
 
+/* Progressive copy controls for rendered code blocks */
+.copy-code-block {
+  margin-bottom: 20px;
+  overflow: hidden;
+  background: #f6f6f6;
+  border: 1px solid #e8e8e8;
+  border-radius: 5px;
+}
+
+.copy-code-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 38px;
+  padding: 5px 8px 5px 12px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.copy-code-anchor {
+  color: #828282;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 14px;
+}
+
+.copy-code-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 9px;
+  border: 1px solid #d8d8d8;
+  border-radius: 5px;
+  color: #555;
+  background: #fff;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.18s, border-color 0.18s, color 0.18s;
+}
+
+.copy-code-button:hover {
+  color: #2a7ae2;
+  border-color: #2a7ae2;
+}
+
+.copy-code-button:focus-visible,
+.lwk-copy-btn:focus-visible,
+.copy-code-anchor:focus-visible {
+  outline: 3px solid rgba(42, 122, 226, 0.45);
+  outline-offset: 2px;
+}
+
+.copy-code-button.is-copied {
+  color: #1f6b32;
+  border-color: #58a66a;
+  background: #f0fbf2;
+}
+
+.copy-code-icon {
+  line-height: 1;
+}
+
+.copy-code-block > pre {
+  margin: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.copy-code-status {
+  display: block;
+  min-height: 0;
+  padding: 0 12px;
+  color: #606060;
+  font-size: 12px;
+}
+
+.copy-code-status:not(:empty) {
+  min-height: 1.7em;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-top: 1px solid #e8e8e8;
+}
+
+.copy-accessibility-note {
+  max-width: 620px;
+  margin: 0 auto 8px;
+}
+
 /* Image captions */
 .imgcap {
   text-align: center;
@@ -539,6 +626,38 @@ a.stat:hover {
 
 [data-theme="dark"] .btn-secondary:hover {
   background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .copy-code-block {
+  background: var(--bg-secondary);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .copy-code-toolbar,
+[data-theme="dark"] .copy-code-status:not(:empty) {
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .copy-code-button {
+  color: var(--text-secondary);
+  background: var(--bg);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .copy-code-button:hover {
+  color: var(--link);
+  border-color: var(--link);
+}
+
+[data-theme="dark"] .copy-code-button.is-copied {
+  color: #9dd8ae;
+  border-color: rgba(74, 183, 115, 0.55);
+  background: rgba(74, 183, 115, 0.12);
+}
+
+[data-theme="dark"] .copy-code-status,
+[data-theme="dark"] .copy-code-anchor {
+  color: var(--text-secondary);
 }
 
 [data-theme="dark"] .stat-value {
@@ -2391,6 +2510,13 @@ a.stat:hover {
   background: rgba(140, 200, 140, 0.14);
   border-color: rgba(140, 200, 140, 0.45);
   color: #9bd6a3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .copy-code-button,
+  .lwk-copy-btn {
+    transition: none;
+  }
 }
 
 .lwk-copy-icon {

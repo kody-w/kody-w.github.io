@@ -81,6 +81,7 @@ jobs:
   # ── Stage 2: Deploy to GitHub Pages (staging) ──
   deploy-staging:
     needs: build
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
