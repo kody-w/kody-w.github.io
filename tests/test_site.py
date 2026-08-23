@@ -2519,6 +2519,45 @@ class SiteContentTests(unittest.TestCase):
             with self.subTest(marker=marker):
                 self.assertIn(marker, html)
 
+    def test_duneheart_museum_artifact_contract(self):
+        demo = ROOT / "learnwithkody" / "demos" / "343-fauna-duneheart.html"
+        html = demo.read_text(encoding="utf-8")
+        for marker in (
+            "const ARTIFACT_COUNT=50000",
+            "const ARTIFACT_VERSION=1",
+            "canonicalArtifactBuffer",
+            "for(const value of state.positions){view.setFloat32",
+            "class ArtifactRenderer",
+            "gl.STATIC_DRAW",
+            "if(artifact.active){",
+            "buildPLYBuffer",
+            "format binary_little_endian 1.0",
+            "buildGLBBuffer",
+            "mode:0",
+            "state_sha256",
+            "hydrateArtifactFromURL",
+            "url.searchParams.set('ah',artifact.state.hash)",
+            "url.searchParams.set('tyaw',orbit.targetYaw.toFixed(6))",
+            "enterArtifact:async options=>await enterArtifact(options)",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, html)
+
+        start = html.index("const EGG = (() => {")
+        end = html.index("\n\n/* ═", start)
+        egg_core = html[start:end].encode("utf-8")
+        self.assertEqual(
+            hashlib.sha256(egg_core).hexdigest(),
+            "e5ebfa800b98c240a714a1a1a07807e323832d4658038460df0f71bf96a435e4",
+        )
+        pose_start = html.index("function buildPose(")
+        pose_end = html.index("\n\n// ── 3D flow field", pose_start)
+        pose_builder = html[pose_start:pose_end].encode("utf-8")
+        self.assertEqual(
+            hashlib.sha256(pose_builder).hexdigest(),
+            "8a4511a532d627c715ec03e25e94b9386915ee602643cab70df7a2452bc54aa2",
+        )
+
     def test_dependency_scanner_ignores_prose_and_covers_dynamic_sinks(self):
         safe_script = r"""
           const prose = "fetch('/not-real'); image.src = '/also-not-real.png'";
