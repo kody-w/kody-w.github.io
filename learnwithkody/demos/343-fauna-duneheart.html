@@ -4,8 +4,68 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 <title>Duneheart · Learn with Kody · Fauna</title>
+<script>
+  (() => {
+    const param = new URLSearchParams(window.location.search).get("scoutTheme");
+    const theme =
+      param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    document.documentElement.setAttribute("data-theme", theme);
+  })();
+</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230b0d10'/%3E%3Cellipse cx='16' cy='17' rx='8' ry='10' fill='%23e8b45a'/%3E%3C/svg%3E">
 <style>
+  :root {
+    color-scheme: light;
+    --cp-bg: #f7f4ef;
+    --cp-bg-elevated: #fcfbf8;
+    --cp-surface: #ffffff;
+    --cp-surface-soft: #f5f5f5;
+    --cp-border: #dedede;
+    --cp-border-strong: #919191;
+    --cp-text: #242424;
+    --cp-text-muted: #5c5c5c;
+    --cp-text-soft: #6f6f6f;
+    --cp-accent: #b11f4b;
+    --cp-accent-hover: #9a1a41;
+    --cp-accent-soft: rgba(177, 31, 75, 0.08);
+    --cp-accent-fg: #ffffff;
+    --cp-success: #16a34a;
+    --cp-danger: #dc2626;
+    --cp-warning: #f59e0b;
+    --cp-link: #0078d4;
+    --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+    --cp-overlay: rgba(255, 255, 255, 0.8);
+    --cp-panel: rgba(255, 255, 255, 0.86);
+    --cp-panel-strong: rgba(255, 255, 255, 0.96);
+    --cp-sheen: rgba(255, 255, 255, 0.55);
+    --cp-highlight: rgba(177, 31, 75, 0.12);
+  }
+  html[data-theme="dark"] {
+    color-scheme: dark;
+    --cp-bg: #3d3b3a;
+    --cp-bg-elevated: #343231;
+    --cp-surface: #292929;
+    --cp-surface-soft: #2e2e2e;
+    --cp-border: #474747;
+    --cp-border-strong: #5f5f5f;
+    --cp-text: #dedede;
+    --cp-text-muted: #919191;
+    --cp-text-soft: #b0b0b0;
+    --cp-accent: #fd8ea1;
+    --cp-accent-hover: #fb7b91;
+    --cp-accent-soft: rgba(253, 142, 161, 0.14);
+    --cp-accent-fg: #1a1a1a;
+    --cp-success: #4ade80;
+    --cp-danger: #f87171;
+    --cp-warning: #fbbf24;
+    --cp-link: #4da6ff;
+    --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+    --cp-overlay: rgba(41, 41, 41, 0.88);
+    --cp-panel: rgba(41, 41, 41, 0.72);
+    --cp-panel-strong: rgba(41, 41, 41, 0.96);
+    --cp-sheen: rgba(255, 255, 255, 0.04);
+    --cp-highlight: rgba(253, 142, 161, 0.12);
+  }
   :root{
     --sand:#e9c88a; --amber:#ff9d3c; --ink:#0c0805; --dust:#c79a5c;
     --glass:rgba(24,16,9,.62); --line:rgba(233,200,138,.22);
@@ -13,7 +73,9 @@
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%;width:100%;overflow:hidden;background:#0c0805;color:#f2e4c8;
     font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;-webkit-font-smoothing:antialiased}
-  #stage{position:fixed;inset:0;display:block}
+  #stage{position:fixed;inset:0;display:block;touch-action:none;cursor:grab;outline:none}
+  #stage.dragging{cursor:grabbing}
+  #stage:focus-visible{box-shadow:inset 0 0 0 2px var(--cp-accent)}
   /* ── HUD ─────────────────────────────────────────── */
   .hud{position:fixed;top:16px;left:16px;z-index:5;max-width:min(92vw,420px);
     pointer-events:none;text-shadow:0 1px 12px rgba(0,0,0,.9)}
@@ -61,14 +123,20 @@
     color:#d8c7ad;white-space:pre-wrap;word-break:break-word}
   .foot{position:fixed;right:14px;bottom:12px;z-index:4;font-size:9.5px;letter-spacing:.14em;
     text-transform:uppercase;color:#7a5c34;pointer-events:none}
+  .orbit-hint{position:fixed;left:50%;bottom:14px;z-index:4;transform:translateX(-50%);
+    padding:7px 11px;border:1px solid var(--line);border-radius:10px;background:var(--glass);
+    color:var(--sand);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+    pointer-events:none;backdrop-filter:blur(8px);opacity:.82;white-space:nowrap}
   @media(max-width:640px){
     .title{font-size:21px}.caption{display:none}.controls{gap:6px}
     button.ctl{padding:8px 10px;font-size:11px}
+    .orbit-hint{bottom:54px;font-size:8.5px}
   }
 </style>
 </head>
 <body>
-<canvas id="stage"></canvas>
+<canvas id="stage" tabindex="0" role="img"
+  aria-label="A volumetric sand golem. Drag to rotate it in 3D, pinch or scroll to zoom, use arrow keys to orbit, and press zero to reset."></canvas>
 
 <div class="hud">
   <div class="title">Duneheart</div>
@@ -80,6 +148,7 @@
 
 <div class="controls">
   <button class="ctl primary" id="btnNew">✦ New Duneheart</button>
+  <button class="ctl" id="btnView" title="Reset the 3D view">↻ View</button>
   <button class="ctl" id="btnSave">🥚 Save .egg</button>
   <button class="ctl" id="btnLoad">Load .egg</button>
 </div>
@@ -98,6 +167,7 @@
   <summary>Genome · DNA</summary>
   <pre id="dna">…</pre>
 </details>
+<div class="orbit-hint">Drag to rotate · pinch or scroll to zoom · 0 resets</div>
 <div class="foot">Learn with Kody · fauna 343</div>
 
 <script>
@@ -146,6 +216,25 @@ const EGG = (() => {
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const r3=v=>Math.round(v*1000)/1000;
 const TAU=Math.PI*2;
+const REDUCED_MOTION=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const orbit={
+  yaw:0.28,pitch:-0.12,zoom:1,
+  targetYaw:0.28,targetPitch:-0.12,targetZoom:1,
+  dragging:false,lastInput:performance.now()
+};
+function resetOrbit(){
+  orbit.targetYaw=0.28; orbit.targetPitch=-0.12; orbit.targetZoom=1;
+  orbit.lastInput=performance.now();
+}
+function updateOrbit(dt){
+  if(!orbit.dragging&&!REDUCED_MOTION&&performance.now()-orbit.lastInput>2200){
+    orbit.targetYaw+=dt*0.16;
+  }
+  const ease=1-Math.pow(0.001,dt);
+  orbit.yaw+=(orbit.targetYaw-orbit.yaw)*ease;
+  orbit.pitch+=(orbit.targetPitch-orbit.pitch)*ease;
+  orbit.zoom+=(orbit.targetZoom-orbit.zoom)*ease;
+}
 
 // Warm sand palettes: [highlight, mid, shadow, glow-accent]. Default identity is
 // warm dune; variants shift toward red waste, oasis teal-accent, rose dusk, bone.
@@ -223,6 +312,7 @@ function colorIdx(r,pattern,theta,shell){
 // Same genome + different seed = same species silhouette, fresh pose.
 function buildPose(g,count,seed){
   const r=EGG.mkRng(seed);
+  const rz=EGG.mkRng(seed+'-depth');
   const f=g.layers[0], s=g.layers[1];
   const {shape,segments,symmetry,body_r,limb_len}=f;
   const amp=shape==='blob'?0.14+f.cohesion*0.12:0.10;
@@ -237,13 +327,18 @@ function buildPose(g,count,seed){
   const bodyN=hasLimbs?Math.floor(count*0.70):count;
   let idx=0;
 
-  const put=(bx,by,theta,shell,limb,phase)=>{
+  const put=(bx,by,bz,theta,shell,limb,phase)=>{
     const ci=limb?(r()<0.4?1:2):colorIdx(r,s.pattern,theta,shell);
-    let eye=false;
-    for(const a of eyeAnchors){ if(Math.hypot(bx-a[0],by-a[1])<eyeR){eye=true;break;} }
+    let eye2d=false;
+    for(const a of eyeAnchors){
+      if(Math.hypot(bx-a[0],by-a[1])<eyeR){eye2d=true;break;}
+    }
+    const eye=eye2d&&bz>body_r*0.12;
     const shade=0.72+r()*0.55;
-    const glow=eye||(ci===0&&r()<sparkle)||(limb&&r()<sparkle*0.4);
-    targets[idx++]={bx,by,ci,shade,eye,glow,limb,phase,
+    const sparkleGlow=!eye2d&&ci===0&&r()<sparkle;
+    const limbGlow=!eye2d&&!sparkleGlow&&limb&&r()<sparkle*0.4;
+    const glow=eye||sparkleGlow||limbGlow;
+    targets[idx++]={bx,by,bz,ci,shade,eye,glow,limb,phase,
       size:grainBase+(r()<0.14?1:0)+(eye?1:0)};
   };
 
@@ -253,16 +348,22 @@ function buildPose(g,count,seed){
     const R=shapeRadius(shape,theta,segments,amp);
     let u;
     const shell=r()<0.32;                                  // rim emphasis
+    let depthR;
     if(shape==='ring'){
       const inner=0.60;
       u=(inner+(1-inner)*(shell?0.85+r()*0.15:r()));
+      const tube=(1-inner)*0.5;
+      const cross=(u-(inner+tube))/tube;
+      depthR=Math.sqrt(Math.max(0,1-cross*cross))*body_r*tube;
     }else{
       u=shell?(0.86+r()*0.14):Math.sqrt(r());              // even area fill
+      depthR=Math.sqrt(Math.max(0,1-u*u))*body_r*0.78;
     }
     const rr=R*u*body_r;
     let bx=Math.cos(theta)*rr, by=Math.sin(theta)*rr;
     if(symmetry==='bilateral')by*=1.12;                    // gentle head/tail axis
-    put(bx,by,theta,shell,false,0);
+    const bz=(rz()*2-1)*depthR;
+    put(bx,by,bz,theta,shell,false,0);
   }
 
   // ── limbs (tendrils radiating from the body edge) ──
@@ -284,6 +385,9 @@ function buildPose(g,count,seed){
     for(let li=0;li<angles.length&&idx<count;li++){
       const a=angles[li], dx=Math.cos(a), dy=Math.sin(a);
       const px=-dy, py=dx;
+      const zReach=(symmetry==='radial'
+        ? Math.sin((li/Math.max(1,angles.length))*TAU+0.65)
+        : (li%2===0?1:-1)*(0.35+0.15*Math.sin(li*1.7)))*0.34;
       const start=body_r*0.82;
       for(let n=0;n<per&&idx<count;n++){
         const t=n/per;
@@ -292,25 +396,34 @@ function buildPose(g,count,seed){
         const off=(r()*2-1)*thick*3;
         const jit=(r()*2-1)*0.01;
         const bx=dx*(rr+jit)+px*off, by=dy*(rr+jit)+py*off;
-        put(bx,by,a,t<0.12,true,a+t*2);
+        const bz=zReach*(rr-start*0.5)+(rz()*2-1)*thick*2.5;
+        put(bx,by,bz,a,t<0.12,true,a+t*2);
       }
     }
     while(idx<count){                                      // top up remainder into body
       const theta=r()*TAU;
-      const rr=shapeRadius(shape,theta,segments,amp)*Math.sqrt(r())*body_r;
-      put(Math.cos(theta)*rr,Math.sin(theta)*rr,theta,false,false,0);
+      const u=Math.sqrt(r());
+      const rr=shapeRadius(shape,theta,segments,amp)*u*body_r;
+      const bz=(rz()*2-1)*Math.sqrt(Math.max(0,1-u*u))*body_r*0.78;
+      put(Math.cos(theta)*rr,Math.sin(theta)*rr,bz,theta,false,false,0);
     }
   }
 
   let maxE=0.001;
-  for(let i=0;i<count;i++){ const t=targets[i]; const e=Math.hypot(t.bx,t.by); if(e>maxE)maxE=e; }
+  for(let i=0;i<count;i++){
+    const t=targets[i], e=Math.hypot(t.bx,t.by,t.bz);
+    if(e>maxE)maxE=e;
+  }
   return {targets,maxExtent:maxE};
 }
 
-// ── flow field: cheap organic turbulence for shimmer & the dust cloud ──
-function flow(x,y,t){
-  return [ Math.sin(x*0.008+t*0.6)+Math.sin(y*0.011-t*0.4),
-           Math.cos(y*0.009-t*0.5)+Math.cos(x*0.012+t*0.35) ];
+// ── 3D flow field: the original organic turbulence, extended through depth ──
+function flow(x,y,z,t){
+  return [
+    Math.sin(x*8+t*0.6)+Math.sin(y*11-t*0.4)+Math.cos(z*9+t*0.3),
+    Math.cos(y*9-t*0.5)+Math.cos(z*12+t*0.35)+Math.sin(x*7-t*0.2),
+    Math.sin(z*10+t*0.45)+Math.cos(x*9-y*5-t*0.25)
+  ];
 }
 
 // ── the swarm ────────────────────────────────────────────────────────────────
@@ -327,7 +440,11 @@ class Swarm{
     this.formTime=2.3;
     this.phase='form'; this.phaseT=0;
     this.grains=new Array(count);
-    for(let i=0;i<count;i++)this.grains[i]={x:0,y:0,vx:0,vy:0,cr:0,cg:0,cb:0,glow:false,size:1,eye:false};
+    this.drawOrder=Array.from({length:count},(_,i)=>i);
+    for(let i=0;i<count;i++)this.grains[i]={
+      x:0,y:0,z:0,vx:0,vy:0,vz:0,sx:0,sy:0,depth:0,perspective:1,
+      cr:0,cg:0,cb:0,glow:false,size:1,eye:false
+    };
     this.needScatter=true;
     this.applyColors();
   }
@@ -344,35 +461,55 @@ class Swarm{
     this.W=W; this.H=H; this.cx=W/2; this.cy=H/2;
     this.scale=0.36*Math.min(W,H)/this.pose.maxExtent;
     if(this.needScatter){
-      const R=Math.min(W,H)*0.55;
       for(const gr of this.grains){
-        const a=Math.random()*TAU, d=R*(0.4+Math.random()*0.8);
-        gr.x=this.cx+Math.cos(a)*d; gr.y=this.cy+Math.sin(a)*d;
+        const a=Math.random()*TAU, cz=Math.random()*2-1;
+        const sr=Math.sqrt(1-cz*cz), d=0.45+Math.random()*0.85;
+        gr.x=Math.cos(a)*sr*d;
+        gr.y=Math.sin(a)*sr*d;
+        gr.z=cz*d;
+        this.project(gr);
       }
       this.needScatter=false;
     }
   }
-  worldTarget(t,T){
-    let bx=t.bx, by=t.by;
+  modelTarget(t,T){
+    let bx=t.bx, by=t.by, bz=t.bz;
     if(t.limb){
       const sw=this.reach*0.16*Math.sin(T*1.4+t.phase*2.0);
       const c=Math.cos(sw), s=Math.sin(sw);
       const nx=bx*c-by*s, ny=bx*s+by*c; bx=nx; by=ny;
+      bz+=Math.sin(T*1.1+t.phase)*this.reach*0.018;
     }
     const breath=1+this.breatheAmt*Math.sin(T*this.breatheSpeed);
     const rot=T*0.05*this.rotDir, c=Math.cos(rot), s=Math.sin(rot);
-    const rx=bx*c-by*s, ry=bx*s+by*c;
-    const bob=Math.sin(T*0.5)*this.drift*0.02*Math.min(this.W,this.H);
-    return {x:this.cx+rx*this.scale*breath+bob, y:this.cy+ry*this.scale*breath};
+    return {
+      x:(bx*c-by*s)*breath,
+      y:(bx*s+by*c)*breath,
+      z:bz*breath
+    };
+  }
+  project(gr){
+    const cy=Math.cos(orbit.yaw), sy=Math.sin(orbit.yaw);
+    const cp=Math.cos(orbit.pitch), sp=Math.sin(orbit.pitch);
+    const ox=gr.x*cy+gr.z*sy;
+    const oz=-gr.x*sy+gr.z*cy;
+    const oy=gr.y*cp-oz*sp;
+    const depth=gr.y*sp+oz*cp;
+    const perspective=clamp(2.35/(2.35-depth),0.68,1.58);
+    gr.sx=this.cx+ox*this.scale*perspective*orbit.zoom;
+    gr.sy=this.cy+oy*this.scale*perspective*orbit.zoom;
+    gr.depth=depth;
+    gr.perspective=perspective;
   }
   startDissolve(){
     this.phase='dissolve'; this.phaseT=0;
     const dv=this.g.layers[2].dissolve;
     for(const gr of this.grains){
-      const dx=gr.x-this.cx, dy=gr.y-this.cy, d=Math.hypot(dx,dy)||1;
-      const sp=2.0+Math.random()*3+dv*2.5;
-      gr.vx+=dx/d*sp+(Math.random()-0.5)*2.6;
-      gr.vy+=dy/d*sp-Math.random()*1.6-0.6;
+      const d=Math.hypot(gr.x,gr.y,gr.z)||1;
+      const sp=0.018+Math.random()*0.025+dv*0.025;
+      gr.vx+=gr.x/d*sp+(Math.random()-0.5)*0.018;
+      gr.vy+=gr.y/d*sp-Math.random()*0.014-0.006;
+      gr.vz+=gr.z/d*sp+(Math.random()-0.5)*0.018;
     }
   }
   reform(){ this.setPose(this.makePose()); this.phase='form'; this.phaseT=0; }
@@ -391,15 +528,19 @@ class Swarm{
     for(let i=0;i<this.n;i++){
       const gr=this.grains[i];
       if(attract){
-        const tp=this.worldTarget(T2[i],T);
+        const tp=this.modelTarget(T2[i],T);
         gr.vx+=(tp.x-gr.x)*stiff*ds;
         gr.vy+=(tp.y-gr.y)*stiff*ds;
+        gr.vz+=(tp.z-gr.z)*stiff*ds;
       }
-      const fl=flow(gr.x,gr.y,T);
-      gr.vx+=fl[0]*turb*ds; gr.vy+=fl[1]*turb*ds;
-      if(this.phase==='dissolve')gr.vy+=0.05*ds;           // faint settle
-      gr.vx*=0.88; gr.vy*=0.88;
-      gr.x+=gr.vx*ds; gr.y+=gr.vy*ds;
+      const fl=flow(gr.x,gr.y,gr.z,T);
+      gr.vx+=fl[0]*turb*0.0011*ds;
+      gr.vy+=fl[1]*turb*0.0011*ds;
+      gr.vz+=fl[2]*turb*0.0011*ds;
+      if(this.phase==='dissolve')gr.vy+=0.0005*ds;         // faint settle
+      gr.vx*=0.88; gr.vy*=0.88; gr.vz*=0.88;
+      gr.x+=gr.vx*ds; gr.y+=gr.vy*ds; gr.z+=gr.vz*ds;
+      this.project(gr);
     }
   }
 
@@ -424,25 +565,21 @@ class Swarm{
       ctx.fillStyle=grd; ctx.fillRect(0,0,W,H);
     }
 
-    // base grain pass (solid sand)
-    ctx.globalCompositeOperation='source-over';
+    // One far-to-near pass keeps rear glints and eyes behind nearer sand.
     const a=(0.65+0.3*lum);
-    for(let i=0;i<this.n;i++){
-      const gr=this.grains[i];
-      if(gr.glow)continue;
-      const s=gr.size;
-      ctx.fillStyle=`rgba(${gr.cr|0},${gr.cg|0},${gr.cb|0},${a})`;
-      ctx.fillRect(gr.x-s*0.5,gr.y-s*0.5,s,s);
-    }
-    // glow pass (glints + eyes, additive)
-    ctx.globalCompositeOperation='lighter';
     const ga=0.5+0.5*lum;
-    for(let i=0;i<this.n;i++){
+    this.drawOrder.sort((ia,ib)=>this.grains[ia].depth-this.grains[ib].depth);
+    let composite='';
+    for(const i of this.drawOrder){
       const gr=this.grains[i];
-      if(!gr.glow)continue;
-      const s=gr.size+(gr.eye?1.2:0.6);
-      ctx.fillStyle=`rgba(${gr.cr|0},${gr.cg|0},${gr.cb|0},${gr.eye?ga:ga*0.75})`;
-      ctx.fillRect(gr.x-s*0.5,gr.y-s*0.5,s,s);
+      const depthLight=clamp(0.82+gr.depth/this.pose.maxExtent*0.22,0.52,1.08);
+      const mode=gr.glow?'lighter':'source-over';
+      if(mode!==composite){ctx.globalCompositeOperation=mode;composite=mode;}
+      const extra=gr.glow?(gr.eye?1.2:0.6):0;
+      const s=(gr.size+extra)*clamp(gr.perspective*Math.sqrt(orbit.zoom),0.62,2.1);
+      const alpha=gr.glow?(gr.eye?ga:ga*0.75):a;
+      ctx.fillStyle=`rgba(${gr.cr|0},${gr.cg|0},${gr.cb|0},${alpha*depthLight})`;
+      ctx.fillRect(gr.sx-s*0.5,gr.sy-s*0.5,s,s);
     }
     ctx.globalCompositeOperation='source-over';
   }
@@ -466,6 +603,72 @@ function resize(){
   if(swarm)swarm.layout(W,H);
 }
 window.addEventListener('resize',resize);
+
+// ── orbit input: camera-only rotation around the live 3D attractor ──
+const orbitPointers=new Map();
+let pinchDistance=0;
+function markOrbitInput(){
+  orbit.lastInput=performance.now();
+}
+function pointerGap(){
+  const pts=[...orbitPointers.values()];
+  return pts.length<2?0:Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);
+}
+function endOrbitPointer(ev){
+  orbitPointers.delete(ev.pointerId);
+  orbit.dragging=orbitPointers.size>0;
+  cv.classList.toggle('dragging',orbit.dragging);
+  pinchDistance=orbitPointers.size>1?pointerGap():0;
+  markOrbitInput();
+}
+cv.addEventListener('pointerdown',ev=>{
+  cv.focus({preventScroll:true});
+  cv.setPointerCapture(ev.pointerId);
+  orbitPointers.set(ev.pointerId,{x:ev.clientX,y:ev.clientY});
+  orbit.dragging=true;
+  cv.classList.add('dragging');
+  pinchDistance=orbitPointers.size>1?pointerGap():0;
+  markOrbitInput();
+  ev.preventDefault();
+});
+cv.addEventListener('pointermove',ev=>{
+  const prev=orbitPointers.get(ev.pointerId);
+  if(!prev)return;
+  orbitPointers.set(ev.pointerId,{x:ev.clientX,y:ev.clientY});
+  if(orbitPointers.size===1){
+    orbit.targetYaw+=(ev.clientX-prev.x)*0.008;
+    orbit.targetPitch=clamp(orbit.targetPitch+(ev.clientY-prev.y)*0.006,-1.35,1.35);
+  }else{
+    const nextGap=pointerGap();
+    if(pinchDistance>0){
+      orbit.targetZoom=clamp(orbit.targetZoom*(nextGap/pinchDistance),0.62,1.8);
+    }
+    pinchDistance=nextGap;
+  }
+  markOrbitInput();
+  ev.preventDefault();
+});
+cv.addEventListener('pointerup',endOrbitPointer);
+cv.addEventListener('pointercancel',endOrbitPointer);
+cv.addEventListener('wheel',ev=>{
+  orbit.targetZoom=clamp(orbit.targetZoom*Math.exp(-ev.deltaY*0.001),0.62,1.8);
+  markOrbitInput();
+  ev.preventDefault();
+},{passive:false});
+cv.addEventListener('dblclick',resetOrbit);
+cv.addEventListener('keydown',ev=>{
+  const step=ev.shiftKey?0.24:0.12;
+  if(ev.key==='ArrowLeft')orbit.targetYaw-=step;
+  else if(ev.key==='ArrowRight')orbit.targetYaw+=step;
+  else if(ev.key==='ArrowUp')orbit.targetPitch=clamp(orbit.targetPitch-step,-1.35,1.35);
+  else if(ev.key==='ArrowDown')orbit.targetPitch=clamp(orbit.targetPitch+step,-1.35,1.35);
+  else if(ev.key==='+'||ev.key==='=')orbit.targetZoom=clamp(orbit.targetZoom+0.1,0.62,1.8);
+  else if(ev.key==='-'||ev.key==='_')orbit.targetZoom=clamp(orbit.targetZoom-0.1,0.62,1.8);
+  else if(ev.key==='0')resetOrbit();
+  else return;
+  markOrbitInput();
+  ev.preventDefault();
+});
 
 function applyCreature(g,id,egg,rarity){
   genome=g; currentId=id; currentEggB64=egg; currentRarity=rarity;
@@ -510,6 +713,7 @@ function loop(now){
   const dtSec=Math.min(0.05,dtMs/1000);
   const ds=clamp(dtMs/16.67,0.4,2.2);
   T+=dtSec;
+  updateOrbit(dtSec);
   if(swarm){ swarm.step(T,dtSec,ds); swarm.draw(ctx); }
   if(window.FAUNA)window.FAUNA.frame++;
   requestAnimationFrame(loop);
@@ -520,6 +724,10 @@ const loadPanel=document.getElementById('loadPanel');
 const loadMsg=document.getElementById('loadMsg');
 document.getElementById('btnNew').addEventListener('click',async()=>{
   loadMsg.textContent=''; await mint(randSeed());
+});
+document.getElementById('btnView').addEventListener('click',()=>{
+  resetOrbit();
+  cv.focus({preventScroll:true});
 });
 document.getElementById('btnSave').addEventListener('click',()=>{
   if(currentEggB64)EGG.download(currentEggB64,currentId);
@@ -553,8 +761,15 @@ document.getElementById('eggFile').addEventListener('change',ev=>{
     get genome(){return genome;},
     get id(){return currentId;},
     get eggB64(){return currentEggB64;},
+    get view(){return {yaw:orbit.yaw,pitch:orbit.pitch,zoom:orbit.zoom};},
     newCreature:async()=>{ await mint(randSeed()); return currentId; },
     loadEgg:async(b64)=>{ return await loadEggStr(b64); },
+    rotateTo:(yaw,pitch=orbit.targetPitch)=>{
+      orbit.targetYaw=Number(yaw)||0;
+      orbit.targetPitch=clamp(Number(pitch)||0,-1.35,1.35);
+      markOrbitInput();
+    },
+    resetView:resetOrbit,
     frame:0
   };
   requestAnimationFrame(loop);

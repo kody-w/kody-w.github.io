@@ -2501,6 +2501,24 @@ class SiteContentTests(unittest.TestCase):
                     f"{example_path.name} references missing local demo {demo}",
                 )
 
+    def test_duneheart_attractor_is_volumetric_and_orbitable(self):
+        demo = ROOT / "learnwithkody" / "demos" / "343-fauna-duneheart.html"
+        html = demo.read_text(encoding="utf-8")
+        for marker in (
+            "targets[idx++]={bx,by,bz",
+            "gr.vz+=(tp.z-gr.z)*stiff*ds",
+            "flow(gr.x,gr.y,gr.z,T)",
+            "this.project(gr)",
+            "this.drawOrder.sort",
+            "cv.addEventListener('pointerdown'",
+            "cv.addEventListener('wheel'",
+            "cv.addEventListener('keydown'",
+            "id=\"btnView\"",
+            "resetView:resetOrbit",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, html)
+
     def test_dependency_scanner_ignores_prose_and_covers_dynamic_sinks(self):
         safe_script = r"""
           const prose = "fetch('/not-real'); image.src = '/also-not-real.png'";
