@@ -1,0 +1,22 @@
+{% assign prompt_source = include.prompt | default: "" %}
+{% assign prompt_name = include.id | default: page.slug | default: page.title | default: "prompt" | slugify %}
+{% assign prompt_id = "ai-prompt-" | append: prompt_name %}
+<section class="ai-prompt lwk-prompt" id="{{ prompt_id }}" data-copy-prompt>
+  <h2 class="lwk-prompt-label" style="font-weight: 400;">
+    <span>{{ include.label | default: "Prompt" }}</span>
+  </h2>
+  <pre><code id="{{ prompt_id }}-text" class="ai-prompt-text lwk-prompt-text"{% if include.highlights %} data-highlights="{{ include.highlights | jsonify | escape }}"{% endif %} tabindex="-1">{{ prompt_source | strip | escape }}</code></pre>
+  <div class="lwk-prompt-actions">
+    <button type="button"
+            class="lwk-copy-btn"
+            data-copy-action="prompt"
+            aria-label="Copy prompt to clipboard"
+            aria-controls="{{ prompt_id }}-text"
+            aria-describedby="{{ prompt_id }}-hint {{ prompt_id }}-status">
+      <span class="lwk-copy-icon" aria-hidden="true">⧉</span>
+      <span class="lwk-copy-label">Copy prompt</span>
+    </button>
+    <p class="lwk-prompt-hint" id="{{ prompt_id }}-hint">Paste into your favorite AI and adapt it to your context.</p>
+    <span class="lwk-copy-status" id="{{ prompt_id }}-status" role="status" aria-live="polite" aria-atomic="true"></span>
+  </div>
+</section>

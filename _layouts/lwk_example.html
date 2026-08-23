@@ -47,21 +47,7 @@ layout: default
   </article>
 
   {% if page.prompt %}
-  {% assign normalized_prompt = page.prompt | strip %}
-  <section class="lwk-prompt">
-    <h2 class="lwk-prompt-label" style="font-weight: 400;">
-      <span>Prompt</span>
-    </h2>
-    <pre><code class="lwk-prompt-text"{% if page.highlights %} data-highlights="{{ page.highlights | jsonify | escape }}"{% endif %} tabindex="-1">{{ normalized_prompt | escape }}</code></pre>
-    <div class="lwk-prompt-actions">
-      <button type="button" class="lwk-copy-btn">
-        <span class="lwk-copy-icon" aria-hidden="true">⧉</span>
-        <span class="lwk-copy-label">Copy prompt</span>
-      </button>
-      <p class="lwk-prompt-hint">Paste this into Claude, Cursor, or Copilot. Change one thing that matters to you.</p>
-      <span class="lwk-copy-status" role="status" aria-live="polite" aria-atomic="true"></span>
-    </div>
-  </section>
+  {% include ai_prompt.html prompt=page.prompt highlights=page.highlights id=page.slug %}
   {% endif %}
 
   {% if page.lessons %}
@@ -78,5 +64,3 @@ layout: default
   </nav>
 
 </div>
-
-<script src="/js/lwk-prompt.js"></script>

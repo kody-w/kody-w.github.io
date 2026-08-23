@@ -110,6 +110,25 @@ print("highlighted by rouge")
 ```
 ````
 
+Every rendered fenced code block receives one keyboard-accessible **Copy code**
+button. The shared enhancer copies only the code text, preserving whitespace.
+The source remains readable when JavaScript is unavailable.
+
+For text that is explicitly an AI prompt, use the prompt include. Do not mark ordinary prose or blockquotes as prompts:
+
+```liquid
+{% capture example_prompt %}
+Review this function for race conditions.
+Keep the public API unchanged.
+{% endcapture %}
+{% include ai_prompt.html prompt=example_prompt id="race-condition-review" %}
+```
+
+The prompt is rendered as inert escaped text with **Copy prompt**, live status,
+and vendor-neutral guidance: “Paste into your favorite AI and adapt it to your
+context.” The include never submits content or links to a provider. Use a unique,
+stable `id` when a page contains more than one prompt.
+
 ### 4. Preview locally (optional)
 
 ```bash
@@ -122,7 +141,7 @@ jekyll serve
 
 ```bash
 python3 -m unittest discover -s tests -p 'test_*.py'
-jekyll build --destination /tmp/kody-w-site-build
+jekyll build --destination _site
 ```
 
 ### 6. Publish

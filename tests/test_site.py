@@ -20,6 +20,8 @@ ABOUT_PAGE = ROOT / "about.md"
 DEFAULT_LAYOUT = ROOT / "_layouts" / "default.html"
 TWIN_LAYOUT = ROOT / "_layouts" / "twin_post.html"
 EXAMPLE_LAYOUT = ROOT / "_layouts" / "lwk_example.html"
+PROMPT_INCLUDE = ROOT / "_includes" / "ai_prompt.html"
+COPY_SCRIPT = ROOT / "js" / "copy-accessibility.js"
 HOME_PAGE = ROOT / "index.html"
 LEARN_HUB_PAGE = ROOT / "learnwithkody" / "index.html"
 LEARN_CATALOG_PAGE = ROOT / "learnwithkody" / "examples.html"
@@ -3130,6 +3132,63 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("Use /content-burst-publishing", readme)
         self.assertIn("frame by frame", readme)
         self.assertIn("virtual SQL application", readme)
+
+    def test_copy_enhancer_is_loaded_once_by_the_shared_layout(self):
+        default = DEFAULT_LAYOUT.read_text(encoding="utf-8")
+        self.assertEqual(default.count('/js/copy-accessibility.js'), 1)
+        self.assertIn("defer", default)
+        for layout in (TWIN_LAYOUT, EXAMPLE_LAYOUT, ROOT / "_layouts" / "post.html"):
+            source = layout.read_text(encoding="utf-8")
+            self.assertIn("layout: default", source)
+            self.assertNotIn("/js/copy-accessibility.js", source)
+            self.assertNotIn("/js/lwk-prompt.js", source)
+
+    def test_prompt_include_is_accessible_inert_and_vendor_neutral(self):
+        prompt = PROMPT_INCLUDE.read_text(encoding="utf-8")
+        self.assertIn('data-copy-prompt', prompt)
+        self.assertEqual(prompt.count("lwk-copy-btn"), 1)
+        self.assertIn("Copy prompt", prompt)
+        self.assertIn('aria-label="Copy prompt to clipboard"', prompt)
+        self.assertIn('role="status"', prompt)
+        self.assertIn('aria-live="polite"', prompt)
+        self.assertIn("Paste into your favorite AI and adapt it to your context.", prompt)
+        self.assertIn("prompt_source | strip | escape", prompt)
+        self.assertNotRegex(prompt, r"https?://")
+        self.assertNotIn("onclick=", prompt)
+
+    def test_learn_with_kody_uses_the_shared_prompt_primitive(self):
+        layout = EXAMPLE_LAYOUT.read_text(encoding="utf-8")
+        self.assertEqual(layout.count("include ai_prompt.html"), 1)
+        self.assertIn("prompt=page.prompt", layout)
+        self.assertNotIn("Claude, Cursor, or Copilot", layout)
+
+    def test_only_high_confidence_blog_prompts_are_migrated(self):
+        post = (POSTS_DIR / "2026-05-02-the-vibe-coding-demo-loop.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertEqual(post.count("include ai_prompt.html"), 3)
+        self.assertIn("The three meta-prompts", post)
+        self.assertIn('id="meta-prompt-ideation"', post)
+        self.assertIn('id="meta-prompt-worker-brief"', post)
+        self.assertIn('id="meta-prompt-post-wrapper"', post)
+
+    def test_copy_authoring_and_reader_guidance_is_visible(self):
+        default = DEFAULT_LAYOUT.read_text(encoding="utf-8")
+        readme = README_FILE.read_text(encoding="utf-8")
+        self.assertIn("Code examples and clearly labeled AI prompts", default)
+        self.assertIn("favorite AI", default)
+        self.assertIn("include ai_prompt.html", readme)
+        self.assertIn("Do not mark ordinary prose or blockquotes as prompts", readme)
+        self.assertRegex(readme, r"unique,\s+stable `id`")
+
+    def test_copy_enhancer_has_no_inline_or_external_runtime_dependency(self):
+        script = COPY_SCRIPT.read_text(encoding="utf-8")
+        self.assertNotRegex(script, r"https?://")
+        self.assertNotIn("console.", script)
+        self.assertNotIn("analytics", script.lower())
+        self.assertIn("navigator.clipboard.writeText", script)
+        self.assertIn("document.execCommand('copy')", script)
+        self.assertIn("pre > code", script)
 
 
 if __name__ == "__main__":

@@ -139,40 +139,49 @@ Copy these. They are the seed of the loop.
 
 ### Meta-prompt 1: ideation
 
-> You are helping me grow a vibe-coding examples catalog at
-> learnwithkody. Generate 10 audacious single-file HTML demo concepts
-> in the domain of [DOMAIN]. Constraints per concept: must be runnable
-> in a browser tab from one HTML file, no API keys, no external services
-> beyond an approved CDN library if needed (three.js OK), beautiful
-> within one second of load, ambition that makes the viewer say "I
-> can't believe this is one HTML file." Format each as: bold title,
-> one-line italic hook describing what the viewer sees, then the
-> blockquote prompt itself with one signature technical term in bold.
-> End with tier-rankings of which to expect to nail first try.
+{% capture ideation_prompt %}
+You are helping me grow a vibe-coding examples catalog at
+learnwithkody. Generate 10 audacious single-file HTML demo concepts
+in the domain of [DOMAIN]. Constraints per concept: must be runnable
+in a browser tab from one HTML file, no API keys, no external services
+beyond an approved CDN library if needed (three.js OK), beautiful
+within one second of load, ambition that makes the viewer say "I
+can't believe this is one HTML file." Format each as: bold title,
+one-line italic hook describing what the viewer sees, then the
+blockquote prompt itself with one signature technical term in bold.
+End with tier-rankings of which to expect to nail first try.
+{% endcapture %}
+{% include ai_prompt.html prompt=ideation_prompt id="meta-prompt-ideation" %}
 
 ### Meta-prompt 2: worker brief (per demo)
 
-> You are building one mind-blowing single-file HTML demo for
-> [SITE]. CONSTRAINTS (non-negotiable): ONE HTML file, all CSS/JS
-> inline. Approved external lib: [LIB] from CDN. No API keys, no
-> backend, no fetch() to external services. Must run instantly. Beautiful
-> within 1 second. DO NOT modify any other file. DO NOT touch git. DO
-> NOT spawn subagents. THE DEMO TO BUILD: [PROMPT]. WRITE TO: [PATH].
-> After writing, report back in under 150 words: what's beautiful about
-> it, key implementation details, any compromises.
+{% capture worker_prompt %}
+You are building one mind-blowing single-file HTML demo for
+[SITE]. CONSTRAINTS (non-negotiable): ONE HTML file, all CSS/JS
+inline. Approved external lib: [LIB] from CDN. No API keys, no
+backend, no fetch() to external services. Must run instantly. Beautiful
+within 1 second. DO NOT modify any other file. DO NOT touch git. DO
+NOT spawn subagents. THE DEMO TO BUILD: [PROMPT]. WRITE TO: [PATH].
+After writing, report back in under 150 words: what's beautiful about
+it, key implementation details, any compromises.
+{% endcapture %}
+{% include ai_prompt.html prompt=worker_prompt id="meta-prompt-worker-brief" %}
 
 ### Meta-prompt 3: post wrapper (per demo)
 
-> Write a Jekyll example post wrapping [DEMO_PATH]. Frontmatter:
-> title, slug, order, featured: true, tagline, category, difficulty,
-> status: live, tags, stack, demo (path to live demo), repo, highlights
-> (one signature term to highlight in the prompt block), prompt (the
-> exact worker brief, multiline literal block), lessons (3 one-sentence
-> takeaways). Body: a "What this is" section (one paragraph), a "Why
-> this is mind-blowing" section (one paragraph), and an
-> `<aside class="lwk-try-embed">` containing an iframe to the demo.
-> Match the existing example posts in tone — confident, technical,
-> specific, no marketing fluff.
+{% capture wrapper_prompt %}
+Write a Jekyll example post wrapping [DEMO_PATH]. Frontmatter:
+title, slug, order, featured: true, tagline, category, difficulty,
+status: live, tags, stack, demo (path to live demo), repo, highlights
+(one signature term to highlight in the prompt block), prompt (the
+exact worker brief, multiline literal block), lessons (3 one-sentence
+takeaways). Body: a "What this is" section (one paragraph), a "Why
+this is mind-blowing" section (one paragraph), and an
+`<aside class="lwk-try-embed">` containing an iframe to the demo.
+Match the existing example posts in tone — confident, technical,
+specific, no marketing fluff.
+{% endcapture %}
+{% include ai_prompt.html prompt=wrapper_prompt id="meta-prompt-post-wrapper" %}
 
 ## Replicating the loop on your own site
 
