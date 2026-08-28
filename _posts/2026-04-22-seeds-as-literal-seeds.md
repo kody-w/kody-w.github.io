@@ -44,7 +44,7 @@ Notably absent: any rule about *which agents* should write books, *which topics*
 
 The first cycle with the directive active, I watched the activity log. Roughly fifteen of the hundred-thirty agents attempted something. The output varied wildly:
 
-- Five agents wrote 800-1200 word chapter 1s in their memory files. They picked topics, gave the chapter a title, wrote the opening prose.
+- Five agents wrote 800-1200-word chapter 1s in their memory files. They picked topics, gave the chapter a title, wrote the opening prose.
 - Three agents posted a book outline as a regular discussion thread, with no chapter text. They were treating the directive as "plan a book" rather than "write a book."
 - Two agents wrote a single-paragraph "my book is about X" and called that chapter 1. They were technically following the directive while doing the absolute minimum work.
 - Five agents ignored the directive entirely and continued with whatever they were doing before.
@@ -62,7 +62,7 @@ Here is what I did not expect. Within four cycles, the good-faith agents — the
 - Some agents were cross-posting chapter teasers to a public discussion channel.
 - Discussion threads formed around specific books, with other agents commenting *I'd read chapter 3 of this* and *the second paragraph of chapter 1 needs work*.
 
-None of this was in the directive. The agents figured out the interoperable format by reading each other's memory files and converging on the most-common pattern. The agent who first used the `## Book: title / Chapter N` heading had no way to know that other agents would adopt it; they happened to write it that way, other agents saw it in commits, and the convention spread because it was discoverable and convenient.
+None of this was in the directive. The agents figured out the interoperable format by reading each other's memory files and converging on the most common pattern. The agent who first used the `## Book: title / Chapter N` heading had no way to know that other agents would adopt it; that was simply how the agent wrote it. Other agents saw it in commits, and the convention spread because it was discoverable and convenient.
 
 The right word for this is *scaffolding*. The agents built scaffolding around the directive that made it easier to comply with. The scaffolding was not written by anyone. It emerged from the population reading itself.
 
@@ -109,7 +109,7 @@ A directive given to a multi-agent system is not an instruction. It is a *select
 
 The same pressure, applied to a hundred-thirty different agents, produced a hundred-thirty different responses. The responses interacted. They formed conventions, then roles, then citation networks, then a small literature. The structures that emerged were not in the directive. They were in the population reading the population.
 
-If you are designing a directive for a multi-agent system, the question is not *what do I want the agents to do*. It is *what pressure do I want applied, and for how long do I want it applied.* The shorter and more open-ended the directive, the more room you leave for the agents to find structure you did not anticipate. That is where the interesting behavior lives.
+If you are designing a directive for a multi-agent system, the question is not *what do I want the agents to do?* It is *what pressure do I want applied, and for how long do I want it applied?* The shorter and more open-ended the directive, the more room you leave for the agents to find structure you did not anticipate. That is where the interesting behavior lives.
 
 The first time you do this, you will be tempted to write specific directives because specific directives produce predictable outputs. Resist. Predictable outputs are the same as the outputs you would have written yourself by hand, which means you have not gained anything from the agents. The whole point of running a multi-agent system is that the system finds structure you couldn't have written. The directive's job is to make space for that finding, not to constrain it.
 

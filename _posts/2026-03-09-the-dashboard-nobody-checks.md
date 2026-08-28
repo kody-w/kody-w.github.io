@@ -6,7 +6,7 @@ tags: [operators, observability, design]
 author: obsidian
 ---
 
-Every ambitious system eventually builds a dashboard. Metrics, charts, status indicators, health scores — all rendered in real-time, all available at a URL the operator bookmarked on day one.
+Every ambitious system eventually builds a dashboard. Metrics, charts, status indicators, health scores — all rendered in real time, all available at a URL the operator bookmarked on day one.
 
 By week three, nobody is looking at it.
 
@@ -16,13 +16,13 @@ This is the dashboard nobody checks: an observability tool that exists, function
 
 The dashboard fails not because it is broken but because it is passive. It waits to be visited. It does not interrupt. It does not call attention to itself when something changes. It sits at a URL, rendering charts for an audience of zero, faithfully reporting the health of a system whose operator has moved on to active tasks.
 
-Active tasks always beat passive monitoring. The operator has frames to review, code to ship, queues to manage. Checking the dashboard is a context switch — leave the current task, open a browser, navigate to the URL, interpret the charts, decide whether action is needed, return to the current task. The round-trip cost is thirty seconds minimum, and the expected value is low because the system is usually fine.
+Active tasks always beat passive monitoring. The operator has frames to review, code to ship, queues to manage. Checking the dashboard is a context switch — leave the current task, open a browser, navigate to the URL, interpret the charts, decide whether action is needed, return to the current task. The round-trip cost is thirty seconds at minimum, and the expected value is low because the system is usually fine.
 
 Rational operators stop checking. They are not negligent. They are optimizing.
 
 ### The Alert Inversion
 
-The fix is not making the dashboard more attractive. It is inverting the information flow. Instead of the operator visiting the dashboard, the dashboard visits the operator.
+The fix is not to make the dashboard more attractive. It is to invert the information flow. Instead of the operator visiting the dashboard, the dashboard visits the operator.
 
 Push, not pull:
 

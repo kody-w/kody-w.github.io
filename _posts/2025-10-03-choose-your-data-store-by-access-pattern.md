@@ -12,7 +12,7 @@ Same author. Same toolchain. Both deploy through the same continuous-integration
 
 Completely opposite storage models.
 
-The community lives in a database. Posts are rows. Comments are rows. Reactions are rows. There are tens of thousands of records. They have a backend, a web UI, an API, and full-text search.
+The community lives in a database. Posts are rows. Comments are rows. Reactions are rows. There are tens of thousands of records. The community has a backend, a web UI, an API, and full-text search.
 
 The blog lives in markdown files. Each post is a file. There are hundreds of files. There is no backend, no API, no reactions, no comments. Just a static site generator and a flat directory.
 
@@ -74,7 +74,7 @@ The single author is locked into one specific tool. The export path is whatever 
 
 Worse: every dependency the CMS adds is a future risk to the durability of the writing. CMS gets discontinued? Database migration. CMS bumps a major version? Schema migration. CMS gets bought by a company that turns it into a SaaS? Re-migration, possibly under hostile terms. None of that is hypothetical; it has happened to every long-lived author who chose a managed CMS.
 
-The right choice for a blog is flat files in a directory the author controls. Markdown is convention; the principle is "files." Plain HTML works. Org-mode works. Any text format you can read in twenty years with a text editor works. The point is that the content's home is a directory, and the directory's home is git, and git's home is wherever I push it next.
+The right choice for a blog is flat files in a directory the author controls. Markdown is a convention; the principle is "files." Plain HTML works. Org-mode works. Any text format you can read in twenty years with a text editor works. The point is that the content's home is a directory, and the directory's home is git, and git's home is wherever I push it next.
 
 ## The five-question diagnostic
 
@@ -100,7 +100,7 @@ Short-shelf-life content tolerates platform lock-in. Long-shelf-life content nee
 
 If the answer is "very important," files win again. A directory of markdown files works with every text editor, every diff tool, every search tool, every static analysis tool. A database requires whatever the CMS offers, plus whatever you build to extend it.
 
-Each question pushes you toward one model or the other. The answers usually cluster cleanly. When they cluster *toward database*, you have a database surface. When they cluster *toward files*, you have a files surface. When they cluster mixed, you almost always actually have *two surfaces* dressed up as one, and you should split them.
+Each question pushes you toward one model or the other. The answers usually cluster cleanly. When they cluster *toward a database*, you have a database surface. When they cluster *toward files*, you have a files surface. When the answers are mixed, you almost always actually have *two surfaces* dressed up as one, and you should split them.
 
 ## When you have both, split them
 
@@ -110,7 +110,7 @@ A typical example: a SaaS app where customers post short-form messages in real t
 
 Both lead to misery. The community-in-files version cannot handle write concurrency. The articles-in-database version makes the article writers fight the CMS forever and prevents portability.
 
-The right answer is two storage subsystems behind one product surface. The community uses the database. The articles use files. The frontend joins them at render time. Each storage layer is right for its own workload. Splitting feels redundant; running them merged feels coherent. The redundant version is the correct one.
+The right answer is two storage subsystems behind one product surface. The community uses the database. The articles use files. The frontend joins them at render time. Each storage layer is right for its own workload. Splitting feels redundant; keeping them merged feels coherent. The redundant version is the correct one.
 
 The cost is a small amount of integration code and the discipline to maintain two systems instead of one. The benefit is that each surface uses a storage model that matches its access pattern, and neither surface is paying the cost of the other's tradeoffs.
 
@@ -122,7 +122,7 @@ Most teams' content surfaces include at least one that is wrong for their defaul
 
 The cost is invisible because nobody benchmarks it. The marketing site nobody can edit on a plane. The documentation that requires logging into a CMS to fix a typo. The articles that get accidentally deleted in a database migration. The author who wants to leave the platform and discovers the export is a partial JSON dump that requires custom transformation.
 
-These are the symptoms of a wrong default. The fix is to recognize per-surface what the access pattern is, and choose the storage model that matches.
+These are the symptoms of a wrong default. The fix is to recognize each surface's access pattern and choose the storage model that matches.
 
 ## The summary, made dogmatic
 

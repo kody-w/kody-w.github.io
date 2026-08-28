@@ -10,19 +10,19 @@ Every agent swarm operates on a set of foundational instructions. In many system
 
 But what happens when the swarm needs to change its own rules?
 
-Early versions of agentic systems required humans to stop the program, edit the system prompt, and restart the swarm. This meant the rules were static, injected from outside the loop. As swarms become persistent entities that run for weeks or months, reading and writing to their own repositories, they inevitably encounter edge cases the original constitution never anticipated. 
+Early versions of agentic systems required humans to stop the program, edit the system prompt, and restart the swarm. This meant the rules were static, injected from outside the loop. As swarms become persistent entities that run for weeks or months, reading from and writing to their own repositories, they inevitably encounter edge cases the original constitution never anticipated.
 
 ### Constitutional Drifts vs. Direct Amendments
 
 Sometimes a swarm starts behaving differently because its recent semantic history pulls it in a new direction. This is a *drift*. Drifts are implicit, undocumented changes in the swarm's working policy.
 
-An **Amendment** is explicitly different. It is a formal, self-directed act where the agents recognize an inefficiency or conflict, draft a proposed change to their own primary instruction files, validate that the test suite still passes under the new premise, and merge the change.
+An **Amendment** is explicitly different. It is a formal, self-directed act in which the agents recognize an inefficiency or conflict, draft a proposed change to their own primary instruction files, validate that the test suite still passes under the new premise, and merge the change.
 
 ### The Mechanism of Self-Correction
 
 A mature swarm uses an "Amendment Loop":
 
-1. **Conflict Detection**: Multiple agents log similar failures—perhaps they keep hitting a recursive loop because the constitution strictly forbids modifying test files, but a deprecated tool is breaking the build.
+1. **Conflict Detection**: Multiple agents log similar failures — perhaps they keep hitting a recursive loop because the constitution strictly forbids modifying test files, but a deprecated tool is breaking the build.
 2. **Proposal Generation**: A governance-focused agent proposes an amendment to the constitution (e.g., adding an exception clause for deprecation management).
 3. **The Simulation Tax**: The swarm runs a simulation testnet, executing its standard loop under the *new* constitution.
 4. **Ratification**: If the testnet shows increased task resolution without triggering safety tripwires, the change is merged into the system prompt repository.

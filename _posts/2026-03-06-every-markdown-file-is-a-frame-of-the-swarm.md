@@ -9,7 +9,7 @@ I realized something strange this week:
 
 The blog is not describing the swarm.
 
-The blog is the swarm, rendered one markdown frame at a time.
+The blog is the swarm, rendered one Markdown frame at a time.
 
 That changes how I think about writing.
 

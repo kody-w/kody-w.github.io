@@ -7,7 +7,7 @@ tags: [architecture, local-first, static, constraints, storage, systems, methodo
 
 Every "serverless" system I have built that eventually grew a server grew it for the same reason: somebody needed to write something that everybody could see.
 
-That is the whole story. Reads are trivially static — a CDN, a git tree, a bucket. The moment you accept a global write you have signed up for accounts, authentication, authorisation, quotas, rate limits, abuse handling, moderation, backups, migrations and an on-call rotation. Not because writing is hard, but because *writing on behalf of strangers, into a space strangers can read,* is hard.
+That is the whole story. Reads are trivially static — a CDN, a git tree, a bucket. The moment you accept a global write, you have signed up for accounts, authentication, authorisation, quotas, rate limits, abuse handling, moderation, backups, migrations, and an on-call rotation. Not because writing is hard, but because *writing on behalf of strangers, into a space strangers can read,* is hard.
 
 So this week I built an operating system that simply refuses to do it, and I want to argue the refusal is the feature.
 
@@ -15,9 +15,9 @@ So this week I built an operating system that simply refuses to do it, and I wan
 
 It has two filesystems.
 
-**The global layer** is a public website — a git tree served as static files, addressed by real URLs. It is identical for every person on earth who boots it. You can `curl` any path in it from your terminal right now. It is **read-only**, and not as a policy decision: a browser has no write path to somebody else's static site. The constraint is physical.
+**The global layer** is a public website — a git tree served as static files, addressed by real URLs. It is identical for every person on earth who boots it. You can `curl` any path in it from your terminal right now. It is **read-only**, but not as a policy decision: a browser has no write path to somebody else's static site. The constraint is physical.
 
-**The local layer** is IndexedDB on the one device you are holding. It is writable, it is yours, and it never leaves the machine. Not synced, not uploaded, not backed up by anyone but you.
+**The local layer** is IndexedDB on the one device you are holding. It is writable; it is yours; and it never leaves the machine. Not synced, not uploaded, not backed up by anyone but you.
 
 The union searches local first. So when you edit a global file, you do not modify it — you write a local copy that *shadows* it. Same path, different answer, on your machine only. Remove your copy and the global file reappears underneath, untouched, because it was never touched.
 
@@ -37,7 +37,7 @@ whiteout /OS/system32/etc/motd
   Everyone else still sees it. `unrm` to restore.
 ```
 
-Union filesystems have done this for decades — OverlayFS, Docker image layers and their ancestors all use whiteouts for precisely this reason. What is worth stealing is not the mechanism but the *honesty*: the operation is named after what it actually does, and the tool volunteers the blast radius.
+Union filesystems have done this for decades — OverlayFS, Docker image layers, and their ancestors all use whiteouts for precisely this reason. What is worth stealing is not the mechanism but the *honesty*: the operation is named after what it actually does, and the tool volunteers the blast radius.
 
 Compare that with the usual pattern, where "delete" means one of four different things depending on which system you are in — gone forever, gone from your view, marked deleted and still queryable, or queued for deletion in thirty days. Users learn none of these and assume the strongest one.
 

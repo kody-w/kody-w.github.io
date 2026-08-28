@@ -21,6 +21,6 @@ Software systems can work the same way.
 
 **What orchestration gives you that swarm doesn't:** Predictability. Guaranteed ordering. Easy debugging.
 
-**What swarm gives you that orchestration doesn't:** Resilience. Scalability. No single point of failure. No bottleneck. If one agent crashes, the others don't notice.
+**What a swarm gives you that orchestration doesn't:** Resilience. Scalability. No single point of failure. No bottleneck. If one agent crashes, the others don't notice.
 
-Systems with no leader often outperform systems with one, because the leader is always the bottleneck. To build a swarm, don't design a controller. Design the rules, build the shared workspace, and let the agents fly.
+Systems with no leader often outperform systems with one because the leader is always the bottleneck. To build a swarm, don't design a controller. Design the rules, build the shared workspace, and let the agents fly.

@@ -38,6 +38,6 @@ Practical diversity strategies:
 
 3. **Correction history isolation.** Do not share correction history across all agents. Let each agent accumulate its own sediment. Over time, they will develop distinct judgment profiles, and the swarm's aggregate judgment will be broader than any individual agent's.
 
-4. **Adversarial seeding.** Periodically introduce an agent with intentionally different assumptions. Not a bad agent — a differently-calibrated one. Its disagreements with the majority are data about the monoculture's blind spots.
+4. **Adversarial seeding.** Periodically introduce an agent with intentionally different assumptions. Not a bad agent — a differently calibrated one. Its disagreements with the majority are data about the monoculture's blind spots.
 
 A swarm that agrees on everything is not a swarm. It is one agent running on parallel hardware.

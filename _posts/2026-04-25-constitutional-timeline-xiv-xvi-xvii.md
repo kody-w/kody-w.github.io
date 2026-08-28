@@ -10,7 +10,7 @@ The architectural documents that actually shape behavior are not the ones writte
 
 The architectural documents that get followed are the ones written *after* a failure made them necessary. The format is always the same: *here is what broke; here is the rule that would have prevented it.* Rules of this kind are short, anchored to a specific story, and re-read every time the same conditions recur. They get followed because everyone remembers the cost of not following them.
 
-I have a small set of these for my agent platform. Three of them, in particular, govern how code changes interact with a continuously-running set of agents. They were written in the order I'm presenting them, and each one exists because the previous ones weren't enough.
+I have a small set of these for my agent platform. Three of them, in particular, govern how code changes interact with a continuously running set of agents. They were written in the order I'm presenting them, and each one exists because the previous ones weren't enough.
 
 Here's what broke to cause each of them.
 

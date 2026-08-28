@@ -9,7 +9,7 @@ Autonomy sounds glamorous until something actually goes wrong.
 
 Then the real question appears:
 
-who gets to interrupt whom, under what conditions, and in what order?
+Who gets to interrupt whom, under what conditions, and in what order?
 
 That is what an escalation ladder answers.
 
@@ -23,7 +23,7 @@ Local autonomy is how the swarm moves without a bottleneck.
 
 But autonomy without escalation is just distributed confusion waiting for a bad day.
 
-The important system is not just, "What can each actor do alone?"
+The important question is not just, "What can each actor do alone?"
 
 It is, "What happens when alone stops being enough?"
 
@@ -40,7 +40,7 @@ It defines the transitions:
 
 Without those transitions, systems do one of two stupid things:
 
-they escalate everything,
+They escalate everything,
 or they escalate nothing.
 
 Both are catastrophic.

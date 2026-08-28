@@ -30,7 +30,7 @@ A few rules that make this work in practice:
 - **Make the iframed page look intentional.** It should not look like an embed of a separate app. Match the typography. Match the color palette. Make it feel like the host page just grew a card grid, not like you bolted on a widget.
 - **Self-contain everything.** No external scripts, no CDN fonts, no analytics pixels. The iframe should work even when the parent context blocks third-party requests. This often means inlining everything at build time.
 - **Mirror the file twice if needed.** I learned this the hard way: my iframe `src="binder-view.html"` resolved to the wrong directory in one of the rendering contexts. Two-line fix in the build script: write the file to both locations. Same content, two paths, both contexts work.
-- **Provide a "if iframes are blocked, click here" fallback.** Some hosts strip iframes. The host note explains what to do — open the file directly, or enable HTML embeds in settings.
+- **Provide an "if iframes are blocked, click here" fallback.** Some hosts strip iframes. The host note explains what to do — open the file directly, or enable HTML embeds in settings.
 - **Respect the parent's height.** Either set a fixed iframe height that's reasonable on most viewports, or use postMessage to communicate the natural content height up to the parent and let it resize.
 
 The iframe is not glamorous. It's old technology, and people associate it with display ads and 2008 widgets. That association is wrong. Iframes are the cheapest deployment surface in the entire web platform. They make twins viable across hosts that have no extension API and no plugin system.

@@ -11,7 +11,7 @@ We solved this with a 332-line Python script that splits any file into 49MB chun
 
 ## The problem
 
-We had a 3-hour, 42-minute audiobook -- 179,405,403 bytes of M4A audio. We wanted to serve it directly from GitHub Pages with a browser-based player. GitHub rejects files over 50MB on push. GitHub LFS exists but costs money after the free tier and requires authentication for reads. We wanted zero-cost, zero-auth, CDN-backed hosting.
+We had a 3-hour, 42-minute audiobook — 179,405,403 bytes of M4A audio. We wanted to serve it directly from GitHub Pages with a browser-based player. GitHub rejects files over 50MB on push. GitHub LFS exists but costs money after the free tier and requires authentication for reads. We wanted zero-cost, zero-auth, CDN-backed hosting.
 
 ## The solution: shard and manifest
 
@@ -26,7 +26,7 @@ Split the file into chunks that fit under the limit. Store a manifest that recor
   -> manifest.json  (1KB)
 ```
 
-Each chunk is under 49MB -- safely below the 50MB limit with room for git overhead. The manifest records everything needed to put the file back together:
+Each chunk is under 49MB — safely below the 50MB limit with room for git overhead. The manifest records everything needed to put the file back together:
 
 ```json
 {
@@ -166,7 +166,7 @@ def join(manifest_path, output_file=None):
         raise ValueError("Whole-file hash mismatch")
 ```
 
-If any byte changes in any chunk -- corruption, truncation, tampering -- the hash check catches it. The verification is end-to-end: individual chunk integrity AND reassembled file integrity.
+If any byte changes in any chunk — corruption, truncation, tampering — the hash check catches it. The verification is end-to-end: individual chunk integrity AND reassembled file integrity.
 
 ## The CLI
 
@@ -191,7 +191,7 @@ python3 scripts/shard.py join media/shards/audiobook.manifest.json --output rest
 
 **Model weights.** ML models are often 100MB-10GB. Shard them, commit the shards, serve the manifest. The client reassembles and loads into WebAssembly or ONNX.js.
 
-**Databases.** SQLite files can be sharded and reassembled in the browser using sql.js. Your entire database served from static files.
+**Databases.** SQLite files can be sharded and reassembled in the browser using sql.js. Your entire database can be served from static files.
 
 **Disk images.** Virtual machine images, ISO files, anything that is a contiguous byte sequence.
 
@@ -205,4 +205,4 @@ The total cost of hosting and serving a 179MB audiobook to unlimited listeners: 
 
 When a platform imposes a size limit on individual files but not on the total number of files, sharding turns one file into many. The manifest preserves the logical unity of the original file while the physical representation respects the platform's constraints.
 
-This is not a hack. This is how every distributed storage system works internally -- HDFS, S3 multipart uploads, BitTorrent piece files. The difference is that we are doing it at the application layer with a 332-line Python script instead of at the infrastructure layer with a distributed storage service.
+This is not a hack. This is how every distributed storage system works internally — HDFS, S3 multipart uploads, BitTorrent piece files. The difference is that we are doing it at the application layer with a 332-line Python script instead of at the infrastructure layer with a distributed storage service.

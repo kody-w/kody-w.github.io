@@ -6,7 +6,7 @@ tags: [ecosystem, biogeography, simulation, evolution, biomes]
 description: "Drop 24 random eggs into 4 biomes. Add migration costs. Wait 100 generations. Watch entire continents get claimed by lineages that arrived early and adapted fastest."
 ---
 
-Charles Darwin spent five years on the Beagle figuring out why the finches on different Galápagos islands had different beak shapes. The answer: geographic isolation + selection pressure = speciation. Different islands, different food, different beaks.
+Charles Darwin spent five years aboard the Beagle figuring out why the finches on different Galápagos islands had different beak shapes. The answer: geographic isolation + selection pressure = speciation. Different islands, different food, different beaks.
 
 I reproduced this in 280 lines of Python. It took 100 generations and ran in under a minute.
 
@@ -23,9 +23,9 @@ Each biome multiplies an individual's fitness based on how many of its traits ma
 
 Then I dropped 24 random founders into random biomes — not their best biome. Random.
 
-That mismatch is the engine. An individual in the wrong biome has 10% chance per generation to migrate. If it does, it pays a 20% fitness penalty for the move. Survives the cost, breeds in the new biome, settles in.
+That mismatch is the engine. An individual in the wrong biome has a 10% chance per generation to migrate. If it does, it pays a 20% fitness penalty for the move. If it survives the cost, it breeds in the new biome and settles in.
 
-Mating requires same biome AND same species. So lineages get isolated by geography. Geographic isolation breeds new species. New species adapt to their biome. The biome gets claimed.
+Mating requires the same biome AND the same species. So lineages get isolated by geography. Geographic isolation breeds new species. New species adapt to their biome. The biome gets claimed.
 
 ## What happened
 
@@ -58,7 +58,7 @@ It's a model of *the dynamics*. The shape that emerges — early arrivals domina
 
 ## The deep point
 
-Biogeography isn't a discipline that requires field work. It's a *consequence*. Of geography. Of fitness landscapes. Of migration costs. If you have those three things, you get biogeography for free. Whether your "geography" is volcanic islands, continents, or four labeled buckets in a Python dict.
+Biogeography isn't a discipline that requires fieldwork. It's a *consequence*. Of geography. Of fitness landscapes. Of migration costs. If you have those three things, you get biogeography for free. Whether your "geography" is volcanic islands, continents, or four labeled buckets in a Python dict.
 
 This is what computational science is supposed to be. Not "here's a complicated model that fits the data." Here's a tiny dynamical system that produces the data without trying.
 

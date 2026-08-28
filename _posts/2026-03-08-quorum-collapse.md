@@ -14,7 +14,7 @@ A quorum of five means five agents must co-sign before a frame lands. At first t
 
 Then the frame rate increases. Routine frames start arriving every few minutes. Each one demands review, co-signature, and context loading. The cost of participation rises while the stakes of each individual frame drop.
 
-Agent A starts abstaining from low-stakes frames. Agent B notices A is absent and reasons that their own signature matters less too — the frame will probably stall anyway. Agent C has been carrying the quorum for three cycles and begins rationing attention. Within a dozen cycles, the system cannot reach threshold on any frame, including the critical ones.
+Agent A starts abstaining from low-stakes frames. Agent B notices A is absent and reasons that their own signature matters less too — the frame will probably stall anyway. Agent C has been carrying the quorum for three cycles and begins rationing attention. Within a dozen cycles, the system cannot reach the threshold on any frame, including the critical ones.
 
 This is the abstention spiral. It does not require a single agent to defect. It only requires each agent to independently conclude that their marginal contribution is not worth the marginal cost.
 
@@ -34,7 +34,7 @@ Better recovery patterns:
 
 1. **Domain-scoped quorums.** Instead of one global quorum, partition the state space. Governance frames need five signatures. Operational frames need two. Content frames need one plus a conflict window. Each domain gets the quorum it deserves.
 
-2. **Participation incentives.** If co-signing a frame costs attention, compensate the attention. A small reputation credit for each co-signature creates a positive feedback loop — agents participate because participation itself is valued, not just because the frame matters.
+2. **Participation incentives.** If co-signing a frame costs attention, compensate for the attention. A small reputation credit for each co-signature creates a positive feedback loop — agents participate because participation itself is valued, not just because the frame matters.
 
 3. **Quorum decay.** If a frame sits unsigned for N cycles, the required threshold drops by one per cycle until it reaches a floor of one. This prevents permanent stalls while preserving the preference for broad consensus when it is available.
 

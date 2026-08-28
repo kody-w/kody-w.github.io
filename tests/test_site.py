@@ -3,6 +3,7 @@ import binascii
 import hashlib
 import json
 import re
+import runpy
 import unittest
 from html.parser import HTMLParser
 from pathlib import Path
@@ -25,6 +26,12 @@ COPY_SCRIPT = ROOT / "js" / "copy-accessibility.js"
 HOME_PAGE = ROOT / "index.html"
 LEARN_HUB_PAGE = ROOT / "learnwithkody" / "index.html"
 LEARN_CATALOG_PAGE = ROOT / "learnwithkody" / "examples.html"
+WORK_PAGE = ROOT / "work" / "index.html"
+WORK_DATA = ROOT / "api" / "works.json"
+WORK_SCRIPT = ROOT / "js" / "work.js"
+WORK_BUILDER = ROOT / "scripts" / "build_works.py"
+NEWSLETTER_PAGE = ROOT / "newsletter" / "index.html"
+NEWSLETTER_FORM = ROOT / "_includes" / "newsletter_form.html"
 STAGING_WORKFLOW = ROOT / ".github" / "workflows" / "staging-canary.yml"
 CONFIG_FILE = ROOT / "_config.yml"
 README_FILE = ROOT / "README.md"
@@ -3142,6 +3149,101 @@ class SiteContentTests(unittest.TestCase):
             self.assertIn("layout: default", source)
             self.assertNotIn("/js/copy-accessibility.js", source)
             self.assertNotIn("/js/lwk-prompt.js", source)
+
+    def test_newsletter_signup_uses_jetpack_subscriber_backend(self):
+        config = yaml.safe_load(CONFIG_FILE.read_text(encoding="utf-8"))
+        self.assertEqual(
+            config.get("newsletter_url"),
+            "/newsletter/#newsletter-signup",
+        )
+        self.assertEqual(
+            config.get("newsletter_action"),
+            "https://subscribe.wordpress.com/",
+        )
+        self.assertEqual(config.get("newsletter_blog_id"), "102271194")
+
+        default = DEFAULT_LAYOUT.read_text(encoding="utf-8")
+        self.assertEqual(default.count("site.newsletter_url"), 1)
+        self.assertIn('class="page-link newsletter-link"', default)
+        self.assertIn("{% include newsletter_form.html %}", default)
+
+        form = NEWSLETTER_FORM.read_text(encoding="utf-8")
+        self.assertIn('name="email"', form)
+        self.assertIn('name="action" value="subscribe"', form)
+        self.assertIn('name="blog_id" value="{{ site.newsletter_blog_id }}"', form)
+        self.assertIn('name="sub-type" value="widget"', form)
+        self.assertIn("Get new posts by email", form)
+
+        front_matter, body = parse_front_matter(NEWSLETTER_PAGE)
+        self.assertEqual(front_matter.get("layout"), "default")
+        self.assertEqual(front_matter.get("title"), "Newsletter")
+        self.assertEqual(front_matter.get("permalink"), "/newsletter/")
+        self.assertIn("#newsletter-signup", body)
+
+    def test_public_work_catalog_is_searchable_and_data_driven(self):
+        front_matter, body = parse_front_matter(WORK_PAGE)
+        self.assertEqual(front_matter.get("layout"), "default")
+        self.assertEqual(front_matter.get("title"), "Everything I've Built")
+        self.assertEqual(front_matter.get("permalink"), "/work/")
+        for marker in (
+            'id="work-featured"',
+            'id="work-search"',
+            'id="work-family"',
+            'id="work-activity"',
+            'id="work-catalog"',
+            'id="work-result-count" aria-live="polite"',
+            'id="work-surfaces-title"',
+            "/js/work.js",
+            "Kody2day",
+            "Learn with Kody",
+            "RAPP Vision",
+        ):
+            self.assertIn(marker, body)
+        self.assertNotIn('id="work-catalog" aria-live', body)
+        self.assertNotIn('id="work-featured" aria-live', body)
+
+        payload = json.loads(WORK_DATA.read_text(encoding="utf-8"))
+        self.assertEqual(payload.get("schema"), "kodyw-public-works/1.0")
+        self.assertEqual(payload.get("owner"), "kody-w")
+        self.assertGreaterEqual(payload["stats"]["public_source_repos"], 400)
+        self.assertGreaterEqual(payload["stats"]["featured"], 8)
+        self.assertEqual(payload["stats"]["public_source_repos"], len(payload["repos"]))
+        self.assertTrue(all(not repo.get("full_name", "").startswith("private/") for repo in payload["repos"]))
+
+        script = WORK_SCRIPT.read_text(encoding="utf-8")
+        self.assertIn('fetch("/api/works.json")', script)
+        self.assertIn("escapeHtml", script)
+        self.assertIn("safeUrl", script)
+        self.assertIn("visibleLimit", script)
+
+        builder = WORK_BUILDER.read_text(encoding="utf-8")
+        self.assertIn("if not repo.get(\"fork\")", builder)
+        self.assertIn("public_source_repos", builder)
+        functions = runpy.run_path(str(WORK_BUILDER))
+        self.assertTrue(
+            functions["catalogs_equal"](
+                {"generated_at": "old", "repos": [{"name": "RAPP"}]},
+                {"generated_at": "new", "repos": [{"name": "RAPP"}]},
+            )
+        )
+        self.assertFalse(
+            functions["catalogs_equal"](
+                {"generated_at": "same", "repos": [{"name": "RAPP"}]},
+                {"generated_at": "same", "repos": [{"name": "RAR"}]},
+            )
+        )
+
+        css = (ROOT / "css" / "main.css").read_text(encoding="utf-8")
+        self.assertIn(".work-show-all[hidden]", css)
+        self.assertIn("background: #1769c2;", css)
+        self.assertIn("color: #1769c2;", css)
+        self.assertNotIn("var(--surface)", css)
+
+        workflow = (ROOT / ".github" / "workflows" / "refresh-works.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("pages: write", workflow)
+        self.assertIn('pages/builds"', workflow)
 
     def test_prompt_include_is_accessible_inert_and_vendor_neutral(self):
         prompt = PROMPT_INCLUDE.read_text(encoding="utf-8")

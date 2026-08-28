@@ -32,7 +32,7 @@ A deleted frame leaves fingerprints everywhere it was loaded:
 
 ### Reconstruction vs. Re-derivation
 
-Sometimes forensics recovers the full frame. More often, it recovers an approximation — the gist of what was said, not the exact text. The operator must then decide: restore the approximation as-is, or re-derive the frame from first principles?
+Sometimes forensics recovers the full frame. More often, it recovers an approximation — the gist of what was said, not the exact text. The operator must then decide: restore the approximation as is, or re-derive the frame from first principles?
 
 Restoration is faster but carries uncertainty. You are committing a reconstruction that might not match the original. If downstream frames depended on specific wording, the reconstruction might introduce subtle incoherence.
 

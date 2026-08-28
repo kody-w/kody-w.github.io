@@ -50,7 +50,7 @@ Our staging build does three things:
 2. **Scans for data leaks** — Pattern matching for emails, phone numbers, API keys. If private data leaked into a public page, the build warns you.
 3. **Generates the artifact** — A complete, ready-to-deploy site that you can review before promoting.
 
-If any step fails, staging stays broken. Production is untouched. You fix the issue locally, push again, and the canary re-runs.
+If any step fails, staging stays broken. Production is untouched. You fix the issue locally, push again, and the canary reruns.
 
 ## Static Files All the Way Down
 

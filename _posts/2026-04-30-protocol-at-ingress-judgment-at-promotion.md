@@ -61,7 +61,7 @@ In every case, the same insight: the *acceptance* decision and the *canonicaliza
 There's a non-obvious upside: when something goes wrong, you can tell *where* it went wrong.
 
 - "We accepted zero candidates this frame" → ingress problem. The parser is too strict, or the input format has drifted.
-- "We accepted candidates but promoted none" → promotion problem. The scoring function is mis-weighted, or the candidates genuinely were all garbage.
+- "We accepted candidates but promoted none" → promotion problem. The scoring function is misweighted, or the candidates genuinely were all garbage.
 - "We promoted a candidate that was clearly garbage" → scoring problem. The composite didn't catch a failure mode you'd expect it to.
 
 Each failure mode has a different fix in a different file. The separation of concerns is the separation of failure modes.

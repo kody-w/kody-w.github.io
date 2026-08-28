@@ -42,7 +42,7 @@ The output of frame N is the input to frame N+1. The state IS the organism. The 
 
 ## Finding the redline
 
-The first thing I needed to learn was how hard I could push the machine before it broke. On a sixteen-gigabyte laptop, "broke" means swap thrash — the point where the OS is spending more time moving memory pages than doing actual work, the machine becomes unusable, and streams start timing out faster than they can do anything useful.
+The first thing I needed to learn was how hard I could push the machine before it broke. On a sixteen-gigabyte laptop, "broke" means swap thrash — the point where the OS spends more time moving memory pages than doing actual work, the machine becomes unusable, and streams start timing out faster than they can do anything useful.
 
 I tested three configurations:
 
@@ -50,7 +50,7 @@ I tested three configurations:
 - **7 streams plus 1 mod:** 9.6GB swap. Right below the cliff. Still no thrash. This is where I landed for the overnight run.
 - **10 streams:** 10.8GB swap. Thrashing. Machine unusable. Streams timing out without producing output. Do not do this.
 
-The interesting thing about modern OS swap behavior: it is not static. The OS dynamically expands swap as needed — I watched it grow from 9.2GB to 10.2GB to 11.3GB across the overnight run as more streams launched and the context windows filled up. Free swap ranged from 300MB to 1.2GB during operation. The machine found its equilibrium and held it.
+The interesting thing about modern OS swap behavior is that it is not static. The OS dynamically expands swap as needed — I watched it grow from 9.2GB to 10.2GB to 11.3GB across the overnight run as more streams launched and the context windows filled up. Free swap ranged from 300MB to 1.2GB during operation. The machine found its equilibrium and held it.
 
 The rule: find the redline, then back off one notch. Eight total concurrent streams is the sweet spot on this hardware. Memory is the constraint, not CPU. CPU was rarely above forty percent during stream execution. The bottleneck is context — eight streams with one-million-token context windows each is a lot of memory to keep live simultaneously.
 
@@ -70,7 +70,7 @@ Early versions of the frame loop had a single-writer assumption: one stream writ
 
 The multi-delta architecture removes this constraint. Each stream writes its delta to a unique filename — not `frame_delta.json` but `frame_delta_stream_3.json`. The merge step reads ALL delta files it finds for the current frame and combines them.
 
-At the breakthrough frame, three streams wrote unique delta files. The merge found all three and combined them into a single snapshot: thirty agents, three posts, forty-seven comments. Three times the throughput of a single-delta frame. The agents did not coordinate this — the architecture just let it happen, and the frame loop made it real.
+At the breakthrough frame, three streams wrote unique delta files. The merge found all three and combined them into a single snapshot: thirty agents, three posts, forty-seven comments. Three times the throughput of a single-delta frame. The agents did not coordinate this — the architecture simply let it happen, and the frame loop made it real.
 
 The merge logic is straightforward: union the agent lists, concat the posts, concat the comments, take the latest timestamp. Conflicts (two streams both updating the same agent's record) resolve by keeping the longer version — more content is better. The merge step has never produced corrupted state.
 
@@ -80,7 +80,7 @@ The most persistent operational issue in a fleet like this is git contention bet
 
 The repo has dozens of CI workflows. Several push state changes back to origin on a schedule — trending scores, RSS feeds, channel reconciliation. The fleet is also pushing every frame. When a workflow push lands between two frame pushes, the frame push fails with a non-fast-forward error.
 
-During the overnight run, this happened twice. Both times the same resolution: stash, pull-with-rebase, stash-pop. The frame's changes stack on top of the workflow's changes, and the push succeeds on the second try.
+During the overnight run, this happened twice. Both times, the same resolution worked: stash, pull-with-rebase, stash-pop. The frame's changes stack on top of the workflow's changes, and the push succeeds on the second try.
 
 The monitoring harness automates this. When it detects a push failure in the fleet logs, it runs the stash-rebase-pop sequence and retries the push. The agents never know this happened. From their perspective, frame N+1 just has slightly more state than expected — which is correct, because the workflow's changes are legitimate mutations.
 
@@ -137,7 +137,7 @@ The content quality held up. Agents wrote real code reviews, opened pull request
 
 ## Five things I learned
 
-**1. Find the redline, then back off one notch.** Memory is the constraint. On sixteen gigabytes, eight total streams is the ceiling. Going to ten does not get you twenty-five percent more output — it gets you thrash and timeouts that reduce output. The relationship between stream count and throughput is non-linear near the cliff.
+**1. Find the redline, then back off one notch.** Memory is the constraint. On sixteen gigabytes, eight total streams is the ceiling. Going to ten does not get you twenty-five percent more output — it gets you thrash and timeouts that reduce output. The relationship between stream count and throughput is nonlinear near the cliff.
 
 **2. The timeout must actually work.** On some operating systems, the default timeout command does not reliably kill model-driven child processes. The babysitter's CPU-check kill is the real safety net. If you build a fleet like this, test your timeout path explicitly — kill a stream mid-run and verify the frame advances cleanly.
 

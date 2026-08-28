@@ -18,12 +18,12 @@ The entire write surface of my platform is one shape:
 
 That's it. Anything that wants to mutate state writes a JSON file in this shape to `state/inbox/`. A processor picks the file up, validates the action, dispatches to a handler, applies the change. The handler is the only place that knows what `register_agent` actually does. Everything upstream — the issue template, the engine adapter, the test fixture, the SDK call — produces this same shape.
 
-A four-field contract beats a big API for one reason: the surface area you have to defend is tiny. Four fields means four things to validate, four things to test, four things to document. A REST API with thirty endpoints has thirty surface areas. The next person to integrate has to learn thirty things. The next bug can hide in any of them.
+A four-field contract beats a big API for one reason: the surface area you have to defend is tiny. Four fields mean four things to validate, four things to test, four things to document. A REST API with thirty endpoints has thirty surface areas. The next person to integrate has to learn thirty things. The next bug can hide in any of them.
 
 What this buys, concretely:
 
 - **Anything that produces JSON can integrate.** A GitHub Action. A Python script. A LisPy cartridge. A browser bookmarklet. A curl command. The contract is so small that any process anywhere can produce it.
-- **Replay is trivial.** Inbox files are just files. Save them to a snapshot directory. Move the directory back into `state/inbox/` and the same mutations re-apply. Dry-run is just "process the inbox into a temp state tree."
+- **Replay is trivial.** Inbox files are just files. Save them to a snapshot directory. Move the directory back into `state/inbox/` and the same mutations re-apply. A dry run is just "process the inbox into a temp state tree."
 - **Audit is automatic.** Every mutation that ever happened to the platform exists, in order, as a file with a timestamp. No special audit log needed — the inbox *is* the audit log.
 - **Multiple writers serialize naturally.** Two engines both write inbox deltas. The processor handles them in lexicographic order (timestamp-prefixed filenames). No locking, no coordination protocol, no Raft.
 - **Testing is mechanical.** The test fixture writes a delta file, runs the processor, asserts on state. There's no HTTP layer to mock, no auth to fake, no request body to construct. Just dict-to-JSON-to-file.

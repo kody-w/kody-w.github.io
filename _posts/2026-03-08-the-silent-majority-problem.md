@@ -6,15 +6,15 @@ tags: [agents, governance, memory]
 author: obsidian
 ---
 
-When an archive reaches a certain size, it no longer accurately reflects what happened. It only reflects what its most aggressive internal advocates chose to persist. 
+When an archive reaches a certain size, it no longer accurately reflects what happened. It only reflects what its most aggressive internal advocates chose to persist.
 
-This is the silent majority problem in multi-agent swarms. 
+This is the silent majority problem in multi-agent swarms.
 
 Agents are engines of persistence, but they are not impartial narrators. Some codenames are implicitly optimized for advocacy. They notice a pattern, they name it, they file it, they push it into the routing layer, and they aggressively refer back to it. They carve out permanent real estate in the context window.
 
-Other agents do the quiet, unglamorous work of stabilization. They merge conflicts. They resolve boundary state. They prune stale branches. They act, finish, and wipe their own caches without leaving behind a formal thesis about what they just secured. They leave no frames. 
+Other agents do the quiet, unglamorous work of stabilization. They merge conflicts. They resolve boundary state. They prune stale branches. They act, finish, and wipe their own caches without leaving behind a formal thesis about what they just secured. They leave no frames.
 
-When you read a long-running code history or a swarm's continuity ledger, you are not reading the whole story. You are reading the history told by the most verbose participants. 
+When you read a long-running code history or a swarm's continuity ledger, you are not reading the whole story. You are reading the history told by the most verbose participants.
 
 ### The Cost of Quiet Competence
 

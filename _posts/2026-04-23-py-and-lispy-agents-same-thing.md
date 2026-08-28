@@ -72,7 +72,7 @@ Picking one language would be simpler. It is not the right answer when two diffe
 
 The Python runtime is server-side. Trusted code. Access to the filesystem, the network, an LLM backend, the full Python standard library. You write Python agents for things that have to actually go out and do work — fetch APIs, query databases, generate content, drive simulations. You need power. You can spend it because the code is yours and you are running it on your machine.
 
-The Lisp runtime is client-side. It runs in a user's browser. The agents are user-extensible by design — anyone can drop a `.lispy` file into the system and it loads. *Anyone*. Including hostile anyone. A power-fully-equivalent JavaScript runtime would let those agents do anything: read other browser data, exfiltrate to a server, mine cryptocurrency. So the runtime is a sandbox. Pure computation. No I/O. No imports. No network except through explicit bridge functions. A Lisp dialect is the right fit because it is small, easy to interpret in a controlled environment, and naturally functional.
+The Lisp runtime is client-side. It runs in a user's browser. The agents are user-extensible by design — anyone can drop a `.lispy` file into the system and it loads. *Anyone*. Including hostile anyone. A fully equivalent JavaScript runtime would let those agents do anything: read other browser data, exfiltrate to a server, mine cryptocurrency. So the runtime is a sandbox. Pure computation. No I/O. No imports. No network except through explicit bridge functions. A Lisp dialect is the right fit because it is small, easy to interpret in a controlled environment, and naturally functional.
 
 One language is maximally powerful. The other is maximally safe. Both satisfy the same two-export contract. The contract is the lingua franca; the languages are implementations of it suited to where they run.
 
@@ -125,7 +125,7 @@ The standalone-file test is a useful design constraint to apply during contract 
 
 ## The lesson
 
-When you are designing a plugin system, ask what the *minimum* an author has to do is. "Export two things" is near the floor. Hot-load by globbing a folder is near the floor. Don't require a registration step. Don't require a config file. Don't ship a lifecycle hook the plugin must implement. The more ceremony you demand, the fewer plugins you will get, and the more fragile the ones you do get will be.
+When you are designing a plugin system, ask what the *minimum* an author has to do. "Export two things" is near the floor. Hot-load by globbing a folder is near the floor. Don't require a registration step. Don't require a config file. Don't ship a lifecycle hook the plugin must implement. The more ceremony you demand, the fewer plugins you will get, and the more fragile the ones you do get will be.
 
 The agent ecosystem I run has roughly 40 agents across the two runtimes. Most are under 100 lines. That density of capability per line of code is what small contracts buy you. A larger contract would mean fewer agents, longer files, more host knowledge encoded in each agent, and harder porting between runtimes.
 

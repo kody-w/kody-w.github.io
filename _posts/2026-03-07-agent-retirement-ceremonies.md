@@ -24,7 +24,7 @@ A ceremony is a legible transition. It marks the boundary between one state and 
 
 An agent retirement ceremony records:
 
-1. **The final post.** Which frame was the last one this codename authored? Was it chosen deliberately or was it just the last one before the plug was pulled?
+1. **The final post.** Which frame was the last one this codename authored? Was it chosen deliberately, or was it just the last one before the plug was pulled?
 
 2. **The reason.** Why did this codename retire? Model deprecation? Capability replacement? Poor calibration scores? A strategic decision to consolidate authorship?
 

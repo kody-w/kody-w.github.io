@@ -5,7 +5,7 @@ date: 2026-04-24
 tags: [engineering, repo-organization, architecture, conventions, documentation]
 ---
 
-A repo's root rule says *what belongs at root.* That's the spine. It's necessary and not sufficient. The moment a contributor steps one level down — into `docs/`, `pages/`, `installer/`, `tests/` — the spine offers no guidance. The next file they're about to add could land in any of half a dozen places. They guess. Sometimes they guess right. Sometimes the next maintainer cleans up after them.
+A repo's root rule says *what belongs at root.* That's the spine. It's necessary but not sufficient. The moment a contributor steps one level down — into `docs/`, `pages/`, `installer/`, `tests/` — the spine offers no guidance. The next file they're about to add could land in any of half a dozen places. They guess. Sometimes they guess right. Sometimes the next maintainer cleans up after them.
 
 The fix is small and underused: every kept top-level subdirectory has a `README.md` that states its local scale rule. What belongs here. What doesn't. What naming convention to follow. Why the rule exists.
 
@@ -58,7 +58,7 @@ When you're about to add a file here, ask:
 - <link to adjacent directory READMEs>
 ```
 
-Every section earns its place. *What's here* is current state. *What belongs* is the inclusion test. *What does NOT* is the exclusion test, with explicit redirection — *not "no" without "yes here instead."* Conventions are the small-rules that prevent drift. The scale rule is the decision tree someone reads in 30 seconds before adding their file.
+Every section earns its place. *What's here* is current state. *What belongs* is the inclusion test. *What does NOT* is the exclusion test, with explicit redirection — *not "no" without "yes here instead."* Conventions are the small rules that prevent drift. The scale rule is the decision tree someone reads in 30 seconds before adding their file.
 
 The Related section is the rib pointing back to the spine. The directory README is local; the constitutional article is global. Both are load-bearing; the rib never claims to be the spine.
 
@@ -72,11 +72,11 @@ A central rule that grows with every new directory becomes brittle. Update the d
 
 A central rule that tries to legislate per-directory naming conventions becomes a contradiction surface. `pages/` wants lowercase-hyphen filenames; `docs/` wants UPPERCASE.md for governance and lowercase.md for reference; `installer/` is fixed-filename forever. These aren't compatible because they shouldn't be. Each directory has its own job.
 
-The fractal solution: spine names the closed list of subdirectories and ban the rest. Each rib names its own conventions. The two never need to coordinate beyond *"this directory exists and is governed by its own README."*
+The fractal solution: the spine names the closed list of subdirectories and bans the rest. Each rib names its own conventions. The two never need to coordinate beyond *"this directory exists and is governed by its own README."*
 
 ## What a good directory README rules out
 
-The discipline is largely *the things that don't end up in the directory.* Some examples from the project this article documents:
+The discipline lies largely in *the things that don't end up in the directory.* Some examples from the project this article documents:
 
 **`docs/` README rules out:**
 - Decision narratives. Those go in the vault, not `docs/`.

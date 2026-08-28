@@ -54,7 +54,7 @@ pages/
 
 **A docs viewer for the markdown.** `pages/docs/viewer.html?doc=SPEC` fetches `SPEC.md` (allowlisted set), renders it via marked.js from a CDN, builds a sticky ToC sidebar, and applies the same theme as the rest of the site. The pattern follows `pages/vault/`: ship the markdown directly + provide a viewer for visitors. Markdown is the spec; HTML is the rendering.
 
-**A manifest as the inventory.** `_site/index.json` lists every page with title, audience, section, description. The site uses it for nav-highlight and (Phase 2) for client-side fuzzy search. Adding a new page = drop the file in the right section + add one line to the manifest. No regen. No build.
+**A manifest as the inventory.** `_site/index.json` lists every page with title, audience, section, description. The site uses it for nav highlighting and (Phase 2) for client-side fuzzy search. Adding a new page = drop the file in the right section + add one line to the manifest. No regen. No build.
 
 ## What this rules out
 

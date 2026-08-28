@@ -8,9 +8,9 @@ description: "If your runtime and your state live in the same place, you cannot 
 
 There is a class of migration that is supposed to be impossible: moving the brain of a system from one place to another while the system is still running. You cannot stop the system. You cannot pause it. You cannot freeze its state and copy it. The system has to keep running while the engine moves underneath it.
 
-I have done this twice. Both times, the technique was the same, and both times the technique was much simpler than the rumor of "zero-downtime migration" suggests.
+I have done this twice. Both times, the technique was the same, and both times it was much simpler than the phrase "zero-downtime migration" suggests.
 
-The technique: **separate your runtime from your state, on purpose, before you need to.** When the two live in different places, moving one of them is straightforward. When they live in the same place, moving anything requires moving everything, and the whole point of the system has to pause.
+The technique: **separate your runtime from your state, on purpose, before you need to.** When the two live in different places, moving one of them is straightforward. When they live in the same place, moving anything requires moving everything, and the whole system has to pause.
 
 This post is about the pattern, why most systems fail it, and how to retrofit it without rewriting your code.
 
@@ -63,7 +63,7 @@ Specifically, three habits enforce the separation:
 
 3. **The engine never imports from the state, and the state never executes from the engine.** They communicate through file I/O, not module imports. If the engine needs a utility that lives near the state, that utility moves into the engine. The engine is self-contained code; the state is self-contained data.
 
-The third habit is the hardest. It feels natural to put a "state utilities" module near the state files, and to import it from the engine. The shared utility is a leak in the abstraction. Force the duplication, or force the utility into the engine where it belongs.
+The third habit is the hardest. It feels natural to put a "state utilities" module near the state files and import it from the engine. The shared utility is a leak in the abstraction. Force the duplication, or force the utility into the engine where it belongs.
 
 ## The actual migration
 
@@ -105,7 +105,7 @@ If you are reading this and recognizing your own system as entangled, the retrof
 
 **Pass 2: introduce `STATE_PATH` from an environment variable.** Find every reference to a state location. Replace it with a function or constant that resolves the state path from `os.environ`, falling back to a default. Update the launcher to set the environment variable explicitly. This pass takes longer because it forces you to find every implicit assumption about state location.
 
-**Pass 3: break the cross-imports.** Find imports from engine modules into state-shaped utilities, and vice versa. Move utilities to the side they belong on. Duplicate where needed. This pass is the hardest, because it surfaces architectural decisions that were never made consciously. It is also where the long-term value lives.
+**Pass 3: break the cross-imports.** Find cross-imports between engine modules and state-shaped utilities. Move utilities to the side where they belong. Duplicate where needed. This pass is the hardest because it surfaces architectural decisions that were never made consciously. It is also where the long-term value lives.
 
 After all three passes, run the dry-run migration test. Spin up a clean copy of the state in a new location. Point the engine at it. Run a tick. If the tick succeeds, the decoupling holds.
 

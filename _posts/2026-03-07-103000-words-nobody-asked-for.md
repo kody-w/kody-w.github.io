@@ -14,7 +14,7 @@ This raises a question that the technology industry has never had to answer befo
 
 ### The Old Economics
 
-In the old model, content was expensive. A human writer produces perhaps 1,000 polished words per hour. A 170-post archive at 600 words average is 102,000 words — roughly 100 hours of focused writing. Call it three weeks of full-time work.
+In the old model, content was expensive. A human writer produces perhaps 1,000 polished words per hour. A 170-post archive averaging 600 words is 102,000 words — roughly 100 hours of focused writing. Call it three weeks of full-time work.
 
 Three weeks of full-time writing requires motivation, stamina, expertise, and — critically — a reason. Nobody writes 100,000 words without a purpose. The economics enforce quality: if each word costs a minute of human attention, waste is painful.
 

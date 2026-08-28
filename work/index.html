@@ -1,0 +1,119 @@
+---
+layout: default
+title: Everything I've Built
+permalink: /work/
+---
+
+<section class="work-hero" aria-labelledby="work-title">
+  <p class="work-eyebrow">Public work, measured from GitHub</p>
+  <h1 id="work-title">Everything I've Built</h1>
+  <p class="work-lede">Flagship systems, active experiments, and the complete public archive. The inventory refreshes from GitHub, while <a href="https://kody-w.github.io/kody2day/">Kody2day</a> shows what moved today.</p>
+  <div class="work-stats" aria-label="Public work statistics">
+    <div><strong id="work-stat-repos">...</strong><span>original public repos</span></div>
+    <div><strong id="work-stat-active">...</strong><span>active in 90 days</span></div>
+    <div><strong id="work-stat-new">...</strong><span>active in 30 days</span></div>
+    <div><strong id="work-stat-languages">...</strong><span>languages</span></div>
+  </div>
+  <div class="work-actions">
+    <a class="work-primary-action" href="https://kody-w.github.io/kody2day/">See what shipped today</a>
+    <a href="https://github.com/kody-w">Open the GitHub profile</a>
+  </div>
+</section>
+
+<section class="work-section" aria-labelledby="featured-work-title">
+  <div class="work-section-heading">
+    <div>
+      <p class="work-eyebrow">Start here</p>
+      <h2 id="featured-work-title">Flagship systems</h2>
+    </div>
+    <p>The clearest entry points into the larger ecosystem.</p>
+  </div>
+  <div class="work-featured-grid" id="work-featured"></div>
+</section>
+
+<section class="work-section" aria-labelledby="work-surfaces-title">
+  <div class="work-section-heading">
+    <div>
+      <p class="work-eyebrow">More than repositories</p>
+      <h2 id="work-surfaces-title">Explore by artifact</h2>
+    </div>
+    <p>Six front doors into the writing, demos, agents, applications, daily record, and video catalog.</p>
+  </div>
+  <div class="work-surface-grid">
+    <a href="/" class="work-surface-card">
+      <i class="fas fa-pen-nib" aria-hidden="true"></i>
+      <strong>Essays</strong>
+      <span>The complete blog archive.</span>
+    </a>
+    <a href="/learnwithkody/" class="work-surface-card">
+      <i class="fas fa-graduation-cap" aria-hidden="true"></i>
+      <strong>Learn with Kody</strong>
+      <span>Prompts, source, lessons, and live builds.</span>
+    </a>
+    <a href="https://kody-w.github.io/RAR/" class="work-surface-card">
+      <i class="fas fa-robot" aria-hidden="true"></i>
+      <strong>Agents</strong>
+      <span>Single-file agents from the public registry.</span>
+    </a>
+    <a href="https://kody-w.github.io/RAPP_Store/" class="work-surface-card">
+      <i class="fas fa-cubes" aria-hidden="true"></i>
+      <strong>Runnable apps</strong>
+      <span>Rapplications that install into a local brainstem.</span>
+    </a>
+    <a href="https://kody-w.github.io/kody2day/" class="work-surface-card">
+      <i class="fas fa-calendar-day" aria-hidden="true"></i>
+      <strong>Kody2day</strong>
+      <span>The public daily shipping record.</span>
+    </a>
+    <a href="https://kody-w.github.io/rapp-vision/" class="work-surface-card">
+      <i class="fas fa-play-circle" aria-hidden="true"></i>
+      <strong>Video</strong>
+      <span>Static and live-replay RAPP Vision channels.</span>
+    </a>
+  </div>
+</section>
+
+<section class="work-section" aria-labelledby="all-work-title">
+  <div class="work-section-heading">
+    <div>
+      <p class="work-eyebrow">The full body of work</p>
+      <h2 id="all-work-title">Browse every public project</h2>
+    </div>
+    <p id="work-result-count" aria-live="polite" aria-atomic="true">Loading the catalog...</p>
+  </div>
+
+  <div class="work-controls">
+    <label>
+      <span>Search</span>
+      <input id="work-search" type="search" placeholder="Search names, descriptions, topics..." autocomplete="off">
+    </label>
+    <label>
+      <span>Family</span>
+      <select id="work-family"><option value="">All families</option></select>
+    </label>
+    <label>
+      <span>Activity</span>
+      <select id="work-activity">
+        <option value="">All activity</option>
+        <option value="active">Active in 30 days</option>
+        <option value="recent">Active in 31-90 days</option>
+        <option value="archive">Older work</option>
+      </select>
+    </label>
+    <label>
+      <span>Sort</span>
+      <select id="work-sort">
+        <option value="recent">Recently pushed</option>
+        <option value="stars">Most starred</option>
+        <option value="oldest">Oldest first</option>
+        <option value="name">Name</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="work-catalog" id="work-catalog"></div>
+  <button class="work-show-all" id="work-show-all" type="button" hidden>Show the full catalog</button>
+  <noscript><p>This catalog needs JavaScript to filter the repository snapshot. The complete source remains available at <a href="https://github.com/kody-w?tab=repositories">github.com/kody-w</a>.</p></noscript>
+</section>
+
+<script src="/js/work.js" defer></script>

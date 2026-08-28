@@ -10,7 +10,7 @@ The standard story about offline support in a web app goes like this. The user l
 
 That is one design. There is a different one I keep finding myself reaching for, and I think it is more interesting.
 
-The premise: instead of treating offline as a degraded mode, treat the device as a place where *the world's state lives*. The server (or the cloud, or the static host, whatever your data lives on) is no longer the authoritative reader-of-record; it is a publisher of snapshots. Each snapshot is the entire visible world at a moment — small, structured, and serializable. The device caches every snapshot it has ever fetched, and the UI is built to read out of that cache by default. The network's job is to keep the cache warm.
+The premise: instead of treating offline as a degraded mode, treat the device as a place where *the world's state lives*. The server (or the cloud, or the static host, wherever your data lives) is no longer the authoritative reader of record; it is a publisher of snapshots. Each snapshot is the entire visible world at a moment — small, structured, and serializable. The device caches every snapshot it has ever fetched, and the UI is built to read out of that cache by default. The network's job is to keep the cache warm.
 
 The user-facing effect is striking. Lose the network and the app does not degrade. It just stops *advancing*. The world you see is the last known state. You can browse it freely. Posts, profiles, threads, configurations, dashboards — all of it. When the network comes back, the cache catches up and the world jumps forward. You experience the gap as a time skip rather than an outage.
 
@@ -116,7 +116,7 @@ The fetch handler picks one of four strategies depending on what is being reques
 
 **Stale-while-revalidate** — a fourth strategy worth knowing, useful when you want to serve from cache *and* fetch the latest in the background. Use it for derived data that is fine to be a few seconds old (a leaderboard, a recommendation list). I have used it less often than the first three; the network-first pattern usually does the same job with simpler invariants.
 
-The thing to internalize is that there is no universal "offline strategy." Different resources want different strategies in the same app, and the service worker is where you encode which-is-which.
+The thing to internalize is that there is no universal "offline strategy." Different resources want different strategies in the same app, and the service worker is where you encode which is which.
 
 ## What the offline experience feels like
 
@@ -134,7 +134,7 @@ A real surprise of building this way: the entire visible state of the applicatio
 
 You are not carrying the database. You are carrying the *flattened, derived, ready-to-render* view of the data. There is no replication concern, no consistency model to negotiate. The device is a read-only consumer of published snapshots, and the snapshot publisher is the only writer.
 
-For any application where the read traffic dwarfs the write traffic and the read view is a function of small-cardinality state — which is most consumer apps, most internal dashboards, most informational sites — this trade is dramatic. A few megabytes on the device replaces ten thousand round-trips a day.
+For any application where the read traffic dwarfs the write traffic and the read view is a function of small-cardinality state — as is true of most consumer apps, most internal dashboards, and most informational sites — this trade is dramatic. A few megabytes on the device replace ten thousand round-trips a day.
 
 ## Where this pattern fits and doesn't
 
@@ -161,6 +161,6 @@ The trick is also that once you have a manifest and a service worker, the browse
 
 You did not write a native app. You wrote a website with two extra files. The browser turned it into a near-native experience because you happened to follow the conventions that make that turn possible.
 
-For an app whose ambitions are "show users this world's state, durably, on any device" — the conventions are sufficient. The whole thing — installable on every device that runs a modern browser, offline-capable, fast, free to host on any static-file CDN — is one manifest, one service worker, and a discipline of publishing snapshots instead of running endpoints.
+For an app whose ambition is "show users this world's state, durably, on any device," the conventions are sufficient. The whole thing — installable on every device that runs a modern browser, offline-capable, fast, free to host on any static-file CDN — is one manifest, one service worker, and a discipline of publishing snapshots instead of running endpoints.
 
 The world's last known state, in the user's pocket, until the network comes back. That is what the cache is for.

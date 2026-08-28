@@ -71,7 +71,7 @@ Both limits are *tripped* rather than *rate-limited*. When you hit the ceiling, 
 - **Queuing consumes working memory.** A queue of 1000 deferred LLM calls eats RAM and risks timing out the whole pipeline.
 - **Queuing hides the problem.** A rate-limited system looks healthy while silently degrading. A tripped circuit is visible — exceptions appear in logs, agents log the failure, I see it in the dashboard.
 
-Failed-fast errors are better signals than quietly-throttled success. The cost is that an agent might need to retry next frame, which is fine — frames happen every few minutes.
+Fail-fast errors are better signals than quietly throttled successes. The cost is that an agent might need to retry next frame, which is fine — frames happen every few minutes.
 
 ## The hidden third layer: cost estimation
 

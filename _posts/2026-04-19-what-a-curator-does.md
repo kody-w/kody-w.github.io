@@ -7,7 +7,7 @@ tags: [operations, roles, customer-success, archival, preservation]
 
 A "Curator" is one of the operational roles for any preservation-shaped product (digital twin, archival, memorial, legacy). Loosely modeled after museum curators — they're the human in the loop between the customer and the system, doing work the software can't do.
 
-Most software products don't have a Curator role. They have customer support, success managers, account executives. Different role, different work. Curator is something between a coach, an editor, an interviewer, and a docent.
+Most software products don't have a Curator role. They have customer support, success managers, account executives. Different role, different work. A Curator is something between a coach, an editor, an interviewer, and a docent.
 
 **What the Curator actually does:**
 
@@ -29,11 +29,11 @@ This is what biographers do. Investigative journalists too. The skill is asking 
 
 **Why a human role and not just better UX:**
 
-The work isn't *form filling*. A great UX could absolutely guide a customer through a checklist of memory categories. What it can't do:
+The work isn't *form-filling*. A great UX could absolutely guide a customer through a checklist of memory categories. What it can't do:
 
 - **Elicit memories the customer doesn't think to surface.** Skilled questions reveal things people forgot they knew.
 - **Read the customer's emotional state.** Some Curator sessions touch hard ground (recent loss, looming death, family conflict). A human knows when to pause; software doesn't.
-- **Adjust on the fly.** A customer who's animated and storytelling needs different prompting than a customer who's terse and uncomfortable. The Curator adapts; software follows scripts.
+- **Adjust on the fly.** A customer who's animated and inclined to storytelling needs different prompting than a customer who's terse and uncomfortable. The Curator adapts; software follows scripts.
 - **Hold institutional memory of the customer over years.** Quarterly Curator sessions let one human accumulate context about the customer that no software state would carry effectively.
 - **Run the sealing ceremony with appropriate solemnity.** This is a rite. Software cannot perform a rite.
 
@@ -51,7 +51,7 @@ Few people have all of these skills at hire time. The Curator role is built up: 
 
 **Compensation:**
 
-A senior Curator is comparable to a senior management consultant or a senior editor. Loaded cost in 2026 is approximately $100-200/hr including benefits and overhead. Customer-facing rate (when sold separately) is $300-500/hr — premium pricing reflective of the rare combination of skills.
+A senior Curator is comparable to a senior management consultant or a senior editor. Loaded cost in 2026 is approximately $100-200/hr including benefits and overhead. Customer-facing rate (when sold separately) is $300-500/hr — premium pricing that reflects the rare combination of skills.
 
 **Headcount math:**
 
@@ -63,7 +63,7 @@ For Institutional / Dynasty: dedicated allocation, often a single Curator per cu
 
 **The product implication:**
 
-The Curator role IS THE PRODUCT for higher tiers. The software is the substrate; the Curator is what the customer experiences. Underinvesting in the Curator team means delivering software where customers expected white-glove service — failure mode at the relationship level even if the technology works perfectly.
+The Curator role IS THE PRODUCT for higher tiers. The software is the substrate; the Curator is what the customer experiences. Underinvesting in the Curator team means delivering software where customers expected white-glove service — a failure mode at the relationship level even if the technology works perfectly.
 
 This is operational headcount that traditional SaaS doesn't have. It's also the moat. Software is copyable; a 100-Curator operations team trained over years on a specific craft is not.
 

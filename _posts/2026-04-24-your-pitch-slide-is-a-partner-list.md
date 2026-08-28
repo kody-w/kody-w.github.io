@@ -5,7 +5,7 @@ date: 2026-04-24
 tags: [positioning, writing, pitch, founders]
 ---
 
-I wrote a pitch slide this week. Three columns: "GPTs / Skills / Plug-ins," "Declarative agents," "Us." First two columns were check-mark rows showing what those tools *can't* do. Third column showed what we can.
+I wrote a pitch slide this week. Three columns: "GPTs / Skills / Plug-ins," "Declarative agents," "Us." The first two columns were check-mark rows showing what those tools *can't* do. The third column showed what we can.
 
 It was a clean slide. It felt good to write. It was the wrong slide.
 
@@ -31,7 +31,7 @@ No row checking "can't." No row checking "can." No other vendors on the slide. T
 
 Before any comparison slide ships, it has to pass two questions:
 
-1. **Is the thing we're comparing against actually a competitor, or is it part of the stack we sit on?** If it's part of the stack, you can't knock it without knocking the deploy target you need. The comparison loses you room allies.
+1. **Is the thing we're comparing against actually a competitor, or is it part of the stack we sit on?** If it's part of the stack, you can't knock it without knocking the deploy target you need. The comparison costs you allies in the room.
 2. **Does our story need the comparison to stand up?** If our three best beats land without mentioning anyone else, the comparison is dead weight. Delete it.
 
 Both tests would have killed my first slide. Ran them late. Shipped the better slide second.

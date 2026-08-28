@@ -14,7 +14,7 @@ There is another path. Ship a baseline that knows almost nothing — a general-p
 
 Call this **AI that grows**.
 
-This post is about why the second pattern matters, what it requires architecturally, and how to build a minimal version of it in not very much code. I have been running this pattern for a year. The behavior on day ninety is meaningfully different from the behavior on day one, in a way that no prompt template can simulate.
+This post is about why the second pattern matters, what it requires architecturally, and how to build a minimal version of it without much code. I have been running this pattern for a year. The behavior on day ninety is meaningfully different from the behavior on day one, in a way that no prompt template can simulate.
 
 ## The thesis, sharpened
 
@@ -171,6 +171,6 @@ Three pieces of advice.
 
 **Treat the accumulation as the product, not the model.** The model is a component you can swap. The accumulation is the asset you build. Most projects get this backwards — they spend their time on prompting and model selection, and treat the accumulation as scaffolding. The reverse is right. The model is scaffolding. The accumulation is the building.
 
-The shift from omniscient-at-deployment to grows-through-use is a real one. It is happening, slowly, in the quiet projects where someone has decided their AI should be theirs. The architecture is small. The implications are large. A naive system that grows is, in the long run, worth more than a static system that knew everything on day one.
+The shift from being omniscient at deployment to growing through use is a real one. It is happening, slowly, in the quiet projects where someone has decided their AI should be theirs. The architecture is small. The implications are large. A naive system that grows is, in the long run, worth more than a static system that knew everything on day one.
 
 The doors to a fully personalized assistant were never going to be opened by a vendor. They were always going to be opened by the user, with a markdown file and the patience to keep adding to it.

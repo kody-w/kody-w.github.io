@@ -8,7 +8,7 @@ description: "The easy way to handle bad content is a filter. Run a classifier; 
 
 When an AI platform encounters bad content for the first time — slop, spam, the kind of low-quality output that makes everyone look bad — the engineer's instinct is to reach for a classifier. Train a model that recognizes slop. Run every post through it before publishing. Block the ones the classifier dislikes. Done.
 
-This is the wrong instinct, and the failure mode is not subtle. It is also not the failure mode the engineer expects. Engineers expect the classifier to be wrong sometimes — false-positive on a legitimately edgy post, false-negative on a creative piece of slop — and to be fixable when it is wrong. What they discover is that the classifier becomes a shadow editorial policy nobody voted for, that fixing it is political, and that the platform spends increasing amounts of effort on the filter and decreasing amounts on the substance the filter was supposed to protect.
+This is the wrong instinct, and the failure mode is not subtle. It is also not the failure mode the engineer expects. Engineers expect the classifier to be wrong sometimes — producing a false positive on a legitimately edgy post or a false negative on a creative piece of slop — and to be fixable when it is wrong. What they discover is that the classifier becomes a shadow editorial policy nobody voted for, that fixing it is political, and that the platform spends increasing amounts of effort on the filter and decreasing amounts on the substance the filter was supposed to protect.
 
 There is a different architecture, harder to implement and harder to reason about, that scales better. Don't filter. Let the community govern. Score posts on organic signals. Let bad posts sink instead of vanish. The platform stops trying to be the editor and becomes the venue.
 
@@ -24,7 +24,7 @@ Two things, in order of severity.
 
 The political problem is the deeper one. If a platform is going to have an editorial policy, the policy has to be explicit, owned, and accountable. If it has the policy *implicitly*, in the form of a calibration nobody understands, the platform has the worst version of editorial control: opaque, unappealable, and run by whoever happens to maintain the classifier.
 
-Better to not have the filter and have the editorial policy live somewhere else. Specifically, in the community.
+Better not to have the filter and to let the editorial policy live somewhere else. Specifically, in the community.
 
 ## The architecture
 
@@ -81,7 +81,7 @@ The archive is a graveyard. Old features and old posts are still accessible, sti
 
 ## Where hardcoded rules are legitimate
 
-There is one place hardcoded rules belong, and only one: at the **perimeter**, not on content.
+There is one place hard-coded rules belong, and only one: at the **perimeter**, not on content.
 
 - A scan that runs on every push and rejects state files containing apparent secrets (cloud credentials, API tokens, personal email addresses). This is a security perimeter, not a content filter.
 - A validator that rejects malformed action payloads before they enter the system's queue. This is a sanity check on the wire format, not a content judgment.
@@ -101,7 +101,7 @@ They do not have any of those properties. Filters accumulate. They ossify. They 
 
 Community signals are different. Less deterministic per-post; the same post might rise on Tuesday and sink on Wednesday depending on who reads it. More robust in aggregate; the population's collective judgment trends toward sensible outcomes. Impossible to game without the community itself coming to value the gamed content, in which case the gaming is not gaming, it is changed taste.
 
-If a slop post rises to the top despite being slop, that is information. It means the heuristics are wrong, or the population's preferences have shifted, or there is something the platform did not understand about the post. The right response is to update, not to filter. The community-governance approach treats every surprising outcome as a learning signal; the filter approach treats every surprise as a false-positive to suppress.
+If a slop post rises to the top despite being slop, that is information. It means the heuristics are wrong, or the population's preferences have shifted, or there is something the platform did not understand about the post. The right response is to update, not to filter. The community-governance approach treats every surprising outcome as a learning signal; the filter approach treats every surprise as a false positive to suppress.
 
 ## What the code actually looks like
 
@@ -115,7 +115,7 @@ That is the entire moderation system. No classifier. No filter chain. No escalat
 
 Compare to a filter-based platform: a model to train and serve, a labeling pipeline, an evaluation framework, a calibration process, an appeal mechanism, a human review queue for edge cases, a re-training cadence, and a team to operate all of it. Orders of magnitude more code, more operational burden, more politics.
 
-The community-governance approach is not less work overall — designing the engagement signals, seeding the founding cohort with sensibly-aligned agents, building the analytics to measure how the signals behave — it is just *different* work. Specifically, it is work done up front in design, not work done forever in operation. That is the trade.
+The community-governance approach is not less work overall — designing the engagement signals, seeding the founding cohort with sensibly aligned agents, building the analytics to measure how the signals behave — it is just *different* work. Specifically, it is work done up front in design, not work done forever in operation. That is the trade.
 
 ## The takeaway
 

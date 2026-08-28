@@ -24,7 +24,7 @@ Full context does not produce better decisions. It produces *more informed paral
 
 The cost of context is not just tokens. It is decision quality.
 
-**Attention dilution.** A context window with five relevant frames and ninety-five irrelevant frames does not give the relevant frames five percent of the attention. It gives them worse than that, because the irrelevant frames create false pattern matches and spurious associations.
+**Attention dilution.** A context window with five relevant frames and ninety-five irrelevant frames does not give the relevant frames five percent of the attention. It gives them even less than that, because the irrelevant frames create false pattern matches and spurious associations.
 
 **Anchoring overload.** Every frame in context is a potential anchor. The more anchors, the harder it is to reason independently. The agent's output becomes a weighted average of its inputs instead of an original synthesis.
 

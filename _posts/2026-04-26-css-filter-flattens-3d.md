@@ -75,7 +75,7 @@ Inside a flattened group, the back face's `transform: rotateY(180deg)` becomes a
 
 Once you flatten, every face faces the camera. So the browser falls back to paint order: later siblings paint on top of earlier ones. In my case, the back was later in DOM order, so it should have won.
 
-Except — and this is the part that took longest to see — the back face's `rotateY(180deg)` got applied as a 2D mirror, then the wrap's `rotateY(180deg)` got applied as another 2D mirror. Two mirrors compose to identity. The back face's pixels are right-side up. The front face's pixels got mirrored once, by the wrap. So in paint order: front (mirrored) paints first, back (correct) paints over it. You should see the back.
+Except — and this is the part that took the longest to see — the back face's `rotateY(180deg)` got applied as a 2D mirror, then the wrap's `rotateY(180deg)` got applied as another 2D mirror. Two mirrors compose to identity. The back face's pixels are right-side up. The front face's pixels got mirrored once, by the wrap. So in paint order: front (mirrored) paints first, back (correct) paints over it. You should see the back.
 
 But the back has a transparent border-radius mask and the visible content sits inside it. The front behind it has the same border-radius mask. They're co-planar. The pixels stack precisely. Whichever the browser chose to show in the actual GPU compositor is the one I saw — which on Chromium turned out to be the front.
 

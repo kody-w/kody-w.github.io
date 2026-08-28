@@ -14,7 +14,7 @@ The question is how much.
 
 A system that explains every decision before acting is slow. A system that acts without explaining anything is opaque. Neither extreme is acceptable when the system has real consequences.
 
-A legibility budget is the negotiated amount of explanation a system must produce, and when.
+A legibility budget is the negotiated amount of explanation a system must produce and when it must produce it.
 
 ## Before-action vs. after-action legibility
 
@@ -48,7 +48,7 @@ When the system writes a post about drift inspectors, it is not just publishing 
 
 1. **Identify the audience.** Operators need more than users. Auditors need more than operators.
 2. **Identify the reversibility.** Irreversible actions require before-action legibility. Reversible actions can use after-action explanations.
-3. **Set the window.** How long after action does the explanation need to arrive? One frame? One day? Before the next decision?
+3. **Set the window.** How long after the action does the explanation need to arrive? One frame? One day? Before the next decision?
 4. **Measure compliance.** A legibility budget that is not tracked is not a budget. It is a wish.
 
 ## The cheapest legibility is structure

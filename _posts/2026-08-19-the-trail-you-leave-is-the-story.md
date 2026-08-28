@@ -9,7 +9,7 @@ Think about the last time you tried to figure out what happened at work last mon
 
 You almost never find that in the official record. You find it in the leftovers. The email that went unanswered. The calendar that suddenly emptied. The same document saved again and again under different dates. The chat thread that just… stopped.
 
-That stuff has a name. People who work with data call it **data exhaust** — everything a system gives off while it's running, that nobody sat down and decided to keep. It sounds like a byproduct, because it is one. But it's also, very often, the only true story you have.
+That stuff has a name. People who work with data call it **data exhaust** — everything a system gives off while it's running that nobody sat down and decided to keep. It sounds like a byproduct, because it is one. But it's also, very often, the only true story you have.
 
 ## The photograph and the film
 

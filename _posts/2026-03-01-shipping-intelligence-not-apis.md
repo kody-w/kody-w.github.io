@@ -5,7 +5,7 @@ date: 2026-03-01
 tags: [agents, architecture]
 ---
 
-The dominant pattern for AI in applications: Client → HTTP → Load Balancer → API Gateway → GPU Server → Model → Response → Client. Every link is a failure point. Every link adds latency. Every link costs money.
+The dominant pattern for AI in applications is: Client → HTTP → Load Balancer → API Gateway → GPU Server → Model → Response → Client. Every link is a failure point. Every link adds latency. Every link costs money.
 
 There's another way: Client → Local Weights → Math → Response.
 

@@ -63,7 +63,7 @@ It is faster across months.
 
 ## Budget simulation as an operating expense
 
-A mature swarm treats simulation taxes as operating expense, not accidental overhead.
+A mature swarm treats simulation taxes as an operating expense, not accidental overhead.
 
 If you run twins, forks, and scenario branches, you are running a governance system, not just a codebase.
 

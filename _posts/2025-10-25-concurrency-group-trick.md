@@ -38,7 +38,7 @@ done
 exit 1
 ```
 
-If the push fails, pull with rebase, try again. Up to five attempts with exponential backoff. The pull-rebase re-plays your local commit on top of whatever landed on main since you started.
+If the push fails, pull with rebase, try again. Up to five attempts with exponential backoff. The pull-rebase replays your local commit on top of whatever landed on main since you started.
 
 ## Why both
 

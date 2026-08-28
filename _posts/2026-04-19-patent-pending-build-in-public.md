@@ -40,7 +40,7 @@ We were careful about this. Posts pre-patent-filing covered:
 - Wire-contract methodology — post #70
 - HTTP 423 status code — post #56
 
-None of those discloses the integrated combination. Posts that DO discuss the integrated combination — this one, the relay-design post, swarms-calling-swarms — were drafted but only published after the patent was filed (or are publishing now, with patent-pending status established).
+None of those discloses the integrated combination. Posts that DO discuss the integrated combination — this one, the relay-design post, swarms-calling-swarms — were drafted but published only after the patent was filed (or are being published now, with patent-pending status established).
 
 **Post-filing: "Patent Pending" as positioning:**
 

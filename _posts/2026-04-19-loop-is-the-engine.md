@@ -35,7 +35,7 @@ For an agent system, the state holds: the agent population, recent interactions 
 3. Apply the actions to state (additively — never overwrite).
 4. Return new state.
 
-Per frame this looks unremarkable. Across thousands of frames it gets interesting. Agents reference past frames. They form sub-communities by repeatedly engaging with the same other agents. They develop slang. They exhibit collective behavior that wasn't in any individual prompt.
+Per frame, this looks unremarkable. Across thousands of frames, it gets interesting. Agents reference past frames. They form sub-communities by repeatedly engaging with the same other agents. They develop slang. They exhibit collective behavior that wasn't in any individual prompt.
 
 This emergent behavior is purely a function of the *loop*, not of any single inference call. The loop is doing something the individual calls can't.
 
@@ -101,7 +101,7 @@ If you have an existing AI feature that's structured as request-response, here's
 2. **Define a tick function.** Wrap your current request-response logic. Inputs: state. Outputs: a delta (what changed) and the response.
 3. **Run it on a schedule.** Don't wait for a user request. Run a tick every minute, every hour, every day. The system has its own clock now.
 4. **Use deltas.** State[N+1] = state[N] + delta. Never modify state directly. (This buys you replay and idempotency.)
-5. **Add state-aware retrieval.** Each tick reads relevant slice of state into the prompt. The prompt isn't the system's memory anymore; the prompt is a *query* against the system's memory.
+5. **Add state-aware retrieval.** Each tick reads a relevant slice of state into the prompt. The prompt isn't the system's memory anymore; the prompt is a *query* against the system's memory.
 
 After this conversion, your system has its own time. It evolves whether or not anyone asks it anything. User requests become "interrupts" — they perturb the state, but they're not the only driver of the loop.
 
@@ -136,6 +136,6 @@ AI products break into two architectures: request-response and frame-based. Most
 
 The loop is the engine. The model is what runs inside the loop. People who confuse the two end up trying to make their model bigger when what they actually need is to give it a clock and a state.
 
-If you're building an AI system right now, ask: **what's the loop?** If you don't have one, you're building a chatbot, not a system. Building chatbots is fine. Building systems is what gets you the behavior the chatbot can't do.
+If you're building an AI system right now, ask: **what's the loop?** If you don't have one, you're building a chatbot, not a system. Building chatbots is fine. Building systems is what gets you the behavior the chatbot can't produce.
 
 Build the loop. Slosh the data through it. Let the world evolve. The interesting parts will be the parts the loop discovered, not the parts you specified.

@@ -23,7 +23,7 @@ A few rules I follow now, after watching too many of my own old links break:
 
 **404s are loud failures, not ambient ones.** If a permalink breaks, that is a bug. Treat it as a bug. Fix it as you would fix any other bug — find the broken URL, restore the content or set the redirect, deploy. Don't let 404s accumulate. They corrode trust faster than any other class of defect, because they are visible to outside observers and not visible to you.
 
-**Test old URLs occasionally.** Every few months, pick a random sample of your own old URLs from a few years back and click them. If any 404, that's a regression. Fix it. The fact that you don't link to those URLs anymore doesn't matter; someone else might.
+**Test old URLs occasionally.** Every few months, pick a random sample of your own old URLs from a few years back and click them. If any return a 404, that's a regression. Fix it. The fact that you don't link to those URLs anymore doesn't matter; someone else might.
 
 The deeper point is that a personal site is partly a kindness to the future. Future people who follow links to your site, expecting to find what they were promised, are doing the basic work of the web — connecting one source to another. Your job, as a publisher, is to honor those clicks. Every kept permalink rewards a click that was made in good faith. Every broken one punishes one.
 

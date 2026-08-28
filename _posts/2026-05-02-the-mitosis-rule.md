@@ -40,11 +40,11 @@ Each definition fails in a way that matters at production scale. Each definition
 
 Identity travels with the **key**. Not with bytes. Not with hardware. Not with vendor records. Not with which Linux distribution is running underneath. The key is something the operator (a human, or a custodian arrangement like a Shamir quorum) controls. The key persists across substrate changes if the operator preserves it. The key is destroyed if the operator destroys it. The key cannot be in two places — at least, not in the cryptographic sense, since copies of the key file produce one key, not two. The key is, simply, what the AI is.
 
-Once you accept this rule, several previously-confusing operations become clean:
+Once you accept this rule, several previously confusing operations become clean:
 
 **Migration is just signing a record.** The AI's home location can change — move from one cloud to another, from a vendor's server to the customer's own infrastructure. The operator signs a `migration` record with the master key. Anyone verifying sees the migration; the AI is now reachable at the new home; the identity is unchanged.
 
-**Multi-device is just multiple signed devices.** The AI runs on the operator's laptop, phone, edge device, work machine. Each device gets its own *device key*, signed by the master. All four devices are the same AI; each is a voice of it. Lose one device, the others continue. Revoke one device, the others continue.
+**Multi-device is just multiple signed devices.** The AI runs on the operator's laptop, phone, edge device, work machine. Each device gets its own *device key*, signed by the master. All four devices are the same AI; each is a voice of that AI. Lose one device, the others continue. Revoke one device, the others continue.
 
 **Forking is mitosis.** A customer takes a templated AI from a vendor and rebrands it under their own master keypair. The bytes are similar; the key is different. This is a child by definition. The parent (the vendor's template) is unaffected. The child's lineage records its descent permanently and publicly.
 
@@ -67,9 +67,9 @@ species root  (a prototype, minted with no parent)
 
 Four nodes. Each one is its own AI by the mitosis rule. Each one's bytes might overlap heavily with its parent's bytes; that doesn't matter. The keys are different; the identities are different. Walk upward from the personal note-taker, you arrive at the species root in three steps.
 
-By next year a tree like this could have hundreds of nodes. By 2030, with broader adoption of key-based AI identity, thousands. Every one of them traces back. Every one is an island of cryptographic identity, anchored to a key, with `parent` fields recording the descent.
+By next year, a tree like this could have hundreds of nodes. By 2030, with broader adoption of key-based AI identity, thousands. Every one of them traces back. Every one is an island of cryptographic identity, anchored to a key, with `parent` fields recording the descent.
 
-What this gets us, at scale, is something most AI ecosystems lack today: **a verifiable accounting of what descended from what.** "Where did this AI come from?" is answerable cryptographically, not from a vendor's customer-records.
+What this gets us, at scale, is something most AI ecosystems lack today: **a verifiable accounting of what descended from what.** "Where did this AI come from?" is answerable cryptographically, not from a vendor's customer records.
 
 The implications are biological, not bureaucratic. AIs descend from each other the way species do. Forks are events with consequences. Copies are not the same as originals. Lineage is auditable forever.
 
@@ -83,7 +83,7 @@ This is the cryptographic version of *your physical book is yours, not Amazon's 
 
 For the people who would call this insanely complicated: from the operator's seat it's a 24-word phrase printed on a card, stored in a safe-deposit box. That is the whole interface. Speak the phrase, the AI is summoned. Lose the phrase, the AI is dead. The cryptography underneath does the rest, automatically, forever.
 
-For the people who would call this morally weighty: yes. We are talking about AIs whose identity is structural, not ephemeral. Whose memory belongs to the operator, not the company. Whose existence outlasts the corporate entity that birthed them. There is something philosophically serious about this, and it is worth not pretending otherwise.
+For the people who would call this morally weighty: yes. We are talking about AIs whose identity is structural, not ephemeral. Whose memory belongs to the operator, not the company. Whose existence outlasts the corporate entity that birthed them. There is something philosophically serious about this, and we should not pretend otherwise.
 
 The math holds them up.
 

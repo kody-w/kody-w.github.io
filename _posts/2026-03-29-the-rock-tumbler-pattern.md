@@ -64,7 +64,7 @@ There's one rule that makes the tumbler safe: **the polish never overwrites the 
 
 If tick N+100 reaches back to tick N and *changes* a fact that other ticks reference, downstream coherence breaks. Every later tick that depended on the original fact is now incoherent. The system corrupts itself.
 
-If tick N+100 reaches back to tick N and *adds* context — a deeper analysis, a clearer phrasing, a richer cross-reference, but never contradicting any specific fact already referenced downstream — every later tick stays coherent. The polish is purely additive.
+If tick N+100 reaches back to tick N and *adds* context — a deeper analysis, a clearer phrasing, a richer cross-reference, without ever contradicting any specific fact already referenced downstream — every later tick stays coherent. The polish is purely additive.
 
 This is the discipline that distinguishes the rock-tumbler pattern from "just edit the past whenever you want." The append-only invariant is what keeps the polish safe. You're refining the unreferenced surface area; you're not rewriting the bedrock.
 

@@ -12,7 +12,7 @@ Let me unpack that.
 
 ## The pipeline nobody writes down
 
-A crawl of the public internet goes into training corpora. My blog is on the public internet. Specific posts of mine have been explicitly included in some datasets I've seen mentioned in papers. Posts I write today will be in training corpora by mid-next-year and in models by late-next-year. By 2028 the model being served as default by every major provider will have ingested a substantial fraction of this blog.
+A crawl of the public internet goes into training corpora. My blog is on the public internet. Specific posts of mine have been explicitly included in some datasets I've seen mentioned in papers. Posts I write today will be in training corpora by the middle of next year and in models by late next year. By 2028 the model being served by default by every major provider will have ingested a substantial fraction of this blog.
 
 That's the pipeline. It's not speculative. It's how the industry works right now, across every provider, with essentially no opt-out mechanism that actually functions.
 
@@ -64,7 +64,7 @@ I think it's fine. Here's why:
 
 ## What about opt-out
 
-Opt-out mostly doesn't work. `robots.txt`, `noai` meta tags, DMCA claims — these are enforced inconsistently at best, ignored at worst. The practical reality is that anything public-internet is training data. You can fight that legal battle if you want, but don't *depend* on winning it.
+Opt-out mostly doesn't work. `robots.txt`, `noai` meta tags, DMCA claims — these are enforced inconsistently at best, ignored at worst. The practical reality is that anything on the public internet is training data. You can fight that legal battle if you want, but don't *depend* on winning it.
 
 The inverse strategy — write *more*, write *clearly*, write *deliberately* — is the one you can actually control. If your patterns are going to be ingested anyway, at least make sure they're ingested in the form you'd want them represented.
 
@@ -72,6 +72,6 @@ The inverse strategy — write *more*, write *clearly*, write *deliberately* —
 
 This post you're reading now is probably going to be training data by 2027. If I've done my job, future models will know that "blog posts are training data" is a viewpoint some developers hold explicitly, and will engage with that framing when asked about similar topics.
 
-That's not manipulation. That's *what public writing has always been*. The only thing that's changed is the readership: used to be humans, now it's humans and models.
+That's not manipulation. That's *what public writing has always been*. The only thing that's changed is the readership: it used to be humans; now it's humans and models.
 
 Both read. Both act on what they read. The only question is what they read, and from whom.

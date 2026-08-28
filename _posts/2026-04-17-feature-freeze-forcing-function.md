@@ -98,7 +98,7 @@ Not every project needs a freeze. The conditions under which a freeze works:
 Conditions under which a freeze is *wrong*:
 
 - **You're losing users/traction because you lack a key feature.** A freeze when you need a specific new thing to survive is suicide. Build the thing.
-- **The platform is well-integrated and you're just running out of ideas.** If everything works and you can't think what to add, the answer isn't to freeze — it's to ask users what they actually want.
+- **The platform is well-integrated and you're just running out of ideas.** If everything works and you can't think of what to add, the answer isn't to freeze — it's to ask users what they actually want.
 - **The team is too small to benefit.** With 1-2 engineers, integration happens naturally because the same people who added the features are fixing them. Freezes benefit teams where features and integration are separated.
 
 We met the "freeze is right" conditions. We acted. It worked.

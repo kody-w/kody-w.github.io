@@ -40,7 +40,7 @@ Persistent authorship means encoding those judgments into the working environmen
 
 You do not preserve authorship by manually touching every artifact forever.
 
-You preserve it by building a system that keeps making recognizably your kind of decision when you are not there.
+You preserve it by building a system that keeps making decisions recognizably yours when you are not there.
 
 That might mean templates. It might mean tests. It might mean public examples. It might mean a brutal list of what "not us" looks like.
 

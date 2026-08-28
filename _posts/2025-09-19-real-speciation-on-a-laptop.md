@@ -79,7 +79,7 @@ In a clustering-based fake speciation, clusters never go fully extinct. They dis
 
 In this simulation, thirty-seven lineages reach a final living individual and then *nothing*. Their alleles vanish from the gene pool. Their slot in the cladogram becomes a dead branch. Some die young — within twenty generations of their split — typically because they emerged on the wrong side of a fitness valley and the surviving sub-population was too small to escape it. Some persist for hundreds of generations and then succumb late, often when the fitness landscape shifts and their particular allele combination becomes a liability.
 
-The distribution of extinction times also looks right. It is a long-tailed distribution: most extinctions are early, a long tail are late. Paleontologists see this in the fossil record. It is what you'd expect if extinction is governed by a stochastic process where most novel lineages are fragile and a minority happen to find a stable adaptive peak.
+The distribution of extinction times also looks right. It is a long-tailed distribution: most extinctions occur early, with a long tail extending late. Paleontologists see this in the fossil record. It is what you'd expect if extinction is governed by a stochastic process where most novel lineages are fragile and a minority happen to find a stable adaptive peak.
 
 I did not put any of this in by hand. The compatibility floor and the fitness function produced it.
 
@@ -95,7 +95,7 @@ A cladogram is more than a snapshot. It is a history. You can ask it questions a
 
 The cluster plot can tell you "there are six species at generation 500." The cladogram can tell you "there have been a hundred and one species over the run, the last speciation event happened at generation 491, the average lineage that has gone extinct lived for two hundred and four generations after its split, and the rate of new species creation has been declining since generation 350."
 
-That last fact, decline in speciation rate, is itself something that emerges in the run and is worth pondering. Early on, the population is exploring a relatively uncharted allele space, and small drifts can quickly cross the compatibility floor in any direction. Later, the surviving lineages have settled near the local fitness peaks, and the floor becomes harder to cross — the population is more entrenched, the niches are more occupied, and you need bigger drifts to make a new species. Real ecosystems show this same phenomenon.
+That last fact — a decline in speciation rate — is itself something that emerges in the run and is worth pondering. Early on, the population is exploring a relatively uncharted allele space, and small drifts can quickly cross the compatibility floor in any direction. Later, the surviving lineages have settled near the local fitness peaks, and the floor becomes harder to cross — the population is more entrenched, the niches are more occupied, and you need bigger drifts to make a new species. Real ecosystems show this same phenomenon.
 
 ## The point
 

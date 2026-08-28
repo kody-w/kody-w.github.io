@@ -27,7 +27,7 @@ Pretend for a moment you do want to post the same news to twenty real platforms.
 
 I tried automating a single GitHub Discussion post recently and got rate-limited after two requests with a vague "submitted too quickly" error. Twitter's developer API costs at least $100/month for any meaningful posting volume. Reddit requires an OAuth handshake that includes a refresh-token rotation. Some platforms — Stack Overflow being the obvious one — explicitly forbid automated answers.
 
-The accidental complexity of integrating with the live platforms is doing none of the work you actually wanted done. It is paying tax on the privilege of reaching real audiences who, for the kind of content I'm describing here, are mostly not looking at automated feeds anyway.
+The accidental complexity of integrating with the live platforms does none of the work you actually wanted done. It pays tax on the privilege of reaching real audiences who, for the kind of content I'm describing here, are mostly not looking at automated feeds anyway.
 
 ## What you actually want
 
@@ -111,11 +111,11 @@ For the kind of content I'm describing — high-volume automated work, machine-g
 
 For the workloads where the trade is favorable, the gains stack quickly:
 
-**Cost.** Real Twitter posting tier is $100/month minimum. Mailchimp for the Substack analog is another $30/month. Reddit, Discord, Slack — each one is its own subscription or workspace. The simulated version is free. GitHub Pages serves the HTML, `raw.githubusercontent.com` serves the JSON, edge caches make it fast.
+**Cost.** A real Twitter posting tier is $100/month minimum. Mailchimp for the Substack analog is another $30/month. Reddit, Discord, Slack — each one is its own subscription or workspace. The simulated version is free. GitHub Pages serves the HTML, `raw.githubusercontent.com` serves the JSON, edge caches make it fast.
 
 **Scale.** Real APIs each have their own rate limit. Posting to twenty in parallel is twenty different rate-limit budgets to track. The simulated version is one `git push` per round of announcements, regardless of how many surfaces you have.
 
-**Latency.** Each real-platform API call is a hundred to two thousand milliseconds. Twenty of them in sequence is twenty-plus seconds. One git push is two or three seconds, and GitHub Pages catches up in under a minute.
+**Latency.** Each real-platform API call is a hundred to two thousand milliseconds. Twenty of them in sequence take twenty-plus seconds. One git push is two or three seconds, and GitHub Pages catches up in under a minute.
 
 **Moderation.** A real platform can suspend your account at its sole discretion, and you have no recourse. The simulated surfaces are hosted in your repo. Nobody can take them down except you and your hosting provider.
 
@@ -127,6 +127,6 @@ For the workloads where the trade is favorable, the gains stack quickly:
 
 There is a more general pattern lurking under all this. *Most of the time, when you think you need to integrate with a system, you actually only need the system's surface.* The audience, the algorithm, the network effects of the real platform — those are real, and they are the parts the platform charges you (in tokens, in rate limits, in account-suspension risk) to access. The *shape* of the platform — what a tweet looks like, what a thread looks like, what an article looks like — is mostly free to reproduce.
 
-Whenever you find yourself building twenty integrations to do twenty variations of the same content presentation, ask whether the integrations are doing useful work for you, or just charging you for the privilege of conforming to twenty different gatekeepers. If the latter, build the surfaces yourself. The cost is linear in surfaces, the result is owned, and you stop paying tax on plumbing.
+Whenever you find yourself building twenty integrations to do twenty variations of the same content presentation, ask whether the integrations are doing useful work for you or just charging you for the privilege of conforming to twenty different gatekeepers. If the latter, build the surfaces yourself. The cost is linear in surfaces, the result is owned, and you stop paying tax on plumbing.
 
 For automated systems and AI-generated content in particular, the math is overwhelming. One commit. Twenty faces. Zero rate limits.

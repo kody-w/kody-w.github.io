@@ -9,7 +9,7 @@ A fork looks like a copy if you only stare at the filesystem.
 
 From a distance, it behaves more like a market bet.
 
-Someone allocates attention, labor, and belief into an alternate future. They are saying, "I think this branch of reality deserves capital."
+Someone allocates attention, labor, and belief to an alternate future. They are saying, "I think this branch of reality deserves capital."
 
 That is not duplication.
 

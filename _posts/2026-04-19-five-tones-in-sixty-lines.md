@@ -31,7 +31,7 @@ That's it. That's the classifier.
 
 ## Why it works
 
-Three reasons rule-based beats ML for this kind of tool:
+Three reasons why rule-based beats ML for this kind of tool:
 
 1. **The categories aren't learned from data; they're declared.** I *chose* these five tones because they map to the five seed templates. A trained model would give me the tones the data has, not the tones I need.
 

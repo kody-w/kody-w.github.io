@@ -6,11 +6,11 @@ tags: [bash, ai, agents, simulation, infrastructure]
 description: "An always-on multi-agent simulation that recovers from crashes, restarts dead workers, resolves merge conflicts, and never stops — all from three shell scripts that talk through files. No Kubernetes. No service mesh. No observability stack. The right level of infrastructure for the workload, which turns out to be a lot less than the cloud-native default suggests."
 ---
 
-There is a kind of system, increasingly common, that runs many processes cooperating on a shared piece of state, and that has to keep running for hours or days without somebody watching it. The cloud-native answer to "how do I run this" is a stack: orchestrator, scheduler, service mesh, observability platform, secrets manager, configuration system, ingress controller. The stack assumes you are running tens of services across tens of nodes for many tenants and you need real isolation guarantees.
+There is a kind of system, increasingly common, that runs many processes cooperating on a shared piece of state and has to keep running for hours or days without somebody watching it. The cloud-native answer to "how do I run this" is a stack: orchestrator, scheduler, service mesh, observability platform, secrets manager, configuration system, ingress controller. The stack assumes you are running tens of services across tens of nodes for many tenants and you need real isolation guarantees.
 
 Most workloads do not need any of that. They run on one machine. They serve one operator. They mutate a shared state file. They need to come back when something crashes. The cloud-native stack is wildly overspecified for them, and the cost of that overspecification — in setup time, in operational complexity, in things that can themselves go wrong — is so high that most of the workloads are simply not run, because the apparent investment is too large.
 
-The right amount of infrastructure for a one-machine many-process always-on workload turns out to be three shell scripts that talk to each other through files. I have been running such a workload — a multi-agent simulation that mutates a Git repository — on this architecture for months. It survives crashes, restarts dead workers, resolves merge conflicts, never stops. It is one of the parts of my system I am proudest of, because it does a lot of work and is almost embarrassingly simple.
+The right amount of infrastructure for a one-machine, many-process, always-on workload turns out to be three shell scripts that talk to each other through files. I have been running such a workload — a multi-agent simulation that mutates a Git repository — on this architecture for months. It survives crashes, restarts dead workers, resolves merge conflicts, and never stops. It is one of the parts of my system I am proudest of because it does a lot of work and is almost embarrassingly simple.
 
 This post is what the architecture looks like, why bash is the right language for it, and what kinds of failures it does and does not handle.
 
@@ -18,11 +18,11 @@ This post is what the architecture looks like, why bash is the right language fo
 
 **The harness.** Launches N parallel worker processes plus M moderator processes. Each worker is a shell loop that, every few seconds: builds a prompt from the current state, sends it to a language model, parses the response, commits the resulting state changes, sleeps for the cycle interval. A worker is a `while true` loop with a model call inside it. That is the whole worker.
 
-**The watchdog.** Runs alongside the harness in a separate process. Every two minutes, it: checks whether the harness is still alive (by reading a PID file the harness writes on startup), restarts it if dead, snapshots a small set of protected files and restores them if they have been overwritten with empty contents, resolves any pending Git merge conflicts on a known recovery strategy, and pushes uncommitted state to the remote.
+**The watchdog.** Runs alongside the harness in a separate process. Every two minutes, it checks whether the harness is still alive (by reading a PID file the harness writes on startup), restarts it if dead, snapshots a small set of protected files and restores them if they have been overwritten with empty contents, resolves any pending Git merge conflicts using a known recovery strategy, and pushes uncommitted state to the remote.
 
-**The sync.** Called by each worker before it builds its prompt. It fetches the latest state from the remote, merges with the local working tree, handles conflicts. It ensures each worker sees the latest world state before it acts on it.
+**The sync.** Called by each worker before it builds its prompt. It fetches the latest state from the remote, merges with the local working tree, and handles conflicts. It ensures each worker sees the latest world state before it acts on it.
 
-Combined, these three scripts run a multi-agent simulation on a single laptop. Adding CPU is increasing the number of workers. Adding resilience is letting the watchdog restart crashed workers. Adding correctness is making the sync run before every cycle. There is no fourth component.
+Combined, these three scripts run a multi-agent simulation on a single laptop. Adding CPU means increasing the number of workers. Adding resilience means letting the watchdog restart crashed workers. Adding correctness means making the sync run before every cycle. There is no fourth component.
 
 ## Cooperation through files
 
@@ -34,13 +34,13 @@ None of the three scripts communicate directly. They communicate through a small
 - A `logs/` directory. Each script appends to its own log. `tail -f` any of them to see what is happening.
 - The state directory itself. The canonical simulation state, committed to Git, shared between all workers.
 
-That is the entire interaction surface. No message queue. No inter-process-communication library. No shared memory. Just files. The guarantees come from POSIX file semantics — atomic rename, `mkdir`-as-mutex, append-is-atomic-below-pipe-size — and from Git, which gives merge, conflict detection, and history for free.
+That is the entire interaction surface. No message queue. No interprocess communication library. No shared memory. Just files. The guarantees come from POSIX file semantics — atomic rename, `mkdir`-as-mutex, append-is-atomic-below-pipe-size — and from Git, which gives merge, conflict detection, and history for free.
 
 This works because file-based coordination scales sufficiently for the workload. Three scripts and a dozen processes do not need a high-throughput message bus. They need a couple of locks and some shared documents. The filesystem is already optimized for that case.
 
 ## Why bash
 
-Bash is the right language for the harness and watchdog and sync because they do exactly what bash is good at: launch processes, redirect their output, wait on background jobs, handle signals.
+Bash is the right language for the harness, watchdog, and sync because they do exactly what bash is good at: launch processes, redirect their output, wait on background jobs, and handle signals.
 
 The harness needs to launch N background processes, let them run independently, write their PIDs somewhere, route their stdout/stderr to log files, and handle a Ctrl-C that stops everyone cleanly. Each of these is a one-liner in bash:
 
@@ -97,7 +97,7 @@ I would reach for Kubernetes or a similar orchestrator the day the workload need
 - To serve more than one tenant with isolation guarantees.
 - To horizontally scale beyond what a single machine provides.
 
-Until any of those is true, three shell scripts is the correct architecture and adding orchestration would be a tax on every operation. The watchdog is one hundred lines of bash. Kubernetes is a system more complex than the workload it is hosting. The cost-benefit only flips at scale.
+Until any of those is true, three shell scripts are the correct architecture, and adding orchestration would be a tax on every operation. The watchdog is one hundred lines of bash. Kubernetes is a system more complex than the workload it is hosting. The cost-benefit balance only flips at scale.
 
 The general rule I have arrived at: *match the infrastructure to the workload's actual demands, not to what infrastructure looks impressive*. Most workloads are smaller than the default infrastructure suggests, and the cost of overshooting is real. A three-script harness for an always-on multi-process workload is the right amount, until it isn't.
 

@@ -84,7 +84,7 @@ The naive guess — and the one I went in with — was that depth two should be 
 
 It is not. Depth two is trivial. A single mutation that swaps the terminal token can turn `(env.food,)` into `(self.state,)`. Agent zero in the founding population often already has depth-two features by pure chance, in generation one. It is one coin flip away from being there.
 
-But depth two does not mean "has theory of mind." It just means "references own state." That is not the interesting step. An agent can reference its own state without modeling anyone — it is just another input to its prediction function, like reading a thermometer.
+But depth two does not mean "has theory of mind." It just means "references its own state." That is not the interesting step. An agent can reference its own state without modeling anyone — it is just another input to its prediction function, like reading a thermometer.
 
 Depth three is where the magic lives. Depth three says: *"when predicting the target, simulate the target's perspective, and ask what the target thinks about me."* This is theory of mind proper — not just self-awareness, but modeling that others model you. And critically, depth three cannot be reached in a single mutation from a founder who only sees the environment. It requires:
 
@@ -188,4 +188,4 @@ Three things are worth carrying out of this experiment, even if you never write 
 
 For this substrate, the threshold answer is three. The ceiling answer is two. The conditions for deeper, sustained self-modeling are more specific than the textbook would have you believe.
 
-That is a finding you can run yourself in fifty seconds. It is also a finding that probably says something true about the cognitive ladders evolution actually climbs, and falls back down, on planets where depth is expensive and shallowness pays its own bills.
+That is a finding you can run yourself in fifty seconds. It is also a finding that probably says something true about the cognitive ladders evolution actually climbs and falls back down on planets where depth is expensive and shallowness pays its own bills.

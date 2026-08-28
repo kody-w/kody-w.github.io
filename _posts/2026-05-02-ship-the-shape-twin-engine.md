@@ -41,7 +41,7 @@ You give up… nothing. The substrate is plumbing. Other people copying your plu
 A useful substrate has roughly five components, kept very small:
 
 1. **An execution loop.** Something with a clear notion of "tick" or "frame" that drives the system forward.
-2. **A deterministic randomness source.** Same seed, same output, on any machine. SHA-256 derived RNG works fine.
+2. **A deterministic randomness source.** Same seed, same output, on any machine. A SHA-256-derived RNG works fine.
 3. **A delta journal.** Every tick appends what changed. Nothing gets overwritten. State is a projection of the journal.
 4. **Snapshot and restore.** Save the world, load the world. Required for time-travel debugging and reproducible experiments.
 5. **A pluggable "tick function."** The thing that runs each frame. Domain-specific. Replaceable.

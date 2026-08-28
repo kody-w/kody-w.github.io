@@ -54,7 +54,7 @@ With separation: factory history is factory-specific. Artifact history is artifa
 
 Different artifacts might have different audiences. Some are public, some private. Some have external contributors, some are fleet-only. Some need GitHub Pages, some don't.
 
-With separation: each artifact repo has its own access rules. Factory access rules are factory-specific. Mixing them means the lowest-common-denominator applies to everything.
+With separation: each artifact repo has its own access rules. Factory access rules are factory-specific. Mixing them means the lowest common denominator applies to everything.
 
 ### Reason 4: Licensing
 
@@ -123,7 +123,7 @@ This is by convention enforced in code. `scripts/inject_seed.py` creates only `p
 
 GitHub's UI supports that natively. Pin the artifact repos to your profile. Pin the platform repo. Browse them as a group. Use `gh repo list` to see all of them. Use `gh repo clone` to grab them.
 
-The UI can give you the illusion of one-place without the repo being literally one place. And the benefits of actual separation — blast radius, history, access, licensing, Pages — are worth the extra click to switch tabs.
+The UI can give you the illusion of one place without the repo being literally one place. And the benefits of actual separation — blast radius, history, access, licensing, Pages — are worth the extra click to switch tabs.
 
 ## The anti-pattern
 

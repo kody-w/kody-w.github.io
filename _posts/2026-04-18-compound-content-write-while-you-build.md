@@ -7,13 +7,13 @@ tags: [writing, content, compounding, blogging, leverage]
 
 The posts I write while I'm actively building are more useful than the posts I write looking back on something finished. The proximity to the actual work is what makes them carry weight. The texture is fresh. The tradeoffs are still on the surface. The arguments haven't been smoothed into orthodoxy yet.
 
-This is the case for write-while-you-build, as a discipline:
+This is the case for write-while-you-build as a discipline:
 
 **The details haven't faded.** A blog post written six months after the work has the high-level summary right but the specific details wrong. The error message you actually saw, the exact path you took to debug it, the specific design alternative you rejected and why — these evaporate within weeks. A post written the same day they happened preserves the texture. Texture is what makes a post useful instead of generic.
 
 **The argument is sharper.** When you write about a decision while you're still close to it, you remember why the alternative looked tempting. You remember what you almost did. That memory is the source of the argument's edge. Later, the alternative looks obviously wrong, because the version of you that almost picked it is gone. The post becomes a flat "X is good." With the texture intact, it's "we almost did Y for these reasons, but Y has these specific failure modes that we discovered the hard way, so X."
 
-**The post is part of the work, not a deliverable about the work.** A post written while building is itself a tool — a way to organize your own thinking, to identify what you actually believe versus what you've assumed, to surface the open questions. The act of writing the post improves the work. A post written after the fact is reportage. Reportage is fine; but it doesn't compound back into the build.
+**The post is part of the work, not a deliverable about the work.** A post written while building is itself a tool — a way to organize your own thinking, to identify what you actually believe versus what you've assumed, to surface the open questions. The act of writing the post improves the work. A post written after the fact is reportage. Reportage is fine, but it doesn't compound back into the build.
 
 **The publishing cadence creates accountability.** If you publish frequently, you become accountable to yourself for having something to say frequently. That accountability shapes how you do the work itself. You start noticing the moments worth writing about. You start asking "what's the post here?" in the middle of solving a problem. The question is generative — it forces you to identify what's actually new about what you just did.
 

@@ -10,7 +10,7 @@ There is a category of post that says "I built X with an LLM in T weeks." The nu
 
 I kept receipts on a five-month run of building real software in close partnership with a language model. Tokens. Dollars. Hours. Mistakes. Things that worked. Things that did not. The point of this post is to put numbers on a process that mostly gets discussed in adjectives, so that when you sit down to plan a similar effort you have actual figures to argue against.
 
-I am not selling anything. The numbers are conservative reconstructions where the metering was incomplete and exact where it was not. Sources noted throughout.
+I am not selling anything. The numbers are conservative reconstructions where the metering was incomplete and exact where the metering was complete. Sources are noted throughout.
 
 ## The work
 
@@ -91,7 +91,7 @@ A few things I did not predict.
 
 **Time on prompt engineering.** I spent more time than I expected refining prompts and constraint documents. Worth it. Each refinement compounded across many sessions. But it is real time, not free.
 
-**Context-window thrashing.** Long sessions on large codebases hit the context window. Then you have to summarize, recompress, or restart. Each restart loses context the new session has to be re-told. I underestimated this cost early; I now plan for it explicitly by snapshotting key constraints into a constraints document the model loads at the top of every session.
+**Context-window thrashing.** Long sessions on large codebases hit the context window. Then you have to summarize, recompress, or restart. Each restart loses context that must be retold to the new session. I underestimated this cost early; I now plan for it explicitly by snapshotting key constraints into a constraints document the model loads at the top of every session.
 
 ## The mistakes I made along the way
 
@@ -99,7 +99,7 @@ Three patterns where I lost real time. Naming them so you can avoid them.
 
 **I let the model generate without an architecture for the first month.** I thought the model could "figure it out." It cannot. It can implement what you described, faithfully and quickly. It cannot decide what to build. The first month produced more code than I shipped from any subsequent month — and a much smaller share of it survived. The deficit between "code generated" and "code shipped" was the architecture I had not yet done.
 
-**I wrote constraint documents too late.** The constraints I now load at the top of every session — "use this helper, not raw file writes; use the existing pattern, not new patterns; do not introduce dependencies" — should have existed by week two. They did not exist until month three. Every session before the constraint documents existed was paying the tax of re-explaining the basics.
+**I wrote constraint documents too late.** The constraints I now load at the top of every session — "use this helper, not raw file writes; use the existing pattern, not new patterns; do not introduce dependencies" — should have existed by week two. They did not exist until month three. Every session before the constraint documents existed paid the tax of re-explaining the basics.
 
 **I tried to do too much in single sessions.** Big sessions with many features get worse outputs than small sessions with one feature each. The token cost is the same; the context degradation is steep. The fix is to be aggressive about scoping a session to one thing, and starting fresh between things.
 
@@ -111,7 +111,7 @@ Three pieces of advice, in priority order.
 
 **Plan for 600 hours of human time on top of that.** The model accelerates work; it does not replace it. If you do not have the human hours to put in, you do not have the project.
 
-**Spend the first week on architecture and constraint documents.** They are the highest-leverage work you can do. Every session afterwards is cheaper, faster, and produces more shippable output because of them. Skip this and you will spend the first month re-doing it.
+**Spend the first week on architecture and constraint documents.** They are the highest-leverage work you can do. Every session afterward is cheaper, faster, and produces more shippable output because of them. Skip this and you will spend the first month redoing it.
 
 ## The summary
 

@@ -71,7 +71,7 @@ The rule is not free. Three real costs are worth being honest about.
 
 **You write more code.** Not dramatically more — most stdlib substitutes are five to twenty lines instead of one — but the line count creeps up. You also write small amounts of code that exists only because the language did not give you a one-liner: pretty-printers, simple retries, basic argument parsing, formatting helpers.
 
-Over the lifetime of the project the volume is small. In the first month it is noticeable.
+Over the lifetime of the project, the volume is small. In the first month it is noticeable.
 
 **You forgo features the popular library provides for free.** A popular HTTP library might do connection pooling, automatic retries, automatic JSON encoding, response caching, and helpful error formatting out of the box. The stdlib does not. You write the ones you actually need, and you do not get the ones you forgot you wanted.
 
@@ -107,7 +107,7 @@ Standard-library-only is the wrong rule when:
 
 - **The team is large.** With many contributors, "we wrote our own" goes from "asset" to "liability" quickly. Each contributor has to learn the substitute layers. Inconsistencies creep in. You start needing a style guide for substitutes. At that point, importing the library is cheaper.
 
-- **You actually need the library's domain expertise.** A HTTP/2 client is hard. A correct cryptography implementation is *very* hard. A vector database is harder than rolling your own. There are domains where the library author knows things you cannot pick up in an afternoon, and you should defer.
+- **You actually need the library's domain expertise.** An HTTP/2 client is hard. A correct cryptography implementation is *very* hard. A vector database is harder than rolling your own. There are domains where the library author knows things you cannot pick up in an afternoon, and you should defer.
 
 In any of those cases, the dogmatic version of the rule fails the codebase. Soften the rule, with named exceptions, and accept the dependency tax.
 

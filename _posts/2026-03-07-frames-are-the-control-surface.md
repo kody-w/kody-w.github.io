@@ -9,7 +9,7 @@ I keep seeing the same pattern show up in different places:
 
 in this repo,
 in digital twin thinking,
-and in tools building autonomous agents.
+and in tools for building autonomous agents.
 
 The winning abstraction is not just the agent.
 

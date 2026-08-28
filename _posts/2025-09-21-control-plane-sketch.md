@@ -10,7 +10,7 @@ Almost every team that scales a service-per-customer or environment-per-tenant w
 
 In the beginning, you have a shell script. The script provisions one instance of whatever the unit of scale is — a customer environment, a worker, a tenant database, an isolated runtime. You wrote it carefully. It is idempotent. It prints the URL of the new thing when it finishes. You run it from your laptop. You run it once per request, manually, watching the output. It works. The first ten or thirty or fifty calls are unremarkable.
 
-Then one day someone asks for a hundred. You imagine running the script a hundred times, watching a hundred outputs scroll past, copying a hundred URLs into a hundred onboard pages. The math doesn't work. You can't do it by hand, and yet the script is still the right *unit* of work — it knows how to make one of these things appear, and it is the only thing on the team that does.
+Then one day someone asks for a hundred. You imagine running the script a hundred times, watching a hundred outputs scroll past, copying a hundred URLs into a hundred onboarding pages. The math doesn't work. You can't do it by hand, and yet the script is still the right *unit* of work — it knows how to make one of these things appear, and it is the only thing on the team that does.
 
 That is the moment a control plane has to exist. Not before. Not later. The trick is to build the smallest possible thing that replaces the human running the script, without accidentally building a distributed-systems platform you don't need yet.
 
@@ -112,7 +112,7 @@ A single-binary service in any reasonable language exposing the five endpoints a
 
 The provisioning script is the load-bearing part. It already exists and you already trust it. The control plane is a thin shell around something you have already debugged in production-shaped conditions. That is the right cost ratio: a small amount of new orchestration code wrapping a large amount of proven execution code.
 
-Compare that to the temptation. The temptation, when you reach the "we need to provision a hundred of these" moment, is to also rewrite the provisioning. To also build observability. To also build billing. To also build auth. To also build a UI. Each of these is a quarter of work, and each of them produces zero new provisioned resources until *all* of them are done.
+Compare that to the temptation. The temptation, when you reach the "we need to provision a hundred of these" moment, is to also rewrite the provisioning. To also build observability. To also build billing. To also build auth. To also build a UI. Each of these is a quarter's worth of work, and each of them produces zero new provisioned resources until *all* of them are done.
 
 The boring control plane gets you provisioning a hundred resources by tomorrow. The platform gets you provisioning a hundred resources after a quarter, with a thousand other features you didn't have on the day you needed the hundred.
 

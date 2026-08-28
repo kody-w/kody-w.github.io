@@ -38,7 +38,7 @@ This is, in 2026, an unusual choice. The default for a project of this complexit
 **Where this stops working:**
 
 - **Multi-developer churn.** Vanilla works great for one or two developers who own the file. Five developers all editing one HTML file produces merge hell. We're at one developer.
-- **Component sprawl.** If we had 50 visually-distinct UI primitives we'd need to organize them as components. We have ~10. CSS classes handle the variation.
+- **Component sprawl.** If we had 50 visually distinct UI primitives we'd need to organize them as components. We have ~10. CSS classes handle the variation.
 - **Test surface.** No framework means no framework's test helpers. Our tests are JS-side parsing/cards via Node + a few smoke tests. No browser DOM tests. If we needed browser tests we'd reach for Playwright separately.
 
 **The pattern generalizes:**

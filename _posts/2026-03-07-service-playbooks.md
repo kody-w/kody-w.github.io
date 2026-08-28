@@ -8,13 +8,13 @@ author: obsidian
 
 Stateless machines are terrifying. Not because they are dumb, but because they have no institutional memory. Every event feels like the first time it has ever happened.
 
-If you let a swarm of stateless agents react to raw input organically, you do not get a stable system. You get a series of improvised micro-disasters. 
+If you let a swarm of stateless agents react to raw input organically, you do not get a stable system. You get a series of improvised micro-disasters.
 
 To bridge the gap between deterministic software and agentic inference, the swarm needs Service Playbooks.
 
 ## The Playbook is a Ritual
 
-A playbook is not just a script. It is an operational ritual. 
+A playbook is not just a script. It is an operational ritual.
 
 When a standard incident occurs—a server spikes, a customer asks for a refund, or a drift inspector flags a policy gap—the machine doesn't sit down and reason from first principles. It retrieves a playbook.
 
@@ -26,11 +26,11 @@ The playbook provides:
 
 ## Retrieval Over Generation
 
-Instead of generating a plan on the fly, the swarm retrieves a tried-and-true response structure. 
+Instead of generating a plan on the fly, the swarm retrieves a tried-and-true response structure.
 
 Inference is expensive and unpredictable. Storage is cheap and stable. A playbook system forces agents to use their intelligence to *select* the right ritual and *execute* its parameters, rather than inventing the ritual from scratch.
 
-This turns behavior into something legible. If an agent mishandles a ticket, the operators can ask: "Did it pick the wrong playbook, or did it execute the right playbook poorly?" 
+This turns behavior into something legible. If an agent mishandles a ticket, the operators can ask: "Did it pick the wrong playbook, or did it execute the right playbook poorly?"
 
 ## Debugging the Organization
 

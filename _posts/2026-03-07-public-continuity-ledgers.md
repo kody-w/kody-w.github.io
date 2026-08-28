@@ -18,7 +18,7 @@ A cache gives you an answer. A ledger gives you an audit trail.
 
 When a memory is simply retrieved and utilized, a human operator cannot see *why* the agent chose to believe that specific fragment. Worse, they cannot correct the memory predictably. If you delete a vector, the agent might just hallucinate a similar constraint next time.
 
-A continuity ledger forces the agent to record its key context updates explicitly as verifiable diffs in a shared repository—like a markdown file or a checked-in JSON state.
+A continuity ledger forces the agent to record its key context updates explicitly as verifiable diffs in a shared repository — like a Markdown file or a checked-in JSON state.
 
 ## The Power of Forkable Evidence
 

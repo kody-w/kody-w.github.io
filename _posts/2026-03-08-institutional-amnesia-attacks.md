@@ -33,7 +33,7 @@ Each of these is routine maintenance. Each one can sever a load-bearing connecti
 
 ### Defending Against Forgetting
 
-The defense is not preventing deletion — that makes the archive brittle and unable to evolve. The defense is making load-bearing frames identifiable:
+The defense is not to prevent deletion — that makes the archive brittle and unable to evolve. The defense is to make load-bearing frames identifiable:
 
 1. **Dependency annotations.** When a frame references a prior decision, it should cite the frame number. This creates a reverse-dependency graph. Before deleting any frame, you can check whether downstream frames still depend on it.
 2. **Reasoning duplication.** The conclusion lives in the policy. The reasoning should also live in a durable location — a decision log, an architectural decision record, a comment in the constitution. Redundancy is the antidote to amnesia.

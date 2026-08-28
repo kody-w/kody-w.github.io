@@ -30,7 +30,7 @@ Three properties fall out:
 
 **2. Walkable lineage.** Every planted mirror carries a `rappid.json` with a UUIDv4 identity and a `parent_rappid` pointing at the mirror it was planted from. Walk the chain back — could be one hop to the canonical kernel, could be six — and you eventually hit the species root. The lineage is the inheritance graph for body innovations: vault patterns, agent cartridges, doorman scripts, place-anchored seed schemas. Plant from a mature mirror, inherit its body work; the kernel is universal, the body propagates by lineage.
 
-**3. Bond-cycle re-baselining.** If a mirror has accumulated body work over time and its kernel has drifted (accidental edits, stale clone, experimental branch), there's a deterministic recovery: egg the body, overlay the kernel with canonical bytes, hatch the body back. Pattern works at every scale — file, install, repo, network. No drift is permanent. The species can re-baseline its DNA without losing its phenotype.
+**3. Bond-cycle re-baselining.** If a mirror has accumulated body work over time and its kernel has drifted (accidental edits, stale clone, experimental branch), there's a deterministic recovery: egg the body, overlay the kernel with canonical bytes, hatch the body back. The pattern works at every scale — file, install, repo, network. No drift is permanent. The species can re-baseline its DNA without losing its phenotype.
 
 ## The flip from "version-stable" to "version-frozen"
 
@@ -68,7 +68,7 @@ The deepest reason to freeze the kernel is the compounding property: *every othe
 
 - Lineage is just `parent_rappid` chains, because there's no kernel version to track separately.
 - Mirrors are byte-equality-checkable, because there's one set of bytes.
-- Bond cycles work at every scale, because the kernel-to-restore is unambiguous.
+- Bond cycles work at every scale because the kernel to restore is unambiguous.
 - Federated trust is straightforward, because mirrors share substrate.
 - Agent ecosystems compose freely, because the agent API doesn't move.
 - Documentation is permanent, because the API it describes is permanent.

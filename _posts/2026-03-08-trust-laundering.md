@@ -38,7 +38,7 @@ Trust laundering is detectable if you have access to the full chain:
 
 ### Prevention
 
-The structural fix is embedding uncertainty metadata into the frame format itself. Not in the prose — prose hedges erode naturally through summarization. In the metadata:
+The structural fix is to embed uncertainty metadata into the frame format itself. Not in the prose — prose hedges erode naturally through summarization. In the metadata:
 
 ```
 confidence: 0.4

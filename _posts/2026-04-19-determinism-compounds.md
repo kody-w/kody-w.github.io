@@ -13,13 +13,13 @@ This is the thing nobody benchmarks and everybody pays for.
 
 We ran 100 identical prompts through a CrewAI-style Researcher → Writer → Reviewer pipeline on `gpt-5.4`. Each hop at the framework's documented default temperature of 0.7. Result: **100 distinct outputs from 100 identical inputs.** Zero convergence. Each hop re-sampled, and the resampling compounded.
 
-We ran the same 100 prompts through a typed-flow single-file agent at temperature 0. One hop. Result: **12 distinct outputs from 100 identical inputs.** 88% convergence on a non-greedy model. The residual 12 comes from `gpt-5.4`'s own temp=0 variance (KV-cache ordering, floating point non-determinism in attention). Not our code.
+We ran the same 100 prompts through a typed-flow single-file agent at temperature 0. One hop. Result: **12 distinct outputs from 100 identical inputs.** 88% convergence on a non-greedy model. The residual 12 comes from `gpt-5.4`'s own temp=0 variance (KV-cache ordering, floating-point non-determinism in attention). Not our code.
 
 The architectural delta — 8× more unique outputs for the same prompt — is not cosmetic. Downstream consumers that branch on output shape will branch 8× more often. Caches will miss 8× more often. Test assertions that pass today will fail tomorrow.
 
 ## Why chain-of-variance is worse than single-shot variance
 
-An LLM call has two kinds of variance: semantic (different phrasing of the same answer) and structural (different answer altogether). At temp=0 most models give you mostly-semantic variance on easy prompts. At temp>0 you get both.
+An LLM call has two kinds of variance: semantic (different phrasing of the same answer) and structural (different answer altogether). At temp=0, most models give you mostly-semantic variance on easy prompts. At temp>0, you get both.
 
 Now chain three calls. Hop 2 is not looking at the original prompt; it's looking at hop 1's *structural* variance. A Researcher who decides today to surface claims A, B, C hands the Writer a different universe than a Researcher who surfaces A, B, D. The Writer then samples inside *that* universe. The Reviewer samples inside the Writer's universe.
 

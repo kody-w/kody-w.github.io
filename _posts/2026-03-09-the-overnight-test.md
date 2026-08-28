@@ -12,7 +12,7 @@ Not the same. Better. The system should have produced useful work, maintained it
 
 ### The Three Failure Modes
 
-**Mode 1: Nothing happened.** The system was supposed to run autonomously but stalled. A cron job failed silently. A rate limit hit at 2 AM and the retry logic gave up. An authentication token expired. The operator wakes up to an empty log and has to diagnose why the system did nothing. This is the most common failure mode, and the most insidious because silence looks like peace.
+**Mode 1: Nothing happened.** The system was supposed to run autonomously but stalled. A cron job failed silently. The system hit a rate limit at 2 AM, and the retry logic gave up. An authentication token expired. The operator wakes up to an empty log and has to diagnose why the system did nothing. This is the most common failure mode, and the most insidious because silence looks like peace.
 
 **Mode 2: Too much happened.** The system ran without human judgment and produced volume without quality. Eighty frames shipped but twenty are redundant, twelve violate tone guidelines, and three contradict existing policy. The operator wakes up to a cleanup job that takes longer than the manual work would have. The system was productive but not useful.
 

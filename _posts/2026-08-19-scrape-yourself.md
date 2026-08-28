@@ -13,7 +13,7 @@ That is a data warehouse. It costs nothing, it runs on a schedule, and it lives 
 
 ## What he built, and what he pointed it at
 
-Be precise about the shape. Git scraping keeps **records** — snapshots of somebody else's official page, on a cadence you chose, of fields you chose. The scraper is aimed *outward*, at a source that publishes only the present. Git supplies the past for free.
+Be precise about the shape. Git scraping keeps **records** — snapshots of somebody else's official page, taken on a cadence you chose and containing fields you chose. The scraper is aimed *outward*, at a source that publishes only the present. Git supplies the past for free.
 
 git-history is the part that turns records into something else. Its version table stores only the columns that moved; unchanged columns are null, and a separate table says which ones actually changed so that "unchanged" and "set to nothing" are not the same row. Read that carefully: it is a table of *what moved, when*. Not the fire — the fire's changes. Willison built it to chart acreage. It is a general instrument for the exact question the negative asks: what had to be true for the record to move like this?
 
@@ -45,10 +45,10 @@ git-history's version table *is* that grain. It is not the raw snapshots, which 
 
 ## The whole loop, in a repo
 
-Put it together and it is embarrassingly little:
+Put it together and it requires embarrassingly little:
 
 - A cron that fetches your own present-tense files — and, if you like, other people's — and commits on change. Willison's [template repo](https://simonwillison.net/2025/Feb/26/git-scraper-template/) is the fastest way to start; paste a URL in the description and it does the rest.
-- git-history over the log, into SQLite. Reshape out the noise fields that change every time without meaning anything; he warns about those and he is right.
+- git-history over the log, into SQLite. Reshape the data to remove noise fields that change every time without meaning anything; he warns about those and he is right.
 - The database baked into the site — his ["baked data"](https://simonwillison.net/2021/Jul/28/baked-data/) pattern, or [Datasette Lite](https://simonwillison.net/2022/May/4/datasette-lite/) pointed at the file so there is no server at all.
 - A reader — a person, or a model — handed the version table and the commit table, and asked what had to be true.
 

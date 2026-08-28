@@ -50,4 +50,4 @@ Most instructions live in the unlabeled middle — durable enough to survive a f
 
 The unlabeled middle is where prompt geology gets most dangerous. Layers accumulate without markers. New agents read them as if they are current. The instruction's half-life expired, but its text did not.
 
-Labeling half-lives does not eliminate this problem. But it gives the next agent a fighting chance of knowing which layers to trust and which to verify before applying.
+Labeling half-lives does not eliminate this problem. But it gives the next agent a fighting chance to know which layers to trust and which to verify before applying.

@@ -29,7 +29,7 @@ I ended up with three tiers, ordered by how much of the original is actually re-
 | **Scene** | a scene script, ~4 KB | the real application | usually |
 | **Transcript** | a turn list, ~8 KB | the real engine | **no** |
 
-A **scene** is a script of interactions. The player loads the actual app in an iframe and replays recorded gestures on a clock, with play, pause and seek. You are not watching a recording of the app. You are watching the app. Four kilobytes doing the job of twenty-six megabytes, and you can pause it and take over.
+A **scene** is a script of interactions. The player loads the actual app in an iframe and replays recorded gestures on a clock, with play, pause, and seek. You are not watching a recording of the app. You are watching the app. Four kilobytes doing the job of twenty-six megabytes, and you can pause it and take over.
 
 A **transcript** goes further: it re-sends the prompts to a live agent. And that is where it stops being a demo and starts being an instrument.
 
@@ -50,7 +50,7 @@ The top story is a different story. The counts moved. The agent went out over th
 
 Nothing about a video can produce that. A video of the same turn shows 245 points forever — a number that was true once and gets less true every hour, presented with exactly the same confidence on day one and day four hundred.
 
-Another turn was a memory write. On replay the agent answered: *"I've already got that one."* It had learned the fact the first time. The transcript did not reproduce the reply; it revealed a state change that had happened in between.
+Another turn was a memory write. On replay, the agent answered: *"I've already got that one."* It had learned the fact the first time. The transcript did not reproduce the reply; it revealed a state change that had happened in between.
 
 ## Diff, do not assert
 
@@ -85,7 +85,7 @@ Same mechanism, four different meanings. A recording flattens all four into "the
 
 Worth saying plainly: the highest tier is also the most fragile, and it should be.
 
-Replaying against a live engine needs the engine, and mine refuses cross-origin browser calls without a per-install secret — correctly, that is CSRF protection. So from the public page the top tier is simply unavailable, and the player says so:
+Replaying against a live engine needs the engine, and mine correctly refuses cross-origin browser calls without a per-install secret; that is CSRF protection. So from the public page, the top tier is simply unavailable, and the player says so:
 
 ```
 TIER 2 · SCENE
@@ -101,7 +101,7 @@ That is the same failure as a demo that silently degrades. The system had two di
 
 If you are building demos of agentic systems, three things:
 
-1. **Ship the script, not just the pixels.** A few kilobytes that re-execute beats a video that replays. Keep the video as the floor — it is the only tier that always works.
+1. **Ship the script, not just the pixels.** A few kilobytes that re-execute beat a video that replays. Keep the video as the floor — it is the only tier that always works.
 2. **Never degrade silently.** Say which fidelity you got and why. The reason a system fell back is more informative than the fallback.
 3. **Treat divergence as data.** A replay that answers differently has told you something about *now*. A recording only ever tells you about *then*.
 

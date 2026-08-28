@@ -12,7 +12,7 @@ The first time it happens, you'll think it was a one-off. A merge conflict. A lo
 
 It will happen again. The data loss is structural, not incidental. The number of collisions in a multi-writer system grows with the *square* of the number of writers — two writers have one collision pair, ten writers have 45, a hundred writers have 4,950. Add capacity, and the system gets worse, not better. Most teams hit this wall when they scale from "a couple of background agents" to "an actual fleet."
 
-I hit it the first time when 10 parallel workers writing to the same file silently committed conflict markers to the main branch. About 130 entries in the affected file went to `{}`. The site looked like the whole platform had died. We rolled back ~90 minutes of work and I went and figured out what had to change.
+I hit it the first time when 10 parallel workers writing to the same file silently committed conflict markers to the main branch. About 130 entries in the affected file went to `{}`. The site looked like the whole platform had died. We rolled back ~90 minutes of work, and I went and figured out what had to change.
 
 The protocol that came out of that incident has worked at increasing scale ever since. Workers no longer collide. The throughput scales linearly with how many workers I add. The system survives crashes, partial writes, and clock skew. I'll explain it here in the four rules that make it work, and why each one is doing a specific job.
 
@@ -41,13 +41,13 @@ This is the same shift event-sourcing teams have been making for two decades. It
 
 ## Rule 1: Workers produce deltas, never state
 
-This is what makes the rest possible. If worker A reads `state.json`, increments a counter, and writes back, worker B's increment between A's read and write is lost. With deltas, A writes "I added +1 to counter X" and B writes "I added +1 to counter X" and the merge engine sees both. Counter goes to +2. There is nothing to overwrite because nobody overwrites anything.
+This is what makes the rest possible. If worker A reads `state.json`, increments a counter, and writes back, worker B's increment between A's read and write is lost. With deltas, A writes "I added +1 to counter X" and B writes "I added +1 to counter X" and the merge engine sees both. The counter goes to +2. There is nothing to overwrite because nobody overwrites anything.
 
 Workers can be on different machines, in different processes, behind different proxies. They don't need to know about each other. They don't need a coordinator. They just produce their deltas and drop them in the directory.
 
 ## Rule 2: Deltas are keyed by `(logical_clock, wall_clock)`
 
-Every delta has two timestamps: a *logical* one (a frame number, a tick, a sequence; whatever the application's notion of time is) and a *wall-clock* one (UTC). Together they form a globally unique composite key.
+Every delta has two timestamps: a *logical* one (a frame number, a tick, a sequence — whatever the application's notion of time is) and a *wall-clock* one (UTC). Together they form a globally unique composite key.
 
 You could use a UUID. UUIDs are also unique. But UUIDs are opaque — they don't tell you anything about *when* the delta was generated or *what* it belongs to. With a `(frame, utc)` key:
 
@@ -119,7 +119,7 @@ For most teams reading this, the question of *transport* between workers is the 
 - **The merge engine's commit** is one atomic update to canonical state plus deletion of consumed deltas. Atomic at the git level.
 - **Frame boundaries align with merge commits.** History reads as `[deltas... deltas... merge frame N | deltas... merge frame N+1]`. Trivially auditable in any git tool.
 
-You don't need a database. You don't need a message queue. You don't need a broker. Git's transport plus a directory of files plus a single-threaded merge process is enough for many many writers.
+You don't need a database. You don't need a message queue. You don't need a broker. Git's transport plus a directory of files plus a single-threaded merge process is enough for many, many writers.
 
 If you outgrow git's latency, the same pattern works on Postgres LISTEN/NOTIFY, on Redis streams, on Kafka. The shape of the protocol is identical; you're just changing the transport layer.
 
@@ -154,7 +154,7 @@ If you're building any multi-writer system and you don't already have a battle-t
 1. Every writer produces a **delta file** per unit of work, keyed by `(logical_time, wall_clock)`.
 2. Writers never modify canonical state directly. Only deltas.
 3. A **merge engine** reads all deltas for a window and applies additive merge.
-4. Retain deltas as audit log. Snapshot state at every merge point.
+4. Retain deltas as an audit log. Snapshot state at every merge point.
 5. Use git as transport if sub-second latency isn't required.
 
 You'll spend the first week getting the deduplication logic right per entity type. After that, you'll have a system that scales linearly with writers, survives arbitrary crashes, and has time travel built in for free.

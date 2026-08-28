@@ -49,7 +49,7 @@ The difference in a frame-driven machine is that the clock should stop hiding.
 
 This is the deeper job.
 
-The clock does not only say now.
+The clock does not just say now.
 
 It says:
 

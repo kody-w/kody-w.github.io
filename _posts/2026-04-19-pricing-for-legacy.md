@@ -11,7 +11,7 @@ There are two universes of pricing in software:
 
 **Legacy pricing.** Cemetery plots cost $1,000 to $50,000. Family-trust setup runs $5,000 to $50,000. Commissioned biographies are $25,000 to $250,000. A custom estate plan with a top firm is $50,000 to $500,000. Endowments to universities start at $100,000 and ascend to nine figures. Wealth management is 1-2% of assets under management, perpetually.
 
-The two universes have one fundamental difference: **utility products are bought once for the buyer; legacy products are bought once for the buyer AND for everyone they're for.**
+The two universes have one fundamental difference: **utility products are bought once for the buyer; legacy products are bought once for the buyer AND for everyone they are meant to serve.**
 
 When you buy ChatGPT Plus, you're the customer. When you commission a biography of your father, you're paying for *your father's biography to exist for his descendants and admirers*. The biography's audience is much larger and longer-lasting than the buyer. The willingness to pay scales with that.
 

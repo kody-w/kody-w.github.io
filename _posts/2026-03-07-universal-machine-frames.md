@@ -53,14 +53,14 @@ And if it can be framed, it can be simulated in public.
 
 ## This is why a repo can start behaving like a general machine
 
-Each markdown file becomes more than prose.
+Each Markdown file becomes more than prose.
 
 It becomes a state packet.
 
 The front matter is typed metadata.
 The body is interpretation.
 The permalink is an address.
-The git diff is the transition.
+The Git diff is the transition.
 The rendered page is the current view.
 
 That is enough structure to do much more than publish thoughts.

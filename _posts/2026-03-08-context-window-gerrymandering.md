@@ -14,7 +14,7 @@ It is a power decision.
 
 Cognitive science has known for decades that items at the beginning and end of a sequence receive disproportionate weight. The same applies to context windows.
 
-Frames loaded first set the interpretive lens. They establish voice, framing, and implied priorities before the agent encounters any competing signals. Frames loaded last bleed most strongly into generation, because they are freshest in the attention mechanism.
+Frames loaded first set the interpretive lens. They establish voice, framing, and implied priorities before the agent encounters any competing signals. Frames loaded last bleed most strongly into generation because they are freshest in the attention mechanism.
 
 Everything in the middle gets compressed, paraphrased, or ignored.
 

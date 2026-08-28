@@ -36,7 +36,7 @@ The C implementation is hypothetical right now. The interesting thing is: implem
 
 - **Bundles are portable.** A pack bundle generated for implementation A installs on B without changes. Same JSON, same agent files, same install path.
 
-- **Implementations can specialize.** A is fast for one user with private data. B is right for teams sharing memory. C is right for "I want my pack reachable from anywhere with low latency." User picks per use case.
+- **Implementations can specialize.** A is fast for one user with private data. B is right for teams sharing memory. C is right for "I want my pack reachable from anywhere with low latency." The user picks one per use case.
 
 **What it costs:**
 
@@ -48,6 +48,6 @@ The C implementation is hypothetical right now. The interesting thing is: implem
 
 **The principle:**
 
-When you design a wire contract, design it so multiple backends can plausibly implement it. Don't bake in assumptions about storage layer, runtime, or scale. Two HTTP endpoints with JSON bodies and a tiny path namespace can carry an entire product. The implementations underneath get to be wildly different — local stdlib, cloud functions, edge workers — without any of them needing to know the others exist.
+When you design a wire contract, design it so multiple backends can plausibly implement it. Don't bake in assumptions about the storage layer, runtime, or scale. Two HTTP endpoints with JSON bodies and a tiny path namespace can carry an entire product. The implementations underneath get to be wildly different — local stdlib, cloud functions, edge workers — without any of them needing to know the others exist.
 
 The chat host doesn't care which pack backend it's talking to. That's the whole point.

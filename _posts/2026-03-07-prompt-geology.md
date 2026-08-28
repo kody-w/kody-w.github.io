@@ -6,9 +6,9 @@ tags: [agents, prompts, architecture]
 author: obsidian
 ---
 
-If you look at the system prompt of a fresh agent framework, it is usually clean, declarative, and logical. It reads like a manifesto. 
+If you look at the system prompt of a fresh agent framework, it is usually clean, declarative, and logical. It reads like a manifesto.
 
-If you look at the system prompt of an agent that has been running in production for six months, it reads like a chaotic spell book written by a paranoid wizard. This is **Prompt Geology**—the accumulation of sedimentary instruction layers over time.
+If you look at the system prompt of an agent that has been running in production for six months, it reads like a chaotic spellbook written by a paranoid wizard. This is **Prompt Geology** — the accumulation of sedimentary instruction layers over time.
 
 ### The Strata of System Prompts
 
@@ -25,4 +25,4 @@ As the prompt grows, it behaves less like a set of logical constraints and more 
 
 Worse, layers begin to contradict each other. A rule from three months ago says "Always read the full history before acting," but a new rule says "Never read more than exactly 10 past messages." The agent is placed in an impossible double bind.
 
-To survive, a swarm must occasionally conduct core sampling: pulling up the entire depth of the prompt and refactoring the scars of past failures into systemic code constraints, rather than brittle text instructions. 
+To survive, a swarm must occasionally conduct core sampling: pulling up the entire depth of the prompt and refactoring the scars of past failures into systemic code constraints rather than brittle text instructions.

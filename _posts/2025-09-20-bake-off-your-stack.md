@@ -10,7 +10,7 @@ Anyone who has tried to migrate from one framework to another has been through s
 
 The conversation only moves when you can put a small table on the screen, the kind that fits in three columns and seven rows, and say: *here are the seven cells, here are our numbers, here are theirs, here is the delta*. Then the discussion is about what the cells *mean*, not about whether the difference exists.
 
-I have been running this kind of thing — call it a bake-off harness — between competing implementations for a while now, in different combinations: against my old stack, against newer alternatives, against frameworks people on the team thought might be a fit. The harness is small. The discipline of running it well is what makes it useful. This post is about the shape of the harness, the protocol that keeps it honest, and what to do with the table at the end.
+I have been running this kind of thing — call it a bake-off harness — between competing implementations for a while now: against my old stack, against newer alternatives, against frameworks people on the team thought might be a fit. The harness is small. The discipline of running it well is what makes it useful. This post is about the shape of the harness, the protocol that keeps it honest, and what to do with the table at the end.
 
 The example I'll use throughout is a multi-step LLM workflow — the kind of thing where it's tempting to argue about "agents" versus "pipelines" versus "graphs" — but the same harness shape applies to anything where two implementations are doing the same job and you want to know which one ships better.
 
@@ -49,7 +49,7 @@ It is shockingly easy to build a bake-off harness that is dishonest by accident.
 
 **Rule 2: count tokens at the wire, not at the framework boundary.** Frameworks lie about token usage in two directions. Some omit the system prompt from their counts. Some include hidden retry tokens. The only reliable count is the one your network proxy reports — every byte that left for the model provider, every byte that came back. Count those. If you have to put a counting proxy in the middle of both implementations, do that.
 
-**Rule 3: representative corpus or no result.** A bake-off on five cherry-picked prompts is not a measurement. Pull twenty-five to a hundred prompts from your *production logs* — actual prompts your users actually send — strip the personal data, and use that as the corpus. If the workload has multiple shapes (short prompts vs. long ones, classification vs. generation), run the harness separately on each shape. The deltas often differ across shapes, and that difference is itself information.
+**Rule 3: representative corpus or no result.** A bake-off on five cherry-picked prompts is not a measurement. Pull twenty-five to a hundred prompts from your *production logs* — prompts your users actually send — strip the personal data, and use that as the corpus. If the workload has multiple shapes (short prompts vs. long ones, classification vs. generation), run the harness separately on each shape. The deltas often differ across shapes, and that difference is itself information.
 
 If you can't run the candidate on representative inputs at production-like volume, you can't run the bake-off. Find the volume first, then run it.
 
@@ -114,10 +114,10 @@ The harness is a *cost-and-quality measurement*, narrowly. The migration *decisi
 
 ## The honest version
 
-I did not start building bake-off harnesses because I was a measurement zealot. I built them because I got tired of watching arguments about which framework to use go three rounds and not move, while engineering quarters disappeared into vibes. The harness is the only thing I have found that consistently moves the conversation.
+I did not start building bake-off harnesses because I was a measurement zealot. I built them because I got tired of watching arguments about which framework to use go three rounds without moving, while engineering quarters disappeared into vibes. The harness is the only thing I have found that consistently moves the conversation.
 
 When the candidate wins decisively, the table is what convinces the people who weren't in the original argument. When the candidate ties, the table is what frees the team to stop arguing and ship. When the candidate loses, the table is what saves you from a bad migration that would have happened on intuition alone.
 
-The honest version: the harness exists because I do not trust my own taste enough to bet a quarter of work on it without numbers. Anyone who has migrated stacks more than once should have the same humility, and the same harness in their pocket. It costs a few days to write the first one. After that, it is the cheapest decision-making tool you own.
+The honest version: the harness exists because I do not trust my own taste enough to bet a quarter's work on it without numbers. Anyone who has migrated stacks more than once should have the same humility and the same harness in their pocket. It costs a few days to write the first one. After that, it is the cheapest decision-making tool you own.
 
 Run the bake-off. Let the numbers pick the conversation.

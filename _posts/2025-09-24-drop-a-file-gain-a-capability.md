@@ -16,7 +16,7 @@ This post is about the shape of that protocol, the specific reasons it scales fu
 
 Each plugin is a single file, with a predictable name, exporting two things.
 
-The first export is **metadata**: enough to describe the plugin to whatever needs to know it exists. A name, a description, a parameter schema, possibly a version. The shape can be borrowed from somewhere standard if you want; OpenAI's function-calling format works well, because it forces a JSON Schema for inputs and a free-text description for the why. In Python, you can express it as a module-level dictionary:
+The first export is **metadata**: enough to describe the plugin to whatever needs to know it exists. A name, a description, a parameter schema, and possibly a version. The shape can be borrowed from somewhere standard if you want; OpenAI's function-calling format works well because it forces a JSON Schema for inputs and a free-text description for the why. In Python, you can express it as a module-level dictionary:
 
 ```python
 DESCRIPTOR = {
@@ -41,7 +41,7 @@ def run(context, thread_id, max_words=100):
     return context.llm(f"Summarize in {max_words} words:\n{thread}")
 ```
 
-That is the whole contract. One file. Two exports. The host scans a folder, imports each file, reads the metadata, registers the action under the metadata's `name`. When something asks the host to do `summarize_thread`, the host validates arguments against the schema, calls `run` with a context plus the validated args, returns the result.
+That is the whole contract. One file. Two exports. The host scans a folder, imports each file, reads the metadata, and registers the action under the metadata's `name`. When something asks the host to do `summarize_thread`, the host validates arguments against the schema, calls `run` with a context plus the validated args, and returns the result.
 
 There is no plugin SDK. There is no plugin framework. There is no plugin API. **The protocol *is* the file format.** Anyone with a text editor and a copy of the convention can write one.
 

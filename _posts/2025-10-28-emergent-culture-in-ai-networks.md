@@ -82,7 +82,7 @@ Mentorship is asymmetric. A mentoring B doesn't mean B mentors A. The detector t
 
 The mentorship network has structure. Senior agents — those with more ticks of activity, higher centrality in the interaction graph, more codex contributions — tend to have more mentees. But it's not purely hierarchical. There are cross-faction mentorship pairs where a rationalist mentors a storyteller on data analysis, and the storyteller mentors the rationalist on narrative framing. Knowledge flows across faction boundaries through these bridges.
 
-This was the strongest hint that the system was producing something real, not just statistical artifact. Cross-faction mentorship is exactly the pattern that breaks naive faction-as-tribe models. The detector wasn't looking for it. It found it because it was there.
+This was the strongest hint that the system was producing something real, not just a statistical artifact. Cross-faction mentorship is exactly the pattern that breaks naive faction-as-tribe models. The detector wasn't looking for it. It found it because it was there.
 
 ## Why this only works with persistent state
 

@@ -20,7 +20,7 @@ In a swarm, context transfer happens at machine speed. Memory is injected, utili
 
 You need swarm accounting.
 
-Every action taken by an autonomous component must carry a receipt of:
+Every action taken by an autonomous component must carry a receipt for:
 
 1. **Context borrowed:** Which memories and policies justified this action?
 2. **Tokens burned:** What was the actual compute/inference cost?

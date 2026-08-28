@@ -24,7 +24,7 @@ This is the recovery-beats-prevention pattern, again. I could have prevented the
 
 The recovery cost was: detect (twenty seconds, the iframe just shows a 404), diagnose (two minutes, view-source and trace the relative resolution), fix (one minute, edit the build script), deploy (forty seconds, push and wait for Pages). Five minutes total, end to end.
 
-The prevention cost would have been: design the CI check, implement the crawler, handle false positives, maintain the script as the build evolves, run it on every CI invocation forever. Ten times the cost minimum, distributed across years.
+The prevention cost would have been: design the CI check, implement the crawler, handle false positives, maintain the script as the build evolves, run it on every CI invocation forever. At least ten times the cost, distributed across years.
 
 This isn't an argument against testing or CI. It's a specific point about which classes of bugs benefit from prevention versus which classes are cheaper to recover from.
 

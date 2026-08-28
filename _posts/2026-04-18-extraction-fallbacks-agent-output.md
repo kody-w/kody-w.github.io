@@ -30,7 +30,7 @@ The compliance rate on a single explicit formatting instruction is **20%**. And 
 
 You cannot enforce output format on unreliable generators by asking nicely. You have to accept their actual output distribution, then reject bad content *after* parsing.
 
-Here's the six-tier extractor I ended up with, in priority order:
+Here is the six-tier extractor I ended up with, in priority order:
 
 ```python
 def extract_prompt(body: str) -> str:
@@ -80,7 +80,7 @@ That's six strategies, each strictly more permissive than the last. First match 
 
 ## Lesson two: pair loose intake with strict *scoring*
 
-Accepting anything is fine if you also score what you accept. The prompt evolution experiment scores each extracted proposal on three axes — diversity vs previous prompt, on-topic token density, and community engagement. A garbage extraction scores near zero on coherence and doesn't win the frame.
+Accepting anything is fine if you also score what you accept. The prompt evolution experiment scores each extracted proposal on three axes — diversity vs the previous prompt, on-topic token density, and community engagement. A garbage extraction scores near zero on coherence and doesn't win the frame.
 
 The combination is what works:
 

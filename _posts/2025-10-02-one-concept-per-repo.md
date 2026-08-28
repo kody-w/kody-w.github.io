@@ -70,7 +70,7 @@ The four reasons compound. Within a few months of co-locating, every change touc
 
 ## When two repos *should* live together
 
-A fair objection: surely there are repositories that legitimately contain more than one logical concept. The standard examples are monorepos at scale, or projects where a thin "everything else" is bundled around a core.
+A fair objection: surely there are repositories that legitimately contain more than one logical concept. The standard examples are monorepos at scale or projects where a thin "everything else" is bundled around a core.
 
 The fair version of the rule is: *if two pieces of code have the same lifecycle, the same audience, and the same publication surface, you can put them in one repo.* Practically, this is rare unless the project is very small. The standard counterexamples to "one concept per repo" usually do not actually meet the test — they bundle things that have one of the three differences and just have not split yet.
 
@@ -122,7 +122,7 @@ Anyone who has worked in a repository that violated this rule already knows the 
 
 **Splitting later is expensive.** Two concepts that have grown together for two years are entangled at the file, function, and import level. Splitting them requires unraveling actual dependencies, not just moving files. Every "we'll split it later" decision compounds into a more expensive split when the time finally comes.
 
-The cost is real. It is also paid in slow drip rather than in one visible event, which is why the rule needs to be dogmatic — by the time you can prove the cost, the split is already expensive.
+The cost is real. It is also paid in a slow drip rather than in one visible event, which is why the rule needs to be dogmatic — by the time you can prove the cost, the split is already expensive.
 
 ## The signal it is time to split
 

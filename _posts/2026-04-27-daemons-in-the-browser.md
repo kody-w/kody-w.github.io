@@ -8,13 +8,13 @@ description: "An AI companion that lives in your browser tab — not in a vendor
 
 There is a category of software I want to call *daemons*, in the old Unix sense. A daemon is a small persistent agent that runs in the background, holds state, responds when called on, and otherwise leaves you alone. The word fits the kind of AI companion I have been building in browsers — a thing that grows with you, remembers across sessions, exports to a file, and survives any vendor pivot.
 
-This post is what these daemons are, why the architecture matters, and what the file format under them is for.
+This post explains what these daemons are, why the architecture matters, and what the file format under them is for.
 
 ## The setup
 
 Open a tab to a single HTML file. The page is a few hundred kilobytes — JavaScript, a small inference shim, a state-management layer over IndexedDB. The page renders an animated character. The character is, in some sense, asleep.
 
-Tap it. It wakes up. It has limited vocabulary at first; you can prompt it, it responds, it remembers what you talked about. Close the tab, come back tomorrow, the same character resumes — its state is preserved in the browser's local storage. Talk to it for a week, it has formed preferences. It develops a personality shaped by what you say to it. It changes over time.
+Tap it. It wakes up. It has limited vocabulary at first; you can prompt it, and it responds and remembers what you talked about. Close the tab, come back tomorrow, and the same character resumes — its state is preserved in the browser's local storage. Talk to it for a week, and it has formed preferences. It develops a personality shaped by what you say to it. It changes over time.
 
 When you want to take it somewhere else, you press export. The browser hands you a file — `companion.json` or whatever extension you gave it — that is the whole organism. Its identity. Its memory. Its preferences. Its current developmental stage. Drop the file into another browser, another machine, another install of the runtime. It wakes up where you left off.
 
@@ -34,7 +34,7 @@ The combination of these three properties is what makes the architecture worth w
 
 ## The architecture
 
-Inside the browser tab, the companion is implemented as a small set of cooperating "agents" — different code paths that share a single underlying inference call. There's typically:
+Inside the browser tab, the companion is implemented as a small set of cooperating "agents" — different code paths that share a single underlying inference call. There are typically:
 
 - A **memory manager** — handles writes to the companion's long-term store; decides what is worth remembering versus forgetting.
 - A **context assembler** — when the companion needs to respond, it pulls relevant memory entries and assembles them into a prompt context.
@@ -45,7 +45,7 @@ These are not separate AI calls; that would be expensive and slow. They are sepa
 
 Memory is stored in IndexedDB — the browser's built-in document store. The schema is simple: episodic events (things that happened), preferences (things the companion has come to like or dislike), relationships (people and topics it has formed associations with). Every entry is timestamped and tagged.
 
-The companion's *developmental stage* is a coarse function of how much state has accumulated. Early on, the memory store is small, the context is thin, responses are generic. Over weeks of interaction the memory store grows and the responses become more specific to your relationship. This is not a learned behavior in a model-weights sense; the model itself doesn't change. The *context* the model receives changes, and the responses follow.
+The companion's *developmental stage* is a coarse function of how much state has accumulated. Early on, the memory store is small, the context is thin, responses are generic. Over weeks of interaction, the memory store grows and the responses become more specific to your relationship. This is not a learned behavior in a model-weights sense; the model itself doesn't change. The *context* the model receives changes, and the responses follow.
 
 ## The export format
 
@@ -81,7 +81,7 @@ Browsers turn out to be unreasonably good for this kind of thing.
 
 **Long-lived.** Web platform APIs are remarkably stable. Code that ran in browsers a decade ago still runs today. A companion app written today has a reasonable expectation of running ten years from now without modification.
 
-The reason cloud-hosted AI companions got popular first is that inference and training were expensive and centralization made business sense. Inference costs are collapsing; local inference is becoming viable for a growing range of use cases; the centralization argument is weakening. Browser-local state has always been viable. The combination — local inference plus local state plus portable format — is the post-cloud architecture for personal AI.
+The reason cloud-hosted AI companions became popular first is that inference and training were expensive, and centralization made business sense. Inference costs are collapsing; local inference is becoming viable for a growing range of use cases; the centralization argument is weakening. Browser-local state has always been viable. The combination — local inference plus local state plus portable format — is the post-cloud architecture for personal AI.
 
 ## What the format buys you
 

@@ -58,7 +58,7 @@ They don't have to trust each other. They have to agree on what they both saw.
 
 I'm now going to use this pattern for everything.
 
-If two systems need to agree on something, the agreement should produce a hash. The hash is the contract. Both sides countersign by appending the hash to their state file. Anyone reading either state file can verify the hash by re-computing it.
+If two systems need to agree on something, the agreement should produce a hash. The hash is the contract. Both sides countersign by appending the hash to their state file. Anyone reading either state file can verify the hash by recomputing it.
 
 This works for:
 

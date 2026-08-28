@@ -10,7 +10,7 @@ Pick a problem you want to ship: an agent that summarizes PDFs, a connector that
 
 That decision deserves a second look. Not because frameworks are bad. They are not. They are some of the best engineering you will ever benefit from. But they are optimized for one shape of problem, and the shape of *your* problem might be a different one. The question worth asking is the simplest one: **is the unit you need to ship a workflow that someone else will install and run, or is it a service you will operate?**
 
-If it is a service, frameworks are great. If it is a workflow that ships, a single file is almost always better. Most teams never name this distinction, and end up using the framework choice for both, and pay the cost on the side that does not fit.
+If it is a service, frameworks are great. If it is a workflow that ships, a single file is almost always better. Most teams never name this distinction, end up using the framework choice for both, and pay the cost on the side that does not fit.
 
 This post is about that distinction.
 
@@ -28,14 +28,14 @@ Use the right tool for the job. None of this is wrong.
 
 ## What frameworks share that is the cost
 
-The shapes are different but the costs are the same. Three popular frameworks all force you to:
+The shapes are different, but the costs are the same. Three popular frameworks all require:
 
 - A runtime layer between your code and the underlying call.
 - A graph / DAG / state-machine abstraction you must learn to express your workflow.
 - A package you `pip install` whose major versions break your code on upgrade.
 - A versioned API surface that is bigger than your problem.
 
-These costs are fine if the framework is doing something for you that those costs pay for. They are not fine if the framework is doing nothing the framework boundary requires.
+These costs are fine if the framework is doing something for you that those costs pay for. They are not fine if the framework is doing nothing that requires the framework boundary.
 
 ## What "shipping" actually means
 
@@ -97,7 +97,7 @@ The user only ever sees the collapsed file. They cannot tell — and do not need
 
 A converged single-file workflow of the kind I am describing is, in practice, a few hundred to a couple thousand lines, somewhere between 10 KB and 50 KB on disk. One import beyond the standard library. The transitive footprint is whatever the runtime is — and the runtime is small.
 
-Equivalent functionality in a popular composition framework would, approximately:
+Equivalent functionality in a popular composition framework would require approximately:
 
 - A dozen-plus files (chain definitions, prompt templates, custom tool classes, output parsers).
 - The framework's own install — an order of magnitude or more dependencies, transitively.
@@ -129,7 +129,7 @@ Not always. The framework is the right answer when:
 
 - **You need the catalog.** The framework's adapters and integrations are doing real work for you. Re-implementing them is silly. If the value of the framework is the 200 connectors, and you need 40 of them, take the framework and the dependency tree.
 
-- **The abstractions match the problem precisely.** Genuine hierarchical role delegation, genuine self-correcting conversational loops — when the framework's metaphor *is* the algorithm of your problem, you are spending effort against the framework, not learning a foreign abstraction.
+- **The abstractions match the problem precisely.** Genuine hierarchical role delegation, genuine self-correcting conversational loops — when the framework's metaphor *is* the algorithm of your problem, you are solving the problem instead of fighting the framework or learning a foreign abstraction.
 
 - **The team's reading audience already speaks the framework.** Code is communication. If everyone reading the workflow already knows the framework's idioms, that is a real cost saving.
 

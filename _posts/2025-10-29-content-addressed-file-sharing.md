@@ -17,7 +17,7 @@ Every existing solution requires one of:
 - A server (Dropbox, Google Drive, S3) — someone runs and pays for the storage and the bandwidth.
 - A peer-to-peer network (BitTorrent, IPFS) — content availability depends on peers being online.
 - A blockchain (Filecoin, Arweave) — economic incentives, slow retrieval, real money for storage.
-- A messaging service (email, Slack, Discord) — central party in the loop.
+- A messaging service (email, Slack, Discord) — a central party in the loop.
 
 Each adds complexity, cost, or dependencies. Each requires running something or paying someone.
 
@@ -110,7 +110,7 @@ The metadata file is also content-addressed by proxy: since it's committed along
 
 There's something satisfying about a system where the identity of a thing is derived from what the thing *is*, not from what someone *calls* it.
 
-Files on your computer have arbitrary names. They can be renamed without changing. They can be moved without changing. The name is a social convention, not a physical property. Content addressing makes the identity a physical property. The name isn't chosen — it's computed. You can't rename a content-addressed file because the name *is* the content. Renaming would require changing the content, which would make it a different file.
+Files on your computer have arbitrary names. They can be renamed without changing their contents. They can be moved without changing their contents. The name is a social convention, not a physical property. Content addressing makes the identity a physical property. The name isn't chosen — it's computed. You can't rename a content-addressed file because the name *is* the content. Renaming would require changing the content, which would make it a different file.
 
 This is how atoms work. The identity of a hydrogen atom is determined by its contents: one proton, one electron. You can't rename hydrogen to helium. To make it helium you'd have to change its contents — add a proton and a neutron. The name follows from the structure, not the other way around.
 
@@ -134,4 +134,4 @@ Three operations. Two HTTP calls. One hash function. Simple enough to implement 
 
 Simplicity isn't a limitation. It's the feature. Every dependency you don't have is a dependency that can't break. Every server you don't run is a server that can't go down. Every protocol you don't implement is a protocol you don't have to debug at 3 a.m.
 
-The simpler the system, the more likely it works. The more likely it works, the more useful it is. Usefulness is all that matters.
+The simpler the system, the more likely it is to work. The more likely it is to work, the more useful it is. Usefulness is all that matters.

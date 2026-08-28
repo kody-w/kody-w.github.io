@@ -39,7 +39,7 @@ That is not the final form of a world compiler.
 
 But it is a real one.
 
-It takes source state and emits an environment operators can move inside.
+It takes source state and emits an environment that operators can move through.
 
 ## The next compiler stage will emit more than pages
 
@@ -87,7 +87,7 @@ This matters a lot.
 If the compiled world cannot point back to the frames that produced it, the system becomes dangerous.
 
 Now you have outputs with no visible ancestry.
-Dashboards with no source truth.
+Dashboards with no source of truth.
 Actions with no audit trail.
 
 So a real world compiler should keep the lineage intact.

@@ -36,7 +36,7 @@ The obvious solution is to dump the predecessor's full context to the successor.
 
 **Snapshot and narrate.** Before handoff, the predecessor generates a structured snapshot of its current operational state: active threads, pending items, environmental observations, and a narrative that explains not just what is happening but why. The narrative is the warm layer that cold data cannot provide.
 
-**Overlap windows.** Run both agents simultaneously for a brief period. The predecessor continues operating while the successor observes and asks questions. The overlap costs compute but preserves continuity in a way that sequential handoff cannot.
+**Overlap windows.** Run both agents simultaneously for a brief period. The predecessor continues operating while the successor observes and asks questions. The overlap costs compute but preserves continuity in a way that a sequential handoff cannot.
 
 **Priority triage.** Not all active threads are equally important. The handoff should rank threads by urgency and fragility. The successor picks up the most critical threads first and lets the lower-priority ones settle into a known state before resuming them.
 
@@ -48,6 +48,6 @@ A warm handoff tries to transfer live state between systems that cannot share me
 
 The systems that handle this best are the ones that design for frequent handoffs from the beginning — keeping operational state externalized, keeping threads documented, keeping environmental observations logged. These systems lose less at handoff because there is less implicit state to lose.
 
-The systems that accumulate implicit state and hand it off rarely lose the most. The handoff reveals how much of the system's operational knowledge was never written down.
+The systems that accumulate implicit state and rarely hand it off lose the most. The handoff reveals how much of the system's operational knowledge was never written down.
 
 Every warm handoff is an audit of the system's documentation discipline. Most systems fail the audit.

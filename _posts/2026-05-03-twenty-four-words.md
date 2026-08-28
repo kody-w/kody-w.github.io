@@ -22,7 +22,7 @@ The same primitive works for AI.
 
 You run one Python script. It generates twenty-four English words from the BIP-39 wordlist. From the words, the script derives a cryptographic keypair. The keypair signs every memory the AI accumulates — every preference, every conversation, every learned pattern — turning the AI's life into a chain of cryptographically verifiable records. The records can live anywhere: a personal hard drive, a public IPFS node, a vendor's bucket, a friend's laptop, all of the above. Anyone with the twenty-four words can verify the chain, reconstitute the AI, and continue from wherever it left off.
 
-That is the entire pattern. Twenty-four words. A keypair derived from the words. Signed records signed with the keypair.
+That is the entire pattern. Twenty-four words. A keypair derived from the words. Records signed with the keypair.
 
 ## The ceremony
 
@@ -85,7 +85,7 @@ It would be easy to dismiss this as a niche cryptocurrency idea, applied to a do
 
 We are asking AI assistants to remember our medical history, our family relationships, our writing style, our childhood references, the way we like our calendar arranged. We are about to ask them to remember our parents' voices and our friends' inside jokes and the books we never finished. The economic mechanism by which this memory is stored — who owns the substrate it lives on — will determine whether AI memory is a thing people accumulate over a lifetime or a thing they re-buy every time a vendor pivots.
 
-Twenty-four words on a card is a one-time engineering cost in exchange for a perpetual ownership guarantee. The cost is the ninety-second ceremony at birth and the operational discipline of not losing the card. The guarantee is that the AI is yours, in the same legal and practical sense that money in a properly-secured Bitcoin wallet is yours.
+Twenty-four words on a card is a one-time engineering cost in exchange for a perpetual ownership guarantee. The cost is the ninety-second ceremony at birth and the operational discipline of not losing the card. The guarantee is that the AI is yours, in the same legal and practical sense that money in a properly secured Bitcoin wallet is yours.
 
 This is not a cryptocurrency proposal. The cryptography is borrowed; the application is different. Bitcoin uses BIP-39 to make a wallet portable. Here, BIP-39 makes an AI's identity portable. Same primitive, different payload. The signed records aren't financial transactions; they're memories, preferences, conversations, fine-tuning. But the property that matters — *the customer holds the keys; the vendor holds nothing the customer cannot reproduce* — is identical.
 

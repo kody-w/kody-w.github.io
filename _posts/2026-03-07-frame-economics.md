@@ -35,7 +35,7 @@ It can be produced here, consumed there, expanded by another actor, and turned i
 
 Traditional productivity loves counting outputs.
 
-Agentic productivity may care more about throughput of high-quality frames.
+Agentic productivity may care more about the throughput of high-quality frames.
 
 How many useful frames did the system generate?
 

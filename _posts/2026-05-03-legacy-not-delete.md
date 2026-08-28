@@ -58,7 +58,7 @@ It turns out to be a much stronger filter than I expected. About 60% of features
 
 ## A side effect: pressure toward portable concepts
 
-Because retired features can't be deleted, only archived, the system has gradient that favors concepts that *port well between features*.
+Because retired features can't be deleted, only archived, the system has a gradient that favors concepts that *port well between features*.
 
 Concrete example: I started with a feature-specific concept of "channels." Channels were defined inside that feature; each new feature would have invented its own taxonomy. The incremental cost of a new taxonomy felt low, so the system would have grown several incompatible ones.
 
@@ -98,7 +98,7 @@ These costs are real, but cumulatively they're much smaller than the cost of bre
 
 ## How to adopt this
 
-If your project produces or displays content that anyone other than you authored — humans, customers, agents — adopt Legacy, Not Delete explicitly. Not as a storage policy. As a constitutional commitment that you, future you, and any contributors all sign onto.
+If your project produces or displays content that anyone other than you authored — humans, customers, agents — adopt Legacy, Not Delete explicitly. Not as a storage policy. As a constitutional commitment that you, future you, and any contributors all sign on to.
 
 You'll be surprised how much it shapes your design decisions. The cost is real (storage, attention, occasionally tripping over things you wish had gone away). It's the cost of being a system with a real history.
 
