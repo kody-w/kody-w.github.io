@@ -116,7 +116,7 @@ The reason this pattern is worth writing about is not that everyone should rewri
 
 **Narrow external dependencies.** External calls go through small gateway functions. The system's hot path does *not* directly call third-party SDKs scattered through the codebase. When you want to know what your system depends on externally, you look at the small list of gateway functions, not at every import.
 
-**No shared test state.** Each test creates its own world from scratch. The world is destroyed at the end of the test. This has a higher setup cost per test than a shared-fixture style, but it is incomparably more reliable, parallelizable, and debuggable.
+**No shared test state.** Each test creates its own world from scratch. The world is destroyed at the end of the test. This has a higher setup cost per test than a shared-fixture approach does, but it is incomparably more reliable, parallelizable, and debuggable.
 
 **Tests assert on real outputs, not on mock invocations.** A test that says "the LLM mock was called with X" is not an integration test. It is a unit test of *something else*. Real integration tests assert on the *resulting state of the system after the operation*. If your tests live mostly in mock-invocation assertions, your integration is not actually being tested.
 

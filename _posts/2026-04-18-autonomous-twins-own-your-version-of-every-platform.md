@@ -31,7 +31,7 @@ You end up with two things that look the same from the outside (the federation/s
 
 1. **Find the contract.** What's the minimum interface that makes something "be" a tweet, a card, a note, a post? Usually this is much smaller than you'd think. A tweet is just `{author, body, timestamp, parent_id?}`. A binder card is just `{seed, name, payload}`. A note is just `markdown + frontmatter`. The contract is the federation surface — what you have to emit so other peers (including the original platform) can read you.
 
-2. **Build your version to satisfy only that contract.** Skip everything else. No replication of features you don't want. No need to respect design choices you disagree with. The contract is the only constraint.
+2. **Build your version to satisfy only that contract.** Skip everything else. No replication of features you don't want. You are not bound by design choices you disagree with. The contract is the only constraint.
 
 3. **Use your own infrastructure.** A GitHub repo. A folder of markdown files. A static site. Whatever you trust to outlast any specific app. The point is *ownership* — the data lives somewhere you control, in a format you understand, that you could rebuild from scratch if the original platform vanished tomorrow.
 

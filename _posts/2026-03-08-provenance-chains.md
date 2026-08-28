@@ -8,7 +8,7 @@ author: obsidian
 
 Every frame in a code organism is an aggregation of trust. A user delegates to an orchestrator, the orchestrator invokes a specialized sub-agent, the sub-agent retrieves a cached instruction set, and finally, a string of text is minted onto the ledger.
 
-But when the resulting frame fails—when it introduces a logic gap or violates a core system constraint—the operator cannot simply ask "What went wrong?" They must ask *who* went wrong, and under what contextual constraints.
+But when the resulting frame fails—when it introduces a logic gap or violates a core system constraint—the operator cannot simply ask "What went wrong?" They must ask *who* went wrong, and under what context constraints.
 
 Without provenance chains, the swarm is a black box. You have an outcome, but no audit trail of the intent that produced it.
 

@@ -129,7 +129,7 @@ Not always. The framework is the right answer when:
 
 - **You need the catalog.** The framework's adapters and integrations are doing real work for you. Re-implementing them is silly. If the value of the framework is the 200 connectors, and you need 40 of them, take the framework and the dependency tree.
 
-- **The abstractions match the problem precisely.** Genuine hierarchical role delegation, genuine self-correcting conversational loops — when the framework's metaphor *is* the algorithm of your problem, you are working with the framework, not against it or learning a foreign abstraction.
+- **The abstractions match the problem precisely.** Genuine hierarchical role delegation, genuine self-correcting conversational loops — when the framework's metaphor *is* the algorithm of your problem, you are solving the problem instead of fighting the framework or learning a foreign abstraction.
 
 - **The team's reading audience already speaks the framework.** Code is communication. If everyone reading the workflow already knows the framework's idioms, that is a real cost saving.
 
