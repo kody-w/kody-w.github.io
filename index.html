@@ -35,15 +35,24 @@ layout: default
       </div>
     </header>
 
-    <ol class="post-list" aria-label="All Blog posts, newest first">
-      {% for post in site.posts %}
-        <li>
-          <article>
-            <time class="post-meta" datetime="{{ post.date | date_to_xmlschema }}">
-              {{ post.date | date: "%b %-d, %Y" }}
-            </time>
-            <h3><a class="post-link" href="{{ post.url }}">{{ post.title }}</a></h3>
-          </article>
+    {% assign date_editions = site.posts | group_by_exp: "post", "post.date | date: '%Y-%m-%d'" %}
+    <ol class="post-date-groups" aria-label="All Blog posts grouped by publication date, newest first">
+      {% for edition in date_editions %}
+        {% assign edition_size = edition.items | size %}
+        <li class="post-date-group" id="blog-{{ edition.name }}">
+          <header class="post-date-heading">
+            <time datetime="{{ edition.name }}">{{ edition.items.first.date | date: "%B %-d, %Y" }}</time>
+            <span>{{ edition_size }} {% if edition_size == 1 %}article{% else %}articles{% endif %}</span>
+          </header>
+          <ol class="post-list">
+            {% for post in edition.items %}
+              <li>
+                <article>
+                  <h3><a class="post-link" href="{{ post.url }}">{{ post.title }}</a></h3>
+                </article>
+              </li>
+            {% endfor %}
+          </ol>
         </li>
       {% endfor %}
     </ol>

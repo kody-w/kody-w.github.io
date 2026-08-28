@@ -8,5 +8,63 @@ permalink: /newsletter/
   <p class="work-eyebrow">A direct line, outside the feed</p>
   <h1>Get the next build note by email.</h1>
   <p>The newsletter carries the strongest essays, field notes, and things worth seeing from the public build stream. No algorithmic feed and no account required—just a confirmation email, then new posts when they are worth sending.</p>
-  <p><a href="#newsletter-signup">Go to the signup form</a> or browse <a href="/work/">everything I've built</a> first.</p>
+  <p><a href="#newsletter-signup">Go to the signup form</a>, browse <a href="/work/">everything I've built</a>, or subscribe to the <a href="/newsletter/feed.xml">date-edition feed</a>.</p>
 </section>
+
+{% assign date_editions = site.posts | group_by_exp: "post", "post.date | date: '%Y-%m-%d'" %}
+{% assign multi_editions = 0 %}
+{% for edition in date_editions %}
+  {% assign edition_size = edition.items | size %}
+  {% if edition_size > 1 %}
+    {% assign multi_editions = multi_editions | plus: 1 %}
+  {% endif %}
+{% endfor %}
+
+<section class="newsletter-archive" aria-labelledby="newsletter-archive-title">
+  <header class="newsletter-archive-header">
+    <div>
+      <p class="work-eyebrow">Consolidated by publication date</p>
+      <h2 id="newsletter-archive-title">Date editions</h2>
+      <p>Every original article remains intact. Each edition simply gathers everything published on the same date into one browsable issue.</p>
+    </div>
+    <dl class="newsletter-archive-stats">
+      <div><dt>Articles</dt><dd>{{ site.posts | size }}</dd></div>
+      <div><dt>Editions</dt><dd>{{ date_editions | size }}</dd></div>
+      <div><dt>Multi-article dates</dt><dd>{{ multi_editions }}</dd></div>
+    </dl>
+  </header>
+
+  <div class="newsletter-archive-controls">
+    <label for="newsletter-archive-search">Search every edition</label>
+    <input id="newsletter-archive-search" type="search" placeholder="Search titles, summaries, or dates..." autocomplete="off">
+    <p id="newsletter-archive-status" aria-live="polite" aria-atomic="true">{{ site.posts | size }} articles across {{ date_editions | size }} editions</p>
+  </div>
+
+  <div class="newsletter-editions" id="newsletter-editions">
+    {% for edition in date_editions %}
+      {% assign edition_size = edition.items | size %}
+      <details class="newsletter-edition" id="edition-{{ edition.name }}" {% if forloop.first %}open{% endif %}>
+        <summary>
+          <span>
+            <time datetime="{{ edition.name }}">{{ edition.items.first.date | date: "%B %-d, %Y" }}</time>
+            <small>{{ edition_size }} {% if edition_size == 1 %}article{% else %}articles{% endif %}</small>
+          </span>
+          <a href="#edition-{{ edition.name }}" aria-label="Link to the {{ edition.name }} edition">#</a>
+        </summary>
+        <ol>
+          {% for post in edition.items %}
+            <li class="newsletter-edition-item" data-search="{{ post.title | escape }} {{ post.excerpt | strip_html | strip_newlines | escape }} {{ edition.name }} {{ edition.items.first.date | date: "%B %-d, %Y" | escape }}">
+              <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
+              <p>{{ post.excerpt | strip_html | strip_newlines | truncatewords: 32 }}</p>
+              {% if post.tags.size > 0 %}
+                <p class="newsletter-edition-tags">{{ post.tags | join: " · " }}</p>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ol>
+      </details>
+    {% endfor %}
+  </div>
+</section>
+
+<script src="/js/newsletter.js" defer></script>
