@@ -654,7 +654,7 @@ a.stat:hover {
 
 [data-theme="dark"] .newsletter-form {
   border-color: var(--border);
-  background: var(--surface);
+  background: var(--card-bg);
 }
 
 [data-theme="dark"] .newsletter-form label {
@@ -677,7 +677,7 @@ a.stat:hover {
 
 .work-eyebrow {
   margin-bottom: 6px;
-  color: #2a7ae2;
+  color: #1769c2;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -724,7 +724,7 @@ a.stat:hover {
 
 .work-stats span {
   margin-top: 5px;
-  color: #828282;
+  color: #666;
   font-size: 12px;
 }
 
@@ -774,7 +774,7 @@ a.stat:hover {
 
 .work-section-heading > p {
   max-width: 360px;
-  color: #828282;
+  color: #666;
   text-align: right;
 }
 
@@ -854,7 +854,7 @@ a.stat:hover {
 
 .work-card-topline,
 .work-repo-meta {
-  color: #828282;
+  color: #666;
   font-size: 12px;
 }
 
@@ -913,11 +913,19 @@ a.stat:hover {
 }
 
 [data-theme="dark"] .work-lede,
+[data-theme="dark"] .work-stats span,
 [data-theme="dark"] .work-section-heading > p,
 [data-theme="dark"] .work-featured-card > p,
 [data-theme="dark"] .work-repo-card > p,
+[data-theme="dark"] .work-card-topline,
+[data-theme="dark"] .work-repo-meta,
+[data-theme="dark"] .work-surface-card span,
 [data-theme="dark"] .work-controls label span {
   color: var(--text-secondary);
+}
+
+[data-theme="dark"] .work-eyebrow {
+  color: var(--link);
 }
 
 [data-theme="dark"] .work-stats div,
@@ -927,7 +935,7 @@ a.stat:hover {
 [data-theme="dark"] .work-controls input,
 [data-theme="dark"] .work-controls select {
   border-color: var(--border);
-  background: var(--surface);
+  background: var(--card-bg);
 }
 
 [data-theme="dark"] .work-surface-card {

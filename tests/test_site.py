@@ -3191,6 +3191,7 @@ class SiteContentTests(unittest.TestCase):
             'id="work-family"',
             'id="work-activity"',
             'id="work-catalog"',
+            'id="work-result-count" aria-live="polite"',
             'id="work-surfaces-title"',
             "/js/work.js",
             "Kody2day",
@@ -3198,6 +3199,8 @@ class SiteContentTests(unittest.TestCase):
             "RAPP Vision",
         ):
             self.assertIn(marker, body)
+        self.assertNotIn('id="work-catalog" aria-live', body)
+        self.assertNotIn('id="work-featured" aria-live', body)
 
         payload = json.loads(WORK_DATA.read_text(encoding="utf-8"))
         self.assertEqual(payload.get("schema"), "kodyw-public-works/1.0")
@@ -3233,6 +3236,7 @@ class SiteContentTests(unittest.TestCase):
         css = (ROOT / "css" / "main.css").read_text(encoding="utf-8")
         self.assertIn(".work-show-all[hidden]", css)
         self.assertIn("background: #1769c2;", css)
+        self.assertNotIn("var(--surface)", css)
 
         workflow = (ROOT / ".github" / "workflows" / "refresh-works.yml").read_text(
             encoding="utf-8"
