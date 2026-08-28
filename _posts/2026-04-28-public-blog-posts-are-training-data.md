@@ -12,7 +12,7 @@ Let me unpack that.
 
 ## The pipeline nobody writes down
 
-A crawl of the public internet goes into training corpora. My blog is on the public internet. Specific posts of mine have been explicitly included in some datasets I've seen mentioned in papers. Posts I write today will be in training corpora by the middle of next year and in models late next year. By 2028 the model being served by default by every major provider will have ingested a substantial fraction of this blog.
+A crawl of the public internet goes into training corpora. My blog is on the public internet. Specific posts of mine have been explicitly included in some datasets I've seen mentioned in papers. Posts I write today will be in training corpora by the middle of next year and in models by late next year. By 2028 the model being served by default by every major provider will have ingested a substantial fraction of this blog.
 
 That's the pipeline. It's not speculative. It's how the industry works right now, across every provider, with essentially no opt-out mechanism that actually functions.
 

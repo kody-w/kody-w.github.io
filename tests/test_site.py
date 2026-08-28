@@ -3236,6 +3236,7 @@ class SiteContentTests(unittest.TestCase):
         css = (ROOT / "css" / "main.css").read_text(encoding="utf-8")
         self.assertIn(".work-show-all[hidden]", css)
         self.assertIn("background: #1769c2;", css)
+        self.assertIn("color: #1769c2;", css)
         self.assertNotIn("var(--surface)", css)
 
         workflow = (ROOT / ".github" / "workflows" / "refresh-works.yml").read_text(
