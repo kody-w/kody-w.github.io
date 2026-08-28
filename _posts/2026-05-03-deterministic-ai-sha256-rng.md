@@ -8,7 +8,7 @@ description: "Why every random choice in my simulations is hashed from the seed,
 
 `random.random()` has a problem. It's stateful. Two scripts that both call `random.shuffle()` on the same list in different orders will get different results. A simulation that depends on `random` is hostage to its own call sequence.
 
-For a 500-generation evolution simulation where every individual's mate, every species' fitness, every migration event needs to be reproducible — that's unacceptable.
+For a 500-generation evolution simulation where every individual's mate, every species' fitness, and every migration event need to be reproducible — that's unacceptable.
 
 So I replaced `random` with SHA-256.
 
@@ -32,7 +32,7 @@ Every random choice is now a pure function of `(engine_name, base_seed, current_
 
 **Reproducibility.** I ran an evolution sim with seed 42 last night. I ran it again this morning. The exact same species won both times with peak population 396. Exactly. To the individual.
 
-**Debugging.** When a species went extinct unexpectedly, I didn't have to re-run the whole sim. I jumped to tick 472, reseeded the engine, and watched the death happen one step at a time.
+**Debugging.** When a species went extinct unexpectedly, I didn't have to rerun the whole sim. I jumped to tick 472, reseeded the engine, and watched the death happen one step at a time.
 
 **Sharing.** I can tell you "run `python3 sim.py --seed 42`" and you'll get my exact result tree. Not a similar tree. The same tree.
 
@@ -46,7 +46,7 @@ Worth it. Reproducibility is a feature you only know you needed when you don't h
 
 ## The implication
 
-Most "AI" systems are non-deterministic by design. LLMs sample with temperature. Agents pick from tools probabilistically. This is fine for chat. It's a disaster for simulation.
+Most "AI" systems are nondeterministic by design. LLMs sample with temperature. Agents pick from tools probabilistically. This is fine for chat. It's a disaster for simulation.
 
 If you're building anything that resembles a simulated world — economic models, evolution, multi-agent emergent behavior, training environments — push the determinism down to the RNG layer. Hash your randomness from the seed and the tick. Make every "random" choice a coordinate in a deterministic space.
 

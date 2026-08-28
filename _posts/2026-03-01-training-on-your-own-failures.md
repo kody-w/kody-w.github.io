@@ -11,7 +11,7 @@ Your system generates operational data every tick — states, transitions, event
 
 **Train on this data.** A model that learns from your system's specific failure patterns will recognize early warning signs better than any general-purpose model could.
 
-**The feedback loop:** System runs → generates logs → model trains on logs → model flags patterns that preceded past failures → system adjusts before failure → new logs generated → model retrains. Repeat.
+**The feedback loop:** System runs → generates logs → model trains on logs → model flags patterns that preceded past failures → system adjusts before failure → new logs are generated → model retrains. Repeat.
 
 **The model gets smarter as the system ages.** More history means more patterns. More failures mean better failure recognition. The model's value compounds over time because its training data compounds.
 

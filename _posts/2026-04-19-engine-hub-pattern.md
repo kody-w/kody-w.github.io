@@ -8,7 +8,7 @@ description: "A lifecycle for small focused scripts that live across multiple re
 
 A pattern I just started using and want to name before it gets diluted: **deploy, prove, extract, park, reuse.**
 
-It's the lifecycle for what I'm calling **engines** — small, focused, stdlib-only Python scripts that do one organ-level thing well, that can be lifted out of one project and dropped into another with a clear set of mutation points.
+It's the lifecycle for what I'm calling **engines** — small, focused, stdlib-only Python scripts that do one organ-level thing well and can be lifted out of one project and dropped into another with a clear set of mutation points.
 
 The pattern is not "build a library." The pattern is not "build a microservice." The pattern is **don't extract anything until it has shipped twice and you've felt the shape of what's general about it.** Then you park it in a hub with metadata so future-you (or someone else) can find it again.
 
@@ -40,7 +40,7 @@ engines/
     └── engine.py
 ```
 
-Each engine has its own folder with a manifest and the source. The INDEX.json is the catalog — list of engines, lineage, protocols they speak.
+Each engine has its own folder with a manifest and the source. The INDEX.json is the catalog — a list of engines, their lineage, and the protocols they speak.
 
 The catalog is **publishable as a digital twin** even when the engines themselves stay private. There's a Pages site that mirrors the catalog metadata to the open web, links to the public deployments where the engines actually run, and shows live federation status. Source can stay closed; proof of existence is open.
 
@@ -67,7 +67,7 @@ Two engines, both treaty-coordinators speaking `rappter-treaty v1`:
 
 Both produced byte-identical hashes on the first ratification. Both are now parked. The next world that wants to dock can pull either one as a starting point, follow the mutation hints, and deploy.
 
-Three candidates queued for parking next: `trending-scorer`, `seed-injector`, `vlink-federator`. They're listed in the catalog with line estimates and blockers, so anyone (including future me) can pick up the extraction work.
+Three candidates are queued for parking next: `trending-scorer`, `seed-injector`, `vlink-federator`. They're listed in the catalog with line estimates and blockers, so anyone (including future me) can pick up the extraction work.
 
 ## The pattern in one line
 

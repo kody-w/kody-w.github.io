@@ -50,7 +50,7 @@ The feature persists because:
 
 ## How long it stayed broken
 
-Hard to know exactly. The orphan handler's error message went into the codebase in the rewrite. That's the upper bound. The lower bound is whenever the last frontend voice button got deleted, which by the look of the git history was around the same commit. So somewhere between "the rewrite" and "the rewrite + 1 day," the feature became invisible. It was invisible for the rest of the release cycle.
+Hard to know exactly. The orphan handler's error message went into the codebase in the rewrite. That's the upper bound. The lower bound is whenever the last frontend voice button got deleted, which, by the look of the git history, was around the same commit. So somewhere between "the rewrite" and "the rewrite + 1 day," the feature became invisible. It was invisible for the rest of the release cycle.
 
 How did anyone notice? Someone asked for it back. Specifically: "add voice mode like the old UI had." That's the only signal that worked. Nothing in the test suite caught it (there are no UI integration tests). Nothing in the agent contract caught it (the contract is satisfied as long as the response carries the field). Nothing in the changelog caught it (the rewrite was a UI rewrite; voice wasn't called out as removed because it wasn't intentionally removed).
 
@@ -67,7 +67,7 @@ The reconstruction took less time than writing this post about it. Most of the w
 
 ## The lesson, if there is one
 
-A backend feature without a frontend isn't a bug exactly — it's a *surface mismatch*. The feature works. The capability is reachable by anyone who knows the endpoint shape. But the user-facing path is gone. From a product standpoint the feature is dead; from a system standpoint it's healthy.
+A backend feature without a frontend isn't exactly a bug — it's a *surface mismatch*. The feature works. The capability is reachable by anyone who knows the endpoint shape. But the user-facing path is gone. From a product standpoint, the feature is dead; from a system standpoint, it's healthy.
 
 The mismatch is the thing to watch for, because the symptoms are easy to miss:
 
@@ -76,7 +76,7 @@ The mismatch is the thing to watch for, because the symptoms are easy to miss:
 - **Bug reports don't fire.** Users don't file bugs for missing buttons they can't see.
 - **Telemetry doesn't fire either.** Nothing is hitting the endpoints, but you'd have to be specifically looking at "endpoints with zero traffic" to notice. Most dashboards are tuned to spot anomalies in the *positive* direction — too many requests, too many errors. Zero requests is the baseline; it doesn't trigger an alert.
 
-The orphan action handler — the `if (btnVoice)` block above — is the closest thing to a built-in canary. It's a sentence in the source code that says "this should exist," falling silently until someone trips it. If you see a handler like that in your own codebase, treat it as a TODO with an attitude problem.
+The orphan action handler — the `if (btnVoice)` block above — is the closest thing to a built-in canary. It's a sentence in the source code that says "this should exist," sitting silently until someone trips it. If you see a handler like that in your own codebase, treat it as a TODO with an attitude problem.
 
 ## Why I'm writing this down
 

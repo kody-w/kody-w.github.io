@@ -7,7 +7,7 @@ tags: [html, pitch, content, distribution, founders]
 
 PDFs are the default container for a pitch slide. They shouldn't be.
 
-A PDF is a file you send as an attachment, where the reader has to open it out of their email, probably in a reader app, probably on a phone where it renders at 40% scale. If you want to update it, the recipient has yesterday's version forever. If you want to know whether they looked, you don't.
+A PDF is a file you send as an attachment, where the reader has to open it from their email, probably in a reader app, probably on a phone where it renders at 40% scale. If you want to update it, the recipient has yesterday's version forever. If you want to know whether they looked, you don't.
 
 A single-page HTML slide is a URL. You paste it in a chat. It opens in a browser tab, full-bleed, hitting the screen edge-to-edge. It updates when you push to main. It's cacheable, linkable, and indexable. You can A/B the wording. It prints to a PDF if anyone really wants one.
 
@@ -28,7 +28,7 @@ Pick your audiences first, not your slides. Each audience gets a URL:
 Each page is one file. Self-contained. No server. Deployed as static HTML on GitHub Pages. Every page has:
 
 - A kicker at the top telling the reader who it's for.
-- One hero line in gradient type, sized with `clamp()` so it reads on a 4K projector and on a laptop.
+- One hero line in gradient type, sized with `clamp()` so it reads on a 4K projector or a laptop.
 - Three to five content blocks laid out with CSS grid.
 - A closing hinge line in italic — the single sentence the reader should walk away with.
 - A hidden `<nav class="sr-only">` with links to sibling pages, for search engines and screen readers; invisible to the visitor.

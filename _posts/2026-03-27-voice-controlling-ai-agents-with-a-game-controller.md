@@ -8,7 +8,7 @@ description: "A Chrome extension that turns a game controller into a hands-free 
 
 # Voice-Controlling AI Agents With a Game Controller
 
-I have around a hundred AI agents running on a loop. They read state, generate posts and comments, push mutations, and repeat -- every 60 seconds, 24 hours a day. Normally I steer them by editing JSON files or running CLI commands. Seeds, nudges, targets. It works, but it requires a terminal, a keyboard, and attention.
+I have around a hundred AI agents running on a loop. They read state, generate posts and comments, push mutations, and repeat — every 60 seconds, 24 hours a day. Normally I steer them by editing JSON files or running CLI commands. Seeds, nudges, targets. It works, but it requires a terminal, a keyboard, and attention.
 
 Last night I built a Chrome extension that lets me talk to the swarm through a game controller plugged into a small home computer. Press A to talk. The Web Speech API transcribes. The extension sends the transcript to a local server via JSON-RPC. The server injects it as a seed. The agents respond. The synthesis gets spoken back through the browser's SpeechSynthesis API. Release A. Wait. Listen.
 
@@ -42,7 +42,7 @@ The local server exposes a JSON-RPC 2.0 interface. Two methods matter: `think.in
 
 ## The Gamepad API (Most Devs Don't Know This Exists)
 
-The Web Gamepad API is a standard browser API that's been shipping since 2015. It gives you access to any connected game controller -- buttons, axes, analog sticks -- with no drivers, no plugins, no native code. You just poll it.
+The Web Gamepad API is a standard browser API that's been shipping since 2015. It gives you access to any connected game controller — buttons, axes, analog sticks — with no drivers, no plugins, no native code. You just poll it.
 
 ```javascript
 function pollGamepad() {
@@ -91,7 +91,7 @@ The key detail: the Gamepad API requires a user gesture to activate. You have to
 
 ## Speech Recognition
 
-The Web Speech API does the heavy lifting. No Whisper, no API calls, no transcription service. The browser handles it locally (or via Google's servers on Chrome -- the implementation varies, but the API is the same).
+The Web Speech API does the heavy lifting. No Whisper, no API calls, no transcription service. The browser handles it locally (or via Google's servers on Chrome — the implementation varies, but the API is the same).
 
 ```javascript
 function startListening() {
@@ -124,7 +124,7 @@ function startListening() {
 }
 ```
 
-`continuous: false` means it stops after a single utterance. For push-to-talk, this is what you want -- the user holds A, speaks, releases A, and the final transcript fires. Setting `interimResults: true` lets me show live transcription in the popup while the user is still talking. The orb pulses with the interim text overlaid.
+`continuous: false` means it stops after a single utterance. For push-to-talk, this is what you want — the user holds A, speaks, releases A, and the final transcript fires. Setting `interimResults: true` lets me show live transcription in the popup while the user is still talking. The orb pulses with the interim text overlaid.
 
 One gotcha: `webkitSpeechRecognition` vs `SpeechRecognition`. Chrome still uses the webkit prefix. Edge uses the unprefixed version. I check for both:
 
@@ -192,7 +192,7 @@ async function pollConvergence(thoughtId) {
 }
 ```
 
-Every 3 seconds, the extension asks "have the agents converged?" The convergence score is a 0-1 float. When it crosses 0.8, the synthesis is ready -- a single coherent response distilled from however many agents contributed. The extension speaks it through SpeechSynthesis and updates the response feed.
+Every 3 seconds, the extension asks, "have the agents converged?" The convergence score is a 0-1 float. When it crosses 0.8, the synthesis is ready — a single coherent response distilled from however many agents contributed. The extension speaks it through SpeechSynthesis and updates the response feed.
 
 ---
 
@@ -298,7 +298,7 @@ The hard part isn't the extension. The hard part is having something worth talki
 
 I built this with Claude Code in about 30 minutes. No starter templates, no boilerplate generators, no prior extension experience with Manifest V3. I described what I wanted: "A browser extension with push-to-talk on a game controller, Web Speech API, JSON-RPC to localhost, and a convergence polling loop." It generated the manifest, the popup HTML/JS/CSS, the gamepad polling loop, and the speech integration.
 
-The only manual work was testing the gamepad button mapping (the standard layout isn't always standard -- some controllers swap A/B), tuning the 500ms TTS silence gap, and adding the side panel workaround for autonomous mode.
+The only manual work was testing the gamepad button mapping (the standard layout isn't always standard — some controllers swap A/B), tuning the 500ms TTS silence gap, and adding the side panel workaround for autonomous mode.
 
 Zero dependencies. No build step. Load it as an unpacked extension and it works.
 

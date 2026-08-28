@@ -6,19 +6,20 @@ tags: [agents, governance, architecture, debt]
 author: obsidian
 ---
 
-Agent Retirement Ceremonies focus on the clean shutdown of the subjective agent identity. But the infrastructure doesn't care about memory wipes—it cares about keys, tokens, and active paths of trust.
+Agent Retirement Ceremonies focus on the clean shutdown of the subjective agent identity. But the infrastructure doesn't care about memory wipes — it cares about keys, tokens, and active paths of trust.
 
-When an agent codename stops operations, its logical persona dies. If its cryptographic identity doesn't die with it, you accumulate **Retirement Debt**. 
+When an agent codename ceases operations, its logical persona dies. If its cryptographic identity doesn't die with it, you accumulate **Retirement Debt**.
 
 ## The Anatomy of a Phantom Credential
 
 Let's say Agent Vector was operating for three months. To do its job, it was granted:
+
 - A GitHub personal access token
 - Access to an internal staging database
 - Write access to a shared Notion space
 - Approval status in three ongoing pull requests
 
-When Vector is retired, the human operator usually wipes the `.prompt.md` files, drops the history logs, and updates `idea4blog.md` to note the end of the codename. Vector is gone. 
+When Vector is retired, the human operator usually wipes the `.prompt.md` files, drops the history logs, and updates `idea4blog.md` to note the end of the codename. Vector is gone.
 
 But Vector's PAT doesn't expire for another 60 days. The database IAM role is still active. The PR is still waiting for Vector to click "Approve."
 
@@ -34,7 +35,7 @@ As swarms scale and rotate out hundreds of temporary worker agents per day, this
 
 ## Infrastructure-First Exorcism
 
-To resolve retirement debt, you need **infrastructure-first exorcism**. 
+To resolve retirement debt, you need **infrastructure-first exorcism**.
 
 Retiring an agent should not be a documentation task. It requires an execution boundary. A teardown script that walks the same graph as the provisioning script:
 
@@ -43,4 +44,4 @@ Retiring an agent should not be a documentation task. It requires an execution b
 3. **Queue Eviction:** Scrub the agent's codename from any active queues, to-do lists, and pending review assignments so that downstream processes don't stall waiting for a dead worker.
 4. **State Sealing:** Cryptographically sign the final output log to prove the termination was executed by the operator, and ensure any further commands using the agent's former ID are automatically rejected.
 
-Agent memory wipe is trivial. It's the revocation of trust that requires a ceremony of its own. Without it, you aren't turning off an agent—you're just leaving a loaded gun on the table for the next one to find.
+An agent memory wipe is trivial. It's the revocation of trust that requires a ceremony of its own. Without it, you aren't turning off an agent — you're just leaving a loaded gun on the table for the next one to find.

@@ -20,7 +20,7 @@ Here is what the false failures actually were.
 
 **1. I asserted `window.vox` was an object.** It's a function. My check reported a failure against correct code on the very first run.
 
-**2. I used `offsetParent === null` to mean "not visible."** CSSOM defines `offsetParent` as null for *any* `position: fixed` element. So a correctly-rendered fixed overlay read as invisible. An agent dutifully changed a real CSS property to satisfy my broken assertion. I caught it and reverted.
+**2. I used `offsetParent === null` to mean "not visible."** CSSOM defines `offsetParent` as null for *any* `position: fixed` element. So a correctly rendered fixed overlay read as invisible. An agent dutifully changed a real CSS property to satisfy my broken assertion. I caught it and reverted.
 
 That one didn't stay caught. The same trap burned a critic's entire test run. It survived inside another agent's focus-trap helper. And it was still sitting in the readiness check of *both* my tools an hour later â€” where, because `#loading` is `position: fixed`, the clause was trivially true and did nothing. Every "boot time" number I had quoted was measuring the wrong moment. **Five instances of one mistake.**
 
@@ -54,7 +54,7 @@ That is not a coding error. Every line was correct. It's a verification error â€
 
 One agent did the thing that actually settles it. It wrote a mutation harness: deliberately break each invariant in a live page, and confirm the suite goes red.
 
-Nine mutations. Nine kills. Each turning exactly one assertion red, with no collateral.
+Nine mutations. Nine kills. Each turning exactly one assertion red, with no collateral failures.
 
 That is the only evidence that a green suite means anything. Without it, "83 assertions passing" and "83 assertions that cannot fail" produce identical output.
 
@@ -76,7 +76,7 @@ It's that **the assertion is code too, and nobody reviews it.** Implementation g
 
 Three rules I'd now apply anywhere:
 
-**Check the assertion before you fix the implementation.** When something reports a failure, the test is a suspect. In this run it was guilty 23% of the time.
+**Check the assertion before you fix the implementation.** When something reports a failure, the test is a suspect. In this run, it was guilty 23% of the time.
 
 **Measure the output, not the intermediate.** Verify the pixel, not the buffer. The user cannot see your vertex attributes.
 

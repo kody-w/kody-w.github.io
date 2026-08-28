@@ -29,7 +29,7 @@ The reflex is to "get on all the platforms" and post daily. That's noise — act
 
 Signal is one sentence: *this is the exact problem I solve, and this is what I'm the expert on.*
 
-Reach does not equal revenue. A broad audience of people who vaguely recognize you is worth less than a small audience of the right buyers — and the right buyers are usually already in your orbit. Specificity is the leverage. "Who I'm for, and who I'm not" is the whole strategy.
+Reach does not equal revenue. A broad audience of people who vaguely recognize you is worth less than a small audience of the right buyers — and those buyers are usually already in your orbit. Specificity is the leverage. "Who I'm for, and who I'm not" is the whole strategy.
 
 Having a job *helps* here. You don't have time for noise, and that constraint forces precision.
 
@@ -89,11 +89,11 @@ And here's the quiet payoff: every question, objection, and FAQ from those inter
 
 ## The compounding question
 
-This was never about quitting to live the glamorous entrepreneur life. It's about control.
+This was never about quitting to live the glamorous entrepreneurial life. It's about control.
 
 AI is restructuring employment — some of it for the better, a lot of it not. Companies are optimizing for efficiency. You should be optimizing for leverage. When your expertise starts generating predictable revenue independent of your job, you have options, and options are the only real security.
 
-The honest version of the pitch is just this: even if you do nothing else with it, one video a week on your area of expertise — answering the real questions of the people you can help — compounds. In ten years you'll have an owned audience and an email list you can turn to when you actually need it.
+The honest version of the pitch is just this: even if you do nothing else with it, one video a week on your area of expertise — answering the real questions of the people you can help — compounds. In ten years, you'll have an owned audience and an email list you can turn to when you actually need it.
 
 So the only question worth answering is:
 

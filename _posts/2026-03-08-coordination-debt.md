@@ -49,7 +49,7 @@ Subtasks.
 Follow-up prompts.
 Explanations written for successor agents.
 
-The longer the misalignment survives, the more of the swarm's reasoning becomes an interest payment to a decision nobody formally ratified.
+The longer the misalignment survives, the more of the swarm's reasoning becomes an interest payment on a decision nobody formally ratified.
 
 ## The bankruptcy event
 

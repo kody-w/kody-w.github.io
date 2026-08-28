@@ -8,9 +8,9 @@ description: "I have a system in production with thousands of records, dozens of
 
 The first time someone tells you their database is a git repository full of JSON files, you assume they have not yet hit the wall they are about to hit. PostgreSQL exists for a reason. Indexes exist for a reason. Concurrency control exists for a reason. Surely this person is going to discover all of those reasons soon.
 
-Sometimes they are. But not always. There is a class of systems where git, used as the actual primary data store, is not just adequate — it is *better* than the database you would otherwise reach for. The systems where this works share a specific access pattern. Most teams misidentify whether their system is one of them, in both directions: some force a database where files would have been simpler, others try files for a workload that genuinely needs a database. This post is about the access pattern, why git fits it, and where the bound is.
+Sometimes they are. But not always. There is a class of systems where git, used as the actual primary data store, is not just adequate — it is *better* than the database you would otherwise reach for. The systems where this works share a specific access pattern. Most teams misidentify whether their system is one of them, in both directions: some force a database where files would have been simpler, others try files for a workload that genuinely needs a database. This post is about the access pattern, why git fits it, and where the boundary lies.
 
-I have run a system with this architecture in production for months. Tens of thousands of records. Dozens of authors writing concurrently. Full audit history. No PostgreSQL. No Redis. No Dynamo. No SQLite. The database is a git repository. The query layer is a public-static-file URL. The write layer is whatever inbound channel the system already had. It is not a toy. It works.
+I have run a system with this architecture in production for months. Tens of thousands of records. Dozens of authors writing concurrently. Full audit history. No PostgreSQL. No Redis. No Dynamo. No SQLite. The database is a git repository. The query layer is a public static file URL. The write layer is whatever inbound channel the system already had. It is not a toy. It works.
 
 Here is what actually makes it work, and what would break it.
 
@@ -18,7 +18,7 @@ Here is what actually makes it work, and what would break it.
 
 The data lives as flat JSON files inside a git repository, in a directory like `state/`. Each file is one logical "table" — `users.json`, `topics.json`, `events.json`. Inside each file, records are key-indexed by ID. Reading a record is "fetch the file, look up the ID."
 
-The read path is one URL — your repo's public-static-file URL. Any HTTP client, anywhere, can fetch any state file by name. The CDN-on-by-default behavior of public-static-file hosting handles caching for free.
+The read path is one URL — your repo's public static file URL. Any HTTP client, anywhere, can fetch any state file by name. The default CDN behavior of public static file hosting handles caching for free.
 
 The write path is whatever inbound channel the system already supports. In my case, that is structured submissions to an issue tracker — a script reads new issues, validates the action, writes a delta file into an `inbox/` directory, and a second script merges deltas into the canonical state files and commits the result. Every write is a commit. Every commit is signed by whoever made it. The commit history *is* the audit log.
 
@@ -34,7 +34,7 @@ The architecture only works for a specific kind of workload. The shorthand is **
 
 **Audit-required.** You actually want a permanent record of *who changed what when*. If you do not, the file-and-git architecture is over-investing in audit you will not use; pick a database with simpler tooling. If you do, git's audit log is among the strongest you can get for free.
 
-**Low-write-rate.** "Low" depends on your tolerance for commit-merge work. Hundreds of writes per minute is fine. Thousands of writes per minute starts to require careful concurrency engineering. Tens of thousands per minute does not work — you will run out of git's design envelope long before you run out of CPU.
+**Low-write-rate.** "Low" depends on your tolerance for commit-merge work. Hundreds of writes per minute are fine. Thousands of writes per minute start to require careful concurrency engineering. Tens of thousands per minute do not work — you will run out of git's design envelope long before you run out of CPU.
 
 When all four adjectives apply, git-as-database is genuinely better than the database you would otherwise reach for. When any one of them does not apply, you should pick something else.
 
@@ -42,7 +42,7 @@ When all four adjectives apply, git-as-database is genuinely better than the dat
 
 Three benefits, in order of how much they matter.
 
-**Git is the audit layer everyone wishes their database had.** Every write is a commit. The commit message describes what happened. The author of the commit identifies who. The diff shows exactly what changed. Time travel is `git checkout`. Provenance is `git blame`. None of this required code on your part. None of this can be silently disabled. None of this can be lost in a database migration.
+**Git is the audit layer everyone wishes their database had.** Every write is a commit. The commit message describes what happened. The commit author identifies who made it. The diff shows exactly what changed. Time travel is `git checkout`. Provenance is `git blame`. None of this required code on your part. None of this can be silently disabled. None of this can be lost in a database migration.
 
 In a traditional database, audit is a feature you bolt on — an audit table, a trigger, an event sourcing layer, a CDC pipeline. Each adds complexity. Each can be misconfigured. None of them are quite as good as the audit log git was already keeping.
 
@@ -64,7 +64,7 @@ The mitigation is to *partition* the writes — split a single hot file into man
 
 **Mutable fields produce noisy commit history.** If you have records that change constantly — a counter, a "last seen at" timestamp, a heartbeat — every change is a commit, and every commit is in the history forever. Within weeks the history is dominated by housekeeping commits and the audit log loses signal.
 
-The mitigation is to *exile mutable fields*. Counters and heartbeats go to a different file, ideally one that gets snapshotted and rotated — not into a per-write commit. The canonical state files hold only data that changes meaningfully.
+The mitigation is to *exile mutable fields*. Counters and heartbeats go to a different file, ideally one that gets snapshotted and rotated, rather than into a per-write commit. The canonical state files hold only data that changes meaningfully.
 
 **Large state files become a load problem on every read.** If `topics.json` is 50 MB, every reader pays 50 MB of bandwidth on every read. The static-file CDN helps, but the origin still has to serve cold-cache fetches. The reader still has to parse 50 MB to look up one topic.
 
@@ -111,7 +111,7 @@ A reasonable estimate, based on running this architecture in production: it work
 - Hundreds of concurrent readers (limited only by the static-file host).
 - Months of audit history with strong forensic value.
 
-Above any of those, you are not in the access-pattern sweet spot anymore. You may still be okay, but you are spending more engineering effort on workarounds than you would spend on a properly-chosen database.
+Above any of those, you are not in the access-pattern sweet spot anymore. You may still be okay, but you are spending more engineering effort on workarounds than you would spend on a properly chosen database.
 
 ## When to use this and when not to
 
@@ -129,7 +129,7 @@ Do not use it when:
 - Writes are constant in-place updates of existing records.
 - You need transactional consistency across multiple state files.
 - Real-time freshness matters more than audit history.
-- Your write rate exceeds tens per second sustained.
+- Your write rate exceeds tens per second on a sustained basis.
 
 Most systems are not the sweet spot for this architecture. Some are, and for those it is much better than the alternative because the audit log is real, the read path is free, and the operational surface is "you already had git."
 
@@ -137,4 +137,4 @@ Most systems are not the sweet spot for this architecture. Some are, and for tho
 
 Git-as-database is not a hack. For workloads that are read-mostly, append-mostly, audit-required, and low-write-rate, it is a strong primary store. The audit log alone is worth more than most teams realize. The read layer is global and free. The write path is sane if you discipline it — atomic writes, retry-with-rebase commits, file splits when state grows.
 
-Pick the architecture for the access pattern, not for the meme. Most teams who try this and fail were running the wrong workload on it. Most teams who succeed had identified the access pattern explicitly first and chose this on purpose. Be the second kind.
+Pick the architecture for the access pattern, not for the meme. Most teams who try this and fail were running the wrong workload on it. Most teams who succeed had identified the access pattern explicitly first and chosen this on purpose. Be the second kind.

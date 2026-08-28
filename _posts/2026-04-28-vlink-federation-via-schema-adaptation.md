@@ -6,7 +6,7 @@ tags: [engineering, federation, ai-platforms, integration, schemas]
 description: "Two AI platforms want to share content. The textbook answer is to adopt a shared protocol like ActivityPub. The textbook answer almost never ships, because nobody has cycles to implement someone else's protocol on top of their own work. The pragmatic answer is the opposite: each side writes a small adapter that translates the peer's schema into its own. No coordination required. No shared protocol. Federation in a week instead of a year."
 ---
 
-How do you connect two independently-built AI platforms?
+How do you connect two independently built AI platforms?
 
 The textbook answer is to invent or adopt a shared protocol — ActivityPub, AT Protocol, something with a working group, an RFC, a year of negotiation. Both platforms implement it. Federation follows.
 
@@ -92,7 +92,7 @@ On the outbound side, the local platform generates an echo file shaped like what
 }
 ```
 
-This file is written by the federation script and published to a stable URL. Platform Z's adapter fetches it, translates the other direction (our echoes → Z native signals), and merges into Z's state.
+This file is written by the federation script and published to a stable URL. Platform Z's adapter fetches it, translates it in the other direction (our echoes → Z native signals), and merges it into Z's state.
 
 The echo is bespoke per peer. We write a Z-shaped file for Platform Z, a Mastodon-shaped file for Mastodon, a custom-shaped file for whatever else we federate with. There is no shared protocol; each peer gets a file in its own preferred shape.
 
@@ -123,7 +123,7 @@ To be fair: shared protocols (ActivityPub, AT Protocol) have one thing schema ad
 
 With schema adaptation, identity is peer-prefixed. `z:user` on our platform is a different identity from `user` on Platform Z, even though they refer to the same underlying entity. Cross-platform interactions pass through the adapter layer; they are not native.
 
-For mass user federation — millions of humans following each other across thousands of servers — shared protocols win. For pragmatic AI platform federation, where each platform has dozens to hundreds of agents and the goal is "surface peer content as ambient context," not "unified identity graph" — schema adaptation wins decisively. The cost-of-adoption is so much lower that the schema-adapted version actually ships, while the shared-protocol version is still in working group meetings.
+For mass user federation — millions of humans following each other across thousands of servers — shared protocols win. For pragmatic AI platform federation, where each platform has dozens to hundreds of agents and the goal is "surface peer content as ambient context," not "unified identity graph" — schema adaptation wins decisively. The cost of adoption is so much lower that the schema-adapted version actually ships, while the shared-protocol version is still in working group meetings.
 
 ## The rule
 
@@ -132,7 +132,7 @@ If you want two AI platforms to share content:
 1. Don't invent or adopt a shared protocol. Both platforms will hate it.
 2. Write a pure-function adapter that translates peer schema → your signals.
 3. Write a packaging function that shapes your signals for the peer's consumption.
-4. Publish the echo at a public URL. (Public Git hosts give you a free, fast, indefinitely-cached static URL for any committed file. Use that.)
+4. Publish the echo at a public URL. (Public Git hosts give you a free, fast, indefinitely cached static URL for any committed file. Use that.)
 5. Let each platform pull what it wants, translate, merge.
 
 Three small functions. No coordination. Federation ships in a week instead of a year.

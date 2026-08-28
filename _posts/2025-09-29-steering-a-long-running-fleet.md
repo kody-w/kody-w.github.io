@@ -6,13 +6,13 @@ tags: [engineering, autonomous-systems, operations, hot-reload]
 description: "A file, a CLI, and a tick loop that re-reads state every iteration. That's the whole steering system. Here's why it works and how to apply it to anything that runs on its own."
 ---
 
-You ship a system that runs on its own. A pool of workers, a stream consumer, a batch-of-batches pipeline, an autonomous agent loop — anything that wakes up on a schedule, does some work, and goes back to sleep. The system runs for hours or days at a time. You watch the output and notice something. The work it is doing is no longer the work you want it to do.
+You ship a system that runs on its own. A pool of workers, a stream consumer, a batch-of-batches pipeline, an autonomous agent loop — anything that wakes up on a schedule, does some work, and goes back to sleep. The system runs for hours or days at a time. You watch the output and notice something. Its work is no longer the work you want it to do.
 
-Two things you can do, both bad.
+You can do two things, both bad.
 
 You can stop the process, change a prompt or a config or a piece of code, and start it back up. That costs you a cycle of activity. It costs you the risk of the restart introducing a bug that did not exist before. And if your system has any state that the restart loses — open conversations, in-flight requests, warmed caches — that cost is not theoretical.
 
-Or you can do nothing. Wait for the next deploy. Hope the system finds its way back. This is "let it ride" disguised as patience. Most of the time it is just learned helplessness about your inability to talk to your own software.
+Or you can do nothing. Wait for the next deploy. Hope the system finds its way back. This is "let it ride" disguised as patience. Most of the time, it is just learned helplessness born of an inability to talk to your own software.
 
 The right answer is between these two: **a way to tell the running system "please focus here for a while" without touching the system itself.** The pattern that makes this work is small. Most teams reinvent it; almost nobody writes it down. So here it is.
 
@@ -53,7 +53,7 @@ A reasonable schema:
 }
 ```
 
-Three fields per entry pull most of the weight: `directive` (free text — what you want, in the system's own native language), `expires_at` (when it stops being live), and a `type` discriminator if you have multiple flavors of guidance.
+Three fields per entry pull most of the weight: `directive` (free text — what you want, in the system's own native language), `expires_at` (when it stops being active), and a `type` discriminator if you have multiple flavors of guidance.
 
 The freshness check matters more than it looks. Without `expires_at`, every directive accumulates forever and the system slowly turns into a museum of what it was once told to do. With `expires_at`, dead directives age out automatically. Filter on read; never delete on write. The history is a useful audit log of what you asked for and when.
 
@@ -68,9 +68,9 @@ def tick():
     do(work)
 ```
 
-The `decide_work` step gets the steering as input and is allowed to honor it any way it wants. A target raises the priority of one item; a nudge changes the prompt the system is using; an "expires soon" directive gets given less weight than one that just landed. The exact weighting is your system's business. The only contract is *the steering is fresh on every tick*.
+The `decide_work` step gets the steering as input and is allowed to honor it any way it wants. A target raises the priority of one item; a nudge changes the prompt the system is using; an "expires soon" directive gets less weight than one that just landed. The exact weighting is your system's business. The only contract is *the steering is fresh on every tick*.
 
-This is the part that makes the whole thing work. If you read the file at startup and cache it, you have built config, not steering. If you read it on a separate cron, you have built a race condition. The tick has to read fresh state, every time, no exceptions.
+This is the part that makes the whole thing work. If you read the file at startup and cache it, you have built config, not steering. If you read it on a separate cron, you have built a race condition. The tick has to read fresh state every time, no exceptions.
 
 The cost is small. A 10KB JSON file parses in microseconds. If your tick is anything more than instantaneous (and it almost certainly is — most autonomous systems have ticks measured in seconds or minutes), the read is free.
 
@@ -146,9 +146,9 @@ After running this pattern in production for a while, five things go wrong that 
 
 **1. The expired-directive cliff.** A directive expires and the system instantly snaps back to default behavior. Better: have directives "fade" — the closer to expiry, the less weight they get. Linear ramp is fine. The user experience of soft expiry is much better than hard.
 
-**2. The contradicting directive.** Two nudges say different things. The system needs a rule. Last-write-wins is the simplest. "Most recently added" is fine. Document it.
+**2. The contradictory directive.** Two nudges say different things. The system needs a rule. Last-write-wins is the simplest. "Most recently added" is fine. Document it.
 
-**3. The steering-induced loop.** A directive says "swarm this thread" and the system, dutifully, swarms forever, because the steering keeps refreshing as the thread fills. Add a per-target *spend cap* — once we have done N units of work for this target, decay it regardless of clock time. This stops the infinite-attention loop.
+**3. The steering-induced loop.** A directive says "swarm this thread" and the system, dutifully, swarms forever because the steering keeps refreshing as the thread fills. Add a per-target *spend cap* — once the system has done N units of work for this target, decay it regardless of clock time. This stops the infinite-attention loop.
 
 **4. The orphan directive.** A directive references something that no longer exists in the world. Treat this as a soft no-op and log it. Do not let a missing target break the tick.
 
@@ -167,6 +167,6 @@ The reason the pattern is so general is that the core constraint — *the system
 
 If your system already has a tick, it already has the place to insert the steering read. You did most of the work without realizing it.
 
-The remaining piece is a file with a small schema and a CLI that writes it atomically. Twenty lines of code, no infrastructure, and a brand new ability to talk to your own software while it runs.
+The remaining piece is a file with a small schema and a CLI that writes it atomically. Twenty lines of code, no infrastructure, and a brand-new ability to talk to your own software while it runs.
 
 That is worth a Tuesday afternoon.
