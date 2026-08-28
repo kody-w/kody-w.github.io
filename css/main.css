@@ -322,10 +322,10 @@ a:hover {
 
 .newsletter-fields button {
   padding: 9px 13px;
-  border: 1px solid #2a7ae2;
+  border: 1px solid #1769c2;
   border-radius: 6px;
   color: #fff;
-  background: #2a7ae2;
+  background: #1769c2;
   font: inherit;
   font-weight: 600;
   cursor: pointer;
@@ -747,7 +747,7 @@ a.stat:hover {
   padding: 9px 14px;
   border-radius: 7px;
   color: #fff;
-  background: #2a7ae2;
+  background: #1769c2;
 }
 
 .work-primary-action:hover {
@@ -908,6 +908,10 @@ a.stat:hover {
   cursor: pointer;
 }
 
+.work-show-all[hidden] {
+  display: none;
+}
+
 [data-theme="dark"] .work-lede,
 [data-theme="dark"] .work-section-heading > p,
 [data-theme="dark"] .work-featured-card > p,
@@ -936,7 +940,7 @@ a.stat:hover {
 
 [data-theme="dark"] .work-primary-action {
   color: #fff;
-  background: var(--link);
+  background: #1769c2;
 }
 
 @media (max-width: 760px) {

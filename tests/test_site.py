@@ -3,6 +3,7 @@ import binascii
 import hashlib
 import json
 import re
+import runpy
 import unittest
 from html.parser import HTMLParser
 from pathlib import Path
@@ -3215,6 +3216,29 @@ class SiteContentTests(unittest.TestCase):
         builder = WORK_BUILDER.read_text(encoding="utf-8")
         self.assertIn("if not repo.get(\"fork\")", builder)
         self.assertIn("public_source_repos", builder)
+        functions = runpy.run_path(str(WORK_BUILDER))
+        self.assertTrue(
+            functions["catalogs_equal"](
+                {"generated_at": "old", "repos": [{"name": "RAPP"}]},
+                {"generated_at": "new", "repos": [{"name": "RAPP"}]},
+            )
+        )
+        self.assertFalse(
+            functions["catalogs_equal"](
+                {"generated_at": "same", "repos": [{"name": "RAPP"}]},
+                {"generated_at": "same", "repos": [{"name": "RAR"}]},
+            )
+        )
+
+        css = (ROOT / "css" / "main.css").read_text(encoding="utf-8")
+        self.assertIn(".work-show-all[hidden]", css)
+        self.assertIn("background: #1769c2;", css)
+
+        workflow = (ROOT / ".github" / "workflows" / "refresh-works.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("pages: write", workflow)
+        self.assertIn('pages/builds"', workflow)
 
     def test_prompt_include_is_accessible_inert_and_vendor_neutral(self):
         prompt = PROMPT_INCLUDE.read_text(encoding="utf-8")

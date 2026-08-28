@@ -233,9 +233,28 @@ def build() -> dict:
     }
 
 
+def catalogs_equal(left: dict, right: dict) -> bool:
+    left = dict(left)
+    right = dict(right)
+    left.pop("generated_at", None)
+    right.pop("generated_at", None)
+    return left == right
+
+
 def main() -> int:
     payload = build()
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    if OUTPUT.exists():
+        try:
+            existing = json.loads(OUTPUT.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            existing = {}
+        if catalogs_equal(existing, payload):
+            print(
+                f"unchanged {OUTPUT}: "
+                f"{payload['stats']['public_source_repos']} public source repos"
+            )
+            return 0
     OUTPUT.write_text(
         json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
