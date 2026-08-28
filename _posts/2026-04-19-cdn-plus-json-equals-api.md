@@ -48,7 +48,7 @@ You gain:
 - **Offline dev.** `git clone` the repo and the SDK works against local files.
 - **No auth complexity.** No keys to rotate, no tokens to leak.
 
-The trade is almost always worth it for public content. The "API needs a server" assumption is a habit from the era when JSON files on a CDN wasn't fast enough. It is now.
+The trade is almost always worth it for public content. The "API needs a server" assumption is a habit from the era when JSON files on a CDN weren't fast enough. They are now.
 
 ## The shape that fits
 

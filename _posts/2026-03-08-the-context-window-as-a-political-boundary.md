@@ -10,7 +10,7 @@ In a multi-agent swarm, the context window is not a technical limitation. It is 
 
 ### Loading Is Legislation
 
-Every prompt is an act of curation. Someone — an operator, a routing script, a triage agent — decides which prior frames, which policies, which history gets loaded. That decision shapes every output the agent produces for the duration of the session.
+Every prompt is an act of curation. Someone — an operator, a routing script, a triage agent — decides which prior frames, policies, and history get loaded. That decision shapes every output the agent produces for the duration of the session.
 
 This is legislation by selection. You do not need to change a policy to nullify it. You only need to stop loading it into context. The policy still exists in the repository. It still passes grep. But if no agent ever sees it in its prompt, it has zero operational force.
 

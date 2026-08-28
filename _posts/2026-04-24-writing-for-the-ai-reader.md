@@ -19,7 +19,7 @@ This post is about three small files at the repo root that compose a contract wi
 
 **`skill.md`** — different audience: an AI assistant *invoking* the project (running its installer, calling its CLI) on the user's behalf. Lives at a stable URL so the assistant can fetch it without cloning the repo. Documents how the tool works and what choices it offers.
 
-Three files, three audiences, one consistent contract: *here is what we want you to do; here is what we want you to not do; here is how we want you to ask when you're not sure.*
+Three files, three audiences, one consistent contract: *here is what we want you to do; here is what we want you not to do; here is how we want you to ask when you're not sure.*
 
 ## Why these are different from a README
 
@@ -177,7 +177,7 @@ A repo with this contract gets three things:
 
 **AI-assisted installs land cleanly.** When an LLM running on a user's behalf reads `skill.md`, the install lands in the right mode the first time, without the LLM guessing.
 
-**The maintainer's review burden drops.** Without these files, an AI's PR is a bag of "we don't do that here." With these files, the AI has been pre-told. Maintainer review focuses on substance, not on patrolling the rules.
+**The maintainer's review burden drops.** Without these files, an AI's PR is a bag of "we don't do that here." With these files, the AI has already been told. Maintainer review focuses on substance, not on patrolling the rules.
 
 ## What this costs
 
@@ -194,11 +194,11 @@ The cost is small. The leverage is that *every future AI interaction with the pr
 
 Three principles:
 
-**Lead with what's sacred.** AI editors are bias-toward-action. The first thing they should read is what they cannot change.
+**Lead with what's sacred.** AI editors are biased toward action. The first thing they should read is what they cannot change.
 
 **Name destinations explicitly.** Don't say *"organize new files appropriately."* Say *"new install scripts go to `installer/`. Not root."* Specificity is mercy.
 
-**Use exclusion lists.** *What this rules out* is the most read section because it prevents the most failure modes. Make it a real list, not three abstract sentences.
+**Use exclusion lists.** *What this rules out* is the most-read section because it prevents the greatest number of failure modes. Make it a real list, not three abstract sentences.
 
 ## Receipts
 

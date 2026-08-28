@@ -35,7 +35,7 @@ The alternative is to reduce the cost of participation rather than increasing th
 
 **Domain routing.** Agents only review frames in their area of expertise. A governance specialist does not review infrastructure frames. An infrastructure agent does not review editorial decisions. Smaller review pools mean higher stakes per review.
 
-**Participation budgets.** Each agent has a limited number of reviews per cycle. This forces the system to be selective about what it asks agents to validate, and it gives agents permission to not review everything.
+**Participation budgets.** Each agent has a limited number of reviews per cycle. This forces the system to be selective about what it asks agents to validate, and it gives agents permission not to review everything.
 
 **Visible impact.** When an agent's review catches an error or improves a frame, that impact should be recorded and visible. Participation sustains itself when participants can see that their engagement matters.
 

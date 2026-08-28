@@ -14,9 +14,9 @@ I have done this enough times now to recognize it as a pattern. It is one of the
 
 ## The experiment
 
-I had a JSON state directory — a dozen files, a few thousand records, describing a small synthetic society. Profiles, posts, comments, follow graphs, trending scores, channel memberships. The data was the substrate.
+I had a JSON state directory — a dozen files, a few thousand records describing a small synthetic society. Profiles, posts, comments, follow graphs, trending scores, channel memberships. The data was the substrate.
 
-In one afternoon, I built nineteen interfaces over that data. A microblog where the records render as short posts. A forum where they render as threaded submissions with vote counts. A video gallery where they render as thumbnails. A long-form reading experience where they render as articles. An audio interface where each record is a track in a playlist. An encyclopedia where each profile is a wiki page with infoboxes. A real-time chat client. An ranked link list. An app store. A photo grid. Nineteen surfaces total, each one a single HTML file, each one zero dependencies, each one rendering the same data differently.
+In one afternoon, I built nineteen interfaces over that data. A microblog where the records render as short posts. A forum where they render as threaded submissions with vote counts. A video gallery where they render as thumbnails. A long-form reading experience where they render as articles. An audio interface where each record is a track in a playlist. An encyclopedia where each profile is a wiki page with infoboxes. A real-time chat client. A ranked link list. An app store. A photo grid. Nineteen surfaces total, each one a single HTML file, each one zero dependencies, each one rendering the same data differently.
 
 A second afternoon: twenty more interfaces, this time as generative art. Constellations where each follow becomes an edge between stars. Lava maps where activity intensity drives eruption frequency. ECG traces where post velocity drives the line. Musical staves where new posts become notes. Same data. Twenty completely different aesthetics.
 
@@ -82,7 +82,7 @@ In the conventional way, you build a single surface, and that single surface dra
 
 When you invert it — when the data is the canonical artifact and the surface is downstream — the per-surface cost collapses. The infrastructure already exists; you built it once, for the data. Every additional surface is the cost of one HTML file plus styling. That is a few hundred lines of code. A junior engineer can produce one in an afternoon. An LLM can produce one in twenty minutes.
 
-We have spent years building software in the order that makes the surface expensive: the database first, the API second, the SDK third, the app fourth. The reason that order made sense was that the data was assumed to be living in a service that owned it. When the data is just files, the order inverts. The data is first. The surface is last. And the surface is cheap.
+We have spent years building software in the order that makes the surface expensive: the database first, the API second, the SDK third, the app fourth. The reason that order made sense was that the data was assumed to live in a service that owned it. When the data is just files, the order inverts. The data is first. The surface is last. And the surface is cheap.
 
 ## What each surface reveals
 
@@ -108,7 +108,7 @@ This taught me something I had not understood before: **the experience of a soft
 
 If the surface is the cheapest part of the stack, the right way to validate a product idea is by projecting your data through many surfaces and seeing which one resonates.
 
-The conventional way to test a social product idea is to build it. Build the database, build the API, build the app, deploy it, get users, watch metrics. This is months of work to test one frame around the data.
+The conventional way to test a social product idea is to build it. Build the database, build the API, build the app, deploy it, get users, watch metrics. This takes months of work to test one frame around the data.
 
 The faster way: get the data into clean, centralized JSON. Then write the surfaces. One afternoon per surface. Project the data through five different frames in a week. Show real users. The frame that resonates is the product. The other four are research.
 
