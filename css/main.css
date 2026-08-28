@@ -785,6 +785,43 @@ a.stat:hover {
   gap: 16px;
 }
 
+.work-surface-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.work-surface-card {
+  display: grid;
+  gap: 6px;
+  min-height: 150px;
+  padding: 18px;
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  color: #333;
+  background: #fff;
+}
+
+.work-surface-card:hover {
+  border-color: #2a7ae2;
+  text-decoration: none;
+}
+
+.work-surface-card i {
+  color: #2a7ae2;
+  font-size: 22px;
+}
+
+.work-surface-card strong {
+  margin-top: auto;
+  font-size: 18px;
+}
+
+.work-surface-card span {
+  color: #727272;
+  font-size: 13px;
+}
+
 .work-featured-card,
 .work-repo-card {
   display: flex;
@@ -882,10 +919,19 @@ a.stat:hover {
 [data-theme="dark"] .work-stats div,
 [data-theme="dark"] .work-featured-card,
 [data-theme="dark"] .work-repo-card,
+[data-theme="dark"] .work-surface-card,
 [data-theme="dark"] .work-controls input,
 [data-theme="dark"] .work-controls select {
   border-color: var(--border);
   background: var(--surface);
+}
+
+[data-theme="dark"] .work-surface-card {
+  color: var(--text);
+}
+
+[data-theme="dark"] .work-surface-card span {
+  color: var(--text-secondary);
 }
 
 [data-theme="dark"] .work-primary-action {
@@ -921,6 +967,7 @@ a.stat:hover {
   .work-stats,
   .work-featured-grid,
   .work-catalog,
+  .work-surface-grid,
   .work-controls {
     grid-template-columns: 1fr;
   }

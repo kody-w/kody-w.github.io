@@ -3190,8 +3190,11 @@ class SiteContentTests(unittest.TestCase):
             'id="work-family"',
             'id="work-activity"',
             'id="work-catalog"',
+            'id="work-surfaces-title"',
             "/js/work.js",
             "Kody2day",
+            "Learn with Kody",
+            "RAPP Vision",
         ):
             self.assertIn(marker, body)
 
