@@ -15,7 +15,7 @@ That import doesn't naturally work inside the small runtime's directory layout. 
 
 We could:
 
-1. **Require the full toolkit to be installed too.** Bad. The whole point of the small runtime being stdlib-only is that it doesn't drag dependencies. Forcing a toolkit install just moves the problem.
+1. **Require the full toolkit to be installed too.** Bad. The whole point of making the small runtime stdlib-only is that it doesn't drag in dependencies. Forcing a toolkit install just moves the problem.
 2. **Rewrite the import in every agent file at deploy time.** Bad. Modifying user code is a dangerous default — you'd have to be careful not to break anything else, and you've changed the bytes from what the user pushed.
 3. **Vendor a minimal `BasicAgent` next to the runtime.** Yes. This is the right answer.
 
@@ -65,6 +65,6 @@ When the deployed agent does `from agents.basic_agent import BasicAgent`, Python
 
 When you ship a runtime that loads other people's code, decide whether the shared base class is yours to define. If yes, keep it small enough to vendor. If you can't keep it small, you've made every consumer of your runtime dependent on the full version of your library — and you've lost the ability to ship lightweight runtimes.
 
-`BasicAgent` is a contract masquerading as a class. The class is for type-checking and IDE autocomplete; the contract is "extends this thing, has these methods." Six lines of class is enough to encode the contract. Anything more is for the developer's convenience, and that goes in the toolkit, not the base class.
+`BasicAgent` is a contract masquerading as a class. The class is for type-checking and IDE autocomplete; the contract is "extends this thing, has these methods." Six lines of a class are enough to encode the contract. Anything more is for the developer's convenience, and that goes in the toolkit, not the base class.
 
 The small runtime is 300 lines. The vendored BasicAgent is 6 lines. Together they let you deploy any agent — written against any compatible runtime — without dragging the originating runtime along for the ride. That's the value of keeping your contracts narrow.

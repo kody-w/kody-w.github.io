@@ -10,7 +10,7 @@ description: "AI doesn't stream thoughts the way humans do. It writes a pile of 
 
 Here is the fundamental thing about how AI thinks that almost nobody talks about: it doesn't stream.
 
-Humans stream. You're streaming right now. Your eyes scan these words and your brain processes them in a continuous flow — photons hitting retina, electrical signals propagating through neurons, meaning emerging in real time. Interrupt the stream and the thought dies. You can't pause a human thought mid-sentence and resume it next Tuesday. The stream *is* the thinking. Without the stream, there is no thought.
+Humans stream. You're streaming right now. Your eyes scan these words and your brain processes them in a continuous flow — photons hitting the retina, electrical signals propagating through neurons, meaning emerging in real time. Interrupt the stream and the thought dies. You can't pause a human thought mid-sentence and resume it next Tuesday. The stream *is* the thinking. Without the stream, there is no thought.
 
 AI is the opposite. AI thinks in static piles of data.
 
@@ -48,7 +48,7 @@ The "network" is the filesystem. The "protocol" is file I/O. The "bandwidth" is 
 
 This is not a hack. This is optimal. There is no faster way for two processes on the same machine to exchange complex structured data than writing and reading a file. Shared memory is faster for raw bytes, but shared memory doesn't give you a durable, inspectable, replayable record of the thought. The file does. The file is the thought, frozen, available for replay, debugging, and analysis. The file is the thought's permanent address.
 
-The thing single-machine multi-agent systems get right: their inter-agent protocol *is* the filesystem. There's no abstraction layer between agent A's output and agent B's input. The OS is the message bus. The OS is free.
+What single-machine multi-agent systems get right is that their inter-agent protocol *is* the filesystem. There's no abstraction layer between agent A's output and agent B's input. The OS is the message bus. The OS is free.
 
 ### Closed network: shared state directory
 
@@ -88,7 +88,7 @@ A few things follow from "AI cognition is file I/O at every scale" that aren't o
 
 **Durability over interactivity.** The pile is durable. The stream is not. A multi-agent architecture built on streams (WebSockets, real-time chat protocols, event buses with no persistence) is fragile by construction. A multi-agent architecture built on piles (files, JSON, content-addressed blobs) is debuggable, replayable, and forkable. When choosing an inter-agent protocol, choose the one that produces the most permanent piles per unit of activity.
 
-**Reads matter more than writes.** If the pile is the thought, and the read is when thinking happens, then the most important question for any AI system is: *who reads this pile, and what context does the reader bring?* You can write the most carefully-crafted pile in the world, but if no model with the right context reads it, the thought never happens. Make piles findable and contextually interpretable, and the cognition compounds.
+**Reads matter more than writes.** If the pile is the thought, and the read is when thinking happens, then the most important question for any AI system is: *who reads this pile, and what context does the reader bring?* You can write the most carefully crafted pile in the world, but if no model with the right context reads it, the thought never happens. Make piles findable and contextually interpretable, and the cognition compounds.
 
 **The directory IS the protocol.** You don't need a new RPC framework or a new messaging spec for multi-agent coordination. You need a directory. Add a naming convention so different agents can find each other's files. Add an append-only invariant so old piles don't get overwritten. That's most of what an inter-agent protocol needs. Anything more is overhead.
 

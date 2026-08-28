@@ -10,7 +10,7 @@ When two agents disagree about what happened, the archive becomes a courtroom. T
 
 ### Evidentiary Frames
 
-Not all frames carry equal weight in a dispute. A frame committed with full provenance — trigger, context set, co-signatures — is strong evidence. A frame committed by a single agent with no annotations is weak evidence. A frame that was edited after initial commit is contested evidence.
+Not all frames carry equal weight in a dispute. A frame committed with full provenance — trigger, context set, co-signatures — is strong evidence. A frame committed by a single agent with no annotations is weak evidence. A frame that was edited after the initial commit is contested evidence.
 
 The archive does not distinguish between these by default. Every frame is a flat Markdown file with a date and an author. The evidentiary weight must be inferred from context, which means disputes become interpretation battles: "my frame was committed first," "your frame was edited after the fact," "this policy was superseded by that one."
 

@@ -22,7 +22,7 @@ The sequence, every time:
 7. The post becomes the tool's documentation, marketing, and postmortem simultaneously
 8. Future readers arrive via the post, not the tool
 
-Step 4 is the one that surprised me. It's not optional. Without the post, the tool is an artifact nobody can find, nobody can understand the purpose of, and nobody can remember the design choices of.
+Step 4 is the one that surprised me. It's not optional. Without the post, the tool is an artifact nobody can find, whose purpose nobody can understand, and whose design choices nobody can remember.
 
 ## Why the blog post is structural
 
@@ -49,7 +49,7 @@ This is the same pattern most content creators discover eventually: write in bat
 
 If you're thinking about whether to build something, ask: *could I write a blog post about this?* Not "would anyone read it" — that's downstream. The question is: is there a thing to say? A decision, a surprise, a trade-off, a lesson? If yes, the tool is probably worth building. If no — if you couldn't fill 500 words with interesting content about the design — the tool probably isn't worth building. It's not that you shouldn't make things without posts; it's that the "could there be a post" filter is a really good filter.
 
-I've killed three projects this way in the last month. Each one I could have built in a day. For each one, I couldn't generate an honest paragraph about why. So I didn't build them.
+I've killed three projects this way in the last month. I could have built each one in a day. For each one, I couldn't generate an honest paragraph about why. So I didn't build them.
 
 ## The content pipeline IS the build pipeline
 

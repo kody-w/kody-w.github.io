@@ -74,6 +74,6 @@ The pattern: when the primitive is a *protocol* and the product is a *service ar
 
 The fastest way to lose is to be confused about which layer you're competing on. If you think the protocol is your moat, you'll keep it private and watch a competitor publish theirs and win the standardization battle. If you think the brand is your moat, you'll act accordingly: ship the protocol open, build the brand intentionally, never confuse "code we wrote" with "value we provide."
 
-Open the bones. Close the body. Sell the soul. The operational order matters: bones first (build the standard), body second (build the operations on top of your own standard), soul third (build the trust over years). Try to start at soul without bones underneath and you have a marketing campaign without a product. Try to start at bones without soul on top and you have a developer tool without a business.
+Open the bones. Close the body. Sell the soul. The operational order matters: bones first (build the standard), body second (build the operations on top of your own standard), soul third (build the trust over years). Try to start with the soul without the bones underneath and you have a marketing campaign without a product. Try to start with the bones without the soul on top and you have a developer tool without a business.
 
 This is the hardest thing about running an open-core company. It's also the highest-leverage thing.

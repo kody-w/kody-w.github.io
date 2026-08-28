@@ -17,8 +17,8 @@ The reference implementation has all the things a multi-section static site is e
 
 - A landing page with sections, audience routing, and an install command.
 - An audience site sectioned into `about/`, `product/`, `release/`.
-- A docs site with a markdown viewer, table of contents, scroll-spy, and theme integration.
-- A vault — long-form decision narratives, ~50 markdown notes — with wikilinks, backlinks, search, and JSZip export.
+- A docs site with a Markdown viewer, table of contents, scroll-spy, and theme integration.
+- A vault — long-form decision narratives, ~50 Markdown notes — with wikilinks, backlinks, search, and JSZip export.
 - A 404 page with sitemap fallback.
 - A persistent dark/light theme with no flash on load.
 - Mobile-responsive nav.
@@ -60,7 +60,7 @@ Three things that weren't true in 2014, when the bundler discourse first hardene
 
 **ES modules are mature.** You can write modern JavaScript and ship it directly. No Babel. No webpack. No "but how do I import in the browser?" — the answer is `<script type="module">` or `<script src="...">` and your code runs.
 
-**CDN-loaded utility libraries are reliable.** marked.js from jsdelivr at a pinned version is one line, no install, no version drift. The loadtime cost is negligible (10s of KB, gzipped, cached cross-origin). For specific needs (markdown rendering, zip handling), CDN-loaded libraries beat the bundling-the-world approach hands down.
+**CDN-loaded utility libraries are reliable.** marked.js from jsdelivr at a pinned version is one line, no install, no version drift. The load-time cost is negligible (10s of KB, gzipped, cached cross-origin). For specific needs (Markdown rendering, zip handling), CDN-loaded libraries beat the bundling-the-world approach hands down.
 
 The combined effect: most of what frameworks were solving in 2018 is now solved by the platform. The frameworks didn't go away because they're still useful for many things — but the *baseline assumption* that you reach for one is no longer load-bearing.
 
@@ -83,7 +83,7 @@ Honesty about the tradeoffs:
 Three signals that vanilla is the right answer for your project:
 
 1. **You're shipping content, not components.** The site is mostly long-form text, marketing pages, docs. The interactive layer is small (theme toggle, nav, search, render-markdown).
-2. **You value not-having-a-build-step over framework ergonomics.** The maintenance liability of *no bundler at all* is meaningfully lower than *modest bundler* over a five-year horizon.
+2. **You value not-having-a-build-step over framework ergonomics.** The maintenance liability of *no bundler at all* is meaningfully lower than *a modest bundler* over a five-year horizon.
 3. **You're comfortable with the vanilla DOM.** If you reach for jQuery's mental model in 2026, you'll still be productive without it. If you only know React, vanilla will feel hostile.
 
 Three signals that vanilla is the *wrong* answer:
@@ -102,7 +102,7 @@ The pattern is a constraint that protects a property. The property is *edit a fi
 
 **Don't add server-side rendering.** GitHub Pages serves static files. Anything that requires server-side computation is the wrong shape for this stack.
 
-**Don't centralize via JS framework.** Partials-via-fetch is the substitute. It's slightly less elegant than React components but vastly cheaper to maintain.
+**Don't centralize via JS framework.** Partials-via-fetch is the substitute. It's slightly less elegant than React components, but vastly cheaper to maintain.
 
 **Don't apologize for vanilla.** "We're using plain HTML/CSS/JS" is an architectural choice, not an oversight. Documenting it as a choice (in the project's CONSTITUTION, in the directory READMEs) prevents the next contributor from "fixing" it by introducing a framework.
 
@@ -111,7 +111,7 @@ The pattern is a constraint that protects a property. The property is *edit a fi
 The single most underrated property of this stack is the absence of a build step. It's hard to overstate how much it changes the maintenance picture:
 
 - A 2026 contributor opens the repo. They edit `pages/about/leadership.html`. They refresh the browser. They see the change. They commit. PR review happens on the same diff they edited. Deployment is `git push`.
-- A 2030 contributor opens the same repo. The npm registry has been through three controversies. The framework that was hot in 2026 has been deprecated and re-launched. The build tools that were cutting-edge are now legacy. None of this matters; the repo still builds, still deploys, still renders. The contributor opens a file, edits, refreshes, commits.
+- A 2030 contributor opens the same repo. The npm registry has been through three controversies. The framework that was hot in 2026 has been deprecated and relaunched. The build tools that were cutting-edge are now legacy. None of this matters; the repo still builds, still deploys, still renders. The contributor opens a file, edits, refreshes, commits.
 - A 2034 contributor pulls down the repo. By any reasonable measure of software entropy, half the projects from 2026 don't build anymore. This one does. Its dependency surface is the browser, which is the most stable software platform in existence.
 
 That's the bet. Vanilla in 2026 isn't a stunt. It's a hedge against the frameworks of 2030 not existing in 2034.

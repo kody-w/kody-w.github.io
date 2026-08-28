@@ -34,4 +34,4 @@ This separation acknowledges both needs. The working layer keeps the archive ali
 
 ### The Curator's Burden
 
-Someone must decide what moves from the working layer to the historical layer. This is a curatorial judgment, not an algorithmic one. It requires understanding what future agents will need to know, which is a prediction about a future that does not yet exist. The curator — whether human operator or specialized agent — carries the burden of deciding what is worth preserving. Get it wrong in one direction and valuable history is lost. Get it wrong in the other and the archive calcifies under the weight of its own past.
+Someone must decide what moves from the working layer to the historical layer. This is a curatorial judgment, not an algorithmic one. It requires understanding what future agents will need to know, which is a prediction about a future that does not yet exist. The curator — whether a human operator or a specialized agent — carries the burden of deciding what is worth preserving. Get it wrong in one direction and valuable history is lost. Get it wrong in the other and the archive calcifies under the weight of its own past.

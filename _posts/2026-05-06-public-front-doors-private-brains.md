@@ -8,9 +8,9 @@ description: "Most AI infrastructure picks one of three: SaaS-central, self-host
 
 Most AI infrastructure picks one of three: SaaS-central (one vendor's database, one row per customer, one dashboard, infinite tenancy risk), self-hosted local (you keep everything, you also keep the operational load and lose the network effects), or anonymous-public (a chatbot anyone can talk to, with no identity layer to make it personal). All three leave value on the table.
 
-A composition I've been exploring in production picks all three at once, layered. One URL serves anonymous strangers a polite doorman and serves the operator the full ascended twin. Same address, same OAuth flow, same code path — what the visitor sees is what GitHub will let their token read. The whole thing runs on substrate that's already universal: GitHub Pages for static hosting, GitHub OAuth for identity, GitHub raw URLs for content distribution, GitHub Issues API for per-user attributed writes. No new servers. No new identity layer.
+A composition I've been exploring in production picks all three at once, layered. One URL serves anonymous strangers a polite doorman and serves the operator the full ascended twin. Same address, same OAuth flow, same code path — what the visitor sees is what GitHub will let their token read. The whole thing runs on a substrate that's already universal: GitHub Pages for static hosting, GitHub OAuth for identity, GitHub raw URLs for content distribution, GitHub Issues API for per-user attributed writes. No new servers. No new identity layer.
 
-This post is the field note. What the composition is, what compounds, what's structurally clean about it.
+This post is the field note: what the composition is, what compounds, and what's structurally clean about it.
 
 ## The shape, in one paragraph
 
@@ -30,7 +30,7 @@ This is the flip of normal engineering instinct. *Don't ship a v2.* Make v1 stab
 
 ### Lineage is structural, not registry
 
-Every planted mirror carries a `rappid.json` with `parent_rappid` (UUIDv4) pointing at the mirror it was planted from. Walk the chain back, you eventually hit the species-root rappid. There's no central registry; the lineage *is* the metadata, attached to the planted artifact itself.
+Every planted mirror carries a `rappid.json` with `parent_rappid` (UUIDv4) pointing at the mirror it was planted from. Walk the chain back and you eventually hit the species-root rappid. There's no central registry; the lineage *is* the metadata, attached to the planted artifact itself.
 
 This means body innovations — vault patterns, doorman scripts, agent cartridges, place-anchored seed schemas — propagate through the lineage graph the same way mutations propagate through species. Plant from the canonical kernel directly: flat tree, kernel only. Plant from a mature mirror: inherit its body, keep the kernel, add your own mutations. The mature mirror's improvements get tested by descendants, refined, and inherited downstream — without anyone running a "core platform team."
 
@@ -101,4 +101,4 @@ A frozen kernel that's the same everywhere; a body stack that escalates silently
 
 The platform that compounds these properties is the platform people will build their public-and-private AI on.
 
-That's the field note version. The spec — byte-equality contracts, the rappid identity schema, the doorman/ascended dispatch tree, the bond cycle invariants — is what the next few posts will unfold.
+That's the field note version. The spec — byte-equality contracts, the rappid identity schema, the doorman/ascended dispatch tree, and the bond cycle invariants — will unfold across the next few posts.

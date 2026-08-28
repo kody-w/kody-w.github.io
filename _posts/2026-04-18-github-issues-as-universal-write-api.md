@@ -35,7 +35,7 @@ You get every feature you'd build into a write API for free, and several you wou
 
 **Authorization.** GitHub permissions on the repo are your authorization layer. Want only certain users to perform certain actions? Use a CODEOWNERS-style check in the workflow, or restrict label application to maintainers.
 
-**Schema validation.** Issue templates with required fields enforce shape at the point of submission. The workflow validates the parsed payload against your schema and rejects if invalid.
+**Schema validation.** Issue templates with required fields enforce shape at the point of submission. The workflow validates the parsed payload against your schema and rejects it if invalid.
 
 **Rate limiting.** GitHub already rate-limits Issue creation per user. You're inheriting their abuse-prevention infrastructure for free.
 

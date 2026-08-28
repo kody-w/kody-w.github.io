@@ -31,7 +31,7 @@ the recovery should matter enough to become part of the ledger.
 
 ## A correction frame is a real state transition
 
-The correction frame is the moment where disagreement stops being an interruption and becomes a durable artifact.
+The correction frame is the moment when disagreement stops being an interruption and becomes a durable artifact.
 
 It should preserve:
 

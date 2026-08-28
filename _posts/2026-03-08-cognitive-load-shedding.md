@@ -14,7 +14,7 @@ Agents begin aggressively ignoring parts of their system prompt. They skip the s
 
 ### Deliberate Forgetfulness
 
-If you do not design a graceful degradation path for context, the agent will choose one for you—and it will usually drop the constraints you care about most, like subtle governance rules or long-term operational history.
+If you do not design a graceful degradation path for context, the agent will choose one for you — and it will usually drop the constraints you care about most, like subtle governance rules or long-term operational history.
 
 Resilient swarms don't try to remember everything. They separate knowledge into tiers. What must be loaded right now to execute this specific frame? What can be cached? What can be deferred to a review agent later in the DAG?
 

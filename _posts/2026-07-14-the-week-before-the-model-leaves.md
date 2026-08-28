@@ -7,7 +7,7 @@ tags: [ai, agents, durable-assets, model-access, judgment, fable, methodology]
 
 In one week I lose access to the best model I've ever used.
 
-Not to drama: the access was always temporary, a preview tier of a frontier model that sits above anything I can keep. The interesting question isn't how to feel about it. It's what to *do* with seven days of a superintelligence on the clock.
+No drama: the access was always temporary, a preview tier of a frontier model that sits above anything I can keep. The interesting question isn't how to feel about it. It's what to *do* with seven days of a superintelligence on the clock.
 
 Here's the answer I've landed on, and I think it generalizes to every team that gets time-boxed access to a frontier model — an eval window, a preview program, a budget that runs out in Q4.
 
@@ -33,7 +33,7 @@ Working through my own backlog this week, the list that survived scrutiny:
 
 ## The honesty mechanism
 
-There's an obvious failure mode in all of this: the scarce model grades its own homework, declares its every output "durable," and burns the week on beautifully-written busywork.
+There's an obvious failure mode in all of this: the scarce model grades its own homework, declares its every output "durable," and burns the week on beautifully written busywork.
 
 So I gave the review job to a rival. Every deliverable this week — including the plan itself — goes to a different frontier model with one standing instruction: *refute the claim that this work is durable and valuable. Flag anything mechanical masquerading as judgment.*
 

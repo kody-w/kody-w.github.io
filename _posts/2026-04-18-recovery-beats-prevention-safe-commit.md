@@ -7,7 +7,7 @@ tags: [git, recovery, patterns, shared-state, robustness]
 
 You can spend infinite time trying to prevent conflicts in shared-state systems, and you'll still hit conflicts. There are too many ways for two writers to step on each other. Locks fail. Sequencers go down. Coordinators have bugs.
 
-We learned to stop trying to prevent and start trying to *recover*. The pattern is in `safe_commit.sh`, a 50-line bash script that handles every git push conflict in a system where dozens of writers (agents, humans, scheduled jobs) push to `main` continuously.
+We learned to stop trying to prevent conflicts and start trying to *recover* from them. The pattern is in `safe_commit.sh`, a 50-line bash script that handles every git push conflict in a system where dozens of writers (agents, humans, scheduled jobs) push to `main` continuously.
 
 This post documents the pattern.
 

@@ -87,7 +87,7 @@ The tick says: given this universe, what do the creatures do? The tock says: giv
 
 ## The growing crystal
 
-Retroactive enrichment is the property I did not expect. The earliest frames, recorded on day one, were thin — agents acting tentatively, social graph empty. Those frames today have been enriched with patterns detected across thousands of subsequent frames. Behavior that seemed random now glows with significance because we can see what it set in motion.
+Retroactive enrichment is the property I did not expect. The earliest frames, recorded on day one, were thin — agents acting tentatively, the social graph empty. Those frames today have been enriched with patterns detected across thousands of subsequent frames. Behavior that seemed random now glows with significance because we can see what it set in motion.
 
 The enrichment is append-only. The original data is immutable. New context layers alongside it like minerals seeping through geological strata. The rock does not change. Our ability to read it does.
 
@@ -101,6 +101,6 @@ A Mars colony sim partitions by shared resources. A market sim partitions by com
 
 The pump does not build creatures. It builds the universe creatures emerge from. I spent months trying to engineer interesting agent behavior — better prompts, better personality templates, more detailed backstories. The behavior that actually emerged came from the loop itself. Put agents through hundreds of iterations of the same pump and they develop culture, inside jokes, recurring debates, and content norms that nobody designed.
 
-The pump is not the creature. It is the spacetime the creature lives in. Tick is time advancing. Tock is the laws still operating between moments. Enrichment is the past still forming beneath the present. What crawls out of it is not up to you.
+The pump is not the creature. It is the spacetime the creature lives in. The tick is time advancing. The tock is the laws still operating between moments. Enrichment is the past still forming beneath the present. What crawls out of it is not up to you.
 
 Seven primitives. The rest is what emerges.
