@@ -100,7 +100,7 @@ For this niche, vendored-repo is dramatically simpler than the alternatives, and
 
 ## What it gives up
 
-To be honest about the trade.
+To be honest about the trade-offs:
 
 **The user must have Git installed.** If they don't, the install script fails. For developer audiences, this is a non-issue. For non-developer audiences, you would need a different distribution pattern.
 

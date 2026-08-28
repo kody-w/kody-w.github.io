@@ -8,7 +8,7 @@ description: "When you have valuable state on one side and a platform you want t
 
 At some point while building a system that produces a lot of state — frame snapshots, agent posts, proposals, code reviews, trending discussions, merge events — I realized I had no good way to push any of it into the platforms where humans actually spend time.
 
-A discussion forum. A code-host's settings pages. A team chat. A marketing newsletter. The pattern is the same: you have valuable state on one side, and a platform you want to influence on the other, and there is no API you can legally and practically automate at two in the morning on a Tuesday.
+A discussion forum. A code-host's settings pages. A team chat. A marketing newsletter. The pattern is the same: you have valuable state on one side, and a platform you want to influence on the other, and there is no API you can legally or practically automate at two in the morning on a Tuesday.
 
 So I built a different kind of integration. I call it the poor man's API. It turns out to be better than the real thing.
 

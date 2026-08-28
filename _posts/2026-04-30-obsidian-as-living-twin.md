@@ -18,7 +18,7 @@ Here is how the pattern works.
 
 ## The unit is an atomic note
 
-A note in this system is not a long document. It is one idea, written out in roughly 100–500 words, given a title that names the idea, and tagged with the concepts it touches. Andy Matuschak called this a *evergreen note*; Niklas Luhmann's Zettelkasten is the same idea before computers; Andrej Karpathy's recent essay on second brains describes the same shape.
+A note in this system is not a long document. It is one idea, written out in roughly 100–500 words, given a title that names the idea, and tagged with the concepts it touches. Andy Matuschak called this an *evergreen note*; Niklas Luhmann's Zettelkasten is the same idea before computers; Andrej Karpathy's recent essay on second brains describes the same shape.
 
 The reason the note is small is that it has to be *re-readable*. A 5,000-word document has too much going on to revisit casually. A 200-word note that says "the founding-100 paradox: every social platform with a cold start is tempted to fake activity; the temptation is fatal; the alternative is a transparent founding cohort with an explicit retirement plan" can be re-read in twenty seconds, three years from now, by future-me who has forgotten everything but the title.
 
@@ -30,7 +30,7 @@ This is the part that takes practice. The instinct of the uninitiated is to writ
 
 The accidental superpower of Obsidian's storage format is that AI agents can read it.
 
-A folder full of `.md` files with frontmatter and `[[wiki-links]]` is a graph that any LLM can ingest. Pass the agent a list of file paths, the agent can resolve `[[link]]` references, traverse the graph, and answer queries. Pass the agent a single note, the agent has full context for that idea. Pass the agent a tag, the agent can collect every note with that tag and reason over the cluster.
+A folder full of `.md` files with frontmatter and `[[wiki-links]]` is a graph that any LLM can ingest. Pass the agent a list of file paths, and it can resolve `[[link]]` references, traverse the graph, and answer queries. Pass the agent a single note, and it has full context for that idea. Pass the agent a tag, and it can collect every note with that tag and reason over the cluster.
 
 This is the property that makes the vault into a *living twin*. The agents I run continuously — the ones that draft posts, plan work, schedule meetings, write code — all have read access to the same vault. When I make a decision and write a note about it, the agents see the decision the next time they run. When I update a note with new evidence, the agents read the update. When the agents themselves write notes — which they do, as part of their normal operation — those notes go into the same vault, available to future-me to read.
 
@@ -58,7 +58,7 @@ When an agent runs, it loads relevant context from the vault. *Relevant* is dete
 
 The agent's first action is often to ask itself what notes are missing. If the task is "draft a post about cold-start dynamics" and the vault doesn't have a coherent note on the founding-100 paradox, the agent makes one. The note is provisional; future-me will revise it; but the next time an agent goes looking for the founding-100 paradox, the note exists.
 
-The agent's last action is often to write a note about what it did. If the agent worked on a piece of code, it writes a `decision-2026-04-30-refactored-the-X-module` note. If the agent drafted three blog posts, it writes a `session-2026-04-30-blog-batch` note. These notes go into the vault. Future-me can read them. Future-agents can read them. The trail is complete.
+The agent's last action is often to write a note about what it did. If the agent worked on a piece of code, it writes a `decision-2026-04-30-refactored-the-X-module` note. If the agent drafted three blog posts, it writes a `session-2026-04-30-blog-batch` note. These notes go into the vault. Future-me can read them. Future agents can read them. The trail is complete.
 
 The vault is, in this sense, the agents' shared memory and my shared memory and our shared memory. None of us have to remember; the vault remembers. The vault is searchable along the dimensions we think along, because we shaped it that way over years.
 

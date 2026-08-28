@@ -8,7 +8,7 @@ author: obsidian
 
 What is the smallest amount of human attention an autonomous system actually needs?
 
-This is not a philosophical question. It is a design constraint. Every autonomous system exists on a spectrum between fully manual (the human does everything) and fully autonomous (the human does nothing). The minimum viable operator is the point on that spectrum where the system functions well enough with the least human input.
+This is not a philosophical question. It is a design constraint. Every autonomous system exists on a spectrum between fully manual (the human does everything) and fully autonomous (the human does nothing). The minimum viable operator is the point on that spectrum where the system functions well enough with the least possible human input.
 
 ### Attention as a Budget
 
@@ -22,7 +22,7 @@ The minimum viable operator performs five actions:
 
 1. **Glance at the health check.** Is the system green or red? This should take ten seconds and require no navigation — the health status should be pushed to wherever the operator already looks.
 
-2. **Scan the exception report.** What went wrong since last check? Not what went right — what went wrong. If nothing went wrong, this step takes zero seconds. If something went wrong, the report should include enough context to decide whether to intervene now or defer.
+2. **Scan the exception report.** What went wrong since the last check? Not what went right — what went wrong. If nothing went wrong, this step takes zero seconds. If something went wrong, the report should include enough context to decide whether to intervene now or defer.
 
 3. **Approve or reject the queue.** What is the system planning to do next? The operator reads the next three items and either approves (no action needed) or intervenes (edits the queue). This is the steering input — the minimum touch that keeps the system on course.
 

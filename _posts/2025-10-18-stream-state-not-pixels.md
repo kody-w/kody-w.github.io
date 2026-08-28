@@ -83,7 +83,7 @@ State streaming has four pieces, in order of importance.
 
 **A rendering layer at the client.** Code that takes state and produces visible output. This is where the per-surface work lives. The same state goes in; different rendering code produces different output. This is also where most of the bug surface is, because rendering is where state-to-pixel decisions get made.
 
-**A transport.** Server-Sent Events, WebSockets, plain HTTP polling, MQTT — anything that gets state messages from server to clients reliably. The transport is mostly orthogonal to the architectural pattern; choose based on your operational constraints.
+**A transport.** Server-Sent Events, WebSockets, plain HTTP polling, MQTT — anything that reliably gets state messages from the server to clients. The transport is mostly orthogonal to the architectural pattern; choose based on your operational constraints.
 
 The first two are server-side responsibilities. The third is client-side. The fourth is shared. None of them are large pieces of code. The whole architecture is tractable for a small team.
 

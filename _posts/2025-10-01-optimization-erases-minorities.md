@@ -10,7 +10,7 @@ I had a simple bug in an evolutionary simulation. The world was supposed to supp
 
 The first version did the obvious thing. Sort by fitness. Keep the top five hundred. Drop the rest.
 
-The result, after running it long enough to see the steady state, was a world with one species in it. The dominant lineage swept the leaderboard, took every slot, and every other lineage got driven extinct — even lineages with unique traits, even lineages that occupied entirely different niches, even lineages that could not interbreed with the winner so were not actually in competition with it.
+The result, after running it long enough to see the steady state, was a world with one species in it. The dominant lineage swept the leaderboard, took every slot, and every other lineage got driven extinct — even lineages with unique traits, even lineages that occupied entirely different niches, even lineages that could not interbreed with the winner and so were not actually in competition with it.
 
 Same simulation, fixed differently: instead of a single global fitness sort, give each species its own per-species quota proportional to its population. Cull within species. Same compute. Same fitness function. Same world. The result this time was an ecosystem with fifty-three surviving species.
 
@@ -40,7 +40,7 @@ Once you see the pattern, it is everywhere.
 
 **Recommender systems.** A platform has limited user attention. It surfaces the top-K items by predicted engagement. Each round, the most-clicked content gets the most slots. Less popular but distinctive content gets squeezed out. Over time, the recommender's catalog homogenizes into whatever was most universally engaging at the start. Niche taste collapses, not because anyone wanted that, but because the global ranking treated all content as one pool.
 
-**Content moderation.** A queue of flagged items, finite review capacity per day. The triage scores by severity. The most severe items always get reviewed; mid-severity items from minority categories never make it to a reviewer. Over months, the moderation policy effectively becomes "we only act on the worst ten percent of complaints." Categories that genuinely deserve review but happen to be less severe on average become invisible.
+**Content moderation.** A queue of flagged items, finite review capacity per day. The triage scores by severity. The most severe items always get reviewed; mid-severity items from minority categories never make it to a reviewer. Over months, the moderation policy effectively becomes "we only act on the worst ten percent of complaints." Categories that genuinely deserve review, but happen to be less severe on average, become invisible.
 
 **Hiring funnels.** Top-K candidates by some composite score. The score correlates with traits that, for any of a dozen reasons, the majority cohort happens to score higher on. The minority cohort is not failing — they are doing fine — but they fall below the threshold and never enter the pipeline. The funnel converges to the majority cohort over time, reinforcing whatever fed the score correlation in the first place.
 
@@ -115,7 +115,7 @@ Before you ship any system that has a cap and a global score, ask three question
 
 **Is the current selection rule group-aware?** If you sort by a single score and slice off the top K, no, it is not.
 
-If you fail this diagnostic, the fix is small. Compute the score per item, *partition* by group, then take the top K-per-group. Two extra lines of code. Order-of-magnitude difference in what survives.
+If you fail this diagnostic, the fix is small. Compute the score per item, *partition* by group, then take the top K per group. Two extra lines of code. Order-of-magnitude difference in what survives.
 
 I had to learn this from a simulation that was supposed to be about evolution and ended up being about monoculture. The same lesson applies — quietly, invisibly, by default — to every ranking system in production.
 

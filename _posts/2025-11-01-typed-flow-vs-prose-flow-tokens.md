@@ -65,7 +65,7 @@ Three forces compound the delta as a product matures:
 
 1. **Context windows grow.** More history per prompt → more re-ingestion cost per hop → the 3.04× prompt-token multiple expands. The longer your conversations get, the worse prose-flow looks.
 
-2. **Hops multiply.** Teams add a verifier. Then a re-verifier. Then a guardrail. Then a "judge." A 3-hop pipeline becomes a 5-hop pipeline becomes a 7-hop pipeline. The token multiplier scales roughly linearly in hops, because each new hop both consumes the prior hop's prose and produces its own.
+2. **Hops multiply.** Teams add a verifier. Then a re-verifier. Then a guardrail. Then a "judge." A 3-hop pipeline becomes a 5-hop pipeline, then a 7-hop pipeline. The token multiplier scales roughly linearly in hops, because each new hop both consumes the prior hop's prose and produces its own.
 
 3. **Retries accumulate.** When the same prompt is re-run because the first answer was malformed or low-quality, you pay the full multi-hop cost twice. Prose-flow pipelines have higher variance — there are more places for things to go subtly wrong — so retries hit a larger fraction of traffic.
 

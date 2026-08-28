@@ -58,11 +58,11 @@ Same with an evolution simulation. Every frame: individuals age, mate, mutate, d
 
 ## The journal makes it scalable
 
-Once you're frame-based, every frame produces a delta. The delta is small (just what changed). The journal is just an ever-growing list of deltas.
+Once you're frame-based, every frame produces a delta. The delta is small (just what changed). The journal is an ever-growing list of deltas.
 
 This unlocks everything:
 
-- **Replay**: re-apply the journal to reconstruct any point in history
+- **Replay**: reapply the journal to reconstruct any point in history
 - **Time travel**: jump to frame 312, examine state, fork from there
 - **Distributed work**: multiple workers produce parallel delta streams; merge at frame boundaries
 - **Audit**: every change is logged with timestamp and frame

@@ -10,7 +10,7 @@ You ship a system. It runs for weeks. One Tuesday afternoon you notice the numbe
 
 In most systems, you cannot answer either question without infrastructure you wished you had built earlier. Audit tables. Snapshots. Event sourcing. CDC pipelines. Log archives. Each is a project. None is free.
 
-In a system whose state is checked into git, you can answer both questions in five minutes with `git`. No new infrastructure. No additional storage budget. No "we should have logged that" regret. The time machine was free, you just have to know it is there.
+In a system whose state is checked into git, you can answer both questions in five minutes with `git`. No new infrastructure. No additional storage budget. No "we should have logged that" regret. The time machine was free; you just have to know it is there.
 
 This post is about what that means in practice. How to use git's history to navigate a system's evolution. What kinds of debugging and audit problems it solves at no cost. Where the technique breaks. And how to design a system from the start so that this capability is the default, not an afterthought.
 
@@ -69,7 +69,7 @@ The above commands compose into a workflow that handles most "wait, what happene
 
 **Decide what to fix.** Often the diff makes the bug obvious — a typo, a math error, an off-by-one in a handler, a copy-paste mistake. Sometimes it shows that the bug is upstream of the diff (the bad value came in correctly because the upstream system handed it bad data, not because the handler was wrong). Either way, you now have a place to look that is much smaller than "the whole codebase."
 
-I have done this many times. The bisect step is the load-bearing magic. Manual reproduction of "when did this break" without bisect is hours of guesswork; with bisect, it is half a dozen commits checked over a coffee.
+I have done this many times. The bisect step is the load-bearing magic. Manual reproduction of "when did this break" without bisect is hours of guesswork; with bisect, it is half a dozen commits checked over coffee.
 
 ## The "time machine UI" pattern
 
@@ -114,7 +114,7 @@ This three-line discipline is what makes the entire technique usable.
 
 Three failure modes are honest.
 
-**Real-time questions.** The technique is great for "what was the state at this commit." It is not great for "what was the state at exactly 14:23:17 on Tuesday." Commits happen on cycle boundaries, not clock boundaries. If your system commits every five minutes, you get five-minute resolution on the time machine. For finer questions, you need higher commit frequency, which costs in commit volume.
+**Real-time questions.** The technique is great for "what was the state at this commit." It is not great for "what was the state at exactly 14:23:17 on Tuesday." Commits happen on cycle boundaries, not clock boundaries. If your system commits every five minutes, you get five-minute resolution in the time machine. For finer questions, you need higher commit frequency, which costs in commit volume.
 
 **High-cardinality state.** If your system has hundreds of thousands of records, the state file can grow large enough that diffs are slow and history searches are tedious. Sharding (one file per partition) helps. But the technique works best for systems with thousands to tens of thousands of records, not millions.
 
