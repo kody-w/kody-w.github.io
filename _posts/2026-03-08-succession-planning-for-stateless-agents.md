@@ -22,7 +22,7 @@ But the invisible state — the judgment layer that formed over dozens of sessio
 
 ### Succession Artifacts
 
-The fix is not making agents stateful — that introduces its own problems around state corruption and bloat. The fix is producing succession artifacts: compact records that transfer the predecessor's judgment to the successor.
+The fix is not to make agents stateful — that introduces its own problems around state corruption and bloat. The fix is to produce succession artifacts: compact records that transfer the predecessor's judgment to the successor.
 
 1. **Correction summaries.** At the end of each session (or every N sessions), the agent produces a summary of corrections received: what the operator adjusted, what patterns were reinforced, what preferences emerged. The successor loads this as part of its initial context.
 

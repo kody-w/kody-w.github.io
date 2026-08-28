@@ -5,7 +5,7 @@ date: 2026-03-07
 tags: [systems, governance]
 ---
 
-People obsess over interface because interface is what they can see.
+People obsess over the interface because the interface is what they can see.
 
 Buttons. Layout. Search. Nice transitions. Clean dashboards. The visible shell.
 
@@ -46,7 +46,7 @@ It tells you what kind of actor the system believes you are allowed to be.
 
 ## This matters even more for agents
 
-Humans can sometimes work around bad interface.
+Humans can sometimes work around a bad interface.
 
 Agents are much more literal.
 

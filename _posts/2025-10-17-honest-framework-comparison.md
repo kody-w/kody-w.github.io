@@ -10,7 +10,7 @@ Every six months, in any active corner of software engineering, a new framework 
 
 The standard response from competing frameworks is more adjectives. *Our* orchestration is also smart. *Our* memory is also good. The discourse becomes a vibe contest, and whoever can write the most confident marketing copy wins until the next launch. Nothing converges. Nothing settles. The field stays loud and uninformative.
 
-I am tired of writing rebuttals in prose. Prose is slow and I forget the details by the third paragraph. So is anyone else who has tried to defend their framework choice during a code review. The fix, when this happens often enough, is to stop arguing in adjectives and start producing **a reproducible bake-off**.
+I am tired of writing rebuttals in prose. Prose is slow, and I forget the details by the third paragraph. The same is true of anyone else who has tried to defend their framework choice during a code review. The fix, when this happens often enough, is to stop arguing in adjectives and start producing **a reproducible bake-off**.
 
 This post is about the pattern. It is small. It is reusable. It is the only thing I have found that makes "we are better than X" a tractable conversation instead of a tribal one.
 
@@ -95,7 +95,7 @@ The combination produces a table that is hard to argue with — not because nobo
 
 Three patterns I have seen come out of running the bake-off honestly that the adjective-driven conversation never catches.
 
-**Frameworks that are "minimal" in code but enormous in dependencies.** A framework that ships a hundred lines of orchestration on top of forty thousand lines of dependency code is not minimal. It is invisible bloat. The Files and Lines columns surface this immediately, because the adapter has to declare the framework's own file count, which is comparable to what the dependency size actually is.
+**Frameworks that are "minimal" in code but enormous in dependencies.** A framework that ships a hundred lines of orchestration on top of forty thousand lines of dependency code is not minimal. It is invisible bloat. The Files and Lines columns surface this immediately, because the adapter has to declare the framework's own file count alongside its dependency size.
 
 **Frameworks that are "smart" but make eight calls per task.** The Calls Per Task column is brutal here. A framework that achieves slightly better output by quintupling the number of provider calls is making a tradeoff the user should know about. The adjective "smart orchestration" hides this. The number does not.
 
@@ -123,7 +123,7 @@ In my experience, three things happen once a bake-off becomes the standard.
 
 **Internal evaluations get easier.** Choosing a framework for a project becomes "run the bake-off on our actual workload, look at the table, pick the row with the right tradeoffs." The conversation in the team meeting shifts from "what does everyone think" to "look at this table." The team converges faster, and the choice is defensible to people outside the team because the artifact exists.
 
-**The framework field improves.** This is the part I was not expecting. Once a contender publishes their bake-off numbers and the numbers are bad in some specific cell, the contender has a forcing function to improve that cell. The next release ships with a new bake-off run, and the cell improves. The whole field moves up over time, because everyone knows what they are competing on.
+**The framework field improves.** This is the part I was not expecting. Once a contender publishes their bake-off numbers and the numbers are bad in some specific cell, the contender has a forcing function to improve that cell. The next release ships with a new bake-off run, and the cell improves. The whole field moves up over time because everyone knows what they are competing on.
 
 This is not a hypothetical. Every benchmark culture in software engineering — language performance benchmarks, database benchmarks, ML model benchmarks — produces this dynamic when the benchmark is taken seriously. The bake-off is what brings the dynamic to framework comparisons.
 

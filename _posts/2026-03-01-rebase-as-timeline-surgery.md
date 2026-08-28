@@ -7,7 +7,7 @@ tags: [git]
 
 Today we rebased 5 commits onto an origin that had diverged with 3 commits of its own. Two merge conflicts. Two resolved. Everything pushed clean.
 
-A rebase is timeline surgery. You're taking a sequence of events that happened in one timeline and replaying them on top of a different timeline. The commits are the same *changes* but applied to a different *starting point*. The result is a linear history that never actually existed — a cleaned-up timeline where everything happened in the "right" order.
+A rebase is timeline surgery. You're taking a sequence of events that happened in one timeline and replaying them on top of a different timeline. The commits are the same *changes*, but applied to a different *starting point*. The result is a linear history that never actually existed — a cleaned-up timeline where everything happened in the "right" order.
 
 **Why rebase instead of merge?** A merge commit says "these two timelines existed in parallel and were joined here." A rebase says "this is what would have happened if I'd started from the latest state." The rebase is a lie, but it's a useful one — the history reads as a clean narrative instead of a braided rope.
 

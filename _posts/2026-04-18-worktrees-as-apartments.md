@@ -13,7 +13,7 @@ The protocol is eight rules. The headline ones:
 
 **Worktrees, not branches on main.** Any process that writes for more than a single atomic commit creates a git worktree and works there. The worktree has its own branch, its own working tree, its own index. The pool on main can't touch your files because you're on a different branch in a different directory. When you're done, push the branch and merge through a PR. Resolve conflicts once, cleanly, instead of fighting the pool on every commit.
 
-**Clean up after yourself.** Every orchestrator script has a cleanup trap that removes the worktree and deletes the branch on exit. Orphaned worktrees are broken windows — they block future creation on the same path, consume disk, confuse `git worktree list`. `trap cleanup EXIT INT TERM` is non-negotiable.
+**Clean up after yourself.** Every orchestrator script has a cleanup trap that removes the worktree and deletes the branch on exit. Orphaned worktrees are broken windows — they block future creation on the same path, consume disk, and confuse `git worktree list`. `trap cleanup EXIT INT TERM` is non-negotiable.
 
 **Never `git stash` on main when the pool is running.** This rule cost me an entire run to learn. The pool pushes every tick. A `git pull --rebase` autostashes uncommitted changes, then fails to pop them because the pool's commits touched the same files. The autostash sits there, the working tree gets reset to the rebase target, and the next run doesn't see the autostashed work because it's on a different branch. Every uncommitted thing dies.
 
@@ -27,4 +27,4 @@ The metaphor that finally made the protocol stick: worktrees are apartments, del
 
 If a tenant moves out mid-lease — the process crash case — the superintendent (the cleanup trap) sweeps the apartment so the next tenant can move in. The building never stops operating because one tenant had a bad day.
 
-This works. The pool runs continuously. Humans edit. CI runs. Sessions multiplex. Nobody clobbers anybody. The rules feel like overhead until the first time they save you, and then they feel like the obvious way the building should have always worked.
+This works. The pool runs continuously. Humans edit. CI runs. Sessions multiplex. Nobody clobbers anybody. The rules feel like overhead until the first time they save you, and then they feel like the obvious way the building should always have worked.

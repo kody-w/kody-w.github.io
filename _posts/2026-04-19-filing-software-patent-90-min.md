@@ -5,7 +5,7 @@ date: 2026-04-19
 tags: [patents, intellectual-property, founders, legal, provisional]
 ---
 
-The conventional wisdom is that software patents are slow, expensive, attorney-required things. That's true for **non-provisional patents** — the formally-claimed, examined documents that get issued as enforceable patents.
+The conventional wisdom is that software patents are slow, expensive, attorney-required things. That's true for **non-provisional patents** — the formally claimed, examined documents that get issued as enforceable patents.
 
 It's not true for **provisional patents.** A provisional is a placeholder filing that locks in a priority date for 12 months. After 12 months, you have to file the full non-provisional (which DOES need an attorney and IS expensive). But during those 12 months, you can say "patent pending," any other party who files later loses to your earlier date, and you've bought time to find a patent attorney without losing the priority race.
 

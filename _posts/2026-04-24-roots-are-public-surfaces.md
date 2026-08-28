@@ -65,7 +65,7 @@ If you maintain a repo and you've gotten this far, three exercises are worth doi
 
 1. **List your repo root.** Out loud, to a colleague who doesn't know the project. Read the names. Notice which ones make you want to explain what they are. Those are the candidates for re-homing.
 2. **Write the closed list.** What *should* be at root? Tier-running code, the README, the LICENSE, governance, the entry HTML if you have one, plumbing files git/CI requires. Anything not on the list is a question.
-3. **Write the rules in a real file.** A `CONTRIBUTING.md` or a `CONSTITUTION.md` or a section of your top-level README. The rule has to be writable down or the next maintainer will inherit confusion instead of discipline.
+3. **Write the rules in a real file.** A `CONTRIBUTING.md` or a `CONSTITUTION.md` or a section of your top-level README. The rule has to be written down or the next maintainer will inherit confusion instead of discipline.
 
 The rule we wrote — *roots are public surfaces; substance earns root residence; symmetry doesn't* — has paid for itself twice in its first week. The version of the project that didn't write it would be running on the same code, with the same features, with a directory listing that nobody enjoys looking at.
 

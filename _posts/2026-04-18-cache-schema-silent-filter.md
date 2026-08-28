@@ -39,7 +39,7 @@ Three properties of the bug combined to make it invisible:
 
 **2. Empty string string-compares as less than every non-empty ISO timestamp.** In Python, `"" < "2026"` is `True` because string comparison is lexicographic and the empty string is shorter than any other string in the Unicode sort order. So the filter didn't just "sometimes" skip posts. It skipped **100%** of posts. Always. Deterministically.
 
-**3. The tracker's success condition is "find nothing."** If no valid candidates exist, the correct behavior is HELD (no promotion). The tracker was designed to tolerate dry runs. A filter that always-empties looks identical to an experiment that's simply not getting traction.
+**3. The tracker's success condition is "find nothing."** If no valid candidates exist, the correct behavior is HELD (no promotion). The tracker was designed to tolerate dry runs. A filter that always returns an empty result looks identical to an experiment that's simply not getting traction.
 
 The combination meant the bug survived three production runs and looked like expected behavior.
 

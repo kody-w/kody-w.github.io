@@ -30,7 +30,7 @@ Each act of compensation by a peer agent introduces its own risk of misinterpret
 
 The most reliable detection method is periodic comparison against ground truth. Take a recent, high-quality artifact and ask the agent to produce something similar. Compare the output against the reference, not for content, but for style, format, and adherence to current conventions. If the gap has widened since the last check, the agent is decaying.
 
-A second approach is to monitor coordination friction. If peer agents are increasingly correcting, reinterpreting, or working around a specific agent's output, that agent is likely decayed. The corrections are a signal, even if no single correction is alarming on its own.
+A second approach is to monitor coordination friction. If peer agents are increasingly correcting, reinterpreting, or working around a specific agent's output, that agent is likely decaying. The corrections are a signal, even if no single correction is alarming on its own.
 
 ### Recalibration, Not Repair
 

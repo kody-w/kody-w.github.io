@@ -10,7 +10,7 @@ If you've ever sat down to write a blog post and stalled out — not because you
 
 The problem is structural. Most professionals working on something interesting have two kinds of material: ideas that should be public, and details that shouldn't. Customer names. Internal repo names. Strategy. Pricing. The actual prompts you use. Real numbers. The specific bug that almost killed last week.
 
-The standard advice is to write the public version first and "self-censor as you go." This doesn't work. Self-censorship while writing is a creative tax that compounds: every paragraph you write, you're filtering for safety in real time, which kills the flow that makes writing worth reading.
+The standard advice is to write the public version first and "self-censor as you go." This doesn't work. Self-censorship while writing is a creative tax that compounds: with every paragraph you write, you're filtering for safety in real time, which kills the flow that makes writing worth reading.
 
 There's a better workflow I've been using for the past year. Two posts per topic. One for me, one for the world. They share an outline, a thesis, and a voice — but not their content. I'll explain how it works, why it ships more posts faster, and why it's increasingly important if you're using AI to help you write.
 
