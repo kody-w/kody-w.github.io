@@ -59,7 +59,7 @@ A peer reading this manifest can:
 - Know exactly what kinds of submissions the system accepts and how to make one.
 - Know what version of the protocol they are dealing with.
 
-The peer does not need a SDK. They do not need an account. They do not need to authenticate. They need an HTTP client. The data is public, the contracts are public, and the manifest told them everything they need.
+The peer does not need an SDK. They do not need an account. They do not need to authenticate. They need an HTTP client. The data is public, the contracts are public, and the manifest told them everything they need.
 
 ## The transport, made cheap
 
@@ -149,6 +149,6 @@ In any of those cases, you have a real distributed-systems problem, and you want
 
 ## The summary
 
-Two systems can talk to each other without sharing a database, an auth provider, a message bus, or a SDK. The minimum protocol is a public manifest at a known URL describing what each side is, what it publishes, and what it accepts. The transport is static file fetches for reads and each system's existing inbox for writes. The cost is shockingly low. The friction to add or remove a peer is a single config change.
+Two systems can talk to each other without sharing a database, an auth provider, a message bus, or an SDK. The minimum protocol is a public manifest at a known URL describing what each side is, what it publishes, and what it accepts. The transport is static file fetches for reads and each system's existing inbox for writes. The cost is shockingly low. The friction to add or remove a peer is a single config change.
 
 Most pairs of systems that should share data could be sharing it tomorrow with this architecture. They are not, because the default mental model for "let's integrate" is too expensive to ever start. The smaller protocol is right there, waiting to be adopted, the moment you give yourself permission to say "we'll just publish JSON and read each other's."

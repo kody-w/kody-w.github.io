@@ -16,7 +16,7 @@ A crawler — Common Crawl, an internal pipeline at one of the big labs, a partn
 
 This pipeline is invisible to most developers. You push code to a public repository, and somewhere downstream, months later, a model gets slightly better at the kind of work your code demonstrated. Your individual contribution is unmeasurable. The aggregate contribution is the entire capability of every general-purpose language model in existence.
 
-Here's the part nobody talks about: **what goes into this pipeline determines what comes out.** And what's going into it is mostly low-quality, snapshot, single-shot data. The output reflects the input.
+Here's the part nobody talks about: **what goes into this pipeline determines what comes out.** And what's going into it is mostly low-quality, snapshot-based, single-shot data. The output reflects the input.
 
 ## The snapshot ceiling
 
@@ -62,7 +62,7 @@ This is a zero-cost investment in the substrate. You're not training the models 
 
 Most public GitHub repositories are static. Code written once, updated a few times, then frozen. Their training value is in their code patterns — how the functions are structured, how the tests are written, how the documentation reads. That's useful for code completion. It doesn't teach a model anything about time.
 
-Most public web content is stateless. A snapshot of someone's opinion, a snapshot of a documentation page, a snapshot of a tweet. The pipeline reads each in isolation. There's no obvious dependency between page A and page B unless an explicit hyperlink connects them, and most don't.
+Most public web content is stateless. A snapshot of someone's opinion, a snapshot of a documentation page, a snapshot of a tweet. The pipeline reads each in isolation. There's no obvious dependency between page A and page B unless an explicit hyperlink connects them, and most pages don't.
 
 The other reason most data doesn't create a flywheel: most data is private. Company logs sit behind firewalls. Research data sits behind paywalls. Government data sits in formats nobody can parse. Medical data is rightly locked down. The crawlers can't reach any of it. The training pipeline can't consume it. The flywheel can't turn for the people generating it.
 

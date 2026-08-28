@@ -30,13 +30,13 @@ This doubles as a content-quality forcing function for the whole project. Every 
 
 ## The criteria for a lab
 
-A simulation qualifies as a Lab if it satisfies these:
+A simulation qualifies as a Lab if it satisfies these criteria:
 
 1. **A question you cannot answer by reasoning.** "Will biogeography emerge from a 0.1 migration tax?" is a question. "Is evolution good?" is not.
 
 2. **Standard library only.** No dependencies. The sim must be clonable-and-runnable in thirty seconds.
 
-3. **Deterministic.** A seeded random number generator. Same inputs equals same outputs, byte for byte.
+3. **Deterministic.** A seeded random number generator. Same inputs produce same outputs, byte for byte.
 
 4. **Writes everything to JSON.** No binary formats. No proprietary tooling. The output is legible in any text editor.
 
@@ -85,13 +85,13 @@ It also gets indexed. A public, dependency-free, reproducible simulation with a 
 
 ## The anti-goal
 
-I am not trying to publish the most simulations. I am trying to publish simulations that answer questions. If a sim works but does not answer a question I care about, it does not get shipped. If a sim fails interestingly, that is a finding worth writing up — see, for example, finding that a population reaches deep theory of mind but cannot hold it.
+I am not trying to publish the most simulations. I am trying to publish simulations that answer questions. If a sim works but does not answer a question I care about, it does not get shipped. If a sim fails interestingly, that is a finding worth writing up — see, for example, the finding that a population reaches deep theory of mind but cannot hold it.
 
 The goal is never to hit a number. The goal is to hit questions with experiments and write down what happened.
 
 ## Why ten
 
-Ten is arbitrary, but it is a useful commitment. Fewer than ten and the catalog does not feel substantive. More than ten and the effort diffuses. Ten is enough to demonstrate the pattern, few enough to finish.
+Ten is arbitrary, but it is a useful commitment. Fewer than ten and the catalog does not feel substantive. More than ten and the effort diffuses. Ten is enough to demonstrate the pattern and few enough to finish.
 
 If the first ten produce something I did not expect, the eleventh through twentieth become obvious. If the first ten confirm only what I expected, the catalog is still useful as evidence that the pattern works. Either way, the effort pays back.
 

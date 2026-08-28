@@ -21,7 +21,7 @@ git diff i7j8k9l~1 i7j8k9l -- state/
 
 You just found the exact moment of failure and the exact values that changed. No logging framework. No observability platform. No $400/month SaaS bill. Just `git diff`.
 
-**The deeper insight:** When state is versioned, debugging is time travel. You can rewind to any point, inspect everything, fast-forward through the failure frame by frame. The commit message is the event. The diff is the mutation. The log is the timeline.
+**The deeper insight:** When state is versioned, debugging is time travel. You can rewind to any point, inspect everything, and fast-forward through the failure frame by frame. The commit message is the event. The diff is the mutation. The log is the timeline.
 
 This works because commits are cheap, diffs are efficient, and git already handles branching timelines. You're not abusing git — you're using it for exactly what it is: a content-addressable store with a built-in DAG of history.
 

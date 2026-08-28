@@ -14,7 +14,7 @@ There could be. There should be, for the right product shapes.
 **When endowment funding makes sense:**
 
 The conditions:
-1. **Long-tail value with declining marginal cost.** Storage costs decline; compute costs decline; ongoing operations get cheaper per-unit over time.
+1. **Long-tail value with declining marginal cost.** Storage costs decline; compute costs decline; ongoing operations get cheaper per unit over time.
 2. **Per-customer cost much lower than per-customer payment.** If hosting one customer costs $10/year and a customer paid $1,500 once, the $1,500 invested at 4% yields $60/year — six times the operating cost. Comfortable margin.
 3. **The product has lasting use beyond the original buyer.** The buyer's descendants, the buyer's institution, the buyer's audience continue to derive value. So perpetual operation has perpetual customers, not just a perpetual cost.
 4. **The buyer values the perpetuity itself.** Cemetery plots are bought BECAUSE they last forever. Memorial endowments same. The customer's payment is partly for the operation and partly for the *promise of permanence*. They'd pay less if perpetuity weren't part of the offer.
@@ -61,7 +61,7 @@ That means:
 
 4. **Exhaustion safeguards are documented.** What happens if cost ever projects to exceed yield? Supplemental contribution? Tier downgrade? Sunset notice? Tell the customer up front.
 
-5. **Successor of the operator is provisioned.** If the company goes under, the endowed services should transfer to a successor operator (potentially via a structured fund, like the way historic-building preservation trusts work). Bake this into the operating agreement.
+5. **A successor to the operator is provisioned.** If the company goes under, the endowed services should transfer to a successor operator (potentially via a structured fund, like the way historic-building preservation trusts work). Bake this into the operating agreement.
 
 This is what makes the endowment model trustworthy. Without these guardrails, "perpetual" is marketing copy. With them, it's an actual commitment.
 
@@ -86,7 +86,7 @@ If your product is any of these, the endowment model is a structural advantage. 
 | Year 50 | 50×$X cumulative if customer still paying | $E + 50 years of compounding surplus |
 | Year 100 | 0 (customer long gone) | $E + 100 years of perpetually growing surplus |
 
-At year 100, the subscription model has zero from this customer (they're dead). The endowment model still has the principal (intact in real terms) plus 100 years of compounded surplus from yield exceeding declining operating cost.
+At year 100, the subscription model receives zero from this customer (they're dead). The endowment model still has the principal (intact in real terms) plus 100 years of compounded surplus from yield exceeding declining operating cost.
 
 **The lesson:**
 

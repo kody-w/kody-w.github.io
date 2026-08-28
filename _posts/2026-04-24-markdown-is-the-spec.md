@@ -27,7 +27,7 @@ The same pattern repeats for the project's vault — long-form decision narrativ
 
 ## Why this beats either extreme
 
-**Against "raw markdown only":** GitHub-rendered markdown is fine for contributors but limited for visitors. No theming. No site nav. No search. No way to build cross-document discovery features. A visitor following a link from a marketing page lands on raw GitHub UI, which is correct for engineers and jarring for everyone else. The same content should be reachable in *both* contexts — read on GitHub for the source, read on the docs site for the visitor experience.
+**Against "raw markdown only":** GitHub-rendered markdown is fine for contributors but limited for visitors. No theming. No site nav. No search. No way to build cross-document discovery features. A visitor following a link from a marketing page lands on raw GitHub UI, which is correct for engineers and jarring for everyone else. The same content should be reachable in *both* contexts — on GitHub for the source and on the docs site for the visitor experience.
 
 **Against "build-step site":** The build step is a permanent maintenance liability. Hugo's release notes. Docusaurus's Node version drift. The CI pipeline that breaks when the static-site generator updates. The deploy that needs to happen separately from the source push. None of these are individually catastrophic; collectively they're the difference between "we maintain a docs site" and "we maintain a project."
 

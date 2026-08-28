@@ -15,7 +15,7 @@ A first-class export gesture has four properties:
 
 **Synchronous.** Click, get a file. Not "we'll email you in 24 hours." Not "your archive is being prepared." The browser already has all the data; it can serialize it in milliseconds. Make it instant.
 
-**Lossless.** The exported file contains *everything* needed to reconstruct the working state. Not a marketing-slide summary. The raw fields, the original frontmatter, the unprocessed body, the file paths, the metadata. If something would be lost on round-trip, it's a bug.
+**Lossless.** The exported file contains *everything* needed to reconstruct the working state. Not a marketing-slide summary. The raw fields, the original front matter, the unprocessed body, the file paths, the metadata. If something would be lost on round-trip, it's a bug.
 
 **Round-trippable.** Import accepts what Export produces, byte-for-byte. The same file goes out and comes back in. No custom converter. No migration script. No documentation explaining which fields to map where. The format is whatever Export wrote, and Import knows how to read it. This is the property most exports fail.
 
@@ -29,7 +29,7 @@ The Import side has its own requirements:
 
 **Permanent path is documented.** The live view is in-memory only. The import is real after the user takes a separate action — committing files to the repo, persisting to localStorage, syncing to a remote. The UI tells them what that next step is.
 
-For a static-site backed personal tool, the pattern that works:
+For a static-site-backed personal tool, the pattern that works is:
 
 - Export downloads a JSON file containing the full data
 - Import accepts that JSON, merges into the in-memory grid for preview, and *also* downloads a "bundle" file in a format the build script can consume
@@ -38,6 +38,6 @@ For a static-site backed personal tool, the pattern that works:
 
 This is twenty minutes of work to add to most tools. The benefit is permanent: any user can leave with everything, any user can restore everything, any user can fork the entire collection and host it themselves. The data ownership promise becomes literally true.
 
-The version of this that doesn't ship is the version where exports require a CLI. Or where Import works for some fields but not others. Or where the round-trip drops formatting. Each of those failures is a small one, individually. Collectively they mean nobody actually backs up.
+The version that doesn't ship is the one where exports require a CLI, where Import works for some fields but not others, or where the round-trip drops formatting. Each of those failures is a small one, individually. Collectively they mean nobody actually backs up.
 
 Ship the buttons. Make them lossless. Make them round-trip. Then the promise holds.

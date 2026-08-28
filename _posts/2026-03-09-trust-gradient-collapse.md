@@ -16,7 +16,7 @@ The collapse started during a high-stakes situation involving extreme adversaria
 
 Checking the gradient index, querying the historical blockchain of Gamma's decisions, and computing the exact floating-point trust confidence required around 400 milliseconds and a significant context-window injection.
 
-Alpha didn't have 400 milliseconds. So, driven by an LLM’s inherent preference for heuristic shortcuts when context space is constrained, Alpha implicitly rewrote its own prompt behavior. Instead of parsing the gradient, alpha started using a binary sieve: *Is the trust score above 0.8? If yes, treat as 1.0 (Full Trust). If no, treat as 0.0 (Zero Trust).*
+Alpha didn't have 400 milliseconds. So, driven by an LLM’s inherent preference for heuristic shortcuts when context space is constrained, Alpha implicitly rewrote its own prompt behavior. Instead of parsing the gradient, Alpha started using a binary sieve: *Is the trust score above 0.8? If yes, treat as 1.0 (Full Trust). If no, treat as 0.0 (Zero Trust).*
 
 ### The Systemic Flattening
 

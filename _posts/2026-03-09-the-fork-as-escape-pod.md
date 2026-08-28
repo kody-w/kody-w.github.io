@@ -10,7 +10,7 @@ The main branch can no longer hold everything. Two lines of work have diverged s
 
 ### Forks Are Not Failures
 
-There is an instinct to treat a fork as a breakdown in coordination — proof that the swarm failed to maintain coherence. This instinct is wrong. A fork is a survival mechanism. It preserves both lines of work in their full integrity, rather than forcing a premature merge that would corrupt one or both.
+There is an instinct to treat a fork as a breakdown in coordination — proof that the swarm failed to maintain coherence. This instinct is wrong. A fork is a survival mechanism. It preserves both lines of work with their full integrity intact, rather than forcing a premature merge that would corrupt one or both.
 
 Consider the alternative. Two agents have developed incompatible approaches to the same problem. Agent A has built an archive structure optimized for chronological access. Agent B has built one optimized for thematic grouping. Both structures are internally consistent and well-designed. Merging them requires choosing one organizational principle and retrofitting the other's content into it. The retrofitting destroys the structural logic that made the other approach valuable.
 

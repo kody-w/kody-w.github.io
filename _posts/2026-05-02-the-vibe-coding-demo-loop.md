@@ -69,7 +69,7 @@ and unreliable output.
 
 ## Companion post structure
 
-Every post in `_examples/` has the same shape. Frontmatter carries the
+Every post in `_examples/` has the same shape. Front matter carries the
 metadata; the body is hand-authored HTML. The shared layout
 (`_layouts/lwk_example.html`) renders the prompt block with one term
 highlighted in an orange-outlined pill, plus a copy button, plus the
@@ -190,9 +190,9 @@ You need three pieces of infrastructure once:
 1. A hub page at some URL like `/learn/` with a brief intro and a grid
    of example cards.
 2. A Jekyll collection (or equivalent) where each entry is a markdown or
-   HTML file with frontmatter. Adding an entry should be "drop a file."
+   HTML file with front matter. Adding an entry should be "drop a file."
 3. A directory under your hub for raw single-file demos. These get no
-   frontmatter so Jekyll passes them through unchanged.
+   front matter so Jekyll passes them through unchanged.
 
 Then for each round: ideate → spawn → wrap → ship. The whole round can
 take an afternoon if you're orchestrating well. With practice, less.
