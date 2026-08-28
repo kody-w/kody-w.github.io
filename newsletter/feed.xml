@@ -1,0 +1,33 @@
+---
+layout: null
+permalink: /newsletter/feed.xml
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>{{ site.title }} date editions</title>
+  <subtitle>Every article consolidated by publication date.</subtitle>
+  <link href="{{ site.url }}/newsletter/feed.xml" rel="self"/>
+  <link href="{{ site.url }}/newsletter/"/>
+  <updated>{{ site.time | date_to_xmlschema }}</updated>
+  <id>{{ site.url }}/newsletter/</id>
+  <author>
+    <name>Kody Wildfeuer</name>
+  </author>
+  {% assign date_editions = site.posts | group_by_exp: "post", "post.date | date: '%Y-%m-%d'" %}
+  {% for edition in date_editions limit:20 %}
+    {% assign edition_size = edition.items | size %}
+    <entry>
+      <title>{{ edition.items.first.date | date: "%B %-d, %Y" }} — {{ edition_size }} {% if edition_size == 1 %}article{% else %}articles{% endif %}</title>
+      <link href="{{ site.url }}/newsletter/#edition-{{ edition.name }}"/>
+      <updated>{{ edition.items.first.date | date_to_xmlschema }}</updated>
+      <id>{{ site.url }}/newsletter/#edition-{{ edition.name }}</id>
+      <content type="html">
+        &lt;ol&gt;
+        {% for post in edition.items %}
+          &lt;li&gt;&lt;a href="{{ site.url }}{{ post.url }}"&gt;{{ post.title | xml_escape }}&lt;/a&gt; — {{ post.excerpt | strip_html | strip_newlines | truncatewords: 24 | xml_escape }}&lt;/li&gt;
+        {% endfor %}
+        &lt;/ol&gt;
+      </content>
+    </entry>
+  {% endfor %}
+</feed>

@@ -3390,9 +3390,44 @@ a.stat:hover {
   border-bottom: 1px solid var(--home-border);
 }
 
+.post-date-groups {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.post-date-group {
+  padding: 24px 0 8px;
+  border-top: 1px solid var(--home-border);
+  scroll-margin-top: 20px;
+}
+
+.post-date-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.post-date-heading time {
+  color: var(--home-ink);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.post-date-heading span {
+  color: var(--home-muted);
+  font-size: 12px;
+}
+
+.post-date-group .post-list {
+  border-bottom: 0;
+}
+
 .home-blog .post-list li {
   margin: 0;
-  padding: 18px 0;
+  padding: 12px 0;
   border-top: 1px solid var(--home-border);
 }
 
@@ -3407,6 +3442,223 @@ a.stat:hover {
   display: block;
   color: var(--home-muted);
   font-size: 13px;
+}
+
+/* Date-consolidated newsletter archive */
+.newsletter-archive {
+  margin: 20px 0 56px;
+}
+
+.newsletter-archive-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: end;
+  margin-bottom: 20px;
+}
+
+.newsletter-archive-header h2 {
+  margin-bottom: 8px;
+  font-size: clamp(30px, 5vw, 44px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.newsletter-archive-header > div > p:last-child {
+  max-width: 620px;
+  color: #606060;
+}
+
+.newsletter-archive-stats {
+  display: flex;
+  gap: 10px;
+}
+
+.newsletter-archive-stats div {
+  min-width: 92px;
+  padding: 11px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  background: #fff;
+  text-align: center;
+}
+
+.newsletter-archive-stats dt {
+  color: #666;
+  font-size: 11px;
+}
+
+.newsletter-archive-stats dd {
+  margin: 3px 0 0;
+  color: #333;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.newsletter-archive-controls {
+  margin-bottom: 14px;
+}
+
+.newsletter-archive-controls label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.newsletter-archive-controls input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d8d8d8;
+  border-radius: 7px;
+  color: inherit;
+  background: #fff;
+  font: inherit;
+}
+
+.newsletter-archive-controls input:focus-visible,
+.newsletter-edition summary:focus-visible,
+.newsletter-edition summary a:focus-visible {
+  outline: 3px solid #1f6feb;
+  outline-offset: 2px;
+}
+
+.newsletter-archive-controls p {
+  margin-top: 6px;
+  color: #666;
+  font-size: 12px;
+}
+
+.newsletter-edition {
+  margin-bottom: 10px;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  background: #fff;
+  scroll-margin-top: 20px;
+}
+
+.newsletter-edition[hidden],
+.newsletter-edition-item[hidden] {
+  display: none;
+}
+
+.newsletter-edition summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 16px;
+  cursor: pointer;
+}
+
+.newsletter-edition summary > span {
+  display: grid;
+  gap: 2px;
+}
+
+.newsletter-edition summary time {
+  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.newsletter-edition summary small {
+  color: #666;
+  font-size: 12px;
+}
+
+.newsletter-edition summary > a {
+  color: #1769c2;
+  font-weight: 700;
+}
+
+.newsletter-edition ol {
+  margin: 0;
+  padding: 0 16px 10px;
+  list-style: none;
+}
+
+.newsletter-edition-item {
+  padding: 14px 0;
+  border-top: 1px solid #e8e8e8;
+}
+
+.newsletter-edition-item h3 {
+  margin-bottom: 5px;
+  font-size: 19px;
+}
+
+.newsletter-edition-item h3 a {
+  color: #1769c2;
+}
+
+.newsletter-edition-item > p {
+  margin-bottom: 5px;
+  color: #606060;
+}
+
+.newsletter-edition-tags {
+  color: #666 !important;
+  font-size: 12px;
+}
+
+[data-theme="dark"] .newsletter-archive-header > div > p:last-child,
+[data-theme="dark"] .newsletter-archive-controls p,
+[data-theme="dark"] .newsletter-edition summary small,
+[data-theme="dark"] .newsletter-edition-item > p,
+[data-theme="dark"] .newsletter-edition-tags {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .newsletter-archive-stats div,
+[data-theme="dark"] .newsletter-edition,
+[data-theme="dark"] .newsletter-archive-controls input {
+  border-color: var(--border);
+  background: var(--card-bg);
+}
+
+[data-theme="dark"] .newsletter-archive-stats dt {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .newsletter-archive-stats dd,
+[data-theme="dark"] .newsletter-edition summary time {
+  color: var(--text);
+}
+
+[data-theme="dark"] .newsletter-edition-item {
+  border-top-color: var(--border);
+}
+
+[data-theme="dark"] .newsletter-edition summary > a,
+[data-theme="dark"] .newsletter-edition-item h3 a {
+  color: var(--link);
+}
+
+@media (max-width: 700px) {
+  .newsletter-archive-header {
+    grid-template-columns: 1fr;
+  }
+
+  .newsletter-archive-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .newsletter-archive-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .post-date-heading {
+    display: block;
+  }
+
+  .post-date-heading span {
+    display: block;
+    margin-top: 3px;
+  }
 }
 
 .home-blog .post-link {

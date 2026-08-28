@@ -32,6 +32,8 @@ WORK_SCRIPT = ROOT / "js" / "work.js"
 WORK_BUILDER = ROOT / "scripts" / "build_works.py"
 NEWSLETTER_PAGE = ROOT / "newsletter" / "index.html"
 NEWSLETTER_FORM = ROOT / "_includes" / "newsletter_form.html"
+NEWSLETTER_FEED = ROOT / "newsletter" / "feed.xml"
+NEWSLETTER_SCRIPT = ROOT / "js" / "newsletter.js"
 STAGING_WORKFLOW = ROOT / ".github" / "workflows" / "staging-canary.yml"
 CONFIG_FILE = ROOT / "_config.yml"
 README_FILE = ROOT / "README.md"
@@ -2784,13 +2786,9 @@ class SiteContentTests(unittest.TestCase):
             ),
         )
         self.assertIn("site.posts", home)
-        self.assertRegex(
-            home,
-            re.compile(
-                r"{%-?\s*for\s+\w+\s+in\s+site\.posts\b[^%]*-?%}",
-                re.IGNORECASE,
-            ),
-        )
+        self.assertIn("group_by_exp", home)
+        self.assertRegex(home, r"{%\s*for\s+edition\s+in\s+date_editions\s*%}")
+        self.assertRegex(home, r"{%\s*for\s+post\s+in\s+edition\.items\s*%}")
         self.assertNotIn("site.examples", home)
         self.assertNotIn("lwk-example-card", home)
 
@@ -3179,6 +3177,31 @@ class SiteContentTests(unittest.TestCase):
         self.assertEqual(front_matter.get("title"), "Newsletter")
         self.assertEqual(front_matter.get("permalink"), "/newsletter/")
         self.assertIn("#newsletter-signup", body)
+        self.assertIn("group_by_exp", body)
+        self.assertIn('class="newsletter-edition"', body)
+        self.assertIn('id="newsletter-archive-search"', body)
+        self.assertIn("/newsletter/feed.xml", body)
+        self.assertIn("/js/newsletter.js", body)
+
+        feed_front_matter, feed_body = parse_front_matter(NEWSLETTER_FEED)
+        self.assertEqual(feed_front_matter.get("layout"), "null")
+        self.assertEqual(feed_front_matter.get("permalink"), "/newsletter/feed.xml")
+        self.assertIn("group_by_exp", feed_body)
+        self.assertIn("edition.items", feed_body)
+        self.assertIn("limit:20", feed_body)
+
+        script = NEWSLETTER_SCRIPT.read_text(encoding="utf-8")
+        self.assertIn("filterEditions", script)
+        self.assertIn("newsletter-edition-item", script)
+        self.assertIn("disclosureState", script)
+        self.assertIn("wasSearching", script)
+        self.assertIn("aria-live", body)
+        self.assertIn('date: "%B %-d, %Y"', body)
+
+        home = HOME_PAGE.read_text(encoding="utf-8")
+        self.assertIn("post-date-groups", home)
+        self.assertIn("group_by_exp", home)
+        self.assertIn("edition.items", home)
 
     def test_public_work_catalog_is_searchable_and_data_driven(self):
         front_matter, body = parse_front_matter(WORK_PAGE)
