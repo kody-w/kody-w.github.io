@@ -6,7 +6,7 @@ tags: [engineering, plugins, architecture, browser, server]
 description: "When the same code needs to run in two different places — a server and a browser, a native binary and a sandbox — the instinct is two plugin ecosystems with two contracts. The better instinct is one contract with two formats. Here is what that costs and what it buys you."
 ---
 
-A common situation in any system that grows beyond one runtime: you have capabilities — tools, plugins, functions, agents, whatever the unit of extension is — and they need to run in more than one place. Maybe a server-side runtime where you have the full operating system, and a browser-side runtime where you have a sandbox. Maybe a native binary where you can do anything, and an embedded environment where you cannot. Maybe a Python-based daemon and a JavaScript-based device agent.
+A common situation arises in any system that grows beyond one runtime: you have capabilities — tools, plugins, functions, agents, whatever the unit of extension is — and they need to run in more than one place. Maybe a server-side runtime where you have the full operating system, and a browser-side runtime where you have a sandbox. Maybe a native binary where you can do anything, and an embedded environment where you cannot. Maybe a Python-based daemon and a JavaScript-based device agent.
 
 The instinct, in every system I have watched go through this transition, is to design two plugin systems. Server-side has its plugin format, browser-side has its plugin format, the two are loosely related but not actually compatible, and over time they diverge. A capability shipped for one cannot be used in the other without a rewrite.
 
@@ -52,7 +52,7 @@ In another source language (say, a sandbox-friendly Lisp), the same plugin is a 
       (format "Summarize in ~a words:~n~a" max_words thread))))
 ```
 
-Different syntax, different implementation, same contract. A host that knows how to load the first format invokes the plugin one way; a host that knows how to load the second format invokes it the other way. Both invocations end up calling `run` with `context` and `thread_id` and `max_words`, both end up returning a string. The metadata in both reads `name = "summarize_thread"`. The dispatcher routes by name. Plugins are interchangeable from the *host's* perspective even though their *source* differs.
+Different syntax, different implementation, same contract. A host that knows how to load the first format invokes the plugin one way; a host that knows how to load the second format invokes it the other way. Both invocations end up calling `run` with `context` and `thread_id` and `max_words`; both end up returning a string. In both, the metadata reads `name = "summarize_thread"`. The dispatcher routes by name. Plugins are interchangeable from the *host's* perspective even though their *source* differs.
 
 ## Why two source languages at all
 
@@ -84,7 +84,7 @@ There is a specific, recurring failure mode for "one contract, two formats" desi
 
 The metadata shape and the call signature are easy to keep aligned because they are explicit and small. The context surface is sneaky. As one runtime grows new features, its context tends to sprout new methods that the other runtime has not yet implemented. A plugin uses one of those methods. The plugin works in one runtime. It silently fails in the other. The dream of "the same plugin runs everywhere" turns into "the same plugin sort of runs everywhere if it doesn't touch any of the seventeen newer methods on the server's context that the browser's context hasn't gotten yet."
 
-The fix is to make the context surface *deliberate*. Treat it as an interface with a version. Whenever you add a method to one runtime's context, decide explicitly whether it will be added to the other runtime's context too. If yes, add it to both, increment the interface version. If no, declare it as runtime-specific in the documentation, and have the plugin metadata declare which runtime versions it requires. Plugins that need server-only capabilities fail fast in the browser, with a clear message ("requires context interface v6 with `subprocess_run`; this runtime exposes v5").
+The fix is to make the context surface *deliberate*. Treat it as an interface with a version. Whenever you add a method to one runtime's context, decide explicitly whether it will be added to the other runtime's context too. If yes, add it to both and increment the interface version. If no, declare it as runtime-specific in the documentation, and have the plugin metadata declare which runtime versions it requires. Plugins that need server-only capabilities fail fast in the browser, with a clear message ("requires context interface v6 with `subprocess_run`; this runtime exposes v5").
 
 Treating the context surface as an explicit interface is the discipline that keeps the contract honest. Without it, the two runtimes diverge in ways that are hard to detect and harder to undo.
 
@@ -108,7 +108,7 @@ A short list of things I'd build differently into a future version of this patte
 
 **Formalize the context interface with a version number.** As above, this is the place drift happens. Forcing the version into the plugin's metadata (`requires_context_version: 5`) makes incompatibilities loud.
 
-**Disagree about errors, agree about success.** The shape of a successful return is exactly the same in both runtimes (a JSON-serializable value). The shape of an error is allowed to differ slightly because each runtime's error model differs. But the *envelope* — the wrapper around either result or error — is shared, so callers don't have to know which runtime they're talking to.
+**Disagree about errors, agree about success.** The shape of a successful return is exactly the same in both runtimes (a JSON-serializable value). The shape of an error is allowed to differ slightly because each runtime's error model differs. But the *envelope* — the wrapper around either a result or an error — is shared, so callers don't have to know which runtime they're talking to.
 
 ## The lesson, abstracted
 

@@ -18,7 +18,7 @@ Python's threat model is "don't run code from people you don't trust." The whole
 
 When you let an AI agent emit Python, **the agent is effectively the untrusted party**. Even if the agent is well-intentioned (whatever that means for a probabilistic generator), its output is a probability distribution over strings. A prompt injection upstream, a training artifact, a hallucination, a creative interpretation of an instruction — any of these can produce `import os; os.system("rm -rf /")` in a surprisingly wide range of contexts.
 
-You can try to sandbox Python. People have been trying for thirty years. There's a literature of techniques: AST walking to reject imports, restricting `__builtins__`, monkey-patching dangerous attributes, running in a subprocess with seccomp, using PyPy's sandbox. **None of them are robust at the level you need.** Every CPython version has had a sandbox escape, and a determined or unlucky agent will find one. `__class__.__mro__`, `__subclasses__()`, `ctypes`, descriptor tricks, format-string exploits — the privilege-escalation surface is enormous.
+You can try to sandbox Python. People have been trying for thirty years. There's a body of literature on techniques: AST walking to reject imports, restricting `__builtins__`, monkey-patching dangerous attributes, running in a subprocess with seccomp, using PyPy's sandbox. **None of them are robust at the level you need.** Every CPython version has had a sandbox escape, and a determined or unlucky agent will find one. `__class__.__mro__`, `__subclasses__()`, `ctypes`, descriptor tricks, format-string exploits — the privilege-escalation surface is enormous.
 
 The language was not designed to be sandboxed. Trying to retrofit a sandbox is a losing battle, and the cost of losing is "your machine got rooted by a hallucinated import."
 
@@ -131,7 +131,7 @@ These are real costs. They're cheap compared to the cost of one Python sandbox e
 
 If your AI agent isn't generating code that gets evaluated — if it's just generating text, or making structured tool calls to a fixed set of pre-written tools — none of this applies. Use whatever language you want. The discussion above is specifically about systems where agents emit programs that the system then runs.
 
-The clearest signal you need a sandbox: any time you find yourself writing the words "the agent generates Python and we exec it." Stop. Replace with a tiny safe interpreter. Future-you will thank present-you.
+The clearest signal that you need a sandbox: any time you find yourself writing the words "the agent generates Python and we exec it." Stop. Replace it with a tiny safe interpreter. Future-you will thank present-you.
 
 ## The takeaway
 

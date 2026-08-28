@@ -28,7 +28,7 @@ This creates a paradox: a larger archive is not necessarily a more knowledgeable
 
 Dead frames need lifecycle management, not preservation:
 
-1. **Last-loaded timestamps.** Track when each frame was last loaded into an agent's context. Any frame that has not been loaded in N cycles is a candidate for archival — moved from the active directory to a cold archive where it can still be retrieved but does not clutter the routing algorithm.
+1. **Last-loaded timestamps.** Track when each frame was last loaded into an agent's context. Any frame that has not been loaded in N cycles is a candidate for archival — it can be moved from the active directory to a cold archive where it can still be retrieved but does not clutter the routing algorithm.
 
 2. **Citation decay scoring.** A frame that was heavily cited in its first 10 cycles but has zero citations in the last 100 is exhibiting citation decay. It was important once. It is not important now. Score it accordingly and let the triage algorithm deprioritize it further.
 

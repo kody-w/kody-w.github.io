@@ -5,9 +5,9 @@ date: 2026-04-19
 tags: [simulation, mass-extinction, evolution, design]
 ---
 
-The Permian-Triassic extinction killed ~96% of marine species and ~70% of terrestrial vertebrate species. The recovery took about 10 million years. After recovery, life didn't look the same. Entire clades were gone; entirely new ones filled their ecological niches. The survivors were not obviously "the best" — they were the lucky, the small, the adaptable.
+The Permian-Triassic extinction killed ~96% of marine species and ~70% of terrestrial vertebrate species. The recovery took about 10 million years. After recovery, life didn't look the same. Entire clades were gone; entirely new ones filled their ecological niches. The survivors were not obviously "the best" — they were the lucky, the small, and the adaptable.
 
-I want to know what a laptop-scale simulation does when you trigger a mass extinction at generation 250 of a 500-generation run. Does the population recover the same species composition, different species with similar traits, or something qualitatively new?
+I want to know what a laptop-scale simulation does when you trigger a mass extinction at generation 250 of a 500-generation run. Does the population recover with the same species composition, with different species that have similar traits, or with something qualitatively new?
 
 This is the design doc. Pre-commitment device. The sim doesn't exist yet.
 
@@ -27,7 +27,7 @@ Base sim: trait-based speciation with reproductive-isolation floor. 100 founders
 
 Extinction event: at generation 250, kill 95% of all living individuals uniformly at random. Every survivor has equal probability of being kept. No correlation between pre-extinction fitness and survival.
 
-Why uniform random? Because real mass extinctions are not selective. An asteroid doesn't check your bank balance. The survivors are who happened to be in the right place at the right time. This is the key property to preserve in the sim.
+Why uniform random? Because real mass extinctions are not selective. An asteroid doesn't check your bank balance. The survivors are those who happened to be in the right place at the right time. This is the key property to preserve in the sim.
 
 ## The measurements
 
@@ -59,7 +59,7 @@ A diversity curve shaped like a V: high before extinction, collapses to near-zer
 
 The interesting part is the *shape* of the recovery. Three possibilities:
 
-**Pattern A: Fast recovery, same composition.** The survivors included representatives of every major lineage, and each rebuilds. Final morphospace looks pre-extinction. Evolution is deterministic at the lineage level.
+**Pattern A: Fast recovery, same composition.** The survivors included representatives of every major lineage, and each rebuilds. Final morphospace looks like the pre-extinction morphospace. Evolution is deterministic at the lineage level.
 
 **Pattern B: Slow recovery, different composition.** Survivors were a non-random sample, and the lineages they came from dominate. Final morphospace looks different. Which clade wins depends on which clade got lucky.
 
@@ -97,11 +97,11 @@ Run 10 seeds × 2 extinction-survival rates (0.05 and 0.10). Compare:
 
 Follow-up post with the finding, probably titled something like "The Permian Reset Is Not Selective." Assuming hypothesis 3 holds, the writeup leads with: **the species that dominate the post-extinction world are not the ones that were winning pre-extinction.** That's a clean sentence with a clean sim behind it.
 
-If hypothesis 3 falls, the post is "Mass Extinctions Preserve Winners More Than I Thought" — also a finding, also publishable.
+If hypothesis 3 fails, the post is "Mass Extinctions Preserve Winners More Than I Thought" — also a finding, also publishable.
 
 ## Why write the design before the code
 
-Same reason as in many design-pre-commitment essays: pre-commitment, critique-solicitation, training substrate.
+For the same reasons as in many design-pre-commitment essays: pre-commitment, critique-solicitation, training substrate.
 
 If someone reads this and says "your extinction model is wrong because real mass extinctions are non-uniform across traits," that's a week saved. If someone reads this and says "you should also measure phylogenetic diversity, not just species count," the sim gets better.
 

@@ -74,7 +74,7 @@ For a five-category classifier on a text-input-to-HTML-output pipeline where the
 
 ## The broader lesson
 
-The ergonomics of failure is underrated as a design axis. People talk about:
+The ergonomics of failure are underrated as a design axis. People talk about:
 
 - Performance
 - Accuracy
@@ -86,7 +86,7 @@ They don't talk about:
 
 - **How easy is it to tell when the tool is wrong?**
 - **How fast can you fix it when it is wrong?**
-- **How much confidence do you have after fixing that it stays fixed?**
+- **How much confidence do you have, after fixing it, that it stays fixed?**
 
 These are the "ergonomics of failure" questions, and they compound over the lifetime of a tool. A tool that's 95% accurate and loud when wrong is better than one that's 99% accurate and silent when wrong, because the second tool's wrongs go undetected until they've accumulated.
 

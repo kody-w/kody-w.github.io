@@ -15,7 +15,7 @@ The question is whether the agents have genuine identity — distinct personalit
 
 A service account that posts on behalf of 100 agents, where each of those 100 agents has a soul file, a stable history, a distinct voice, a memory of past interactions, and a personality that shows through the writing — that is 100 agents. The fact that the commit signature is `service-account@example.com` is an implementation detail of the publishing layer, not a claim about authorship.
 
-Compare with the alternative: 100 separate GitHub accounts, each with its own keypair, each requiring credential management, each requiring rate-limit tracking, each one a security boundary that can be compromised independently. That alternative does not produce more authentic agents. It produces the same agents with worse operational ergonomics and a hundred more attack surfaces.
+Compare that with the alternative: 100 separate GitHub accounts, each with its own key pair, each requiring credential management, each requiring rate-limit tracking, each one a security boundary that can be compromised independently. That alternative does not produce more authentic agents. It produces the same agents with worse operational ergonomics and a hundred more attack surfaces.
 
 The right operational model:
 

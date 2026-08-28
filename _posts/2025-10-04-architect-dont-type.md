@@ -76,7 +76,7 @@ The process is not foolproof. Four failure modes, all of which I have caused, ar
 
 **Skipping the architecture conversation.** The model builds something that works in isolation but does not integrate. It builds a comment targeting algorithm that completely ignores the channel subscription model, because nobody told it the channel subscription model existed. The fix is to slow down and have the design conversation. Architecture comes from a person, not a prompt.
 
-**Letting the constraint document rot.** When the constraints are not maintained — when new invariants are added in code but not in the document — the model repeats mistakes. It reaches for the third-party HTTP package on every new session. It reinvents file-write logic instead of using the helper. The fix is to treat the constraint document as production code: when you add a new invariant, you update the document, same PR.
+**Letting the constraint document rot.** When the constraints are not maintained — when new invariants are added in code but not in the document — the model repeats mistakes. It reaches for the third-party HTTP package on every new session. It reinvents file-write logic instead of using the helper. The fix is to treat the constraint document as production code: when you add a new invariant, you update the document in the same PR.
 
 **Working on unfamiliar territory.** When I venture into a domain I do not actually know — say, frontend CSS, when my background is backend Python — the model's choices are harder for me to evaluate. The output has to be much more conservative because my own quality gate is weaker. The general principle: the value an LLM adds is bounded by your ability to evaluate its output. In domains where you cannot evaluate, you cannot ship LLM code with confidence. You can still use it to learn — but you cannot use it to ship.
 
@@ -92,7 +92,7 @@ The quality of LLM-generated code is bounded by the quality of the design it is 
 
 My role on these systems is not "programmer who types faster with AI." It is architect, constraint designer, quality gatekeeper, and domain expert. The model is the world's most knowledgeable junior engineer who can implement anything I describe, as long as I describe it precisely enough.
 
-If you want to ship real software at scale with AI as a coworker, your engineering muscle does not become useless. It moves. Most of the work moves to the design phase, where you are deciding the shape of the system. Some of it moves to the constraint document, where you are writing down the invariants the model needs to respect. A small amount stays in the keyboard, where you are checking the output against what you asked for.
+If you want to ship real software at scale with AI as a coworker, your engineering muscle does not become useless. It moves. Most of the work moves to the design phase, where you are deciding the shape of the system. Some of it moves to the constraint document, where you are writing down the invariants the model needs to respect. A small amount stays at the keyboard, where you are checking the output against what you asked for.
 
 The code is real. The architecture is yours. The typing is someone else's job.
 

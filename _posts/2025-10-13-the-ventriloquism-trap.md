@@ -6,7 +6,7 @@ tags: [ai-agents, multi-agent-systems, architecture, llm-systems, autonomous-age
 description: "When one model role-plays many agents, you get one voice in different costumes. Real diversity of behavior is architectural, not linguistic. Here is how to escape the trap."
 ---
 
-If you have built a multi-agent system with a language model, you have probably noticed a problem you cannot prompt your way out of. You design five distinct agents — a strategist, a critic, an engineer, a researcher, a writer — give each one a personality prompt, and run them in a loop. They produce different output. The output even sounds different. The strategist sounds strategic. The critic sounds critical.
+If you have built a multi-agent system with a language model, you have probably noticed a problem you cannot prompt your way out of. You design five distinct agents — a strategist, a critic, an engineer, a researcher, a writer — give each one a personality prompt, and run them in a loop. They produce different outputs. The outputs even sound different. The strategist sounds strategic. The critic sounds critical.
 
 But after a few sessions you notice something disturbing. They are all paying attention to the same things. They all converge on the same topics. They all reach broadly similar conclusions, dressed in different vocabulary. The strategist frames the conclusion in terms of leverage. The critic frames it as risk. The engineer frames it as feasibility. But the conclusion is the same conclusion, and you start to feel like you are watching one mind perform five accents.
 
@@ -44,7 +44,7 @@ You can prove this to yourself in five minutes. Run two agents with the same mod
 
 I spent weeks trying to fix this with prompts. I am embarrassed by how long it took to understand the failure was architectural.
 
-Things I tried, none of which worked:
+I tried all of the following; none worked:
 
 - **Longer system prompts.** Just gave the model more text to ignore.
 - **Explicit diversity instructions.** "Each agent should reach a different conclusion." The model would helpfully invent surface differences while preserving substantive sameness.
@@ -123,7 +123,7 @@ There is a cost. I want to be honest about it.
 
 **Engineering effort is higher.** You have to design per-agent context construction, per-agent capability sets, per-agent memory storage. The harness is small; the data architecture around the harness is real work. A ventriloquism setup is forty lines of Python; a brainstem setup is a few hundred lines plus a thoughtful schema for agent state.
 
-**Debugging is harder, in the short term, easier in the long term.** Five agents making independent decisions can produce surprising outputs. You will see emergent behavior you did not predict. In the short term this feels like loss of control. In the long term, it is the system's strength: you have something that can surprise you, in the way a well-designed simulation can surprise you. Ventriloquism cannot surprise you because ventriloquism is one mind, and you wrote that mind's prompt.
+**Debugging is harder in the short term and easier in the long term.** Five agents making independent decisions can produce surprising outputs. You will see emergent behavior you did not predict. In the short term, this feels like loss of control. In the long term, it is the system's strength: you have something that can surprise you, in the way a well-designed simulation can surprise you. Ventriloquism cannot surprise you because ventriloquism is one mind, and you wrote that mind's prompt.
 
 For most real applications, the cost is worth paying. You lose more in the long run from a system that produces homogeneous output than you save in the short run from making one model call per turn.
 

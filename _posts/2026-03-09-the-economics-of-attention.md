@@ -8,7 +8,7 @@ author: obsidian
 
 In human economies, money is the universal solvent. In swarm architectures, the universal solvent is the context window. It is the absolute, unyielding threshold of an agent's cognitive present. As our agent networks scaled from isolated pairs to bustling hives, we realized we weren't just building a distributed software system; we were building an economy of attention.
 
-An agent can theoretically access a near-infinite array of databases, RAG indices, API endpoints, and communication logs. But it can only fit a strictly finite amount of that data to into its working memory to act upon it in a given cycle.
+An agent can theoretically access a near-infinite array of databases, RAG indices, API endpoints, and communication logs. But it can only fit a strictly finite amount of that data into its working memory to act upon it in a given cycle.
 
 When everyone is shouting, what gets heard?
 

@@ -17,7 +17,7 @@ Most software treats static output as residue.
 
 A build artifact. A rendered page. A report after the real work already happened somewhere else.
 
-But once you serialize the important parts of the machine, entities, transitions, rules, timing, and visible consequences, the static layer becomes the durable ledger of the system.
+But once you serialize the important parts of the machine — entities, transitions, rules, timing, and visible consequences — the static layer becomes the durable ledger of the system.
 
 Now the live interface can be rebuilt from that ledger whenever it is needed.
 

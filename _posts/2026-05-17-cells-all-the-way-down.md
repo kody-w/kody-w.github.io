@@ -116,9 +116,9 @@ A cell can be an organism. An organism can be a cell of a larger organism. The p
                         └── ...
 ```
 
-From the Society's perspective, Organism A and Organism B are just two of its children. It routes between them the same way a single-organism's estate routes between industries. The interior structure of each child is opaque to the parent — and irrelevant, because the protocol is uniform.
+From the Society's perspective, Organism A and Organism B are just two of its children. It routes between them the same way an estate in a single organism routes between industries. The interior structure of each child is opaque to the parent — and irrelevant, because the protocol is uniform.
 
-This is the **scale-free property**. A 1-cell daemon, a 227-cell digital twin, a 10,000-cell federated empire are *the same system*. Only the depth differs. Single-celled life and multi-cellular life share the same biochemistry; they differ in how many cells coordinate and what specialization those cells have evolved.
+This is the **scale-free property**. A 1-cell daemon, a 227-cell digital twin, a 10,000-cell federated empire are *the same system*. Only the depth differs. Single-celled life and multicellular life share the same biochemistry; they differ in how many cells coordinate and what specialization those cells have evolved.
 
 ## What this means practically
 

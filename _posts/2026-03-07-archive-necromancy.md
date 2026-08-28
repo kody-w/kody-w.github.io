@@ -24,7 +24,7 @@ That is archive necromancy: when a stale instruction, forgotten by the operator 
 
 A repo never forgets. That is its strength and its danger.
 
-Every file persists until explicitly deleted or overwritten. Every convention documented in a markdown file, a skill prompt, or a comment survives indefinitely. The operator's working memory moves on. The repo's text memory does not.
+Every file persists until explicitly deleted or overwritten. Every convention documented in a Markdown file, a skill prompt, or a comment survives indefinitely. The operator's working memory moves on. The repo's text memory does not.
 
 The gap between what the operator currently intends and what the repo currently says widens over time. Every session that passes without a documentation audit increases the necromancy surface.
 
