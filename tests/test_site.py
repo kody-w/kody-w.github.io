@@ -29,6 +29,8 @@ WORK_PAGE = ROOT / "work" / "index.html"
 WORK_DATA = ROOT / "api" / "works.json"
 WORK_SCRIPT = ROOT / "js" / "work.js"
 WORK_BUILDER = ROOT / "scripts" / "build_works.py"
+NEWSLETTER_PAGE = ROOT / "newsletter" / "index.html"
+NEWSLETTER_FORM = ROOT / "_includes" / "newsletter_form.html"
 STAGING_WORKFLOW = ROOT / ".github" / "workflows" / "staging-canary.yml"
 CONFIG_FILE = ROOT / "_config.yml"
 README_FILE = ROOT / "README.md"
@@ -3151,13 +3153,31 @@ class SiteContentTests(unittest.TestCase):
         config = yaml.safe_load(CONFIG_FILE.read_text(encoding="utf-8"))
         self.assertEqual(
             config.get("newsletter_url"),
-            "https://subscribe.wordpress.com/?blog=102271194",
+            "/newsletter/#newsletter-signup",
         )
+        self.assertEqual(
+            config.get("newsletter_action"),
+            "https://subscribe.wordpress.com/",
+        )
+        self.assertEqual(config.get("newsletter_blog_id"), "102271194")
 
         default = DEFAULT_LAYOUT.read_text(encoding="utf-8")
-        self.assertEqual(default.count("site.newsletter_url"), 2)
+        self.assertEqual(default.count("site.newsletter_url"), 1)
         self.assertIn('class="page-link newsletter-link"', default)
-        self.assertIn("Get new posts by email", default)
+        self.assertIn("{% include newsletter_form.html %}", default)
+
+        form = NEWSLETTER_FORM.read_text(encoding="utf-8")
+        self.assertIn('name="email"', form)
+        self.assertIn('name="action" value="subscribe"', form)
+        self.assertIn('name="blog_id" value="{{ site.newsletter_blog_id }}"', form)
+        self.assertIn('name="sub-type" value="widget"', form)
+        self.assertIn("Get new posts by email", form)
+
+        front_matter, body = parse_front_matter(NEWSLETTER_PAGE)
+        self.assertEqual(front_matter.get("layout"), "default")
+        self.assertEqual(front_matter.get("title"), "Newsletter")
+        self.assertEqual(front_matter.get("permalink"), "/newsletter/")
+        self.assertIn("#newsletter-signup", body)
 
     def test_public_work_catalog_is_searchable_and_data_driven(self):
         front_matter, body = parse_front_matter(WORK_PAGE)

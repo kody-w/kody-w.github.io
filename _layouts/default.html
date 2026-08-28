@@ -78,7 +78,7 @@
 
 <footer class="site-footer">
   <div class="wrap">
-    <p class="newsletter-cta"><a href="{{ site.newsletter_url }}">Get new posts by email</a> through the KodyW newsletter.</p>
+    {% include newsletter_form.html %}
     <p class="copy-accessibility-note">Code examples and clearly labeled AI prompts are intentionally copyable. Paste prompts into your favorite AI and adapt them to your context.</p>
     <p>&copy; {{ site.time | date: '%Y' }} {{ site.title }}</p>
   </div>
