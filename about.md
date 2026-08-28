@@ -5,9 +5,9 @@ permalink: /about/
 ---
 
 <div class="stats">
-    <a href="#projects" class="stat">
+    <a href="/work/" class="stat">
         <div class="stat-value"><i class="fas fa-project-diagram"></i></div>
-        <div class="stat-label">Active Projects</div>
+        <div class="stat-label">Complete Work</div>
     </a>
     <a href="https://github.com/kody-w" target="_blank" class="stat">
         <div class="stat-value"><i class="fas fa-code"></i></div>

@@ -1,6 +1,7 @@
 title: Kody Wildfeuer
 description: AI agents, systems, and things I'm building.
 url: "https://kody-w.github.io"
+newsletter_url: "https://subscribe.wordpress.com/?blog=102271194"
 markdown: kramdown
 highlighter: rouge
 permalink: /:year/:month/:day/:title/

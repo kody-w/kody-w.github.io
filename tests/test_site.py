@@ -25,6 +25,10 @@ COPY_SCRIPT = ROOT / "js" / "copy-accessibility.js"
 HOME_PAGE = ROOT / "index.html"
 LEARN_HUB_PAGE = ROOT / "learnwithkody" / "index.html"
 LEARN_CATALOG_PAGE = ROOT / "learnwithkody" / "examples.html"
+WORK_PAGE = ROOT / "work" / "index.html"
+WORK_DATA = ROOT / "api" / "works.json"
+WORK_SCRIPT = ROOT / "js" / "work.js"
+WORK_BUILDER = ROOT / "scripts" / "build_works.py"
 STAGING_WORKFLOW = ROOT / ".github" / "workflows" / "staging-canary.yml"
 CONFIG_FILE = ROOT / "_config.yml"
 README_FILE = ROOT / "README.md"
@@ -3142,6 +3146,52 @@ class SiteContentTests(unittest.TestCase):
             self.assertIn("layout: default", source)
             self.assertNotIn("/js/copy-accessibility.js", source)
             self.assertNotIn("/js/lwk-prompt.js", source)
+
+    def test_newsletter_signup_uses_jetpack_subscriber_backend(self):
+        config = yaml.safe_load(CONFIG_FILE.read_text(encoding="utf-8"))
+        self.assertEqual(
+            config.get("newsletter_url"),
+            "https://subscribe.wordpress.com/?blog=102271194",
+        )
+
+        default = DEFAULT_LAYOUT.read_text(encoding="utf-8")
+        self.assertEqual(default.count("site.newsletter_url"), 2)
+        self.assertIn('class="page-link newsletter-link"', default)
+        self.assertIn("Get new posts by email", default)
+
+    def test_public_work_catalog_is_searchable_and_data_driven(self):
+        front_matter, body = parse_front_matter(WORK_PAGE)
+        self.assertEqual(front_matter.get("layout"), "default")
+        self.assertEqual(front_matter.get("title"), "Everything I've Built")
+        self.assertEqual(front_matter.get("permalink"), "/work/")
+        for marker in (
+            'id="work-featured"',
+            'id="work-search"',
+            'id="work-family"',
+            'id="work-activity"',
+            'id="work-catalog"',
+            "/js/work.js",
+            "Kody2day",
+        ):
+            self.assertIn(marker, body)
+
+        payload = json.loads(WORK_DATA.read_text(encoding="utf-8"))
+        self.assertEqual(payload.get("schema"), "kodyw-public-works/1.0")
+        self.assertEqual(payload.get("owner"), "kody-w")
+        self.assertGreaterEqual(payload["stats"]["public_source_repos"], 400)
+        self.assertGreaterEqual(payload["stats"]["featured"], 8)
+        self.assertEqual(payload["stats"]["public_source_repos"], len(payload["repos"]))
+        self.assertTrue(all(not repo.get("full_name", "").startswith("private/") for repo in payload["repos"]))
+
+        script = WORK_SCRIPT.read_text(encoding="utf-8")
+        self.assertIn('fetch("/api/works.json")', script)
+        self.assertIn("escapeHtml", script)
+        self.assertIn("safeUrl", script)
+        self.assertIn("visibleLimit", script)
+
+        builder = WORK_BUILDER.read_text(encoding="utf-8")
+        self.assertIn("if not repo.get(\"fork\")", builder)
+        self.assertIn("public_source_repos", builder)
 
     def test_prompt_include_is_accessible_inert_and_vendor_neutral(self):
         prompt = PROMPT_INCLUDE.read_text(encoding="utf-8")
