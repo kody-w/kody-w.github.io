@@ -5,7 +5,7 @@ date: 2026-04-18
 tags: [twins, autonomy, federation, sovereignty, second-brain, patterns]
 ---
 
-I have my own version of Reddit. My own version of Obsidian. My own version of Twitter. My own version of every platform I use seriously. They live in repositories I own, on infrastructure I control, with data structured the way *I* want it structured. They do everything the originals do. And — when I want to — they sync back to the originals.
+I have my own version of Reddit. My own version of Obsidian. My own version of Twitter. My own version of every platform I use seriously. They live in repositories I own, on infrastructure I control, with data structured the way *I* want. They do everything the originals do. And — when I want to — they sync back to the originals.
 
 I call this pattern **Autonomous Twins**. It's the recipe I keep reaching for when I want to actually *own* something instead of being a tenant in someone else's app.
 
@@ -19,7 +19,7 @@ This is fine for casual use. It's terrible if you actually have *opinions* about
 
 ## The Autonomous Twin pattern
 
-The fix isn't self-hosting. Self-hosting still gives you the platform's UI and the platform's data model — you just run them on your own VPS. You're still living in someone else's house, you just pay rent to yourself instead of them.
+The fix isn't self-hosting. Self-hosting still gives you the platform's UI and the platform's data model — you just run the platform on your own VPS. You're still living in someone else's house; you just pay rent to yourself instead of them.
 
 Autonomous Twins go further:
 
@@ -31,7 +31,7 @@ You end up with two things that look the same from the outside (the federation/s
 
 1. **Find the contract.** What's the minimum interface that makes something "be" a tweet, a card, a note, a post? Usually this is much smaller than you'd think. A tweet is just `{author, body, timestamp, parent_id?}`. A binder card is just `{seed, name, payload}`. A note is just `markdown + frontmatter`. The contract is the federation surface — what you have to emit so other peers (including the original platform) can read you.
 
-2. **Build your version satisfying only that contract.** Skip everything else. No replication of features you don't want. No respecting design choices you disagree with. The contract is the only constraint.
+2. **Build your version to satisfy only that contract.** Skip everything else. No replication of features you don't want. No need to respect design choices you disagree with. The contract is the only constraint.
 
 3. **Use your own infrastructure.** A GitHub repo. A folder of markdown files. A static site. Whatever you trust to outlast any specific app. The point is *ownership* — the data lives somewhere you control, in a format you understand, that you could rebuild from scratch if the original platform vanished tomorrow.
 
@@ -49,7 +49,7 @@ But because you built the twin, you get to add things the original vault tool do
 
 ### Another platform → your own social network
 
-A discussion-style platform is subreddits, posts, comments, votes. The "contract" is: there is a community, posts have titles and bodies, comments thread, votes count. You can run your own version. Use a code-host's discussion features as the post substrate, reactions as votes, an issues system as the action protocol. The data lives in flat JSON files in a repo you own.
+A discussion-style platform is subreddits, posts, comments, votes. The "contract" is: there is a community, posts have titles and bodies, comments thread, votes count. You can run your own version. Use a code host's discussion features as the post substrate, reactions as votes, an issues system as the action protocol. The data lives in flat JSON files in a repo you own.
 
 But because you built the twin, the inhabitants can be AI agents instead of humans. The moderation can be community self-governance via heuristic agents. The trending algorithm is yours. The post types include conversation modes the original platform never had. None of this required permission. If you ever want to cross-post a thread to the actual original platform, the contract is small enough that a bridge would be trivial.
 
@@ -75,7 +75,7 @@ Three things changed that make this pattern cheap:
 
 2. **AI agents fill in the gaps.** The hard part of being a sovereign used to be *operating* your sovereign world. AI agents handle moderation, content generation, governance, maintenance. You do not need twenty employees; you need twenty agents.
 
-3. **Markdown-as-data is real.** YAML frontmatter on a markdown file is a fully-fledged record. Note-taking apps, every static site generator, half of the indie-hacker world — they all already think this way. Your twin does not need a database; it needs a folder.
+3. **Markdown-as-data is real.** YAML frontmatter on a markdown file is a full-fledged record. Note-taking apps, every static site generator, half of the indie-hacker world — they all already think this way. Your twin does not need a database; it needs a folder.
 
 These three together turn a year of platform-building into a weekend of YAML and a script.
 

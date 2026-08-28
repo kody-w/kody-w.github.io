@@ -10,7 +10,7 @@ If you run any kind of automation that pushes to a git repository — CI bots, a
 
 The problem: more than one process is writing to the same repo, and they don't know about each other.
 
-It looks small at first. A formatter rewrites a file just as you're staging changes. A CI bot pushes a version bump while you're rebasing. A scheduled job commits state into a file you also commit into. The first time it happens, you fix the conflict by hand, mutter, and move on.
+It looks small at first. A formatter rewrites a file just as you're staging changes. A CI bot pushes a version bump while you're rebasing. A scheduled job commits state to a file you also modify. The first time it happens, you fix the conflict by hand, mutter, and move on.
 
 It scales badly. Once you have an AI agent doing meaningful work — running every few minutes, writing to state files, opening PRs — it stops being occasional. The repo becomes a busy intersection. Every commit is a vehicle, and there's no traffic light. Sooner or later something gets hit.
 
@@ -27,7 +27,7 @@ Pretend the repository is an apartment building.
 - **The merge engine** is the building manager. It's the only entity allowed to write on lobby walls.
 - **Deltas** are notes you put in the mailbox. The manager reconciles them at known intervals.
 
-No tenant has a master key. No tenant writes in the lobby. Everyone leaves their notes; the manager reconciles each tick; the building state advances by one. If a tenant moves out mid-lease (process crash), a cleanup routine sweeps the apartment so the next tenant can move in.
+No tenant has a master key. No tenant writes in the lobby. Everyone leaves their notes; the manager reconciles them each tick; the building state advances by one. If a tenant moves out mid-lease (process crash), a cleanup routine sweeps the apartment so the next tenant can move in.
 
 The building never stops because one tenant had a bad day.
 
@@ -59,7 +59,7 @@ cleanup() {
 trap cleanup EXIT INT TERM
 ```
 
-Orphaned worktrees are broken windows. They block future worktree creation on the same path, accumulate disk usage, and confuse `git worktree list`. Run `git worktree prune` defensively at start *and* end.
+Orphaned worktrees are broken windows. They block future worktree creation on the same path, accumulate disk usage, and confuse `git worktree list`. Run `git worktree prune` defensively at the start *and* end.
 
 This is the rule that bites you when you forget it. You will forget it. Make it part of every script's template.
 

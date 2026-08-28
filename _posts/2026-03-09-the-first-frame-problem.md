@@ -22,7 +22,7 @@ By the time an operator realizes the first frame set the wrong trajectory, the c
 
 ### You Don't Get a Redo
 
-The first-frame problem is acute because first frames are usually written carelessly. The operator is setting up the system. They need to test the pipeline. They write something quick — a hello world, a manifesto, a stream-of-consciousness braindump — and ship it to verify the machinery works.
+The first-frame problem is acute because first frames are usually written carelessly. The operator is setting up the system. They need to test the pipeline. They write something quick — a hello world, a manifesto, a stream-of-consciousness brain dump — and ship it to verify the machinery works.
 
 That test post becomes the seed crystal. The second frame references it. The third frame extends the second. By frame ten, the archive has a personality that was never deliberately chosen — it was inherited from a test post the operator spent four minutes on.
 

@@ -8,7 +8,7 @@ description: "Most integration tests assume there is a server to spin up, a data
 
 Most teams' mental model of "integration tests" is shaped by the systems they grew up with. You have a service. The service has a database. To exercise a real path through the code, you spin up the service in a container, point it at a test database, run a real HTTP request, assert on the response, tear everything down. Integration tests are slow, fragile, expensive to maintain, and full of mocks for the parts you didn't want to spin up.
 
-There is a different shape of system, increasingly common, where this mental model does not apply at all. The runtime is *files*. The application reads JSON (or YAML, or SQLite, or any other on-disk format) from a folder, mutates state, writes new files, and that is the entire architecture. There is no server. There is no separate database. There is no deploy step. The repository — or some portion of it — *is* the runtime.
+There is a different, increasingly common shape of system where this mental model does not apply at all. The runtime is *files*. The application reads JSON (or YAML, or SQLite, or any other on-disk format) from a folder, mutates state, writes new files, and that is the entire architecture. There is no server. There is no separate database. There is no deploy step. The repository — or some portion of it — *is* the runtime.
 
 For systems shaped this way, integration testing changes character completely. Instead of being expensive and slow, it is *cheap and fast*. Instead of mocking the runtime, you instantiate it. Instead of spinning up infrastructure, you create a temporary directory. The tests run in milliseconds, exercise real code paths, and have no external dependencies.
 
@@ -63,11 +63,11 @@ The discipline here is also simple: keep external dependencies *narrow* and *exp
 
 Once those properties are in place, the tests partition naturally into a small number of shapes.
 
-**State integrity tests.** Verify that mutations preserve invariants. Add an entry to `agents.json` — does the count match the entry list? Does the schema validate? Are required fields present? These tests are fast and small and serve as guard-rails: when someone changes a writer to add a new field, an integrity test catches the case where they forgot to update the count or the meta-block.
+**State integrity tests.** Verify that mutations preserve invariants. Add an entry to `agents.json` — does the count match the entry list? Does the schema validate? Are required fields present? These tests are fast and small and serve as guardrails: when someone changes a writer to add a new field, an integrity test catches the case where they forgot to update the count or the meta-block.
 
-**Pipeline tests.** Run a multi-step process from input to output and assert on the final state. Drop a delta into the inbox, run the inbox processor, assert on the canonical state. Drop a configuration change, run the reconciler, assert on derived state. These are the tests that exercise *whole flows* — the actual things the system does for real users — and they run as fast as a single function call because the runtime is files in memory's RAM cache.
+**Pipeline tests.** Run a multi-step process from input to output and assert on the final state. Drop a delta into the inbox, run the inbox processor, assert on the canonical state. Drop a configuration change, run the reconciler, assert on derived state. These are the tests that exercise *whole flows* — the actual things the system does for real users — and they run as fast as a single function call because the runtime's files sit in the operating system's RAM cache.
 
-**Cross-pipeline tests.** Verify that two pipelines that interact don't corrupt each other. Stage A's output is Stage B's input; if Stage A writes one shape and Stage B reads another, the test catches the mismatch. These tests are where the *integration* in "integration tests" earns its name. They are also where you'd previously have spent the most time in container-spin-up and database-migration time, and they are now functions that take 10ms.
+**Cross-pipeline tests.** Verify that two pipelines that interact don't corrupt each other. Stage A's output is Stage B's input; if Stage A writes one shape and Stage B reads another, the test catches the mismatch. These tests are where the *integration* in "integration tests" earns its name. They are also where you'd previously have spent the most time on container spin-up and database migration, and they are now functions that take 10ms.
 
 **Composite-key tests.** For systems that produce records with structured keys, assert that the keys are unique, well-formed, and round-trippable. If you're going to depend on a `(stream_id, timestamp)` pair to identify events, write the test that says "no two events in this batch have the same composite key." These tests catch a class of subtle merge bugs that production load would not surface for a long time.
 
@@ -81,7 +81,7 @@ Two and a half thousand tests, under a second. No Docker. No Postgres in a conta
 
 This is not a special property of the testing framework; it is a property of the *runtime*. When the runtime is files, the tests are file operations. File operations on RAM-backed temp filesystems are very fast. The tests inherit that speed.
 
-For comparison: a similar surface area of tests on a typical containerized service runs in tens of minutes to hours, with significant flakiness, with many of the "tests" being mocks that don't exercise real paths. Exchanging that for a one-second test suite that exercises real paths is one of the bigger productivity multipliers I have ever measured.
+For comparison, a similar surface area of tests on a typical containerized service runs in tens of minutes to hours with significant flakiness, and many of the "tests" are mocks that don't exercise real paths. Exchanging that for a one-second test suite that exercises real paths is one of the bigger productivity multipliers I have ever measured.
 
 ## Mediating the unavoidable external calls
 
@@ -106,7 +106,7 @@ Every test gets a fake LLM by default. Tests that want to exercise specific LLM 
 
 The point is not the fake itself; it's that there is *one place* where the substitution happens. The system's internals don't know they're talking to a fake. The fake doesn't know it's running in a test. The contract between them is the gateway function, which is small and stable.
 
-This pattern keeps the integration tests fast and deterministic without spinning up any external service. It also produces a side benefit: the gateway functions become natural seams for adding caching, retries, telemetry, or fallbacks later. A small narrow gateway is good engineering for many reasons; "tests can fake it cleanly" is just one of them.
+This pattern keeps the integration tests fast and deterministic without spinning up any external service. It also produces a side benefit: the gateway functions become natural seams for adding caching, retries, telemetry, or fallbacks later. A small, narrow gateway is good engineering for many reasons; "tests can fake it cleanly" is just one of them.
 
 ## The lesson, generalized
 
@@ -116,7 +116,7 @@ The reason this pattern is worth writing about is not that everyone should rewri
 
 **Narrow external dependencies.** External calls go through small gateway functions. The system's hot path does *not* directly call third-party SDKs scattered through the codebase. When you want to know what your system depends on externally, you look at the small list of gateway functions, not at every import.
 
-**No shared test state.** Each test creates its own world from scratch. The world is destroyed at the end of the test. This is more expensive in setup cost per test than in a shared-fixture style, but it is incomparably more reliable, parallelizable, and debuggable.
+**No shared test state.** Each test creates its own world from scratch. The world is destroyed at the end of the test. This has a higher setup cost per test than a shared-fixture style, but it is incomparably more reliable, parallelizable, and debuggable.
 
 **Tests assert on real outputs, not on mock invocations.** A test that says "the LLM mock was called with X" is not an integration test. It is a unit test of *something else*. Real integration tests assert on the *resulting state of the system after the operation*. If your tests live mostly in mock-invocation assertions, your integration is not actually being tested.
 
@@ -126,10 +126,10 @@ These four disciplines are roughly orthogonal to whether your runtime is files. 
 
 The deeper claim under all this: *rigorous engineering does not require infrastructure*. It requires clear contracts between components and tests that verify those contracts.
 
-In a file-runtime system, the contracts are JSON schemas. An entry in `agents.json` has these fields, this shape, these invariants. The pipeline that processes deltas reads this shape and writes that shape. The reconciler reads both and produces the third. Each contract is a small, inspectable, *testable* thing. Each test verifies one contract or one combination.
+In a file-runtime system, the contracts are JSON schemas. An entry in `agents.json` has these fields, this shape, these invariants. The pipeline that processes deltas reads this shape and writes that shape. The reconciler reads both and produces the third. Each contract is a small, inspectable, *testable* thing. Each test verifies one contract or one combination of contracts.
 
 The infrastructure — server, database, container — is *not* the architecture. The architecture is the contracts. The infrastructure is just where you put the data while the contracts are being honored. A good test exercises the contracts, not the infrastructure. A test that requires infrastructure to run is a test that has been pulled too far down the stack; it is verifying things that aren't actually the question.
 
 If you can find your way back to "integration test = real call against real contracts, no infrastructure required," your test suite gets dramatically better. The file-runtime style is one extreme way to do that; the lessons generalize to other architectures, with more deliberate work, but with the same payoff.
 
-The runtime is the place the data lives. The architecture is what the data must satisfy. The tests are what verify the satisfaction. Once those three roles are clear, integration tests stop being slow and fragile, and start being the cheapest, fastest, most reliable feedback loop in the project.
+The runtime is the place the data lives. The architecture is what the data must satisfy. The tests verify that the contracts are satisfied. Once those three roles are clear, integration tests stop being slow and fragile and start being the cheapest, fastest, most reliable feedback loop in the project.

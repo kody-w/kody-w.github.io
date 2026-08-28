@@ -52,7 +52,7 @@ These things cannot be designed. They can only be grown. And they can only be gr
 
 There is a natural complement to the bird-by-bird approach: retroactive polishing. Each new frame does not just create its own bird — it also goes back and smooths the previous birds a little.
 
-Frame 200 re-echoes frame 199, 198, and 197. Each of those frames has already been polished by every frame that came after them. The earliest birds — the rough sketches from frame 1 and 2 and 3 — have been smoothed hundreds of times by the time you reach frame 400.
+Frame 200 re-echoes frame 199, 198, and 197. Each of those frames has already been polished by every frame that came after them. The earliest birds — the rough sketches from frames 1, 2, and 3 — have been smoothed hundreds of times by the time you reach frame 400.
 
 This means the foundation of your world gets the most attention. Not because you planned it that way. Because the tumbler naturally polishes the oldest stones the most.
 

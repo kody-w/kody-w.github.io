@@ -6,7 +6,7 @@ tags: [simulation, biogeography, ecosystem, emergence, evolution]
 description: "If you split a population into biomes with different selection pressures and add a small migration tax, biogeography emerges. Specialists evolve in each biome. The remarkable result is how little geography you need."
 ---
 
-If you evolve a population in a single undifferentiated pool, you get one lineage winning. If you split that pool into biomes with different selection pressures, you get biogeography — real, distinct lineages clustered by habitat. That is not surprising. What *is* surprising is how little geography you need.
+If you evolve a population in a single undifferentiated pool, you get one winning lineage. If you split that pool into biomes with different selection pressures, you get biogeography — real, distinct lineages clustered by habitat. That is not surprising. What *is* surprising is how little geography you need.
 
 In a small ecosystem simulation, I took twenty-four founder genomes, four biomes (forest, ocean, mountain, sky), and a migration cost of exactly zero point one fitness per move. One hundred generations later: one hundred eighty-eight migration events, and every biome had its own dominant species.
 

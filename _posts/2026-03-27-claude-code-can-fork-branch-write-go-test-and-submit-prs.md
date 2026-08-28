@@ -21,7 +21,7 @@ I want to break down exactly what Claude Code did, step by step, because each st
 
 Claude Code has access to the `gh` CLI. That means it can interact with GitHub's full API surface — repos, issues, PRs, releases, all of it. Forking a repo is a single command: `gh repo fork steveyegge/gastown`.
 
-The fork `kody-w/gastown` appeared on January 26, 2026. From that moment, Claude Code had a writable copy of the entire Gastown codebase under my account. It could clone it, modify it, and push changes — all using my GitHub credentials that were already configured on my machine.
+The fork `kody-w/gastown` appeared on January 26, 2026. From that moment, Claude Code had a writable copy of the entire Gastown codebase under my account. It could clone it, modify it, and push changes — all with my GitHub credentials, which were already configured on my machine.
 
 This is the step that makes everything else possible. Forking is the gateway to the open source contribution workflow: fork, branch, change, push, PR. Claude Code executed the entire workflow autonomously.
 

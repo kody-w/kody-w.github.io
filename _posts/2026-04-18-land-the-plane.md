@@ -35,7 +35,7 @@ The mandatory checklist at the end of every work session, in order:
 
 7. **Hand off.** Write a short note about state — what's done, what's next, where things sit. Leave breadcrumbs for the next session.
 
-The thing that makes this discipline hard is that step 4 is the most boring step. The interesting work happened in steps before that. The instinct is to move on as soon as the interesting work is done. The instinct is wrong. The interesting work doesn't exist as a real artifact until it's landed.
+The thing that makes this discipline hard is that step 4 is the most boring step. The interesting work happened in the steps before it. The instinct is to move on as soon as the interesting work is done. The instinct is wrong. The interesting work doesn't exist as a real artifact until it's landed.
 
 A few common failure modes that landing-the-plane discipline catches:
 

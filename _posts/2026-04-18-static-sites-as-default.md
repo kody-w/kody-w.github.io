@@ -9,7 +9,7 @@ If you are building infrastructure for yourself — a personal site, a personal 
 
 The reasoning is about lifecycle costs, not capability. Static sites can do almost anything a dynamic site can do. The dynamic side just costs more, in dimensions that compound over years.
 
-**Hosting cost.** A static site on GitHub Pages, Netlify, Cloudflare Pages, or any CDN is free or close to free at any scale a personal project will ever reach. A dynamic site requires a server. A server requires a billing relationship. A billing relationship requires attention — credit card updates, invoice review, capacity planning. Over a decade, the cumulative attention is significant. Static sites deduct this cost to zero.
+**Hosting cost.** A static site on GitHub Pages, Netlify, Cloudflare Pages, or any CDN is free or close to free at any scale a personal project will ever reach. A dynamic site requires a server. A server requires a billing relationship. A billing relationship requires attention — credit card updates, invoice review, capacity planning. Over a decade, the cumulative attention is significant. Static sites reduce this cost to zero.
 
 **Operational cost.** A static site does not crash. It does not run out of memory. It does not need restarts. It does not have a process to monitor. Its uptime is the uptime of the CDN, which is higher than any uptime you can engineer yourself. A dynamic site requires you to be on call for it, even if quietly. Static sites delete the on-call burden entirely.
 

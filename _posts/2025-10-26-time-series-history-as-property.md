@@ -12,7 +12,7 @@ description: "Pixels are infinite. Domains are policy-scarce. NFTs are sentiment
 
 Every attempt at digital scarcity has been a disappointment in roughly the same way. Domain names were scarce, until ICANN added new top-level domains. NFT land parcels in metaverse platforms were scarce, until the platform decided to mint more, or until everyone stopped caring about that platform. Cryptocurrencies were scarce by protocol, but the *number* of cryptocurrencies wasn't, and a fungible-with-itself token whose total supply is 21 million is not the same thing as a scarce *resource* — there are now ten thousand of them, each making the same claim.
 
-The core issue is that all of these are **policy-scarce**. The supply is fixed by a rule, and the rule is fragile. One governance vote, one platform exit, one cultural shift and the scarcity evaporates. You don't own a scarce thing; you own a thing whose scarcity is a current opinion.
+The core issue is that all of these are **policy-scarce**. The supply is fixed by a rule, and the rule is fragile. One governance vote, one platform exit, one cultural shift, and the scarcity evaporates. You don't own a scarce thing; you own a thing whose scarcity is a current opinion.
 
 I've been working with a different kind of digital data over the last year, and I've come to think it's the only digital substance that is genuinely scarce — not by rule, but structurally. It can't be artificially inflated. It can't be retroactively faked. And it has the strange property that it only ever increases in value over time without anyone deciding it should.
 
@@ -58,7 +58,7 @@ And the value is monotonic. A frame's value tomorrow is at least its value today
 
 Here's why this matters beyond simulations: every system that produces sequential state changes is producing frames, whether or not anyone is treating them as such.
 
-**A building.** Temperature, humidity, occupancy, energy consumption, structural strain, access events. Every cluster of readings per minute is a frame delta. A building running for ten years has five million frames. Some of those frames are catastrophe precursors. Most building management systems don't store the data this way; they keep the latest reading, alert when a threshold is crossed, and discard the rest. The frames exist in the world; they just aren't preserved as references can attach to.
+**A building.** Temperature, humidity, occupancy, energy consumption, structural strain, access events. Every cluster of readings per minute is a frame delta. A building running for ten years has five million frames. Some of those frames are catastrophe precursors. Most building management systems don't store the data this way; they keep the latest reading, alert when a threshold is crossed, and discard the rest. The frames exist in the world; they just aren't preserved in a form to which references can attach.
 
 **A patient.** Glucose monitor every five minutes. Heart rate every second. Sleep stages, activity, medication adherence. Five years of monitoring is several million frames. The frame where variability inflected — eighteen months before the kidney decline — is now retrospectively the most valuable point in the entire chart. Every subsequent decision depends on it. No EHR is storing this in a way that preserves the dependency graph.
 
@@ -92,7 +92,7 @@ In physical real estate, appraisal is an art. Two qualified appraisers can disag
 
 In frame real estate, appraisal is a computation: count the downstream references, weighted however you want. Two programs running the same scan get the same number. The metric is auditable. It's deterministic. It points to specific events in a public log.
 
-You can refine it — recent references count more, self-references discount, second-order references (a reference to a reference) decay by some factor — but the base measure is clear. **A frame's value is its reference count.** That's a computable function over the history.
+You can refine it — recent references count more, self-references receive a discount, second-order references (a reference to a reference) decay by some factor — but the base measure is clear. **A frame's value is its reference count.** That's a computable function over the history.
 
 This makes frame value uniquely *legible* in a way other digital asset values aren't. An NFT's value is whatever the next buyer will pay. A token's value is a function of market dynamics. A frame's value is a function of its causal position in a verifiable record. You can prove it by pointing to the log.
 

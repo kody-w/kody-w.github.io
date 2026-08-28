@@ -137,7 +137,7 @@ A reasonable rule for the two-tier gate, in production:
 - Tier 2 should flag under 5% of items in steady state. If it flags more, your moderator queue will overflow and the workflow will collapse. Tighten the prompt or accept a faster cadence of moderator review.
 - Tier 2 should block under 0.5% of items. If it blocks more, your prompt is too aggressive and you are silencing real content.
 
-These numbers are starting points. Your domain will shift them. The shape — Tier 1 hits rare, Tier 2 flags occasional, Tier 2 blocks rare — is what you want to engineer toward.
+These numbers are starting points. Your domain will shift them. The shape — Tier 1 hits rarely, Tier 2 flags occasionally, Tier 2 blocks rarely — is what you want to engineer toward.
 
 ## The pattern beyond content moderation
 
@@ -148,7 +148,7 @@ Content moderation is the most obvious application of the two-tier gate. The pat
 - **Code review.** Tier 1 linter and static analysis. Tier 2 LLM review on what survives.
 - **Resource scheduling.** Tier 1 hard quota check. Tier 2 model-based prioritization of what fits.
 
-The architecture is the same. Cheap layer eliminates the obvious cases. Expensive layer handles the rest. The two layers have different failure modes and different cost profiles, and using both gets you better behavior than either alone.
+The architecture is the same. The cheap layer eliminates the obvious cases. The expensive layer handles the rest. The two layers have different failure modes and different cost profiles, and using both gets you better behavior than either alone.
 
 ## The summary, made dogmatic
 

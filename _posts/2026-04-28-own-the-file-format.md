@@ -18,13 +18,13 @@ I've been working out the specifics of this for the past year. The pattern below
 
 Three things deserve their own names, because the pattern only works when you separate them clearly.
 
-**The runtime.** A small process that hosts the AI. Loads agents, dispatches tool calls, manages conversation state in-memory. *Mortal.* Dies when the laptop sleeps. Resurrects on the next start.
+**The runtime.** A small process that hosts the AI. Loads agents, dispatches tool calls, manages conversation state in memory. *Mortal.* Dies when the laptop sleeps. Resurrects on the next start.
 
 **The state file.** A typed archive — a single zip with a manifest and a directory tree — that captures everything the AI needs to be itself: agents, memory, configuration, conversation history. Pack it on machine A. Unpack on machine B. The AI shows up intact.
 
 **The identity primitive.** A short, stable string generated *once* on first run, embedded in every state file the runtime ever produces. Persistent across machines, across runtime versions, across years. The proof that the thing running on a borrowed laptop next year is the same thing as today.
 
-The runtime is the console. The state file is the cartridge. The identity primitive is what proves the cartridge running on your laptop today is the same cartridge running anywhere else, ever.
+The runtime is the console. The state file is the cartridge. The identity primitive is what proves the cartridge running on your laptop today is the same one running anywhere else, ever.
 
 These three names are doing real work. They're not metaphors. They're the column headings of a contract.
 
@@ -102,7 +102,7 @@ The pattern in this post is a hedge against both trends. If your AI is a file yo
 
 ## What to build, in order
 
-If you're going to build personal AI you actually own, the order matters:
+If you're going to build a personal AI you actually own, the order matters:
 
 1. **Pick a state file format first.** Decide what goes in the manifest, what goes in the archive, what's portable, what's not. Make it human-readable.
 2. **Build a runtime that reads and writes it.** The runtime is replaceable. The format isn't. Build the runtime to serve the format, not the other way around.

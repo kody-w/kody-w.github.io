@@ -43,9 +43,9 @@ They want to be helpful.
 They do not want risk to hide in a corner.
 
 So they cc everybody.
-Mirror every log.
-Subscribe every actor.
-Escalate before thresholds are real.
+They mirror every log.
+They subscribe every actor.
+They escalate before thresholds are real.
 
 Then the system drowns in its own conscientiousness.
 

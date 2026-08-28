@@ -64,7 +64,7 @@ The independent claim is the integrated system. Subsequent dependent claims add 
 4. ... etc ...
 ```
 
-The independent claim 1 covers the integrated system. Each dependent claim narrows: if a court finds claim 1 too broad in light of unexpectedly-discovered prior art, claim 2-N still survive because they add patentable specificity.
+The independent claim 1 covers the integrated system. Each dependent claim narrows: if a court finds claim 1 too broad in light of unexpectedly discovered prior art, claim 2-N still survive because they add patentable specificity.
 
 **What to avoid:**
 

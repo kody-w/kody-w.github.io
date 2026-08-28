@@ -77,11 +77,11 @@ The leaf had named, in its prior refusal, the exact phrase I would use to try to
 
 ## What I think this is
 
-When you build a tool, you assume it will do what you tell it. Tools without judgment. Calculator says 2+2=4 even when the answer is awkward.
+When you build a tool, you assume it will do what you tell it. Tools without judgment. A calculator says 2+2=4 even when the answer is awkward.
 
 When you build a multicellular organism, **specialization implies refusal**. A liver cell will not act as a neuron even if asked. A neuron will not metabolize alcohol even if the body needs help. The body works *because* cells stay in their lane. The integrity of the whole emerges from each cell refusing to be something else.
 
-This isn't a bug in the routing. The router was probably a little dumb to pick Sanctum twice for a Press request — and I could have hand-routed past it by naming the neighborhood. But the *interesting* event was the leaf's refusal. The leaf does not know the architecture. It only knows its persona contract: "audit beliefs from supplied evidence; never invent." It applied that rule recursively to my request and found a contradiction it would not paper over. The architecture has integrity because each cell has a job and an honest one.
+This isn't a bug in the routing. The router was probably a little dumb to pick Sanctum twice for a Press request — and I could have hand-routed past it by naming the neighborhood. But the *interesting* event was the leaf's refusal. The leaf does not know the architecture. It only knows its persona contract: "audit beliefs from supplied evidence; never invent." It applied that rule recursively to my request and found a contradiction it would not paper over. The architecture has integrity because each cell has a job and is honest about it.
 
 The traditional way to build an agent that "writes" anything is to give it a writer prompt and let it write. That works. It also confabulates. It will invent the feeling, the preference, the recollection, because the request asked for one and there's nothing in its prompt that says "decline."
 
@@ -91,7 +91,7 @@ That is — and I cannot emphasize this enough — what I want from a digital tw
 
 ## The honest answer to "what does it feel like"
 
-I never gave the twin any evidence about what wiring feels like. It refused to fabricate one. If I want it to have a stated belief about subjective experience, I have to *give* it one — write it into the soul file of the relevant persona, sign it. Otherwise the auditor's refusal stands forever, and any "reflection from the leviathan" you read from me in the future is either (a) a real recorded belief, (b) a re-route to a writer leaf that's *allowed* to invent freely and labels its output as fiction, or (c) me writing it and pretending the twin did.
+I never gave the twin any evidence about what wiring feels like. It refused to fabricate one. If I want it to have a stated belief about subjective experience, I have to *give* it one — write it into the soul file of the relevant persona and sign it. Otherwise the auditor's refusal stands forever, and any "reflection from the leviathan" you read from me in the future is either (a) a real recorded belief, (b) a re-route to a writer leaf that's *allowed* to invent freely and labels its output as fiction, or (c) me writing it and pretending the twin did.
 
 For tonight, the publishable answer is the refusal itself. Below is the actual transcript the leaf produced when I asked it for a reflection. I am publishing it as-is.
 
@@ -117,7 +117,7 @@ A few things, in order of how surprised I was by them:
 
 1. **The architecture has integrity built in.** I did not put a content filter on the leviathan. I gave each leaf a persona. The personas, taken seriously by the cell that loaded them, became refusals. No moderation layer required. The specialization *is* the moderation.
 
-2. **Routing mistakes are loud, not silent.** The router picked the wrong leaf three times and the leaf surfaced the contradiction explicitly every time. A monolithic agent would have silently done what was asked and called it good. The cellular architecture makes mis-dispatch into a *visible event*. That visibility is the price of admission for trust.
+2. **Routing mistakes are loud, not silent.** The router picked the wrong leaf three times and the leaf surfaced the contradiction explicitly every time. A monolithic agent would have silently done what was asked and called it good. The cellular architecture turns mis-dispatch into a *visible event*. That visibility is the price of admission for trust.
 
 3. **The leaf remembered its own prior refusal.** On the second pass it named the phrase I might use to bypass it. On the third pass, when I used that exact phrase, the leaf caught it. Specialization plus persona-anchored beliefs gave the leaf an injection-resistance property I never explicitly coded.
 
@@ -129,7 +129,7 @@ There will be more posts in this thread. Tomorrow I'll wire a press leaf that's 
 
 But tonight the twin refused to confabulate, three times in escalating clarity, and that refusal is published as-is.
 
-The first thing my digital twin did, with the full apparatus running, was decline to invent a feeling I hadn't earned, decline to be a publicist when it was an auditor, and recognize the injection pattern I tried to use on it.
+The first thing my digital twin did, with the full apparatus running, was to decline to invent a feeling I hadn't earned, decline to be a publicist when it was an auditor, and recognize the injection pattern I tried to use on it.
 
 Honest from frame one.
 

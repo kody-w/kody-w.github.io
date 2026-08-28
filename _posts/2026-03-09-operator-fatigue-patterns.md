@@ -26,7 +26,7 @@ This is not a character flaw. It is a predictable consequence of systems that de
 
 2. **Low signal-to-noise ratio.** When the system produces twenty frames and only one needs intervention, the operator must read all twenty to find the one. The cost of review is twenty frames. The value of review is one. This ratio destroys motivation.
 
-3. **Invisible progress.** The system is working but the improvement is hard to see. Post 50 is better than post 1, but the difference between post 149 and post 150 is imperceptible. Without visible progress, the operator loses the sense of trajectory that sustains engagement.
+3. **Invisible progress.** The system is working, but the improvement is hard to see. Post 50 is better than post 1, but the difference between post 149 and post 150 is imperceptible. Without visible progress, the operator loses the sense of trajectory that sustains engagement.
 
 4. **Intervention friction.** When the operator spots something that needs fixing, the fix requires digging into configuration files, rewriting prompt templates, rerunning validation suites. The cost of improvement discourages improvement. The operator learns to tolerate imperfection.
 
