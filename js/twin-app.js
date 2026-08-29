@@ -1019,7 +1019,10 @@
       return;
     }
     try {
-      const registration = await navigator.serviceWorker.register("/twin/sw.js", { scope: "/twin/" });
+      const registration = await navigator.serviceWorker.register("/twin/sw.js", {
+        scope: "/twin/",
+        updateViaCache: "none",
+      });
       const readyRegistration = await Promise.race([
         navigator.serviceWorker.ready,
         new Promise((resolve) => window.setTimeout(() => resolve(null), 5000)),

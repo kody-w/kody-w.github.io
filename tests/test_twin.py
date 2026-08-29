@@ -258,6 +258,11 @@ class TwinAcceptanceTest(unittest.TestCase):
         self.assertIn('id="twin-results"', page)
         self.assertIn('id="twin-corpus-breakdown"', page)
         self.assertIn("Example verified citation", page)
+        document_release = re.search(
+            r'data-twin-document-sha256="([0-9a-f]{64})"',
+            page,
+        )
+        self.assertIsNotNone(document_release)
         self.assertIn('id="twin-source-dialog"', page)
         self.assertIn('id="twin-live-status"', page)
         self.assertIn('aria-live="polite"', page)
@@ -268,6 +273,7 @@ class TwinAcceptanceTest(unittest.TestCase):
         self.assertNotIn("innerHTML", page)
         self.assertIn(corpus["corpusSha256"], app)
         self.assertIn(corpus["sourceManifestSha256"], app)
+        self.assertIn('updateViaCache: "none"', app)
 
         layout = DEFAULT_LAYOUT.read_text()
         self.assertIn("page.offline_shell", layout)
@@ -279,12 +285,32 @@ class TwinAcceptanceTest(unittest.TestCase):
         corpus = json.loads(CORPUS.read_text())
         shell_manifest_bytes = SHELL_MANIFEST.read_bytes()
         shell_manifest = json.loads(shell_manifest_bytes)
+        document_release = re.search(
+            r'data-twin-document-sha256="([0-9a-f]{64})"',
+            PAGE.read_text(),
+        )
+        self.assertIsNotNone(document_release)
         self.assertIn("kody-twin-", worker)
         self.assertIn("/api/twin-corpus.json", worker)
         self.assertIn(corpus["corpusSha256"], worker)
         self.assertIn(corpus["sourceManifestSha256"], worker)
         self.assertEqual(shell_manifest["schema"], "kodyw-twin-shell/1.0")
         self.assertEqual(shell_manifest["sourceSha256"], twin_shell_hash())
+        required_document_text = set(
+            shell_manifest["documents"][0]["requiredText"]
+        )
+        self.assertIn(
+            f'data-twin-document-sha256="{document_release.group(1)}"',
+            required_document_text,
+        )
+        for marker in (
+            'id="public-twin"',
+            'id="twin-question-form"',
+            'id="twin-question"',
+            'id="twin-results"',
+            "/js/twin-app.js",
+        ):
+            self.assertIn(marker, required_document_text)
         self.assertIn(hashlib.sha256(shell_manifest_bytes).hexdigest(), worker)
         self.assertIn("/twin/shell-manifest.json", worker)
         self.assertIn(
@@ -371,6 +397,7 @@ class TwinAcceptanceTest(unittest.TestCase):
             "api/works.json",
             "api/twin-corpus.json",
             "js/twin-app.js",
+            "twin/index.html",
             "twin/shell-manifest.json",
             "twin/sw.js",
         ):

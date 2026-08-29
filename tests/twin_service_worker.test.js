@@ -33,6 +33,28 @@ const assetFiles = {
   '/apple-touch-icon.png': 'apple-touch-icon.png'
 };
 
+function validDocumentResponse(content = '') {
+  const marker = shellManifest.documents[0].requiredText.find((value) =>
+    value.startsWith('data-twin-document-sha256=')
+  );
+  return new Response(
+    '<!doctype html>' +
+      '<meta http-equiv="Content-Security-Policy">' +
+      `<main id="public-twin" ${marker}>` +
+      '<form id="twin-question-form">' +
+      '<textarea id="twin-question"></textarea>' +
+      '<div id="twin-results"></div>' +
+      '</form>' +
+      content +
+      '</main>' +
+      '<script src="/js/twin-app.js"></script>',
+    {
+      status: 200,
+      headers: { 'Content-Type': 'text/html' }
+    }
+  );
+}
+
 function defaultShellResponse(pathname) {
   if (pathname === '/twin/shell-manifest.json') {
     return new Response(
@@ -44,13 +66,7 @@ function defaultShellResponse(pathname) {
     );
   }
   if (pathname === '/twin/' || pathname === '/twin/index.html') {
-    return new Response(
-      '<!doctype html><meta http-equiv="Content-Security-Policy"><main id="public-twin"></main>',
-      {
-        status: 200,
-        headers: { 'Content-Type': 'text/html' }
-      }
-    );
+    return validDocumentResponse();
   }
   const relative = assetFiles[pathname];
   if (!relative) {
@@ -320,6 +336,30 @@ test('HTML fallbacks and tampered bytes cannot install as shell assets', async (
   }
 });
 
+test('generic HTML without the release document contract cannot install', async () => {
+  const generic = new Response(
+    '<!doctype html><meta http-equiv="Content-Security-Policy"><main id="public-twin"></main>',
+    {
+      status: 200,
+      headers: { 'Content-Type': 'text/html' }
+    }
+  );
+  const runtime = loadWorker(
+    new Response(JSON.stringify(corpus), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    }),
+    {
+      responses: {
+        '/twin/': generic,
+        '/twin/index.html': generic
+      }
+    }
+  );
+  await assert.rejects(runInstall(runtime));
+  assert.equal(runtime.state.skipWaiting, 0);
+});
+
 test('successful root navigation cannot mutate the installed release cache', async () => {
   const runtime = loadWorker(
     new Response(JSON.stringify(corpus), {
@@ -328,13 +368,7 @@ test('successful root navigation cannot mutate the installed release cache', asy
     }),
     {
       responses: {
-        '/twin/': new Response(
-          '<!doctype html><meta http-equiv="Content-Security-Policy"><main id="public-twin">new network body</main>',
-          {
-            status: 200,
-            headers: { 'Content-Type': 'text/html' }
-          }
-        )
+        '/twin/': validDocumentResponse('new network body')
       }
     }
   );

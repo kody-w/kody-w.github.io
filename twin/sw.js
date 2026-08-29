@@ -8,7 +8,7 @@ var BASELINE_SOURCE_MANIFEST_SHA256 =
 var BASELINE_CORPUS_SHA256 =
   '0d6badcd9364761804d7e77f2f5695185ed8e8254a80650f9d57a09695dd7f9d';
 var SHELL_RELEASE_SHA256 =
-  '0462099a4ce7f5f4a3dfad1deef31a2743ebd59340c3b81efdf1d7b0b9522b4d';
+  'f5cd34048c9aa4fbc0d4438d1212e744a3e9af35175ccf93bd2decc215f9d5cb';
 var SHELL_CACHE = 'kody-twin-shell-' + SHELL_RELEASE_SHA256.slice(0, 16);
 var CORPUS_CACHE = 'kody-twin-corpus-' + BASELINE_CORPUS_SHA256.slice(0, 16);
 var SHELL_MANIFEST_PATH = '/twin/shell-manifest.json';

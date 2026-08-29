@@ -102,7 +102,7 @@ test('reset fails rather than leaving stale durable state to resurrect', () => {
   ]);
 });
 
-test('reset clears stale durable state when removal remains available', () => {
+test('reset requires a durable tombstone even when removal remains available', () => {
   const behavior = {};
   const storage = memoryStorage(behavior);
   const store = TwinState.createStore({ storage });
@@ -115,11 +115,13 @@ test('reset clears stale durable state when removal remains available', () => {
     state.savedQuestions.push({ question: 'memory-only question' });
   });
   assert.equal(store.storageMode(), 'memory');
-  assert.doesNotThrow(() => store.reset());
+  assert.throws(() => store.reset(), /generation|persist|storage|reset/i);
 
   behavior.failSet = false;
   const restarted = TwinState.createStore({ storage });
-  assert.deepEqual(restarted.get().savedQuestions, []);
+  assert.deepEqual(restarted.get().savedQuestions, [
+    { question: 'persisted question' }
+  ]);
 });
 
 test('unreadable storage with no-op removal cannot verify a durable reset', () => {
@@ -144,4 +146,31 @@ test('unreadable storage with no-op removal cannot verify a durable reset', () =
   assert.deepEqual(restarted.get().savedQuestions, [
     { question: 'must not resurrect' }
   ]);
+});
+
+test('reset tombstone blocks cross-tab resurrection', () => {
+  const storage = memoryStorage({});
+  const first = TwinState.createStore({ storage });
+  const staleTab = TwinState.createStore({ storage });
+  staleTab.update((state) => {
+    state.savedQuestions.push({ question: 'cross-tab secret' });
+  });
+
+  first.reset();
+  const afterReset = TwinState.createStore({ storage });
+  assert.deepEqual(afterReset.get().savedQuestions, []);
+
+  let conflict;
+  try {
+    staleTab.update((state) => {
+      state.savedQuestions.push({ question: 'resurrected' });
+    });
+  } catch (error) {
+    conflict = error;
+  }
+  assert.ok(conflict, 'stale tab write did not fail');
+  assert.equal(conflict.code, 'STATE_CONFLICT');
+
+  const finalStore = TwinState.createStore({ storage });
+  assert.deepEqual(finalStore.get().savedQuestions, []);
 });
