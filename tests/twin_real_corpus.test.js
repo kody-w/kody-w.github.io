@@ -15,6 +15,13 @@ function recordBySuffix(suffix) {
   return record;
 }
 
+function hasSingleClauseWith(text, terms) {
+  return String(text)
+    .toLowerCase()
+    .split(/[.!?;\n]+/)
+    .some((clause) => terms.every((term) => clause.includes(term)));
+}
+
 test('real corpus preserves source counts and authorship boundaries', () => {
   assert.equal(corpus.records.length, 837);
   assert.equal(corpus.records.filter((item) => item.sourceType === 'post').length, 312);
@@ -108,21 +115,36 @@ test('negation remains a material answer constraint', () => {
   assert.ok(evidence.claims.length > 0);
   evidence.claims.forEach((claim) => {
     const text = String(claim.citation.quote || claim.citation.value).toLowerCase();
-    assert.match(text, /\bnot\b/);
-    assert.match(text, /\bevidence\b/);
+    assert.equal(hasSingleClauseWith(text, ['not', 'evidence']), true, text);
+    assert.doesNotMatch(text, /not decorative lore[\s\S]*operational evidence/i);
   });
 
   const source = engine.answer('What is not the source of truth?');
   if (source.status === 'answered') {
     source.claims.forEach((claim) => {
       const text = String(claim.citation.quote || claim.citation.value).toLowerCase();
-      assert.match(text, /\bnot\b|\bnever\b|\bwithout\b/);
-      assert.match(text, /\bsource\b/);
-      assert.match(text, /\btruth\b/);
+      assert.equal(
+        ['not', 'never', 'without'].some((qualifier) =>
+          hasSingleClauseWith(text, [qualifier, 'source', 'truth'])
+        ),
+        true,
+        text
+      );
     });
   } else {
     assert.equal(source.status, 'insufficient-evidence');
     assert.deepEqual(source.claims, []);
+  }
+
+  const always = engine.answer('What is always evidence?');
+  if (always.status === 'answered') {
+    always.claims.forEach((claim) => {
+      const text = String(claim.citation.quote || claim.citation.value).toLowerCase();
+      assert.equal(hasSingleClauseWith(text, ['always', 'evidence']), true, text);
+    });
+  } else {
+    assert.equal(always.status, 'insufficient-evidence');
+    assert.deepEqual(always.claims, []);
   }
 });
 
