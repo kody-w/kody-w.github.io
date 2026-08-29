@@ -188,6 +188,7 @@
     var storage = null;
     var mode = 'memory';
     var state = initialState();
+    var persistentStateMayExist = false;
 
     if (typeof key !== 'string' || !key) {
       throw new TypeError('key must be a non-empty string');
@@ -203,6 +204,7 @@
         storage = window.localStorage;
       } catch (error) {
         storage = null;
+        persistentStateMayExist = true;
       }
     }
     if (storage && typeof storage.getItem === 'function' &&
@@ -225,8 +227,9 @@
       }
       try {
         storage.setItem(key, canonicalJson(state));
+        persistentStateMayExist = true;
       } catch (error) {
-        storage = null;
+        persistentStateMayExist = true;
         mode = 'memory';
       }
     }
@@ -235,8 +238,9 @@
     if (mode === 'localStorage') {
       try {
         stored = storage.getItem(key);
+        persistentStateMayExist = stored !== null;
       } catch (error) {
-        storage = null;
+        persistentStateMayExist = true;
         mode = 'memory';
       }
     }
@@ -265,6 +269,65 @@
       state = next;
       persist();
       return clone(state);
+    }
+
+    function resetError(code, message) {
+      var error = new Error(message);
+      error.name = 'TwinStateStorageError';
+      error.code = code;
+      return error;
+    }
+
+    function readBackMatches(expected) {
+      if (!storage || typeof storage.getItem !== 'function') {
+        return true;
+      }
+      try {
+        return storage.getItem(key) === expected;
+      } catch (error) {
+        return true;
+      }
+    }
+
+    function durablyReset(next) {
+      if (!persistentStateMayExist) {
+        return;
+      }
+      if (!storage) {
+        throw resetError(
+          'STORAGE_UNAVAILABLE',
+          'Persistent state may exist but storage is unavailable'
+        );
+      }
+
+      if (typeof storage.removeItem === 'function') {
+        try {
+          storage.removeItem(key);
+          if (readBackMatches(null)) {
+            persistentStateMayExist = false;
+            return;
+          }
+        } catch (error) {
+          mode = 'memory';
+        }
+      }
+
+      var serialized = canonicalJson(next);
+      try {
+        storage.setItem(key, serialized);
+        if (readBackMatches(serialized)) {
+          persistentStateMayExist = true;
+          return;
+        }
+      } catch (error) {
+        mode = 'memory';
+      }
+
+      mode = 'memory';
+      throw resetError(
+        'RESET_NOT_PERSISTED',
+        'Persistent state could not be cleared or overwritten'
+      );
     }
 
     return Object.freeze({
@@ -305,8 +368,9 @@
       },
 
       reset: function () {
-        state = initialState();
-        persist();
+        var next = initialState();
+        durablyReset(next);
+        state = next;
         return clone(state);
       },
 
