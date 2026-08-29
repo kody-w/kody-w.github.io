@@ -1,0 +1,199 @@
+---
+layout: default
+title: Public Evidence Twin
+permalink: /twin/
+offline_shell: true
+manifest: /twin/manifest.webmanifest
+content_security_policy: "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'"
+---
+
+<main class="public-twin" id="public-twin">
+  <section class="twin-hero" aria-labelledby="twin-title">
+    <p class="twin-eyebrow">Public evidence explorer · local-first</p>
+    <div class="twin-hero-grid">
+      <div>
+        <h1 id="twin-title">Ask the record.<br>Inspect every answer.</h1>
+        <p class="twin-lede">A deterministic interface over Kody's public posts, public field notes, and public GitHub work. It uses public evidence only. It never invents Kody's private thoughts, feelings, or first-person claims.</p>
+      </div>
+      <aside class="twin-boundary" aria-label="Evidence boundary">
+        <strong>Evidence boundary</strong>
+        <p>Every substantive result is an exact quote or catalog value. When the public corpus cannot support an answer, the twin abstains.</p>
+      </aside>
+    </div>
+
+    <div class="twin-status-grid" aria-label="Runtime status">
+      <div class="twin-status-card">
+        <span>Corpus</span>
+        <strong id="twin-corpus-status">Loading and validating…</strong>
+        <small id="twin-corpus-detail">Public records only</small>
+      </div>
+      <div class="twin-status-card">
+        <span>Storage</span>
+        <strong id="twin-storage-status">Initializing…</strong>
+        <small id="twin-storage-detail">No account or telemetry</small>
+      </div>
+      <div class="twin-status-card">
+        <span>Offline</span>
+        <strong id="twin-offline-status">Checking…</strong>
+        <small id="twin-offline-detail">Not yet confirmed</small>
+      </div>
+    </div>
+    <p class="twin-live-status" id="twin-live-status" aria-live="polite" aria-atomic="true">Starting the public twin.</p>
+  </section>
+
+  <section class="twin-workspace" aria-labelledby="twin-ask-heading">
+    <div class="twin-section-heading">
+      <div>
+        <p class="twin-kicker">Evidence query</p>
+        <h2 id="twin-ask-heading">What do you want to inspect?</h2>
+      </div>
+      <p>Search meaning, trace change over time, or look for explicit counterevidence.</p>
+    </div>
+
+    <form class="twin-query" id="twin-question-form" data-semantic-action="answer.ask">
+      <label for="twin-question">Question for the public corpus</label>
+      <div class="twin-query-row">
+        <textarea id="twin-question" name="question" rows="3" maxlength="600" required data-semantic-action="search.query" placeholder="Example: Where does Kody describe the source of truth?"></textarea>
+        <button class="twin-primary-button" id="twin-submit" type="submit" disabled data-semantic-action="answer.ask">Inspect evidence</button>
+      </div>
+    </form>
+
+    <div class="twin-mode-bar" role="toolbar" aria-label="Semantic result mode">
+      <button class="twin-mode-button is-active" type="button" data-mode="answer" data-semantic-action="ui.setMode" aria-pressed="true">
+        <span>Answer</span>
+        <small>Exact supported claims</small>
+      </button>
+      <button class="twin-mode-button" type="button" data-mode="evolution" data-semantic-action="ui.setMode" aria-pressed="false">
+        <span>Evolution</span>
+        <small>Evidence through time</small>
+      </button>
+      <button class="twin-mode-button" type="button" data-mode="challenge" data-semantic-action="ui.setMode" aria-pressed="false">
+        <span>Challenge</span>
+        <small>Explicit qualifications</small>
+      </button>
+    </div>
+
+    <div class="twin-result-shell">
+      <div class="twin-result-header">
+        <div>
+          <p class="twin-kicker">Inspectible output</p>
+          <h3 id="twin-result-title">Ready for a question</h3>
+        </div>
+        <span class="twin-result-count" id="twin-result-count">0 citations</span>
+      </div>
+      <div id="twin-results" class="twin-results" aria-live="polite" aria-busy="false">
+        <div class="twin-empty-state">
+          <strong>No generated voice. No hidden inference.</strong>
+          <p>Ask a question to retrieve exact, adjacent evidence from the public record.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="twin-lower-grid">
+    <section class="twin-panel twin-pinned-panel" aria-labelledby="twin-pinned-heading">
+      <div class="twin-panel-heading">
+        <div>
+          <p class="twin-kicker">Local evidence tray</p>
+          <h2 id="twin-pinned-heading">Pinned evidence</h2>
+        </div>
+        <span id="twin-pinned-count">0</span>
+      </div>
+      <div id="twin-pinned" class="twin-pinned-list">
+        <p class="twin-muted">Pin a citation to keep it beside your investigation.</p>
+      </div>
+    </section>
+
+    <section class="twin-panel" aria-labelledby="twin-state-heading">
+      <p class="twin-kicker">Your device, your state</p>
+      <h2 id="twin-state-heading">Local controls</h2>
+      <p class="twin-muted">History and pins stay in this browser when storage is available. Memory mode remains usable but does not survive restart.</p>
+      <div class="twin-control-stack">
+        <button type="button" id="twin-export" data-semantic-action="state.export">Export state</button>
+        <label class="twin-file-control" for="twin-import">
+          <span>Import state</span>
+          <input type="file" id="twin-import" accept="application/json,.json" data-semantic-action="state.import">
+        </label>
+        <button type="button" id="twin-reset" class="twin-danger-button" data-semantic-action="state.reset">Reset local state</button>
+      </div>
+      <p id="twin-state-status" class="twin-inline-status" aria-live="polite"></p>
+    </section>
+  </div>
+
+  <section class="twin-studio" aria-labelledby="twin-studio-heading">
+    <div class="twin-section-heading">
+      <div>
+        <p class="twin-kicker">One-Sentence Product Studio</p>
+        <h2 id="twin-studio-heading">Turn an app idea into the machine contract.</h2>
+      </div>
+      <p>Only <code>{APP}</code> changes. The rest of the canonical sentence stays byte-for-byte intact.</p>
+    </div>
+    <label for="twin-app-idea">App idea</label>
+    <div class="twin-studio-input">
+      <input id="twin-app-idea" type="text" maxlength="300" data-semantic-action="prompt.build" placeholder="a public evidence explorer for municipal decisions">
+      <button type="button" id="twin-build-prompt" data-semantic-action="prompt.build" disabled>Build prompt</button>
+    </div>
+    <div class="twin-prompt-output">
+      <p id="twin-prompt-text">Enter an app idea to replace the canonical {APP} token.</p>
+      <button class="twin-primary-button" type="button" id="twin-copy-prompt" data-semantic-action="prompt.copy" disabled>Copy exact prompt</button>
+    </div>
+    <p id="twin-prompt-status" class="twin-inline-status" aria-live="polite"></p>
+  </section>
+
+  <section class="twin-api-panel" aria-labelledby="twin-api-heading">
+    <div class="twin-section-heading">
+      <div>
+        <p class="twin-kicker">Semantic API · v1.0.0</p>
+        <h2 id="twin-api-heading">Named actions, not screen coordinates.</h2>
+      </div>
+      <p>The same frozen interface driving this UI is available at <code>window.KodyTwin</code>. Inputs and outputs are JSON-only.</p>
+    </div>
+    <div class="twin-api-grid">
+      <div>
+        <h3>Inspectible actions</h3>
+        <ul class="twin-action-list">
+          <li><code>answer.ask</code><span>Return exact supported claims or abstain.</span></li>
+          <li><code>evolution.compare</code><span>Order distinct evidence by its declared time basis.</span></li>
+          <li><code>challenge.run</code><span>Show only explicit, proved qualifications.</span></li>
+          <li><code>citation.open</code><span>Inspect provenance, hash, URL, and locator.</span></li>
+          <li><code>citation.pin</code><span>Persist evidence locally when possible.</span></li>
+          <li><code>state.export</code><span>Move deterministic state without an account.</span></li>
+        </ul>
+      </div>
+      <div class="twin-mission-card">
+        <h3>Structured mission</h3>
+        <pre><code>{
+  "steps": [
+    {
+      "action": "answer.ask",
+      "input": {
+        "question": "What changed?"
+      }
+    },
+    {
+      "action": "state.export"
+    }
+  ],
+  "stopOnError": true
+}</code></pre>
+        <p><code>runMission</code> executes declared actions in order and returns a per-step trace. It is not a natural-language planner.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<dialog class="twin-source-dialog" id="twin-source-dialog" aria-labelledby="twin-source-title">
+  <div class="twin-dialog-header">
+    <div>
+      <p class="twin-kicker">Source provenance</p>
+      <h2 id="twin-source-title">Citation details</h2>
+    </div>
+    <button type="button" id="twin-source-close" class="twin-icon-button" data-semantic-action="citation.open" aria-label="Close source details">Close</button>
+  </div>
+  <div id="twin-source-content" class="twin-source-content"></div>
+</dialog>
+
+<script src="/js/twin-engine.js" defer></script>
+<script src="/js/twin-state.js" defer></script>
+<script src="/js/twin-controller.js" defer></script>
+<script src="/js/twin-app.js" defer></script>
