@@ -1,0 +1,90 @@
+---
+layout: default
+title: Start Here
+permalink: /start/
+---
+
+{% assign reading_paths = site.data.reading_paths %}
+{% assign total_steps = 0 %}
+{% for path in reading_paths %}
+  {% assign path_steps = path.posts | size %}
+  {% assign total_steps = total_steps | plus: path_steps %}
+{% endfor %}
+
+<main class="start-here" id="start-top">
+  <header class="start-hero">
+    <p class="start-eyebrow">Six ways into the archive</p>
+    <h1>Start with the question you actually have.</h1>
+    <p class="start-intro">The blog is large because the systems are connected. These paths put the strongest essays in an intentional order and explain why each step comes next.</p>
+    <div class="start-summary">
+      <div><strong>{{ reading_paths | size }}</strong><span>guided paths</span></div>
+      <div><strong>{{ total_steps }}</strong><span>ordered readings</span></div>
+      <div><strong id="start-completed-count" aria-live="polite">0</strong><span>completed locally</span></div>
+    </div>
+    <div class="start-overall-progress">
+      <label for="start-overall-meter">Your progress</label>
+      <progress id="start-overall-meter" max="{{ total_steps }}" value="0">0 of {{ total_steps }}</progress>
+      <button id="start-reset-all" type="button">Reset all progress</button>
+    </div>
+  </header>
+
+  <nav class="start-path-grid" aria-label="Choose a guided reading path">
+    {% for path in reading_paths %}
+      <a class="start-path-card" href="#{{ path.id }}">
+        <i class="fas {{ path.icon }}" aria-hidden="true"></i>
+        <span class="start-path-label">{{ path.label }}</span>
+        <strong>{{ path.title }}</strong>
+        <span>{{ path.question }}</span>
+        <small>{{ path.posts | size }} readings · about {{ path.minutes }} minutes</small>
+      </a>
+    {% endfor %}
+  </nav>
+
+  <div class="start-paths">
+    {% for path in reading_paths %}
+      <section class="start-path" id="{{ path.id }}" data-reading-path="{{ path.id }}">
+        <header class="start-path-header">
+          <div>
+            <p class="start-eyebrow">{{ path.label }}</p>
+            <h2>{{ path.title }}</h2>
+            <p class="start-path-question">{{ path.question }}</p>
+            <p>{{ path.description }}</p>
+          </div>
+          <div class="start-path-status">
+            <span data-path-progress="{{ path.id }}">0 / {{ path.posts | size }} complete</span>
+            <button type="button" data-reset-path="{{ path.id }}">Reset path</button>
+          </div>
+        </header>
+
+        <ol class="start-step-list">
+          {% for step in path.posts %}
+            {% assign article = site.posts | where: "url", step.url | first %}
+            <li class="start-step" data-reading-step="{{ path.id }}:{{ step.url }}" data-path-id="{{ path.id }}">
+              <button class="start-step-toggle" type="button" aria-pressed="false" aria-label="Mark step {{ forloop.index }} complete">
+                <span aria-hidden="true">{{ forloop.index }}</span>
+              </button>
+              <article>
+                <p class="start-step-kicker">Step {{ forloop.index }}</p>
+                <h3><a href="{{ article.url }}">{{ article.title }}</a></h3>
+                <p>{{ step.why }}</p>
+                <p class="start-step-meta">
+                  {{ article.date | date: "%B %-d, %Y" }}
+                  ·
+                  {% assign words = article.content | number_of_words %}{% if words < 200 %}1{% else %}{{ words | divided_by: 200 }}{% endif %} min read
+                </p>
+              </article>
+            </li>
+          {% endfor %}
+        </ol>
+
+        <footer class="start-path-outcome">
+          <strong>Where this leaves you</strong>
+          <p>{{ path.outcome }}</p>
+          <a href="#start-top">Choose another path ↑</a>
+        </footer>
+      </section>
+    {% endfor %}
+  </div>
+</main>
+
+<script src="/js/start-here.js" defer></script>
