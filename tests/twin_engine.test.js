@@ -86,4 +86,12 @@ test('citation corruption fails validation', () => {
   const corrupted = structuredClone(result.claims[0].citation);
   corrupted.quote += ' changed';
   assert.equal(engine.validateCitation(corrupted).ok, false);
+
+  const forgedTitle = structuredClone(result.claims[0].citation);
+  forgedTitle.title = 'A more convenient title';
+  assert.equal(engine.validateCitation(forgedTitle).ok, false);
+
+  const forgedUrl = structuredClone(result.claims[0].citation);
+  forgedUrl.sourceUrl = 'https://evil.example/forged';
+  assert.equal(engine.validateCitation(forgedUrl).ok, false);
 });
