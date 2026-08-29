@@ -32,6 +32,7 @@
   const elements = {
     root: document.getElementById("public-twin"),
     corpusStatus: document.getElementById("twin-corpus-status"),
+    corpusBreakdown: document.getElementById("twin-corpus-breakdown"),
     corpusDetail: document.getElementById("twin-corpus-detail"),
     storageStatus: document.getElementById("twin-storage-status"),
     storageDetail: document.getElementById("twin-storage-detail"),
@@ -244,6 +245,12 @@
       elements.corpusDetail.textContent = runtime.corpusSha256
         ? `SHA-256 ${shortHash(runtime.corpusSha256)}`
         : "Public records only";
+      if (elements.corpusBreakdown && runtime.corpus) {
+        elements.corpusBreakdown.textContent =
+          `${runtime.corpus.post.toLocaleString()} posts · ` +
+          `${runtime.corpus.field_note.toLocaleString()} field notes · ` +
+          `${runtime.corpus.work.toLocaleString()} repositories`;
+      }
     }
 
     if (elements.storageStatus) {
@@ -1039,7 +1046,7 @@
         const mode = modesByAction[action];
         if (mode) {
           renderResult(mode, { ok: true, action, data: candidate });
-          setLive(`${action} rendered through the semantic view adapter.`);
+          setLive("Evidence rendered from the verified public corpus.");
         }
       },
       setMode,
@@ -1148,6 +1155,11 @@
       runtime.corpusValidated = true;
       runtime.corpusSha256 = text(corpus.corpusSha256 || corpus.sourceManifestSha256);
       runtime.records = Number(corpus.stats && corpus.stats.total || corpus.records && corpus.records.length || 0);
+      runtime.corpus = {
+        post: Number(corpus.stats && corpus.stats.post || 0),
+        field_note: Number(corpus.stats && corpus.stats.field_note || 0),
+        work: Number(corpus.stats && corpus.stats.work || 0),
+      };
 
       runtime.phase = "indexing";
       const engine = Engine.createEngine(corpus);

@@ -172,6 +172,8 @@ class TwinAcceptanceTest(unittest.TestCase):
         self.assertIn("offline_shell: true", page)
         self.assertIn('id="twin-question"', page)
         self.assertIn('id="twin-results"', page)
+        self.assertIn('id="twin-corpus-breakdown"', page)
+        self.assertIn("Example verified citation", page)
         self.assertIn('id="twin-source-dialog"', page)
         self.assertIn('id="twin-live-status"', page)
         self.assertIn('aria-live="polite"', page)

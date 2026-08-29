@@ -4093,6 +4093,14 @@ a.stat:hover {
   max-width: 1180px;
 }
 
+.offline-shell-page .site-nav .trigger {
+  gap: 10px 12px;
+}
+
+.offline-shell-page .site-header .page-link {
+  font-size: 14px;
+}
+
 .public-twin {
   --twin-ink: #24292f;
   --twin-muted: #59636e;
@@ -4118,7 +4126,7 @@ a.stat:hover {
 }
 
 .twin-hero {
-  padding: 18px 0 42px;
+  padding: 14px 0 28px;
   border-bottom: 1px solid var(--twin-border);
 }
 
@@ -4145,7 +4153,7 @@ a.stat:hover {
 .twin-hero h1 {
   max-width: 780px;
   margin-bottom: 18px;
-  font-size: clamp(44px, 7vw, 80px);
+  font-size: clamp(44px, 6.4vw, 72px);
   font-weight: 500;
   letter-spacing: -0.055em;
   line-height: 0.96;
@@ -4176,11 +4184,39 @@ a.stat:hover {
   font-size: 14px;
 }
 
+.twin-boundary-proof {
+  display: grid;
+  gap: 5px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--twin-border);
+}
+
+.twin-boundary-proof span {
+  color: var(--twin-accent);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.twin-boundary-proof q {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.twin-boundary-proof code {
+  overflow-wrap: anywhere;
+  color: var(--twin-muted);
+  font-size: 10px;
+}
+
 .twin-status-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
 .twin-status-card {
@@ -4251,7 +4287,7 @@ a.stat:hover {
 .twin-workspace,
 .twin-studio,
 .twin-api-panel {
-  padding: 46px 0;
+  padding: 34px 0;
   border-bottom: 1px solid var(--twin-border);
 }
 
@@ -4260,7 +4296,7 @@ a.stat:hover {
   justify-content: space-between;
   gap: 28px;
   align-items: end;
-  margin-bottom: 22px;
+  margin-bottom: 16px;
 }
 
 .twin-section-heading h2,
