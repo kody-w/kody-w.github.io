@@ -227,7 +227,18 @@ class TwinAcceptanceTest(unittest.TestCase):
         self.assertEqual(prompt.count("."), 1)
 
     def test_shell_budget_and_ci_gate(self):
-        shell_files = [PAGE, WORKER, MANIFEST, PROMPT, ENGINE, STATE, CONTROLLER, APP]
+        shell_files = [
+            PAGE,
+            WORKER,
+            MANIFEST,
+            PROMPT,
+            ENGINE,
+            STATE,
+            CONTROLLER,
+            APP,
+            ROOT / "css" / "main.css",
+            DEFAULT_LAYOUT,
+        ]
         shell_bytes = sum(path.stat().st_size for path in shell_files)
         self.assertLessEqual(shell_bytes, 350 * 1024)
         workflow = WORKFLOW.read_text()

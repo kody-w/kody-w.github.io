@@ -16,6 +16,7 @@ COMMANDS = [
         "node",
         "--test",
         "tests/twin_engine.test.js",
+        "tests/twin_real_corpus.test.js",
         "tests/twin_state.test.js",
         "tests/twin_controller.test.js",
     ],
