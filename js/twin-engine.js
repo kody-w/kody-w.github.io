@@ -690,28 +690,32 @@
 
   function makeCitation(record, queryTokens, phrases) {
     var structured = structuredEntry(record);
-    if (record.sourceType === 'work' && structured) {
-      return {
-        sourceId: record.id,
-        sourceSha256: record.sourceSha256,
-        locator: {
-          kind: 'json-pointer',
-          pointer: structured.pointer
-        },
-        value: cloneJson(structured.value)
-      };
-    }
-    var span = bestTextSpan(record, queryTokens, phrases);
-    return {
+    var citation = {
       sourceId: record.id,
       sourceSha256: record.sourceSha256,
-      locator: {
-        kind: 'text',
-        start: span.start,
-        end: span.end
-      },
-      quote: record.text.slice(span.start, span.end)
+      sourceType: record.sourceType,
+      title: record.title,
+      author: record.author,
+      date: record.date,
+      timeBasis: record.timeBasis,
+      sourceUrl: record.sourceUrl
     };
+    if (record.sourceType === 'work' && structured) {
+      citation.locator = {
+        kind: 'json-pointer',
+        pointer: structured.pointer
+      };
+      citation.value = cloneJson(structured.value);
+      return citation;
+    }
+    var span = bestTextSpan(record, queryTokens, phrases);
+    citation.locator = {
+      kind: 'text',
+      start: span.start,
+      end: span.end
+    };
+    citation.quote = record.text.slice(span.start, span.end);
+    return citation;
   }
 
   function citationEvidence(citation) {
@@ -1178,6 +1182,12 @@
       }
       var record = byId[citation.sourceId];
       if (citation.sourceSha256 !== record.sourceSha256 ||
+          citation.sourceType !== record.sourceType ||
+          citation.title !== record.title ||
+          citation.author !== record.author ||
+          citation.date !== record.date ||
+          citation.timeBasis !== record.timeBasis ||
+          citation.sourceUrl !== record.sourceUrl ||
           !isPlainObject(citation.locator)) {
         return { ok: false, reason: 'provenance-mismatch' };
       }
