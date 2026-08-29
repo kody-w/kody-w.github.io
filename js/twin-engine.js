@@ -151,7 +151,8 @@
   function validSourceUrl(value) {
     return isNonEmptyString(value, 2000) &&
       !/[\u0000-\u001f\u007f]/.test(value) &&
-      (value.charAt(0) === '/' || /^https:\/\//.test(value));
+      ((value.charAt(0) === '/' && value.charAt(1) !== '/') ||
+       /^https:\/\/[^\/\s?#]+(?:[\/?#]|$)/.test(value));
   }
 
   function validPointer(pointer) {
@@ -317,6 +318,11 @@
         'Source manifest must be an array.');
       return;
     }
+    if (manifest.length === 0) {
+      addError(errors, '$.sourceManifest', 'EMPTY_MANIFEST',
+        'Source manifest must contain provenance entries.');
+      return;
+    }
     var seen = Object.create(null);
     for (var index = 0; index < manifest.length; index += 1) {
       var item = manifest[index];
@@ -362,9 +368,7 @@
       addError(errors, '$.corpusSha256', 'INVALID_CORPUS_HASH',
         'Corpus hash must be a lowercase SHA-256 digest.');
     }
-    if (hasOwn(corpus, 'sourceManifest')) {
-      validateManifest(corpus.sourceManifest, errors);
-    }
+    validateManifest(corpus.sourceManifest, errors);
 
     var ids = Object.create(null);
     var counts = { post: 0, field_note: 0, work: 0 };
