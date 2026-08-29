@@ -201,7 +201,15 @@
   }
 
   function inspectRuntime() {
-    return {
+    let controllerInspection = {};
+    if (controller && typeof controller.inspect === "function") {
+      try {
+        controllerInspection = objectValue(controller.inspect());
+      } catch (_error) {
+        controllerInspection = {};
+      }
+    }
+    return Object.assign({}, controllerInspection, {
       version: VERSION,
       phase: runtime.phase,
       ready: runtime.ready,
@@ -218,7 +226,7 @@
       corpusSha256: runtime.corpusSha256,
       serviceWorkerError: runtime.serviceWorkerError,
       error: runtime.error,
-    };
+    });
   }
 
   function updateRuntimeStatus() {
@@ -893,11 +901,22 @@
 
   function controllerView() {
     return {
-      render(value) {
+      render(value, action) {
         const candidate = objectValue(value);
         const state = objectValue(candidate.state || candidate);
         if (Array.isArray(state.pinnedCitations)) {
           renderPinned(state);
+        }
+        const modesByAction = {
+          "answer.ask": "answer",
+          "evolution.compare": "evolution",
+          "challenge.run": "challenge",
+        };
+        const mode = modesByAction[action];
+        if (mode) {
+          setMode(mode);
+          renderResult(mode, { ok: true, action, data: candidate });
+          setLive(`${action} rendered through the semantic view adapter.`);
         }
       },
       setMode,
