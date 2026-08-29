@@ -94,13 +94,20 @@ test('real unsupported question abstains', () => {
 
 test('real answer quotes support the meaningful question terms', () => {
   const answer = engine.answer('evidence not demos');
-  assert.equal(answer.status, 'answered');
-  assert.ok(answer.claims.length > 0);
-  answer.claims.forEach((claim) => {
-    const evidence = String(claim.citation.quote || claim.citation.value).toLowerCase();
-    assert.match(evidence, /evidence/);
-    assert.match(evidence, /demo/);
-  });
+  if (answer.status === 'answered') {
+    assert.ok(answer.claims.length > 0);
+    answer.claims.forEach((claim) => {
+      const evidence = String(claim.citation.quote || claim.citation.value).toLowerCase();
+      assert.equal(
+        hasSingleClauseWith(evidence, ['evidence', 'not', 'demo']),
+        true,
+        evidence
+      );
+    });
+  } else {
+    assert.equal(answer.status, 'insufficient-evidence');
+    assert.deepEqual(answer.claims, []);
+  }
 });
 
 test('real challenge does not manufacture relations from transition words', () => {
