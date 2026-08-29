@@ -591,6 +591,199 @@ a.stat:hover {
   text-decoration: none;
 }
 
+/* Public profile ethos */
+.profile-ethos {
+  margin: 10px 0 34px;
+  padding: 30px;
+  border: 1px solid #d7e5ff;
+  border-left: 5px solid #2a7ae2;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f7faff 0%, #fff 72%);
+}
+
+.profile-ethos-kicker,
+.constitution-kicker {
+  margin-bottom: 8px;
+  color: #1769c2;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.profile-ethos h1 {
+  margin-bottom: 10px;
+  font-size: clamp(38px, 7vw, 58px);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.profile-ethos-lede {
+  max-width: 680px;
+  color: #555;
+  font-size: 17px;
+}
+
+.profile-ethos blockquote,
+.constitution-hero blockquote,
+.twin-constitution blockquote {
+  margin: 22px 0;
+  padding: 17px 20px;
+  border-left: 4px solid #2a7ae2;
+  color: #273447;
+  background: #eef5ff;
+  font-size: 16px;
+  font-style: normal;
+  line-height: 1.6;
+}
+
+.profile-ethos-principles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.profile-ethos-principles > div {
+  padding: 14px;
+  border: 1px solid #dfe7f3;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.profile-ethos-principles span {
+  color: #2a7ae2;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.profile-ethos-principles strong {
+  display: block;
+  margin: 3px 0 5px;
+}
+
+.profile-ethos-principles p {
+  margin: 0;
+  color: #606060;
+  font-size: 13px;
+}
+
+.profile-ethos-actions,
+.constitution-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+/* Product constitution */
+.constitution-hero {
+  padding: 18px 0 38px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.constitution-hero h1 {
+  max-width: 720px;
+  margin-bottom: 14px;
+  font-size: clamp(40px, 8vw, 68px);
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  line-height: 0.98;
+}
+
+.constitution-lede {
+  max-width: 700px;
+  color: #555;
+  font-size: 18px;
+}
+
+.constitution-hero blockquote {
+  max-width: 760px;
+  font-size: 19px;
+}
+
+.constitution-principles,
+.constitution-governance {
+  padding: 42px 0;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.constitution-section-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 28px;
+  align-items: end;
+  margin-bottom: 20px;
+}
+
+.constitution-section-heading h2,
+.constitution-governance h2 {
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+}
+
+.constitution-section-heading > p {
+  max-width: 390px;
+  color: #666;
+  text-align: right;
+}
+
+.constitution-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.constitution-card {
+  padding: 20px;
+  border: 1px solid #e0e6ef;
+  border-radius: 11px;
+  background: #fff;
+}
+
+.constitution-number {
+  color: #2a7ae2;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.constitution-card h3 {
+  margin: 6px 0 9px;
+  font-size: 21px;
+  font-weight: 500;
+}
+
+.constitution-card > p,
+.constitution-governance > p {
+  color: #555;
+}
+
+.constitution-card dl {
+  margin-top: 16px;
+  padding-top: 13px;
+  border-top: 1px solid #edf0f4;
+}
+
+.constitution-card dt {
+  color: #1769c2;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.constitution-card dd {
+  margin: 5px 0 0;
+  color: #666;
+  font-size: 13px;
+}
+
 /* ========================================
    Dark Mode
    ======================================== */
@@ -670,6 +863,64 @@ a.stat:hover {
 [data-theme="dark"] .newsletter-fields input {
   border-color: var(--border);
   background: var(--code-bg);
+}
+
+[data-theme="dark"] .profile-ethos,
+[data-theme="dark"] .constitution-card {
+  border-color: var(--border);
+  background: var(--card-bg);
+}
+
+[data-theme="dark"] .profile-ethos {
+  border-left-color: var(--link);
+}
+
+[data-theme="dark"] .profile-ethos-lede,
+[data-theme="dark"] .profile-ethos-principles p,
+[data-theme="dark"] .constitution-lede,
+[data-theme="dark"] .constitution-section-heading > p,
+[data-theme="dark"] .constitution-card > p,
+[data-theme="dark"] .constitution-card dd,
+[data-theme="dark"] .constitution-governance > p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .profile-ethos blockquote,
+[data-theme="dark"] .constitution-hero blockquote {
+  color: var(--text);
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .profile-ethos-principles > div {
+  border-color: var(--border);
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .constitution-hero,
+[data-theme="dark"] .constitution-principles,
+[data-theme="dark"] .constitution-governance,
+[data-theme="dark"] .constitution-card dl {
+  border-color: var(--border);
+}
+
+@media (max-width: 650px) {
+  .profile-ethos {
+    padding: 22px;
+  }
+
+  .profile-ethos-principles,
+  .constitution-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .constitution-section-heading {
+    display: block;
+  }
+
+  .constitution-section-heading > p {
+    margin-top: 9px;
+    text-align: left;
+  }
 }
 
 /* Public work catalog */
@@ -4085,7 +4336,7 @@ a.stat:hover {
   }
 
 /* ========================================
-   PUBLIC TWIN — /twin/ only
+   PUBLIC TWIN — /public-twin/ only
    Citation-first, local-first evidence UI
    ======================================== */
 
@@ -4289,6 +4540,59 @@ a.stat:hover {
 .twin-api-panel {
   padding: 34px 0;
   border-bottom: 1px solid var(--twin-border);
+}
+
+.twin-constitution {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.6fr);
+  gap: 24px;
+  margin-top: 34px;
+  padding: 26px;
+  border: 1px solid var(--twin-border);
+  border-radius: 12px;
+  background: var(--twin-subtle);
+}
+
+.twin-constitution h2 {
+  margin-bottom: 0;
+  font-size: clamp(30px, 5vw, 44px);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+}
+
+.twin-constitution blockquote {
+  margin-bottom: 0;
+  color: var(--twin-ink);
+  background: var(--twin-surface);
+}
+
+.twin-constitution-rules {
+  display: grid;
+  align-content: center;
+  gap: 8px;
+}
+
+.twin-constitution-rules > div {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--twin-border);
+}
+
+.twin-constitution-rules span {
+  color: var(--twin-accent);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.twin-constitution-rules a {
+  margin-top: 8px;
+  color: var(--twin-accent);
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .twin-section-heading {
@@ -5000,6 +5304,7 @@ a.stat:hover {
 @media (max-width: 760px) {
   .twin-hero-grid,
   .twin-lower-grid,
+  .twin-constitution,
   .twin-api-grid {
     grid-template-columns: 1fr;
   }

@@ -16,6 +16,20 @@ catalog value with a verifiable citation. Unsupported questions abstain.
 The existing `/digital-twin/` field-note collection remains a separate,
 unchanged publishing surface.
 
+## UX constitution
+
+The public twin follows `_data/design_constitution.yml`, whose governing oath
+is:
+
+> Preserve the user's intent. Complete what the system can safely infer. Make
+> assistance visible, reversible, and optional. Never make a person restate
+> what the interface already knows.
+
+This is a behavior contract. Hints become editable assistance instead of
+disappearing; machine-added content remains distinguishable; keyboard and
+semantic actions reach the same outcomes; predictions never silently become
+decisions.
+
 ## Corpus
 
 The deterministic builder writes `api/twin-corpus.json` with schema

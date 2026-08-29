@@ -38,6 +38,7 @@ EXPECTED_LEGACY_TWIN_HASH = (
 )
 TWIN_SHELL_SOURCES = (
     "_config.yml",
+    "_data/design_constitution.yml",
     "_layouts/default.html",
     "public-twin/index.html",
     "public-twin/manifest.webmanifest",

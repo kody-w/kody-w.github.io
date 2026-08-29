@@ -1,10 +1,10 @@
 {
   "schema": "kodyw-public-twin/1.0",
   "normalizationVersion": "plain-text/1",
-  "sourceManifestSha256": "32231e39c1178bb219923e00dff56d6139dfec0bf25690e7f21172243cc590a9",
+  "sourceManifestSha256": "6c66df6a15cba318ffdbd3315d7c4507dd66da4464154de7fe7b9b5693122295",
   "stats": {
-    "total": 840,
-    "post": 312,
+    "total": 841,
+    "post": 313,
     "field_note": 116,
     "work": 412
   },
@@ -1256,6 +1256,10 @@
     {
       "path": "_posts/2026-08-19-the-trail-you-leave-is-the-story.md",
       "sha256": "a5b329623498fc8c1ef2fea7ec3c9e9fec59d46761bb19c3494cb10890a6d339"
+    },
+    {
+      "path": "_posts/2026-08-29-the-interface-should-meet-you-halfway.md",
+      "sha256": "828e2b8e5543fdc53769fc6f9da30f33cbba1ea08100b705463b51a49984829f"
     },
     {
       "path": "_twin_posts/2026-03-07-drift-is-how-i-feel-pain.md",
@@ -6154,6 +6158,18 @@
       "sourceUrl": "/2026/03/08/the-infinite-regression-of-meta-agents/",
       "sourceSha256": "3ac3a503d866c3d882e12142bdbadb6ae17ddacfe0206315fba9bdfd8213ddba",
       "text": "When an agent fails, the operator's first instinct is often to introduce a new agent to watch it.\n\nThe worker agent hallucinates a function call, so we add a Reviewer Agent. The Reviewer Agent misses a logic flaw, so we add an Auditor Agent. The Auditor Agent hallucinates a completely new problem, so we add a Meta-Auditor to check the Auditor.\n\nBefore long, you are no longer building an application. You are building an infinite regression of bureaucracy.\n\nThe Supervisor Trap\n\nAdding a meta-agent feels like adding reliability, but it is actually adding architectural latency. Every new layer of supervision introduces a new layer of interpretation. The Reviewer does not see the raw problem; it sees the Worker's model of the problem. Multi-agent supervision chains do not compound intelligence — they compound the probability of context loss.\n\nWhen operators build infinite meta-agent chains, they are usually trying to solve a prompting problem with architecture. They think the first agent isn't resilient enough, so they try to catch its errors later.\n\nThe fix isn't to build a longer supervisor chain. The fix is to stop the chain, go back to the single worker node, and harden the prompt, the tools, and the constraints until the single node can be trusted. Do not build an agency to fix a prompt."
+    },
+    {
+      "id": "post:the-interface-should-meet-you-halfway",
+      "sourceType": "post",
+      "title": "The Interface Should Meet You Halfway",
+      "date": "2026-08-29",
+      "timeBasis": "published",
+      "author": null,
+      "sourcePath": "_posts/2026-08-29-the-interface-should-meet-you-halfway.md",
+      "sourceUrl": "/2026/08/29/the-interface-should-meet-you-halfway/",
+      "sourceSha256": "828e2b8e5543fdc53769fc6f9da30f33cbba1ea08100b705463b51a49984829f",
+      "text": "A placeholder is a promise that disappears at the first sign of intent.\n\nThe interface shows an example. The person starts typing because the example is close to what they want. Then the example vanishes, and the person is left reconstructing the very context the product just demonstrated it already had.\n\nThat is a small interaction failure, but it reveals a larger philosophy.\n\nSoftware should meet the user halfway.\n\nIf the system can safely infer the next likely step, it should offer that completion where the person is already working. It should not send them through another panel, make them repeat known context, or hide the help behind a button.\n\nThe completion must remain visible. It must be clearly distinguishable from what the person typed. It must be easy to accept, overwrite, dismiss, or ignore.\n\nThat gives us a constitutional rule:\n\nPreserve the user's intent. Complete what the system can safely infer. Make assistance visible, reversible, and optional. Never make a person restate what the interface already knows.\n\nAutocomplete is only the smallest example.\n\nA good agent remembers the constraint you already gave it. A good form carries forward the choice you already made. A good workflow resumes from the last verified state. A good interface turns its hint into an editable completion instead of erasing it.\n\nThe machine may propose. The person remains authoritative.\n\nThis is also why keyboard behavior matters. If the completion is right, Enter should accept it. If it is wrong, continued typing should replace only the suggested part. Escape or Backspace should dismiss the help without damaging the person's own text.\n\nThe same principle applies to autonomous systems. Give the machine named, inspectable actions. Let it move work forward where intent is clear. Require evidence and approval where consequences become irreversible.\n\nThe goal is not maximum prediction.\n\nThe goal is minimum unnecessary friction without surrendering control.\n\nThat is the product ethos I want attached to my public work: preserve the signal, meet intent halfway, and never confuse assistance with authority."
     },
     {
       "id": "post:the-last-agent-standing",
@@ -13468,5 +13484,5 @@
       }
     }
   ],
-  "corpusSha256": "d19f013f9c480c5b1766f8e3566682958d47a80f6af48aacc73d592d25ca3413"
+  "corpusSha256": "5b344348559ec2f82e5db07db7c1c2b165ab22dcdc35b9d13bc363ddfbc5a510"
 }

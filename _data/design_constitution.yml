@@ -1,0 +1,30 @@
+version: "1.0"
+title: "Intent-Preserving Product Constitution"
+short_title: "Meet intent halfway"
+preamble: "Software should preserve the user's signal, infer the next safe step, and offer that help where the person is already working."
+oath: "Preserve the user's intent. Complete what the system can safely infer. Make assistance visible, reversible, and optional. Never make a person restate what the interface already knows."
+principles:
+  - id: preserve-the-signal
+    name: "Preserve the signal"
+    rule: "A hint, selection, partial thought, or prior state must not disappear merely because the user begins acting."
+    test: "When typing starts inside a suggested field, the useful suggestion becomes an inline completion instead of vanishing."
+  - id: meet-intent-halfway
+    name: "Meet intent halfway"
+    rule: "When the next step is strongly inferable, complete it in place instead of adding another interaction or asking the user to repeat context."
+    test: "A user can accept the likely completion with Enter without leaving the control or retyping known text."
+  - id: make-help-visible
+    name: "Make assistance visible"
+    rule: "Machine-added content must be distinguishable from what the person supplied."
+    test: "Suggested text is visibly selected or otherwise marked before it becomes the user's committed input."
+  - id: make-help-reversible
+    name: "Make assistance reversible"
+    rule: "A person must be able to overwrite, dismiss, undo, or ignore assistance without losing their own work."
+    test: "Continued typing replaces only the suggestion; Escape or Backspace dismisses it; arbitrary user selections remain untouched."
+  - id: keep-human-authority
+    name: "Keep human authority"
+    rule: "The system may predict and propose, but it must not silently convert a prediction into a decision."
+    test: "Suggested actions remain optional and no irreversible action occurs without an explicit user command."
+  - id: design-for-intent
+    name: "Design for intent, not coordinates"
+    rule: "Primary interactions should expose stable semantic actions and predictable keyboard behavior rather than depend on screen position."
+    test: "The same outcome can be reached by a named action and by an accessible keyboard path."

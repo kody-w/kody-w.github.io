@@ -1,0 +1,49 @@
+---
+layout: default
+title: Product Constitution
+permalink: /constitution/
+---
+
+{% assign constitution = site.data.design_constitution %}
+<main class="constitution-page">
+  <header class="constitution-hero">
+    <p class="constitution-kicker">Public product constitution · v{{ constitution.version }}</p>
+    <h1>{{ constitution.title }}</h1>
+    <p class="constitution-lede">{{ constitution.preamble }}</p>
+    <blockquote>{{ constitution.oath }}</blockquote>
+  </header>
+
+  <section class="constitution-principles" aria-labelledby="constitution-principles-title">
+    <div class="constitution-section-heading">
+      <div>
+        <p class="constitution-kicker">Non-negotiable interaction rules</p>
+        <h2 id="constitution-principles-title">The interface owes the user continuity.</h2>
+      </div>
+      <p>These are observable constraints, not aspirational adjectives. A product either passes them or it does not.</p>
+    </div>
+
+    <ol class="constitution-grid">
+      {% for principle in constitution.principles %}
+      <li id="{{ principle.id }}" class="constitution-card">
+        <span class="constitution-number">{{ forloop.index | prepend: "0" | slice: -2, 2 }}</span>
+        <h3>{{ principle.name }}</h3>
+        <p>{{ principle.rule }}</p>
+        <dl>
+          <dt>Observable test</dt>
+          <dd>{{ principle.test }}</dd>
+        </dl>
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  <section class="constitution-governance">
+    <p class="constitution-kicker">How this stays constitutional</p>
+    <h2>Ship the invariant, then prove the interaction.</h2>
+    <p>A design does not satisfy this constitution because its source looks thoughtful. The rendered behavior must preserve context, expose assistance, respect dismissal, and keep the person in control.</p>
+    <div class="constitution-actions">
+      <a class="btn" href="/public-twin/#product-studio">See the principle working</a>
+      <a class="btn btn-secondary" href="/about/">Back to Kody's profile</a>
+    </div>
+  </section>
+</main>
