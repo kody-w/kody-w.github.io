@@ -27,6 +27,17 @@
     field_note: true,
     work: true
   });
+  var MATERIAL_QUALIFIERS = Object.freeze({
+    all: true,
+    always: true,
+    every: true,
+    never: true,
+    no: true,
+    none: true,
+    not: true,
+    only: true,
+    without: true
+  });
   var STOP_WORDS = Object.freeze({
     a: true, about: true, an: true, and: true, are: true, as: true, at: true,
     be: true, been: true, being: true, by: true, did: true, do: true, does: true,
@@ -843,16 +854,64 @@
     return spans;
   }
 
+  function hasMaterialQualifier(tokens) {
+    for (var index = 0; index < tokens.length; index += 1) {
+      if (MATERIAL_QUALIFIERS[tokens[index]]) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function splitClauseSpans(text) {
+    var sentences = splitSpans(text);
+    var clauses = [];
+    var boundary = /[;:\u2014]|,\s+|\s+(?:but|however|while|whereas)\s+/gi;
+    for (var sentenceIndex = 0;
+         sentenceIndex < sentences.length;
+         sentenceIndex += 1) {
+      var sentence = sentences[sentenceIndex];
+      var sentenceText = text.slice(sentence.start, sentence.end);
+      var relativeStart = 0;
+      var match;
+      boundary.lastIndex = 0;
+      while ((match = boundary.exec(sentenceText)) !== null) {
+        addTrimmedSpan(clauses, text, sentence.start + relativeStart,
+          sentence.start + match.index);
+        relativeStart = match.index + match[0].length;
+      }
+      addTrimmedSpan(clauses, text, sentence.start + relativeStart,
+        sentence.end);
+    }
+    return clauses;
+  }
+
+  function addTrimmedSpan(spans, text, start, end) {
+    while (start < end && /\s/.test(text.charAt(start))) {
+      start += 1;
+    }
+    while (end > start && /\s/.test(text.charAt(end - 1))) {
+      end -= 1;
+    }
+    if (end > start) {
+      spans.push({ start: start, end: end });
+    }
+  }
+
   function bestTextSpan(record, queryTokens, phrases) {
-    var spans = splitSpans(record.text);
+    var qualified = hasMaterialQualifier(queryTokens);
+    var spans = qualified
+      ? splitClauseSpans(record.text) : splitSpans(record.text);
     if (spans.length === 0) {
       return { start: 0, end: record.text.length };
     }
     var best = spans[0];
     var bestScore = -1;
+    var maximumSpanCount = qualified ? 1 : 3;
     for (var startIndex = 0; startIndex < spans.length; startIndex += 1) {
       for (var endIndex = startIndex;
-           endIndex < spans.length && endIndex < startIndex + 3;
+           endIndex < spans.length &&
+             endIndex < startIndex + maximumSpanCount;
            endIndex += 1) {
         var span = {
           start: spans[startIndex].start,
@@ -930,14 +989,29 @@
     }
     var value = citation.locator.kind === 'text'
       ? citation.quote : String(citation.value);
-    var evidenceTokens = tokenizeData(value);
-    var matched = 0;
-    for (var index = 0; index < queryTokens.length; index += 1) {
-      if (evidenceTokens.indexOf(queryTokens[index]) !== -1) {
-        matched += 1;
+    var evidenceValues = [value];
+    if (hasMaterialQualifier(queryTokens)) {
+      evidenceValues = splitClauseSpans(value).map(function (span) {
+        return value.slice(span.start, span.end);
+      });
+    }
+    for (var valueIndex = 0;
+         valueIndex < evidenceValues.length;
+         valueIndex += 1) {
+      var evidenceTokens = tokenizeData(evidenceValues[valueIndex]);
+      var matched = 0;
+      for (var tokenIndex = 0;
+           tokenIndex < queryTokens.length;
+           tokenIndex += 1) {
+        if (evidenceTokens.indexOf(queryTokens[tokenIndex]) !== -1) {
+          matched += 1;
+        }
+      }
+      if (matched === queryTokens.length) {
+        return true;
       }
     }
-    return matched === queryTokens.length;
+    return false;
   }
 
   function createEngine(inputCorpus) {
