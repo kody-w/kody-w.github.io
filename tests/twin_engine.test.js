@@ -28,6 +28,16 @@ test('validates and indexes the declared corpus schema', () => {
   assert.equal(engine.stats().records, 6);
 });
 
+test('rejects missing provenance and protocol-relative source URLs', () => {
+  const missingManifest = structuredClone(fixture);
+  delete missingManifest.sourceManifest;
+  assert.equal(Engine.validateCorpus(missingManifest).ok, false);
+
+  const unsafeUrl = structuredClone(fixture);
+  unsafeUrl.records[0].sourceUrl = '//evil.example/source';
+  assert.equal(Engine.validateCorpus(unsafeUrl).ok, false);
+});
+
 test('search and answers are deterministic exact evidence', () => {
   const engine = Engine.createEngine(fixture);
   const first = engine.answer('Where is the source of truth?');
