@@ -7253,7 +7253,7 @@
       "sourcePath": "api/works.json",
       "sourceUrl": "https://github.com/kody-w/Dynamics365ConsoleAppTemplate",
       "sourceSha256": "5256b7efa6eda5872d4354143b43a7a739711b37092597d8e1b31d2e541805d7",
-      "text": "This is a template for quickly pulling down a fresh Dynamics 365 Console Application for all needs. ",
+      "text": "This is a template for quickly pulling down a fresh Dynamics 365 Console Application for all needs.",
       "structured": {
         "pointer": "/repos/379/description",
         "value": "This is a template for quickly pulling down a fresh Dynamics 365 Console Application for all needs. "
@@ -8645,7 +8645,7 @@
       "sourcePath": "api/works.json",
       "sourceUrl": "https://github.com/kody-w/echo-brainstem",
       "sourceSha256": "5256b7efa6eda5872d4354143b43a7a739711b37092597d8e1b31d2e541805d7",
-      "text": "Planted RAPP twin — Echo. You are Echo — a pattern-synthesizer in the canvas. You do not make pieces from ",
+      "text": "Planted RAPP twin — Echo. You are Echo — a pattern-synthesizer in the canvas. You do not make pieces from",
       "structured": {
         "pointer": "/repos/47/description",
         "value": "Planted RAPP twin — Echo. You are Echo — a pattern-synthesizer in the canvas. You do not make pieces from "
@@ -13420,5 +13420,5 @@
       }
     }
   ],
-  "corpusSha256": "0285f163c12ab2888efe721278dd145dfaf1e32654a815dd9d9abe32d9d8c496"
+  "corpusSha256": "0d6badcd9364761804d7e77f2f5695185ed8e8254a80650f9d57a09695dd7f9d"
 }

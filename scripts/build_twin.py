@@ -308,12 +308,13 @@ def _work_records(root: Path, path: Path) -> list[dict[str, Any]]:
 
     for index, repository in enumerate(catalog["repos"]):
         description = repository["description"]
-        if description:
-            text = description
+        if description != "":
+            value = description
             pointer_field = "description"
         else:
-            text = repository["name"]
+            value = repository["name"]
             pointer_field = "name"
+        text = " ".join(value.split())
         records.append(
             {
                 "id": f"work:{repository['full_name']}",
@@ -328,7 +329,7 @@ def _work_records(root: Path, path: Path) -> list[dict[str, Any]]:
                 "text": text,
                 "structured": {
                     "pointer": f"/repos/{index}/{pointer_field}",
-                    "value": text,
+                    "value": value,
                 },
             }
         )
