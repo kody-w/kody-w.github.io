@@ -2,6 +2,7 @@ import hashlib
 import importlib.util
 import json
 import re
+import struct
 import subprocess
 import sys
 import tempfile
@@ -15,6 +16,8 @@ CORPUS = ROOT / "api" / "twin-corpus.json"
 PAGE = ROOT / "twin" / "index.html"
 WORKER = ROOT / "twin" / "sw.js"
 MANIFEST = ROOT / "twin" / "manifest.webmanifest"
+ICON_192 = ROOT / "twin" / "icon-192.png"
+ICON_512 = ROOT / "twin" / "icon-512.png"
 PROMPT = ROOT / "twin" / "one-sentence-prompt.txt"
 ENGINE = ROOT / "js" / "twin-engine.js"
 STATE = ROOT / "js" / "twin-state.js"
@@ -84,6 +87,8 @@ class TwinAcceptanceTest(unittest.TestCase):
             PAGE,
             WORKER,
             MANIFEST,
+            ICON_192,
+            ICON_512,
             PROMPT,
             ENGINE,
             STATE,
@@ -198,6 +203,8 @@ class TwinAcceptanceTest(unittest.TestCase):
         self.assertTrue(manifest["icons"])
         for icon in manifest["icons"]:
             self.assertTrue(icon["src"].startswith("/"))
+        self.assertEqual(self.png_dimensions(ICON_192), (192, 192))
+        self.assertEqual(self.png_dimensions(ICON_512), (512, 512))
 
     def test_application_source_rejects_unsafe_runtime_patterns(self):
         source = "\n".join(
@@ -253,6 +260,13 @@ class TwinAcceptanceTest(unittest.TestCase):
         self.assertIn("python3 scripts/check_twin.py", workflow)
         gate = (ROOT / "scripts" / "check_twin.py").read_text()
         self.assertIn("scripts/benchmark_twin.js", gate)
+
+    @staticmethod
+    def png_dimensions(path):
+        data = path.read_bytes()
+        if data[:8] != b"\x89PNG\r\n\x1a\n":
+            raise AssertionError(f"{path} is not a PNG")
+        return struct.unpack(">II", data[16:24])
 
 
 if __name__ == "__main__":

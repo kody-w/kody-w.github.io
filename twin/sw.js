@@ -11,6 +11,8 @@ var SHELL_PATHS = [
   '/twin/',
   '/twin/index.html',
   '/twin/manifest.webmanifest',
+  '/twin/icon-192.png',
+  '/twin/icon-512.png',
   '/twin/one-sentence-prompt.txt',
   '/css/main.css',
   '/js/copy-accessibility.js',
