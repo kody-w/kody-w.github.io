@@ -741,7 +741,7 @@
 
   function tokenize(value) {
     var normalized = normalizeText(value);
-    return tokensFromNormalized(normalized, MAX_QUERY_TOKENS);
+    return tokensFromNormalized(normalized, Infinity);
   }
 
   function tokenizeData(value) {
@@ -1096,7 +1096,8 @@
       var normalized = normalizeText(query);
       var rawTokens = tokenize(query);
       var queryTokens = uniqueMeaningfulTokens(rawTokens);
-      if (!normalized || queryTokens.length === 0) {
+      if (!normalized || queryTokens.length === 0 ||
+          queryTokens.length > MAX_QUERY_TOKENS) {
         return [];
       }
       var phrases = phraseCandidates(rawTokens, queryTokens);
@@ -1400,6 +1401,14 @@
         };
       }
       var queryTokens = uniqueMeaningfulTokens(tokenize(question));
+      if (queryTokens.length > MAX_QUERY_TOKENS) {
+        return {
+          status: 'insufficient-evidence',
+          question: question.slice(0, MAX_QUERY_LENGTH),
+          thesis: [],
+          counterevidence: []
+        };
+      }
       var queryPhrases = phraseCandidates(tokenize(question), queryTokens);
       var thesisInternal = null;
       var selectedRelation = null;

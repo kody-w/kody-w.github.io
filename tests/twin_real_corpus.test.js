@@ -199,6 +199,12 @@ test('unsupported material qualifiers force abstention', () => {
     assert.equal(answer.status, 'insufficient-evidence', question);
     assert.deepEqual(answer.claims, [], question);
   }
+
+  const trailingConstraint =
+    `source truth ${'the '.repeat(30)}not cloud`;
+  const trailing = engine.answer(trailingConstraint);
+  assert.equal(trailing.status, 'insufficient-evidence');
+  assert.deepEqual(trailing.claims, []);
 });
 
 test('modal qualifiers remain in the same clause as their subject', () => {
