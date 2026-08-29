@@ -18,6 +18,9 @@ EXAMPLES_DIR = ROOT / "_examples"
 DEMOS_DIR = ROOT / "learnwithkody" / "demos"
 IDEA4BLOG_PAGE = ROOT / "idea4blog.md"
 ABOUT_PAGE = ROOT / "about.md"
+CONSTITUTION_PAGE = ROOT / "constitution" / "index.html"
+CONSTITUTION_DATA = ROOT / "_data" / "design_constitution.yml"
+CONSTITUTION_API = ROOT / "api" / "design-constitution.json"
 DEFAULT_LAYOUT = ROOT / "_layouts" / "default.html"
 TWIN_LAYOUT = ROOT / "_layouts" / "twin_post.html"
 EXAMPLE_LAYOUT = ROOT / "_layouts" / "lwk_example.html"
@@ -205,6 +208,11 @@ REQUIRED_NONE_CSP_DIRECTIVES = {
 }
 
 EXPECTED_POSTS = {
+    "2026-08-29-the-interface-should-meet-you-halfway.md": {
+        "title": '"The Interface Should Meet You Halfway"',
+        "date": "2026-08-29",
+        "tags": "[design, ux, local-first, agents]",
+    },
     "2026-03-06-the-repo-is-an-organism.md": {
         "title": '"The Repo Is an Organism: Software That Heals, Mutates, and Remembers"',
         "date": "2026-03-06",
@@ -3034,9 +3042,53 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("<h3>Local-First Design</h3>", about)
         self.assertIn("<h3>GitHub-Native Infrastructure</h3>", about)
         self.assertIn("Copilot workflows", about)
+        self.assertIn("site.data.design_constitution", about)
+        self.assertIn("Read the constitution", about)
+        self.assertIn("interfaces that preserve intent", about)
         self.assertNotIn("OpenAI GPT-4 integration", about)
         self.assertNotIn("Azure cloud architecture", about)
         self.assertNotIn("<h3>Cloud Architecture</h3>", about)
+
+    def test_intent_preserving_product_constitution_is_public(self):
+        constitution = yaml.safe_load(CONSTITUTION_DATA.read_text(encoding="utf-8"))
+        self.assertEqual(constitution["version"], "1.0")
+        self.assertEqual(constitution["short_title"], "Meet intent halfway")
+        self.assertIn("Preserve the user's intent", constitution["oath"])
+        self.assertIn("visible, reversible, and optional", constitution["oath"])
+        self.assertEqual(len(constitution["principles"]), 6)
+        self.assertEqual(
+            len({principle["id"] for principle in constitution["principles"]}),
+            6,
+        )
+        for principle in constitution["principles"]:
+            self.assertGreater(len(principle["rule"]), 50)
+            self.assertGreater(len(principle["test"]), 50)
+
+        front_matter, body = parse_front_matter(CONSTITUTION_PAGE)
+        self.assertEqual(front_matter.get("layout"), "default")
+        self.assertEqual(front_matter.get("title"), "Product Constitution")
+        self.assertEqual(front_matter.get("permalink"), "/constitution/")
+        self.assertIn("site.data.design_constitution", body)
+        self.assertIn("Observable test", body)
+        self.assertIn("/public-twin/#product-studio", body)
+
+        api_front_matter, api_body = parse_front_matter(CONSTITUTION_API)
+        self.assertEqual(api_front_matter.get("layout"), "null")
+        self.assertEqual(
+            api_front_matter.get("permalink"),
+            "/api/design-constitution.json",
+        )
+        self.assertIn("site.data.design_constitution | jsonify", api_body)
+
+        config = yaml.safe_load(CONFIG_FILE.read_text(encoding="utf-8"))
+        self.assertIn("interfaces that preserve intent", config["description"])
+
+        public_twin = (ROOT / "public-twin" / "index.html").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('id="twin-constitution-heading"', public_twin)
+        self.assertIn('id="product-studio"', public_twin)
+        self.assertIn("/constitution/", public_twin)
 
     def test_twin_blog_collection_and_pages_exist(self):
         config = CONFIG_FILE.read_text(encoding="utf-8")

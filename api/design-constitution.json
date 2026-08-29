@@ -1,0 +1,5 @@
+---
+layout: null
+permalink: /api/design-constitution.json
+---
+{{ site.data.design_constitution | jsonify }}

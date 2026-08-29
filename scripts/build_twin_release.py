@@ -26,6 +26,7 @@ DOCUMENT_MARKER = re.compile(
 
 SHELL_SOURCES = (
     "_config.yml",
+    "_data/design_constitution.yml",
     "_layouts/default.html",
     "public-twin/index.html",
     "public-twin/manifest.webmanifest",
@@ -148,6 +149,10 @@ def document_contract(page_source: str) -> tuple[str, bytes]:
     digest = hashlib.sha256()
     for relative, data in (
         ("_config.yml", (ROOT / "_config.yml").read_bytes()),
+        (
+            "_data/design_constitution.yml",
+            (ROOT / "_data" / "design_constitution.yml").read_bytes(),
+        ),
         ("_layouts/default.html", (ROOT / "_layouts/default.html").read_bytes()),
         ("public-twin/index.html", normalized.encode("utf-8")),
     ):

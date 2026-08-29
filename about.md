@@ -4,6 +4,30 @@ title: About
 permalink: /about/
 ---
 
+{% assign constitution = site.data.design_constitution %}
+<section class="profile-ethos" aria-labelledby="profile-ethos-title">
+    <p class="profile-ethos-kicker">Product constitution · v{{ constitution.version }}</p>
+    <h1 id="profile-ethos-title">Kody Wildfeuer</h1>
+    <p class="profile-ethos-lede">I build local-first agent systems and interfaces that preserve intent instead of making people repeat what the software already knows.</p>
+    <blockquote>
+        <strong>{{ constitution.short_title }}.</strong>
+        {{ constitution.oath }}
+    </blockquote>
+    <div class="profile-ethos-principles">
+        {% for principle in constitution.principles limit: 4 %}
+        <div>
+            <span>0{{ forloop.index }}</span>
+            <strong>{{ principle.name }}</strong>
+            <p>{{ principle.rule }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="profile-ethos-actions">
+        <a href="/constitution/" class="btn">Read the constitution</a>
+        <a href="/public-twin/#product-studio" class="btn btn-secondary">See it working</a>
+    </div>
+</section>
+
 <div class="stats">
     <a href="/work/" class="stat">
         <div class="stat-value"><i class="fas fa-project-diagram"></i></div>

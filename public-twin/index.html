@@ -7,7 +7,7 @@ manifest: /public-twin/manifest.webmanifest
 content_security_policy: "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'"
 ---
 
-<main class="public-twin" id="public-twin" data-twin-document-sha256="5dfd1cb30179ef59460be55be43a5baf2da2e9b347954a243443edddb1b4e6f1">
+<main class="public-twin" id="public-twin" data-twin-document-sha256="2d200b8893e9827a2caf376bc3ff0632e36234014eb7d235d9a930bb6f2eb948">
   <section class="twin-hero" aria-labelledby="twin-title">
     <p class="twin-eyebrow">Public evidence explorer · local-first</p>
     <div class="twin-hero-grid">
@@ -127,7 +127,25 @@ content_security_policy: "default-src 'self'; script-src 'self'; style-src 'self
     </section>
   </div>
 
-  <section class="twin-studio" aria-labelledby="twin-studio-heading">
+  {% assign constitution = site.data.design_constitution %}
+  <section class="twin-constitution" aria-labelledby="twin-constitution-heading">
+    <div>
+      <p class="twin-kicker">Constitutional design principle · v{{ constitution.version }}</p>
+      <h2 id="twin-constitution-heading">{{ constitution.short_title }}.</h2>
+      <blockquote>{{ constitution.oath }}</blockquote>
+    </div>
+    <div class="twin-constitution-rules">
+      {% for principle in constitution.principles limit: 4 %}
+      <div>
+        <span>0{{ forloop.index }}</span>
+        <strong>{{ principle.name }}</strong>
+      </div>
+      {% endfor %}
+      <a href="/constitution/">Read the full product constitution →</a>
+    </div>
+  </section>
+
+  <section class="twin-studio" id="product-studio" aria-labelledby="twin-studio-heading">
     <div class="twin-section-heading">
       <div>
         <p class="twin-kicker">One-Sentence Product Studio</p>
