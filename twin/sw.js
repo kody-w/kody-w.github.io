@@ -6,7 +6,7 @@ var CORPUS_PATH = '/api/twin-corpus.json';
 var BASELINE_SOURCE_MANIFEST_SHA256 =
   '9b14903ad91282be2e962e97697479b04e8416da52b7b219afa0422e391d3e29';
 var BASELINE_CORPUS_SHA256 =
-  'c04711d2a2783f04b1e6bebc3cc7d630522a8c6080ebfde3f233228ab33ffdc5';
+  '0d6badcd9364761804d7e77f2f5695185ed8e8254a80650f9d57a09695dd7f9d';
 var SHELL_PATHS = [
   '/twin/',
   '/twin/index.html',

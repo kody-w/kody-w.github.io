@@ -183,9 +183,12 @@ class TwinAcceptanceTest(unittest.TestCase):
 
     def test_service_worker_and_manifest_are_scope_limited(self):
         worker = WORKER.read_text()
+        corpus = json.loads(CORPUS.read_text())
         self.assertIn("kody-twin-", worker)
         self.assertIn("/api/twin-corpus.json", worker)
         self.assertIn("/twin/one-sentence-prompt.txt", worker)
+        self.assertIn(corpus["corpusSha256"], worker)
+        self.assertIn(corpus["sourceManifestSha256"], worker)
         self.assertNotIn("scope: '/'", worker)
 
         manifest = json.loads(MANIFEST.read_text())
