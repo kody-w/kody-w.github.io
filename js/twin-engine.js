@@ -39,11 +39,23 @@
     where: true, which: true, who: true, why: true, wildfeuer: true,
     with: true, would: true, you: true, your: true
   });
-  var TRANSITION_PATTERNS = [
-    /\bi changed my mind\b/i,
-    /\bi (?:no longer|now) believe\b/i,
-    /\bi used to\b[^.!?\n]{0,240}\b(?:but|now|instead)\b/i,
-    /\b(?:however|instead|by contrast|in contrast|no longer)\b/i
+  var SHA256_CONSTANTS = [
+    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
+    0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
+    0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc,
+    0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7,
+    0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
+    0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3,
+    0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5,
+    0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
+    0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
   ];
 
   function hasOwn(value, key) {
@@ -340,6 +352,200 @@
     }
   }
 
+  function compareUnicode(left, right) {
+    var leftIndex = 0;
+    var rightIndex = 0;
+    while (leftIndex < left.length && rightIndex < right.length) {
+      var leftPoint = left.codePointAt(leftIndex);
+      var rightPoint = right.codePointAt(rightIndex);
+      if (leftPoint !== rightPoint) {
+        return leftPoint < rightPoint ? -1 : 1;
+      }
+      leftIndex += leftPoint > 0xffff ? 2 : 1;
+      rightIndex += rightPoint > 0xffff ? 2 : 1;
+    }
+    if (leftIndex === left.length && rightIndex === right.length) {
+      return 0;
+    }
+    return leftIndex === left.length ? -1 : 1;
+  }
+
+  function canonicalJson(value, root) {
+    if (value === null) {
+      return 'null';
+    }
+    if (typeof value === 'string') {
+      return JSON.stringify(value);
+    }
+    if (typeof value === 'number') {
+      if (!Number.isFinite(value)) {
+        throw new TypeError('Canonical JSON requires finite numbers.');
+      }
+      return JSON.stringify(value);
+    }
+    if (typeof value === 'boolean') {
+      return value ? 'true' : 'false';
+    }
+    if (Array.isArray(value)) {
+      var items = [];
+      for (var arrayIndex = 0; arrayIndex < value.length; arrayIndex += 1) {
+        if (!hasOwn(value, String(arrayIndex))) {
+          throw new TypeError('Canonical JSON does not accept sparse arrays.');
+        }
+        items.push(canonicalJson(value[arrayIndex], false));
+      }
+      return '[' + items.join(',') + ']';
+    }
+    if (!isPlainObject(value)) {
+      throw new TypeError('Canonical JSON requires plain objects.');
+    }
+    var keys = Object.keys(value).filter(function (key) {
+      return !(root && key === 'corpusSha256');
+    }).sort(compareUnicode);
+    var properties = [];
+    for (var keyIndex = 0; keyIndex < keys.length; keyIndex += 1) {
+      var key = keys[keyIndex];
+      properties.push(JSON.stringify(key) + ':' +
+        canonicalJson(value[key], false));
+    }
+    return '{' + properties.join(',') + '}';
+  }
+
+  function utf8Bytes(value) {
+    var bytes = [];
+    for (var index = 0; index < value.length; index += 1) {
+      var point = value.charCodeAt(index);
+      if (point >= 0xd800 && point <= 0xdbff) {
+        if (index + 1 >= value.length) {
+          throw new TypeError('Canonical JSON contains an unpaired surrogate.');
+        }
+        var low = value.charCodeAt(index + 1);
+        if (low < 0xdc00 || low > 0xdfff) {
+          throw new TypeError('Canonical JSON contains an unpaired surrogate.');
+        }
+        point = ((point - 0xd800) * 0x400) + (low - 0xdc00) + 0x10000;
+        index += 1;
+      } else if (point >= 0xdc00 && point <= 0xdfff) {
+        throw new TypeError('Canonical JSON contains an unpaired surrogate.');
+      }
+      if (point <= 0x7f) {
+        bytes.push(point);
+      } else if (point <= 0x7ff) {
+        bytes.push(0xc0 | (point >>> 6));
+        bytes.push(0x80 | (point & 0x3f));
+      } else if (point <= 0xffff) {
+        bytes.push(0xe0 | (point >>> 12));
+        bytes.push(0x80 | ((point >>> 6) & 0x3f));
+        bytes.push(0x80 | (point & 0x3f));
+      } else {
+        bytes.push(0xf0 | (point >>> 18));
+        bytes.push(0x80 | ((point >>> 12) & 0x3f));
+        bytes.push(0x80 | ((point >>> 6) & 0x3f));
+        bytes.push(0x80 | (point & 0x3f));
+      }
+    }
+    return bytes;
+  }
+
+  function rotateRight(value, amount) {
+    return (value >>> amount) | (value << (32 - amount));
+  }
+
+  function wordHex(value) {
+    return ('00000000' + (value >>> 0).toString(16)).slice(-8);
+  }
+
+  function sha256Hex(bytes) {
+    var message = bytes.slice();
+    var bitLength = bytes.length * 8;
+    message.push(0x80);
+    while (message.length % 64 !== 56) {
+      message.push(0);
+    }
+    var highLength = Math.floor(bitLength / 0x100000000);
+    var lowLength = bitLength >>> 0;
+    for (var highShift = 24; highShift >= 0; highShift -= 8) {
+      message.push((highLength >>> highShift) & 0xff);
+    }
+    for (var lowShift = 24; lowShift >= 0; lowShift -= 8) {
+      message.push((lowLength >>> lowShift) & 0xff);
+    }
+
+    var hash = [
+      0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
+      0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
+    ];
+    var words = new Array(64);
+    for (var offset = 0; offset < message.length; offset += 64) {
+      var wordIndex;
+      for (wordIndex = 0; wordIndex < 16; wordIndex += 1) {
+        var byteIndex = offset + wordIndex * 4;
+        words[wordIndex] = (
+          (message[byteIndex] << 24) |
+          (message[byteIndex + 1] << 16) |
+          (message[byteIndex + 2] << 8) |
+          message[byteIndex + 3]
+        );
+      }
+      for (wordIndex = 16; wordIndex < 64; wordIndex += 1) {
+        var previous = words[wordIndex - 15];
+        var prior = words[wordIndex - 2];
+        var smallZero = rotateRight(previous, 7) ^
+          rotateRight(previous, 18) ^ (previous >>> 3);
+        var smallOne = rotateRight(prior, 17) ^
+          rotateRight(prior, 19) ^ (prior >>> 10);
+        words[wordIndex] = (words[wordIndex - 16] + smallZero +
+          words[wordIndex - 7] + smallOne) | 0;
+      }
+
+      var a = hash[0];
+      var b = hash[1];
+      var c = hash[2];
+      var d = hash[3];
+      var e = hash[4];
+      var f = hash[5];
+      var g = hash[6];
+      var h = hash[7];
+      for (var round = 0; round < 64; round += 1) {
+        var bigOne = rotateRight(e, 6) ^ rotateRight(e, 11) ^
+          rotateRight(e, 25);
+        var choose = (e & f) ^ ((~e) & g);
+        var first = (h + bigOne + choose +
+          SHA256_CONSTANTS[round] + words[round]) | 0;
+        var bigZero = rotateRight(a, 2) ^ rotateRight(a, 13) ^
+          rotateRight(a, 22);
+        var majority = (a & b) ^ (a & c) ^ (b & c);
+        var second = (bigZero + majority) | 0;
+        h = g;
+        g = f;
+        f = e;
+        e = (d + first) | 0;
+        d = c;
+        c = b;
+        b = a;
+        a = (first + second) | 0;
+      }
+      hash[0] = (hash[0] + a) | 0;
+      hash[1] = (hash[1] + b) | 0;
+      hash[2] = (hash[2] + c) | 0;
+      hash[3] = (hash[3] + d) | 0;
+      hash[4] = (hash[4] + e) | 0;
+      hash[5] = (hash[5] + f) | 0;
+      hash[6] = (hash[6] + g) | 0;
+      hash[7] = (hash[7] + h) | 0;
+    }
+    return hash.map(wordHex).join('');
+  }
+
+  function computeCorpusSha256(corpus) {
+    var errors = [];
+    inspectData(corpus, '$', [], errors);
+    if (errors.length > 0 || !isPlainObject(corpus)) {
+      throw new TypeError('Corpus hash input must be JSON-only data.');
+    }
+    return sha256Hex(utf8Bytes(canonicalJson(corpus, true)));
+  }
+
   function validateCorpus(corpus) {
     var errors = [];
     inspectData(corpus, '$', [], errors);
@@ -367,6 +573,16 @@
         !SHA256.test(corpus.corpusSha256)) {
       addError(errors, '$.corpusSha256', 'INVALID_CORPUS_HASH',
         'Corpus hash must be a lowercase SHA-256 digest.');
+    } else {
+      try {
+        if (computeCorpusSha256(corpus) !== corpus.corpusSha256) {
+          addError(errors, '$.corpusSha256', 'CORPUS_HASH_MISMATCH',
+            'Corpus content does not match its declared SHA-256 digest.');
+        }
+      } catch (hashError) {
+        addError(errors, '$.corpusSha256', 'CORPUS_HASH_FAILURE',
+          'Corpus content cannot be hashed canonically.');
+      }
     }
     validateManifest(corpus.sourceManifest, errors);
 
@@ -634,58 +850,43 @@
     }
     var best = spans[0];
     var bestScore = -1;
-    for (var index = 0; index < spans.length; index += 1) {
-      var span = spans[index];
-      var normalized = normalizeDataText(
-        record.text.slice(span.start, span.end));
-      var score = 0;
-      for (var phraseIndex = 0;
-           phraseIndex < phrases.length;
-           phraseIndex += 1) {
-        if (normalized.indexOf(phrases[phraseIndex]) !== -1) {
-          score += phrases[phraseIndex].split(' ').length * 8;
+    for (var startIndex = 0; startIndex < spans.length; startIndex += 1) {
+      for (var endIndex = startIndex;
+           endIndex < spans.length && endIndex < startIndex + 3;
+           endIndex += 1) {
+        var span = {
+          start: spans[startIndex].start,
+          end: spans[endIndex].end
+        };
+        var normalized = normalizeDataText(
+          record.text.slice(span.start, span.end));
+        var evidenceTokens = tokenizeData(normalized);
+        var matched = 0;
+        for (var tokenIndex = 0;
+             tokenIndex < queryTokens.length;
+             tokenIndex += 1) {
+          if (evidenceTokens.indexOf(queryTokens[tokenIndex]) !== -1) {
+            matched += 1;
+          }
+        }
+        var score = matched * 1000;
+        for (var phraseIndex = 0;
+             phraseIndex < phrases.length;
+             phraseIndex += 1) {
+          if (normalized.indexOf(phrases[phraseIndex]) !== -1) {
+            score += phrases[phraseIndex].split(' ').length * 20;
+          }
+        }
+        score -= (span.end - span.start) / 10000;
+        if (score > bestScore ||
+            (score === bestScore &&
+             span.end - span.start < best.end - best.start)) {
+          best = span;
+          bestScore = score;
         }
       }
-      for (var tokenIndex = 0;
-           tokenIndex < queryTokens.length;
-           tokenIndex += 1) {
-        if (tokenizeData(normalized).indexOf(queryTokens[tokenIndex]) !== -1) {
-          score += 3;
-        }
-      }
-      if (score > bestScore ||
-          (score === bestScore &&
-           span.end - span.start < best.end - best.start)) {
-        best = span;
-        bestScore = score;
-      }
     }
-    if (best.end - best.start <= 600) {
-      return best;
-    }
-    var lower = record.text.toLowerCase();
-    var anchor = best.start;
-    for (var phrase = 0; phrase < phrases.length; phrase += 1) {
-      var found = lower.indexOf(phrases[phrase], best.start);
-      if (found >= best.start && found < best.end) {
-        anchor = found;
-        break;
-      }
-    }
-    var croppedStart = Math.max(best.start, anchor - 220);
-    var croppedEnd = Math.min(best.end, croppedStart + 600);
-    while (croppedStart < anchor && /\S/.test(record.text.charAt(croppedStart))) {
-      croppedStart += 1;
-    }
-    while (croppedStart < croppedEnd &&
-           /\s/.test(record.text.charAt(croppedStart))) {
-      croppedStart += 1;
-    }
-    while (croppedEnd > croppedStart &&
-           /\s/.test(record.text.charAt(croppedEnd - 1))) {
-      croppedEnd -= 1;
-    }
-    return { start: croppedStart, end: croppedEnd };
+    return best;
   }
 
   function makeCitation(record, queryTokens, phrases) {
@@ -721,6 +922,25 @@
   function citationEvidence(citation) {
     return citation.locator.kind === 'text'
       ? citation.quote : cloneJson(citation.value);
+  }
+
+  function citationSupportsQuery(citation, queryTokens) {
+    if (!citation || queryTokens.length === 0) {
+      return false;
+    }
+    var value = citation.locator.kind === 'text'
+      ? citation.quote : String(citation.value);
+    var evidenceTokens = tokenizeData(value);
+    var matched = 0;
+    for (var index = 0; index < queryTokens.length; index += 1) {
+      if (evidenceTokens.indexOf(queryTokens[index]) !== -1) {
+        matched += 1;
+      }
+    }
+    if (queryTokens.length === 1) {
+      return matched === 1;
+    }
+    return matched >= 2 && matched / queryTokens.length >= 0.5;
   }
 
   function createEngine(inputCorpus) {
@@ -955,13 +1175,6 @@
         from: safeOptions.from,
         to: safeOptions.to
       });
-      if (!isAnswerable(internal[0])) {
-        return {
-          status: 'insufficient-evidence',
-          question: question.slice(0, MAX_QUERY_LENGTH),
-          claims: []
-        };
-      }
       var claims = [];
       for (var index = 0;
            index < internal.length && claims.length < Math.min(5, safeOptions.limit);
@@ -970,6 +1183,10 @@
           continue;
         }
         var hit = publicHit(internal[index]);
+        if (!citationSupportsQuery(
+          hit.citation, internal[index].queryTokens)) {
+          continue;
+        }
         claims.push({
           evidence: hit.evidence,
           citation: hit.citation
@@ -1001,6 +1218,10 @@
           continue;
         }
         var hit = publicHit(internal[index]);
+        if (!citationSupportsQuery(
+          hit.citation, internal[index].queryTokens)) {
+          continue;
+        }
         items.push({
           at: hit.date,
           timeBasis: hit.timeBasis,
@@ -1061,22 +1282,6 @@
       return true;
     }
 
-    function explicitTransitionHit(hits, excludedId) {
-      for (var index = 0; index < hits.length; index += 1) {
-        var hit = hits[index];
-        var candidate = hit.indexed.record;
-        if (candidate.id === excludedId || !isAnswerable(hit)) {
-          continue;
-        }
-        for (var pattern = 0; pattern < TRANSITION_PATTERNS.length; pattern += 1) {
-          if (TRANSITION_PATTERNS[pattern].test(candidate.text)) {
-            return hit;
-          }
-        }
-      }
-      return null;
-    }
-
     function challenge(question, options) {
       var safeOptions = normalizeOptions(options);
       var internal = typeof question === 'string'
@@ -1088,7 +1293,7 @@
           to: safeOptions.to
         })
         : [];
-      if (!isAnswerable(internal[0])) {
+      if (internal.length === 0) {
         return {
           status: 'missing-evidence',
           question: typeof question === 'string'
@@ -1099,13 +1304,18 @@
       }
       var queryTokens = uniqueMeaningfulTokens(tokenize(question));
       var queryPhrases = phraseCandidates(tokenize(question), queryTokens);
-      var thesisInternal = internal[0];
+      var thesisInternal = null;
       var selectedRelation = null;
 
       for (var hitIndex = 0;
            hitIndex < internal.length && !selectedRelation;
            hitIndex += 1) {
         if (!isAnswerable(internal[hitIndex])) {
+          continue;
+        }
+        var possibleThesis = publicHit(internal[hitIndex]);
+        if (!citationSupportsQuery(
+          possibleThesis.citation, internal[hitIndex].queryTokens)) {
           continue;
         }
         for (var relationIndex = 0;
@@ -1124,12 +1334,35 @@
         }
       }
 
+      if (!thesisInternal) {
+        for (var thesisIndex = 0;
+             thesisIndex < internal.length;
+             thesisIndex += 1) {
+          if (!isAnswerable(internal[thesisIndex])) {
+            continue;
+          }
+          var fallbackThesis = publicHit(internal[thesisIndex]);
+          if (citationSupportsQuery(
+            fallbackThesis.citation, internal[thesisIndex].queryTokens)) {
+            thesisInternal = internal[thesisIndex];
+            break;
+          }
+        }
+      }
+      if (!thesisInternal) {
+        return {
+          status: 'missing-evidence',
+          question: question.slice(0, MAX_QUERY_LENGTH),
+          thesis: [],
+          counterevidence: []
+        };
+      }
+
       var thesisHit = publicHit(thesisInternal);
       var thesis = [{
         evidence: thesisHit.evidence,
         citation: thesisHit.citation
       }];
-      var thesisId = thesisHit.sourceId;
       var counter = null;
 
       if (selectedRelation) {
@@ -1141,20 +1374,6 @@
           evidence: citationEvidence(relatedCitation),
           citation: relatedCitation
         };
-      }
-
-      if (!counter) {
-        var transitionHit = explicitTransitionHit(internal, thesisId);
-        if (transitionHit) {
-          var transitionCitation = makeCitation(
-            transitionHit.indexed.record, queryTokens,
-            transitionHit.phrases);
-          counter = {
-            relation: 'explicit-transition',
-            evidence: citationEvidence(transitionCitation),
-            citation: transitionCitation
-          };
-        }
       }
 
       return {
@@ -1253,6 +1472,7 @@
   return Object.freeze({
     version: '1.0.0',
     validateCorpus: validateCorpus,
+    computeCorpusSha256: computeCorpusSha256,
     createEngine: createEngine,
     normalizeText: normalizeText,
     tokenize: tokenize
