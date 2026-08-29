@@ -30,13 +30,23 @@
   var MATERIAL_QUALIFIERS = Object.freeze({
     all: true,
     always: true,
+    can: true,
+    cannot: true,
+    could: true,
     every: true,
+    may: true,
+    might: true,
+    must: true,
     never: true,
     no: true,
     none: true,
     not: true,
+    ought: true,
     only: true,
-    without: true
+    shall: true,
+    should: true,
+    without: true,
+    would: true
   });
   var STOP_WORDS = Object.freeze({
     a: true, about: true, an: true, and: true, are: true, as: true, at: true,
@@ -44,11 +54,11 @@
     for: true, from: true, had: true, has: true, have: true, he: true, her: true,
     here: true, him: true, his: true, how: true, i: true, in: true, into: true,
     is: true, it: true, its: true, kody: true, me: true, my: true, of: true,
-    on: true, or: true, our: true, she: true, should: true, that: true,
+    on: true, or: true, our: true, she: true, that: true,
     the: true, their: true, them: true, there: true, they: true, this: true,
     to: true, was: true, we: true, were: true, what: true, when: true,
     where: true, which: true, who: true, why: true, wildfeuer: true,
-    with: true, would: true, you: true, your: true
+    with: true, you: true, your: true
   });
   var SHA256_CONSTANTS = [
     0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
@@ -71,6 +81,22 @@
 
   function hasOwn(value, key) {
     return Object.prototype.hasOwnProperty.call(value, key);
+  }
+
+  function hasExactKeys(value, expected) {
+    if (!isPlainObject(value)) {
+      return false;
+    }
+    var keys = Object.keys(value);
+    if (keys.length !== expected.length) {
+      return false;
+    }
+    for (var index = 0; index < expected.length; index += 1) {
+      if (!hasOwn(value, expected[index])) {
+        return false;
+      }
+    }
+    return true;
   }
 
   function isPlainObject(value) {
@@ -1470,6 +1496,28 @@
           !byId[citation.sourceId]) {
         return { ok: false, reason: 'invalid-citation' };
       }
+      var commonKeys = [
+        'sourceId', 'sourceSha256', 'sourceType', 'title', 'author',
+        'date', 'timeBasis', 'sourceUrl', 'locator'
+      ];
+      if (!isPlainObject(citation.locator)) {
+        return { ok: false, reason: 'invalid-citation-schema' };
+      }
+      if (citation.locator.kind === 'text') {
+        if (!hasExactKeys(citation, commonKeys.concat(['quote'])) ||
+            !hasExactKeys(citation.locator,
+              ['kind', 'start', 'end'])) {
+          return { ok: false, reason: 'invalid-citation-schema' };
+        }
+      } else if (citation.locator.kind === 'json-pointer') {
+        if (!hasExactKeys(citation, commonKeys.concat(['value'])) ||
+            !hasExactKeys(citation.locator,
+              ['kind', 'pointer'])) {
+          return { ok: false, reason: 'invalid-citation-schema' };
+        }
+      } else {
+        return { ok: false, reason: 'unknown-locator' };
+      }
       var record = byId[citation.sourceId];
       if (citation.sourceSha256 !== record.sourceSha256 ||
           citation.sourceType !== record.sourceType ||
@@ -1477,8 +1525,7 @@
           citation.author !== record.author ||
           citation.date !== record.date ||
           citation.timeBasis !== record.timeBasis ||
-          citation.sourceUrl !== record.sourceUrl ||
-          !isPlainObject(citation.locator)) {
+          citation.sourceUrl !== record.sourceUrl) {
         return { ok: false, reason: 'provenance-mismatch' };
       }
       if (citation.locator.kind === 'text') {
@@ -1496,8 +1543,6 @@
             !jsonEqual(citation.value, entry.value)) {
           return { ok: false, reason: 'structured-value-mismatch' };
         }
-      } else {
-        return { ok: false, reason: 'unknown-locator' };
       }
       return {
         ok: true,
