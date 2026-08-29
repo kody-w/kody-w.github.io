@@ -580,8 +580,10 @@
       setLive(`${response.error.code}: ${response.error.message}`);
       return;
     }
-    button.textContent = "Pinned";
-    setLive("Citation pinned to local evidence.");
+    const data = responseData(response);
+    const newlyPinned = data.pinned !== false;
+    button.textContent = newlyPinned ? "Pinned" : "Already pinned";
+    setLive(newlyPinned ? "Citation pinned to local evidence." : "Citation was already pinned.");
     await refreshState();
   }
 
