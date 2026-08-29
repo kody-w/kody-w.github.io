@@ -215,7 +215,10 @@ test('state import rejects forged pinned evidence transactionally', async () => 
   const answer = await controller.dispatch('answer.ask', {
     question: 'source truth'
   });
-  const extraClaim = JSON.parse(before);
+  const afterAnswer = (
+    await controller.dispatch('state.export')
+  ).data.serialized;
+  const extraClaim = JSON.parse(afterAnswer);
   extraClaim.pinnedCitations.push({
     ...answer.data.claims[0].citation,
     claim: 'FORGED IMPORTED CLAIM: I secretly endorse this.'
@@ -226,7 +229,7 @@ test('state import rejects forged pinned evidence transactionally', async () => 
   assert.equal(extraImported.ok, false);
   assert.equal(
     (await controller.dispatch('state.export')).data.serialized,
-    before
+    afterAnswer
   );
 });
 
