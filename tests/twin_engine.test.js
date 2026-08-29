@@ -17,7 +17,7 @@ function citationIsExact(citation) {
       record.text.slice(citation.locator.start, citation.locator.end)
     );
   } else {
-    assert.equal(citation.value, record.structured.description);
+    assert.equal(citation.value, record.structured.value);
   }
 }
 

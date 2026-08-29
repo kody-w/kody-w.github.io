@@ -91,8 +91,8 @@
       "sourceSha256": "6666666666666666666666666666666666666666666666666666666666666666",
       "text": "RAPP is a local-first agent operating system.",
       "structured": {
-        "description": "RAPP is a local-first agent operating system.",
-        "pointer": "/repos/0/description"
+        "pointer": "/repos/0/description",
+        "value": "RAPP is a local-first agent operating system."
       }
     }
   ]

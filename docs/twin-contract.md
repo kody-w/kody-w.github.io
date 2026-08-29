@@ -30,6 +30,10 @@ Structured work citations use JSON Pointers into `api/works.json`. Source
 authors remain `null` when the source does not declare one. In particular,
 field-note authorship must never be rewritten as Kody attribution.
 
+Work records store structured provenance as
+`{ "pointer": "/repos/<index>/<field>", "value": <exact scalar> }`. The
+pointer's resolved catalog scalar and `value` must be identical.
+
 Challenge relationships are conservative and explicit. A related search result
 is not automatically counterevidence. If no curated or textually explicit
 relationship can be proved, the result is `missing-evidence`.
