@@ -12,6 +12,7 @@
   'use strict';
 
   var VERSION = '1.0.0';
+  var STATE_SCHEMA = 'kody-twin-state/1';
   var MAX_TEXT_LENGTH = 500;
   var MAX_IMPORT_LENGTH = 1024 * 1024;
   var MAX_MISSION_STEPS = 100;
@@ -246,7 +247,7 @@
         corpus = { error: errorMessage(error) };
       }
       try {
-        state = cloneJson(store.get());
+        state = validatedState();
       } catch (error) {
         state = { error: errorMessage(error) };
       }
@@ -383,11 +384,12 @@
 
         case 'state.get':
           return {
-            state: cloneJson(store.get()),
+            state: validatedState(),
             storageMode: storageMode()
           };
 
         case 'state.export':
+          validatedState();
           return {
             serialized: exportedState(),
             storageMode: storageMode()
@@ -395,19 +397,20 @@
 
         case 'state.import':
           snapshot = stateSnapshot();
+          validateImportCandidate(input.serialized);
           try {
             store.importState(input.serialized);
           } catch (error) {
             restoreStateSnapshot(snapshot);
             throw controllerError(
-              'INVALID_INPUT',
+              'INVALID_IMPORT',
               'serialized is not a valid supported state export.',
               false
             );
           }
           try {
             value = {
-              state: cloneJson(store.get()),
+              state: validatedState(),
               serialized: exportedState(),
               storageMode: storageMode()
             };
@@ -424,7 +427,7 @@
           try {
             store.reset();
             value = {
-              state: cloneJson(store.get()),
+              state: validatedState(),
               serialized: exportedState(),
               storageMode: storageMode()
             };
@@ -567,6 +570,7 @@
       }
 
       try {
+        validatedState();
         snapshot = exportedState();
         store.importState(snapshot);
         var roundTrip = exportedState();
@@ -702,6 +706,69 @@
           false
         );
       }
+    }
+
+    function validateImportCandidate(serialized) {
+      var candidate;
+      try {
+        candidate = JSON.parse(serialized);
+      } catch (error) {
+        throw controllerError(
+          'INVALID_IMPORT',
+          'serialized is not valid JSON state.',
+          false
+        );
+      }
+      inspectImportData(candidate, 0);
+      if (!isPlainObject(candidate) || candidate.schema !== STATE_SCHEMA) {
+        throw controllerError(
+          'INVALID_IMPORT',
+          'serialized uses an unsupported state schema.',
+          false
+        );
+      }
+      if (!Array.isArray(candidate.pinnedCitations)) {
+        throw controllerError(
+          'INVALID_IMPORT',
+          'serialized must contain a pinnedCitations array.',
+          false
+        );
+      }
+      validatePinnedCitations(candidate.pinnedCitations);
+    }
+
+    function validatedState() {
+      var state = cloneJson(store.get());
+      if (!Array.isArray(state.pinnedCitations)) {
+        throw controllerError(
+          'INVALID_CITATION',
+          'Stored pinned citations are malformed.',
+          false
+        );
+      }
+      validatePinnedCitations(state.pinnedCitations);
+      return state;
+    }
+
+    function validatePinnedCitations(citations) {
+      citations.forEach(function (citation, index) {
+        if (!isPlainObject(citation)) {
+          throw controllerError(
+            'INVALID_CITATION',
+            'Pinned citation ' + index + ' is malformed.',
+            false
+          );
+        }
+        try {
+          assertValidCitation(citation);
+        } catch (error) {
+          throw controllerError(
+            'INVALID_CITATION',
+            'Pinned citation ' + index + ' is invalid for this corpus.',
+            false
+          );
+        }
+      });
     }
 
     function pinCitation(citation) {
@@ -1174,6 +1241,60 @@
       assertSafeJson(descriptors[key].value, seen);
     });
     seen.pop();
+  }
+
+  function inspectImportData(value, depth) {
+    if (depth > 100) {
+      throw controllerError(
+        'INVALID_IMPORT',
+        'serialized state is nested too deeply.',
+        false
+      );
+    }
+    if (
+      value === null ||
+      typeof value === 'string' ||
+      typeof value === 'boolean'
+    ) {
+      return;
+    }
+    if (typeof value === 'number') {
+      if (!Number.isFinite(value)) {
+        throw controllerError(
+          'INVALID_IMPORT',
+          'serialized state contains an invalid number.',
+          false
+        );
+      }
+      return;
+    }
+    if (Array.isArray(value)) {
+      value.forEach(function (item) {
+        inspectImportData(item, depth + 1);
+      });
+      return;
+    }
+    if (!isPlainObject(value)) {
+      throw controllerError(
+        'INVALID_IMPORT',
+        'serialized state must contain JSON objects only.',
+        false
+      );
+    }
+    Object.keys(value).forEach(function (key) {
+      if (
+        key === '__proto__' ||
+        key === 'prototype' ||
+        key === 'constructor'
+      ) {
+        throw controllerError(
+          'INVALID_IMPORT',
+          'serialized state contains an unsafe object key.',
+          false
+        );
+      }
+      inspectImportData(value[key], depth + 1);
+    });
   }
 
   function queryOptions(input) {
