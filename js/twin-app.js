@@ -4,6 +4,8 @@
   const VERSION = "1.0.0";
   const CORPUS_URL = "/api/twin-corpus.json";
   const PROMPT_URL = "/twin/one-sentence-prompt.txt";
+  const EXPECTED_CORPUS_SHA256 = "0d6badcd9364761804d7e77f2f5695185ed8e8254a80650f9d57a09695dd7f9d";
+  const EXPECTED_SOURCE_MANIFEST_SHA256 = "9b14903ad91282be2e962e97697479b04e8416da52b7b219afa0422e391d3e29";
   const MODE_ACTIONS = Object.freeze({
     answer: "answer.ask",
     evolution: "evolution.compare",
@@ -24,8 +26,10 @@
     cacheVerificationError: null,
     serviceWorkerError: null,
     corpusSha256: "",
+    sourceManifestSha256: "",
     records: 0,
     storageMode: "unknown",
+    stalePinsRemoved: 0,
     error: null,
   };
 
@@ -229,6 +233,8 @@
       storageMode: runtime.storageMode,
       records: runtime.records,
       corpusSha256: runtime.corpusSha256,
+      sourceManifestSha256: runtime.sourceManifestSha256,
+      stalePinsRemoved: runtime.stalePinsRemoved,
       cacheVerificationError: runtime.cacheVerificationError,
       serviceWorkerError: runtime.serviceWorkerError,
       error: runtime.error,
@@ -333,6 +339,36 @@
     const snapshot = objectValue(state);
     setMode(modeFromState(snapshot));
     renderPinned(snapshot);
+  }
+
+  function refreshStorageMode() {
+    if (store && typeof store.storageMode === "function") {
+      runtime.storageMode = store.storageMode();
+      updateRuntimeStatus();
+    }
+    return runtime.storageMode;
+  }
+
+  function reconcileStoredPins(engine) {
+    const before = store.get();
+    const pins = Array.isArray(before.pinnedCitations) ? before.pinnedCitations : [];
+    const validPins = pins.filter((citation) => {
+      try {
+        const validation = engine.validateCitation(citation);
+        return validation && validation.ok === true;
+      } catch (_error) {
+        return false;
+      }
+    });
+    const removed = pins.length - validPins.length;
+    let state = before;
+    if (removed > 0) {
+      state = store.update((draft) => {
+        draft.pinnedCitations = validPins;
+      });
+    }
+    refreshStorageMode();
+    return { state, removed };
   }
 
   function evidenceCitation(item) {
@@ -673,10 +709,12 @@
     }
     try {
       const response = await controller.dispatch(action, input);
+      refreshStorageMode();
       return response && typeof response === "object"
         ? response
         : errorEnvelope(action, "INVALID_RESPONSE", "The semantic controller returned an invalid response.");
     } catch (error) {
+      refreshStorageMode();
       return errorEnvelope(action, "ACTION_FAILED", error && error.message, false);
     }
   }
@@ -921,6 +959,13 @@
           message: "The cached corpus digest does not match the running corpus.",
         };
       }
+      if (cachedCorpus.sourceManifestSha256 !== runtime.sourceManifestSha256) {
+        return {
+          ok: false,
+          code: "CACHED_MANIFEST_MISMATCH",
+          message: "The cached source manifest digest does not match the running corpus.",
+        };
+      }
       return { ok: true };
     } catch (error) {
       return {
@@ -1065,11 +1110,15 @@
       },
       inspect: inspectRuntime,
       dispatch: (action, input) => dispatchAction(action, input),
-      runMission: (mission) => {
+      runMission: async (mission) => {
         if (!controller) {
-          return Promise.resolve(errorEnvelope("mission.run", "NOT_READY", "The public twin is still initializing.", true));
+          return errorEnvelope("mission.run", "NOT_READY", "The public twin is still initializing.", true);
         }
-        return controller.runMission(mission);
+        try {
+          return await controller.runMission(mission);
+        } finally {
+          refreshStorageMode();
+        }
       },
       selfTest: () => {
         if (!controller) {
@@ -1152,8 +1201,16 @@
         error.retryable = false;
         throw error;
       }
+      if (corpus.corpusSha256 !== EXPECTED_CORPUS_SHA256
+          || corpus.sourceManifestSha256 !== EXPECTED_SOURCE_MANIFEST_SHA256) {
+        const error = new Error("Loaded corpus does not match the trusted public twin release.");
+        error.code = "CORPUS_RELEASE_MISMATCH";
+        error.retryable = false;
+        throw error;
+      }
       runtime.corpusValidated = true;
-      runtime.corpusSha256 = text(corpus.corpusSha256 || corpus.sourceManifestSha256);
+      runtime.corpusSha256 = corpus.corpusSha256;
+      runtime.sourceManifestSha256 = corpus.sourceManifestSha256;
       runtime.records = Number(corpus.stats && corpus.stats.total || corpus.records && corpus.records.length || 0);
       runtime.corpus = {
         post: Number(corpus.stats && corpus.stats.post || 0),
@@ -1166,7 +1223,9 @@
       runtime.indexed = true;
 
       store = TwinState.createStore({ storage: browserStorage() });
-      runtime.storageMode = typeof store.storageMode === "function" ? store.storageMode() : "memory";
+      refreshStorageMode();
+      const reconciliation = reconcileStoredPins(engine);
+      runtime.stalePinsRemoved = reconciliation.removed;
       runtime.stateInitialized = true;
 
       controller = Controller.createController({
@@ -1177,7 +1236,8 @@
         copyText,
         corpusSha256: runtime.corpusSha256,
       });
-      applyStateView(store.get());
+      applyStateView(reconciliation.state);
+      elements.stateStatus.textContent = `${reconciliation.removed} stale pinned citation${reconciliation.removed === 1 ? "" : "s"} removed during startup validation.`;
 
       runtime.phase = "offline-check";
       await serviceWorkerStatus(Engine);
