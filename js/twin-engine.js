@@ -33,7 +33,7 @@
     for: true, from: true, had: true, has: true, have: true, he: true, her: true,
     here: true, him: true, his: true, how: true, i: true, in: true, into: true,
     is: true, it: true, its: true, kody: true, me: true, my: true, of: true,
-    not: true, on: true, or: true, our: true, she: true, should: true, that: true,
+    on: true, or: true, our: true, she: true, should: true, that: true,
     the: true, their: true, them: true, there: true, they: true, this: true,
     to: true, was: true, we: true, were: true, what: true, when: true,
     where: true, which: true, who: true, why: true, wildfeuer: true,
@@ -937,10 +937,7 @@
         matched += 1;
       }
     }
-    if (queryTokens.length <= 2) {
-      return matched === queryTokens.length;
-    }
-    return matched >= 2 && matched / queryTokens.length >= 0.5;
+    return matched === queryTokens.length;
   }
 
   function createEngine(inputCorpus) {
