@@ -14,6 +14,7 @@
   var DEFAULT_KEY = 'kody-twin-state';
   var DEFAULT_MAX_HISTORY = 100;
   var MAX_IMPORT_BYTES = 1024 * 1024;
+  var MAX_PERSISTED_BYTES = MAX_IMPORT_BYTES + 256;
   var TOP_LEVEL_KEYS = [
     'schema',
     'revision',
@@ -189,10 +190,12 @@
     var mode = 'memory';
     var state = initialState();
     var persistentStateMayExist = false;
+    var localGeneration = 0;
 
     if (typeof key !== 'string' || !key) {
       throw new TypeError('key must be a non-empty string');
     }
+    var generationKey = key + ':generation';
     if (!Number.isSafeInteger(maxHistory) || maxHistory < 0) {
       throw new TypeError('maxHistory must be a non-negative safe integer');
     }
@@ -221,23 +224,118 @@
       return candidate;
     }
 
-    function persist() {
+    function parseGeneration(serialized) {
+      if (serialized === null) {
+        return 0;
+      }
+      if (!/^(?:0|[1-9][0-9]*)$/.test(serialized)) {
+        throw new TypeError('Invalid durable state generation');
+      }
+      var generation = Number(serialized);
+      if (!Number.isSafeInteger(generation)) {
+        throw new TypeError('Invalid durable state generation');
+      }
+      return generation;
+    }
+
+    function persistedStateJson(candidate, generation) {
+      return canonicalJson({
+        generation: generation,
+        state: candidate
+      });
+    }
+
+    function parsePersistedState(serialized, generation, generationExists) {
+      if (utf8Length(serialized) > MAX_PERSISTED_BYTES) {
+        throw new RangeError('Persisted state is too large');
+      }
+      var parsed = JSON.parse(serialized);
+      if (isPlainObject(parsed) &&
+          Object.keys(parsed).length === 2 &&
+          Object.prototype.hasOwnProperty.call(parsed, 'generation') &&
+          Object.prototype.hasOwnProperty.call(parsed, 'state')) {
+        if (!Number.isSafeInteger(parsed.generation) ||
+            parsed.generation < 0) {
+          throw new TypeError('Invalid persisted state generation');
+        }
+        validateState(parsed.state);
+        return parsed.generation === generation ? parsed.state : null;
+      }
+      validateState(parsed);
+      if (generationExists && generation !== 0) {
+        return null;
+      }
+      return parsed;
+    }
+
+    function stateConflict() {
+      var error = new Error('Persistent state was reset by another store');
+      error.name = 'TwinStateConflictError';
+      error.code = 'STATE_CONFLICT';
+      return error;
+    }
+
+    function durableGeneration() {
+      return parseGeneration(storage.getItem(generationKey));
+    }
+
+    function discardSnapshotIfOwned(serialized) {
+      try {
+        if (storage.getItem(key) === serialized &&
+            typeof storage.removeItem === 'function') {
+          storage.removeItem(key);
+        }
+      } catch (error) {
+        // The generation tombstone still prevents this snapshot from loading.
+      }
+    }
+
+    function persist(candidate) {
       if (mode !== 'localStorage') {
         return;
       }
+      var generation;
       try {
-        storage.setItem(key, canonicalJson(state));
+        generation = durableGeneration();
+      } catch (error) {
+        persistentStateMayExist = true;
+        mode = 'memory';
+        return;
+      }
+      if (generation !== localGeneration) {
+        throw stateConflict();
+      }
+
+      var serialized = persistedStateJson(candidate, localGeneration);
+      try {
+        storage.setItem(key, serialized);
         persistentStateMayExist = true;
       } catch (error) {
         persistentStateMayExist = true;
         mode = 'memory';
+        return;
+      }
+
+      try {
+        generation = durableGeneration();
+      } catch (error) {
+        discardSnapshotIfOwned(serialized);
+        mode = 'memory';
+        return;
+      }
+      if (generation !== localGeneration) {
+        discardSnapshotIfOwned(serialized);
+        throw stateConflict();
       }
     }
 
     var stored = null;
+    var storedGeneration = null;
     if (mode === 'localStorage') {
       try {
+        storedGeneration = storage.getItem(generationKey);
         stored = storage.getItem(key);
+        localGeneration = parseGeneration(storedGeneration);
         persistentStateMayExist = stored !== null;
       } catch (error) {
         persistentStateMayExist = true;
@@ -246,14 +344,21 @@
     }
     if (mode === 'localStorage' && stored !== null) {
       try {
-        var loaded = boundHistory(parseImport(stored));
-        state = clone(loaded);
-        if (canonicalJson(state) !== stored) {
-          persist();
+        var loaded = parsePersistedState(
+          stored,
+          localGeneration,
+          storedGeneration !== null
+        );
+        if (loaded !== null) {
+          boundHistory(loaded);
+          state = clone(loaded);
+          if (persistedStateJson(state, localGeneration) !== stored) {
+            persist(state);
+          }
         }
       } catch (error) {
         state = initialState();
-        persist();
+        persist(state);
       }
     }
 
@@ -266,8 +371,8 @@
       if (shouldBoundHistory) {
         boundHistory(next);
       }
+      persist(next);
       state = next;
-      persist();
       return clone(state);
     }
 
@@ -278,33 +383,67 @@
       return error;
     }
 
-    function readBackMatches(expected) {
+    function readBackMatches(storageKey, expected) {
       if (!storage || typeof storage.getItem !== 'function') {
-        return true;
+        return false;
       }
       try {
-        return storage.getItem(key) === expected;
+        return storage.getItem(storageKey) === expected;
       } catch (error) {
         return false;
       }
     }
 
     function durablyReset(next) {
-      if (!persistentStateMayExist) {
-        return;
-      }
       if (!storage) {
+        if (!persistentStateMayExist) {
+          return;
+        }
         throw resetError(
           'STORAGE_UNAVAILABLE',
           'Persistent state may exist but storage is unavailable'
         );
       }
 
+      var durable;
+      try {
+        durable = durableGeneration();
+        storage.getItem(key);
+      } catch (error) {
+        mode = 'memory';
+        throw resetError(
+          'STORAGE_UNAVAILABLE',
+          'Persistent state could not be inspected before reset'
+        );
+      }
+      if (durable >= Number.MAX_SAFE_INTEGER) {
+        throw resetError(
+          'RESET_NOT_PERSISTED',
+          'Persistent state generation cannot be incremented'
+        );
+      }
+
+      var nextGeneration = durable + 1;
+      var serializedGeneration = String(nextGeneration);
+      try {
+        storage.setItem(generationKey, serializedGeneration);
+        if (!readBackMatches(generationKey, serializedGeneration)) {
+          throw new Error('Generation verification failed');
+        }
+      } catch (error) {
+        mode = 'memory';
+        throw resetError(
+          'RESET_NOT_PERSISTED',
+          'Reset generation could not be durably persisted'
+        );
+      }
+
       if (typeof storage.removeItem === 'function') {
         try {
           storage.removeItem(key);
-          if (readBackMatches(null)) {
+          if (readBackMatches(key, null)) {
             persistentStateMayExist = false;
+            localGeneration = nextGeneration;
             return;
           }
         } catch (error) {
@@ -312,11 +451,12 @@
         }
       }
 
-      var serialized = canonicalJson(next);
+      var serialized = persistedStateJson(next, nextGeneration);
       try {
         storage.setItem(key, serialized);
-        if (readBackMatches(serialized)) {
+        if (readBackMatches(key, serialized)) {
           persistentStateMayExist = true;
+          localGeneration = nextGeneration;
           return;
         }
       } catch (error) {
