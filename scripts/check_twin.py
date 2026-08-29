@@ -19,6 +19,7 @@ COMMANDS = [
         "tests/twin_real_corpus.test.js",
         "tests/twin_state.test.js",
         "tests/twin_controller.test.js",
+        "tests/twin_service_worker.test.js",
         "tests/theme_storage.test.js",
     ],
     ["node", "scripts/benchmark_twin.js"],
