@@ -327,8 +327,8 @@ def _work_records(root: Path, path: Path) -> list[dict[str, Any]]:
                 "sourceSha256": source_hash,
                 "text": text,
                 "structured": {
-                    "description": text,
                     "pointer": f"/repos/{index}/{pointer_field}",
+                    "value": text,
                 },
             }
         )
