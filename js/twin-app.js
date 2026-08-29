@@ -20,6 +20,8 @@
     serviceWorkerActivated: false,
     offlineReady: false,
     serviceWorkerControlled: false,
+    cachedCorpusVerified: false,
+    cacheVerificationError: null,
     serviceWorkerError: null,
     corpusSha256: "",
     records: 0,
@@ -143,6 +145,7 @@
       year: "numeric",
       month: "short",
       day: "numeric",
+      timeZone: "UTC",
     }).format(date);
   }
 
@@ -220,10 +223,12 @@
       serviceWorkerActivated: runtime.serviceWorkerActivated,
       offlineReady: runtime.offlineReady,
       serviceWorkerControlled: runtime.serviceWorkerControlled,
+      cachedCorpusVerified: runtime.cachedCorpusVerified,
       online: navigator.onLine,
       storageMode: runtime.storageMode,
       records: runtime.records,
       corpusSha256: runtime.corpusSha256,
+      cacheVerificationError: runtime.cacheVerificationError,
       serviceWorkerError: runtime.serviceWorkerError,
       error: runtime.error,
     });
@@ -255,8 +260,12 @@
     if (elements.offlineStatus) {
       elements.offlineStatus.textContent = runtime.offlineReady
         ? "Offline ready"
-        : runtime.serviceWorkerActivated
+        : runtime.serviceWorkerControlled
+          ? "Cache unverified"
+        : runtime.serviceWorkerActivated && runtime.cachedCorpusVerified
           ? "Reload required"
+        : runtime.serviceWorkerActivated
+          ? "Cache unverified"
         : runtime.serviceWorkerHandled
           ? "Online only"
           : "Checking…";
@@ -264,15 +273,21 @@
         elements.offlineDetail.textContent = navigator.onLine
           ? "Offline shell is active"
           : "Working from the local cache";
+      } else if (runtime.serviceWorkerControlled) {
+        elements.offlineDetail.textContent = "Controlled page; cached corpus integrity is not confirmed";
+      } else if (runtime.serviceWorkerActivated && runtime.cachedCorpusVerified) {
+        elements.offlineDetail.textContent = "Verified cache installed; this page is not controlled yet";
       } else if (runtime.serviceWorkerActivated) {
-        elements.offlineDetail.textContent = "Cache installed; this page is not controlled yet";
+        elements.offlineDetail.textContent = "Worker active; cached corpus integrity is not confirmed";
       } else if (runtime.serviceWorkerHandled) {
         elements.offlineDetail.textContent = "Offline use is not confirmed";
       } else {
         elements.offlineDetail.textContent = "Not yet confirmed";
       }
       if (elements.offlineReload) {
-        elements.offlineReload.hidden = !runtime.serviceWorkerActivated || runtime.serviceWorkerControlled;
+        elements.offlineReload.hidden = !runtime.serviceWorkerActivated
+          || !runtime.cachedCorpusVerified
+          || runtime.serviceWorkerControlled;
       }
     }
   }
@@ -298,6 +313,19 @@
           ? "Trace evolution"
           : "Run challenge";
     }
+  }
+
+  function modeFromState(state) {
+    const preferences = objectValue(objectValue(state).preferences);
+    return Object.prototype.hasOwnProperty.call(MODE_ACTIONS, preferences.mode)
+      ? preferences.mode
+      : "answer";
+  }
+
+  function applyStateView(state) {
+    const snapshot = objectValue(state);
+    setMode(modeFromState(snapshot));
+    renderPinned(snapshot);
   }
 
   function evidenceCitation(item) {
@@ -627,7 +655,7 @@
     const response = await dispatchAction("state.get");
     if (response.ok) {
       const data = responseData(response);
-      renderPinned(objectValue(data.state || data));
+      applyStateView(objectValue(data.state || data));
     }
     return response;
   }
@@ -840,7 +868,85 @@
     });
   }
 
-  async function serviceWorkerStatus() {
+  async function cachedCorpusEvidence(Engine) {
+    let cacheStorage;
+    try {
+      cacheStorage = window.caches;
+    } catch (_error) {
+      cacheStorage = null;
+    }
+    if (!cacheStorage || typeof cacheStorage.match !== "function") {
+      return {
+        ok: false,
+        code: "CACHE_STORAGE_UNAVAILABLE",
+        message: "CacheStorage is unavailable in this browser.",
+      };
+    }
+    if (!Engine || typeof Engine.validateCorpus !== "function" || !runtime.corpusSha256) {
+      return {
+        ok: false,
+        code: "CACHE_VALIDATION_UNAVAILABLE",
+        message: "Cached corpus validation cannot run.",
+      };
+    }
+    try {
+      const response = await cacheStorage.match(CORPUS_URL, { ignoreSearch: true });
+      if (!response || !response.ok) {
+        return {
+          ok: false,
+          code: "CACHED_CORPUS_MISSING",
+          message: "No successful cached corpus response was found.",
+        };
+      }
+      const cachedCorpus = await response.clone().json();
+      const validation = Engine.validateCorpus(cachedCorpus);
+      if (!validation || validation.ok !== true) {
+        return {
+          ok: false,
+          code: "CACHED_CORPUS_INVALID",
+          message: "The cached corpus failed engine validation.",
+        };
+      }
+      if (cachedCorpus.corpusSha256 !== runtime.corpusSha256) {
+        return {
+          ok: false,
+          code: "CACHED_CORPUS_MISMATCH",
+          message: "The cached corpus digest does not match the running corpus.",
+        };
+      }
+      return { ok: true };
+    } catch (error) {
+      return {
+        ok: false,
+        code: "CACHE_VERIFICATION_FAILED",
+        message: text(error && error.message, "Cached corpus verification failed."),
+      };
+    }
+  }
+
+  async function verifyCachedCorpus(Engine) {
+    const timeout = new Promise((resolve) => {
+      window.setTimeout(() => {
+        resolve({
+          ok: false,
+          code: "CACHE_VERIFICATION_TIMEOUT",
+          message: "Cached corpus verification exceeded the bounded startup window.",
+        });
+      }, 2500);
+    });
+    const result = await Promise.race([cachedCorpusEvidence(Engine), timeout]);
+    runtime.cachedCorpusVerified = result.ok === true;
+    runtime.cacheVerificationError = result.ok ? null : {
+      code: result.code,
+      message: result.message,
+      retryable: true,
+    };
+    runtime.offlineReady = runtime.serviceWorkerControlled && runtime.cachedCorpusVerified;
+    updateRuntimeStatus();
+    return runtime.cachedCorpusVerified;
+  }
+
+  async function serviceWorkerStatus(Engine) {
     if (!("serviceWorker" in navigator)) {
       runtime.serviceWorkerHandled = true;
       return;
@@ -856,38 +962,45 @@
         : registration.active;
       runtime.serviceWorkerControlled = Boolean(navigator.serviceWorker.controller);
       runtime.serviceWorkerActivated = Boolean(active || runtime.serviceWorkerControlled);
-      runtime.offlineReady = runtime.serviceWorkerActivated && runtime.serviceWorkerControlled;
+      await verifyCachedCorpus(Engine);
 
       const pendingWorker = registration.installing || registration.waiting;
       if (!active && pendingWorker) {
-        pendingWorker.addEventListener("statechange", () => {
+        pendingWorker.addEventListener("statechange", async () => {
           if (pendingWorker.state === "activated") {
             runtime.serviceWorkerActivated = true;
             runtime.serviceWorkerControlled = Boolean(navigator.serviceWorker.controller);
-            runtime.offlineReady = runtime.serviceWorkerControlled;
+            await verifyCachedCorpus(Engine);
             updateRuntimeStatus();
             if (!runtime.serviceWorkerControlled) {
-              setLive("Offline cache installed. Reload once to activate offline mode for this page.");
+              setLive(runtime.cachedCorpusVerified
+                ? "Verified offline cache installed. Reload once to activate offline mode for this page."
+                : "Worker activated, but cached corpus integrity is not verified.");
             }
           }
         });
       }
 
-      navigator.serviceWorker.addEventListener("controllerchange", () => {
+      navigator.serviceWorker.addEventListener("controllerchange", async () => {
         runtime.serviceWorkerControlled = Boolean(navigator.serviceWorker.controller);
         runtime.serviceWorkerActivated = runtime.serviceWorkerControlled || runtime.serviceWorkerActivated;
-        runtime.offlineReady = runtime.serviceWorkerControlled;
+        await verifyCachedCorpus(Engine);
         updateRuntimeStatus();
-        if (runtime.serviceWorkerControlled) {
-          setLive("Offline shell control is active for /twin/.");
+        if (runtime.offlineReady) {
+          setLive("Offline shell control and cached corpus integrity are verified for /twin/.");
+        } else if (runtime.serviceWorkerControlled) {
+          setLive("Service-worker control is active, but cached corpus integrity is not verified.");
         }
       });
 
       if (runtime.serviceWorkerActivated && !runtime.serviceWorkerControlled) {
-        setLive("Offline cache installed. Reload once to activate offline mode for this page.");
+        setLive(runtime.cachedCorpusVerified
+          ? "Verified offline cache installed. Reload once to activate offline mode for this page."
+          : "Worker activated, but cached corpus integrity is not verified.");
       }
     } catch (error) {
       runtime.offlineReady = false;
+      runtime.cachedCorpusVerified = false;
       runtime.serviceWorkerError = {
         code: "SERVICE_WORKER_UNAVAILABLE",
         message: text(error.message),
@@ -903,9 +1016,20 @@
     return {
       render(value, action) {
         const candidate = objectValue(value);
-        const state = objectValue(candidate.state || candidate);
-        if (Array.isArray(state.pinnedCitations)) {
-          renderPinned(state);
+        let state = null;
+        if (candidate.state && typeof candidate.state === "object") {
+          state = candidate.state;
+        } else if (Array.isArray(candidate.pinnedCitations) && candidate.preferences) {
+          state = candidate;
+        } else if (store && typeof store.get === "function") {
+          try {
+            state = store.get();
+          } catch (_error) {
+            state = null;
+          }
+        }
+        if (state) {
+          applyStateView(state);
         }
         const modesByAction = {
           "answer.ask": "answer",
@@ -914,7 +1038,6 @@
         };
         const mode = modesByAction[action];
         if (mode) {
-          setMode(mode);
           renderResult(mode, { ok: true, action, data: candidate });
           setLive(`${action} rendered through the semantic view adapter.`);
         }
@@ -1042,9 +1165,10 @@
         copyText,
         corpusSha256: runtime.corpusSha256,
       });
+      applyStateView(store.get());
 
       runtime.phase = "offline-check";
-      await serviceWorkerStatus();
+      await serviceWorkerStatus(Engine);
       const capabilities = typeof controller.capabilities === "function"
         ? controller.capabilities()
         : { actions: [] };
@@ -1061,8 +1185,10 @@
       await refreshState();
       setLive(runtime.offlineReady
         ? "Public twin ready. Corpus validated, indexed, and under offline service-worker control."
-        : runtime.serviceWorkerActivated
+        : runtime.serviceWorkerActivated && runtime.cachedCorpusVerified
           ? "Public twin ready. Reload once to place this page under offline service-worker control."
+          : runtime.serviceWorkerControlled
+            ? "Public twin ready online. Service-worker control is active, but cached corpus integrity is not verified."
           : "Public twin ready in online mode. Offline readiness is not confirmed.");
     } catch (error) {
       exposeFailure(error);
