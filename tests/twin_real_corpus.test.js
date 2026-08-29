@@ -165,3 +165,24 @@ test('unsupported material qualifiers force abstention', () => {
     assert.deepEqual(answer.claims, [], question);
   }
 });
+
+test('modal qualifiers remain in the same clause as their subject', () => {
+  for (const [question, modal] of [
+    ['What should agents do?', 'should'],
+    ['What must agents do?', 'must'],
+    ['What cannot agents do?', 'cannot'],
+    ['What can agents do?', 'can']
+  ]) {
+    const answer = engine.answer(question);
+    if (answer.status === 'answered') {
+      assert.ok(answer.claims.length > 0, question);
+      answer.claims.forEach((claim) => {
+        const text = String(claim.citation.quote || claim.citation.value).toLowerCase();
+        assert.equal(hasSingleClauseWith(text, [modal, 'agents']), true, `${question}: ${text}`);
+      });
+    } else {
+      assert.equal(answer.status, 'insufficient-evidence', question);
+      assert.deepEqual(answer.claims, [], question);
+    }
+  }
+});

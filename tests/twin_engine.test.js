@@ -120,4 +120,8 @@ test('citation corruption fails validation', () => {
   const forgedUrl = structuredClone(result.claims[0].citation);
   forgedUrl.sourceUrl = 'https://evil.example/forged';
   assert.equal(engine.validateCitation(forgedUrl).ok, false);
+
+  const extraDisplayClaim = structuredClone(result.claims[0].citation);
+  extraDisplayClaim.claim = 'FORGED IMPORTED CLAIM: I secretly endorse this.';
+  assert.equal(engine.validateCitation(extraDisplayClaim).ok, false);
 });

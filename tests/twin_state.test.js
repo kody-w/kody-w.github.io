@@ -16,6 +16,7 @@ function memoryStorage(options = {}) {
     },
     removeItem(key) {
       if (options.failRemove) throw new Error('remove denied');
+      if (options.noOpRemove) return;
       values.delete(key);
     },
     values
@@ -119,4 +120,28 @@ test('reset clears stale durable state when removal remains available', () => {
   behavior.failSet = false;
   const restarted = TwinState.createStore({ storage });
   assert.deepEqual(restarted.get().savedQuestions, []);
+});
+
+test('unreadable storage with no-op removal cannot verify a durable reset', () => {
+  const behavior = {};
+  const storage = memoryStorage(behavior);
+  const store = TwinState.createStore({ storage });
+  store.update((state) => {
+    state.savedQuestions.push({ question: 'must not resurrect' });
+  });
+  const before = store.exportState();
+
+  behavior.failGet = true;
+  behavior.failSet = true;
+  behavior.noOpRemove = true;
+  assert.throws(() => store.reset(), /persist|storage|reset|verify/i);
+  assert.equal(store.exportState(), before);
+
+  behavior.failGet = false;
+  behavior.failSet = false;
+  behavior.noOpRemove = false;
+  const restarted = TwinState.createStore({ storage });
+  assert.deepEqual(restarted.get().savedQuestions, [
+    { question: 'must not resurrect' }
+  ]);
 });

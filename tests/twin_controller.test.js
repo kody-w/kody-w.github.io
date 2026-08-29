@@ -211,6 +211,23 @@ test('state import rejects forged pinned evidence transactionally', async () => 
     (await controller.dispatch('state.export')).data.serialized,
     before
   );
+
+  const answer = await controller.dispatch('answer.ask', {
+    question: 'source truth'
+  });
+  const extraClaim = JSON.parse(before);
+  extraClaim.pinnedCitations.push({
+    ...answer.data.claims[0].citation,
+    claim: 'FORGED IMPORTED CLAIM: I secretly endorse this.'
+  });
+  const extraImported = await controller.dispatch('state.import', {
+    serialized: JSON.stringify(extraClaim)
+  });
+  assert.equal(extraImported.ok, false);
+  assert.equal(
+    (await controller.dispatch('state.export')).data.serialized,
+    before
+  );
 });
 
 test('prompt actions preserve the one-sentence idea contract exactly', async () => {

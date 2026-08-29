@@ -81,6 +81,9 @@ function loadWorker(corpusResponse, options = {}) {
       if ((options.failPaths || []).includes(pathname)) {
         return new Response('failed', { status: 503 });
       }
+      if (options.responses && options.responses[pathname]) {
+        return options.responses[pathname].clone();
+      }
       if (pathname === CORPUS_PATH) {
         return corpusResponse.clone();
       }
@@ -118,6 +121,18 @@ async function runInstall(runtime) {
     }
   });
   assert.ok(pending, 'install handler did not register work');
+  return pending;
+}
+
+async function runFetch(runtime, request) {
+  let pending;
+  runtime.handlers.fetch({
+    request,
+    respondWith(value) {
+      pending = Promise.resolve(value);
+    }
+  });
+  assert.ok(pending, 'fetch handler did not respond');
   return pending;
 }
 
@@ -198,4 +213,38 @@ test('interrupted upgrade leaves the active shell cache untouched', async () => 
   assert.equal(runtime.state.skipWaiting, 0);
   const preserved = await active.match('/twin/');
   assert.equal(await preserved.text(), 'old-shell');
+});
+
+test('asset navigation cannot replace the canonical cached app shell', async () => {
+  const runtime = loadWorker(
+    new Response(JSON.stringify(corpus), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    }),
+    {
+      responses: {
+        '/twin/manifest.webmanifest': new Response('{"name":"manifest"}', {
+          status: 200,
+          headers: { 'Content-Type': 'application/manifest+json' }
+        })
+      }
+    }
+  );
+  const cache = await runtime.caches.open(runtime.shellCache);
+  await cache.put(
+    '/twin/',
+    new Response('<!doctype html><title>app shell</title>', {
+      status: 200,
+      headers: { 'Content-Type': 'text/html' }
+    })
+  );
+
+  const response = await runFetch(runtime, {
+    method: 'GET',
+    mode: 'navigate',
+    url: `${ORIGIN}/twin/manifest.webmanifest`
+  });
+  assert.equal(await response.text(), '{"name":"manifest"}');
+  const preserved = await cache.match('/twin/');
+  assert.match(await preserved.text(), /app shell/);
 });
