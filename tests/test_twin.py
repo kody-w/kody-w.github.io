@@ -257,6 +257,9 @@ class TwinAcceptanceTest(unittest.TestCase):
         self.assertIn('id="twin-question"', page)
         self.assertIn('id="twin-results"', page)
         self.assertIn('id="twin-corpus-breakdown"', page)
+        self.assertIn('aria-autocomplete="inline"', page)
+        self.assertIn('id="twin-app-idea-help"', page)
+        self.assertIn('data-autocomplete-example=', page)
         self.assertIn("Example verified citation", page)
         document_release = re.search(
             r'data-twin-document-sha256="([0-9a-f]{64})"',
@@ -274,6 +277,12 @@ class TwinAcceptanceTest(unittest.TestCase):
         self.assertIn(corpus["corpusSha256"], app)
         self.assertIn(corpus["sourceManifestSha256"], app)
         self.assertIn('updateViaCache: "none"', app)
+        self.assertIn("function autocompleteAppIdea", app)
+        self.assertIn("setSelectionRange", app)
+        self.assertIn('inputType.indexOf("delete")', app)
+        self.assertIn("activeAppIdeaCompletion", app)
+        self.assertIn("event.isComposing", app)
+        self.assertIn('event.key === "Escape"', app)
 
         layout = DEFAULT_LAYOUT.read_text()
         self.assertIn("page.offline_shell", layout)

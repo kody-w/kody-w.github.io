@@ -7,7 +7,7 @@ manifest: /public-twin/manifest.webmanifest
 content_security_policy: "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'"
 ---
 
-<main class="public-twin" id="public-twin" data-twin-document-sha256="6dc3e65cc5b1f1564a5a678f6b844b574a5f59aa70db1b958b6023ccf730a6d5">
+<main class="public-twin" id="public-twin" data-twin-document-sha256="5dfd1cb30179ef59460be55be43a5baf2da2e9b347954a243443edddb1b4e6f1">
   <section class="twin-hero" aria-labelledby="twin-title">
     <p class="twin-eyebrow">Public evidence explorer · local-first</p>
     <div class="twin-hero-grid">
@@ -137,9 +137,19 @@ content_security_policy: "default-src 'self'; script-src 'self'; style-src 'self
     </div>
     <label for="twin-app-idea">App idea</label>
     <div class="twin-studio-input">
-      <input id="twin-app-idea" type="text" maxlength="300" data-semantic-action="prompt.build" placeholder="a public evidence explorer for municipal decisions">
+      <input
+        id="twin-app-idea"
+        type="text"
+        maxlength="300"
+        autocomplete="off"
+        aria-autocomplete="inline"
+        aria-describedby="twin-app-idea-help twin-prompt-status"
+        data-semantic-action="prompt.build"
+        data-autocomplete-example="a public evidence explorer for municipal decisions"
+        placeholder="a public evidence explorer for municipal decisions">
       <button type="button" id="twin-build-prompt" data-semantic-action="prompt.build" disabled>Build prompt</button>
     </div>
+    <p id="twin-app-idea-help" class="twin-field-help">Start typing to complete the example inline. Keep typing to replace the selected ending, press Enter to build it, or press Escape to keep only what you typed.</p>
     <div class="twin-prompt-output">
       <p id="twin-prompt-text">Enter an app idea to replace the canonical {APP} token.</p>
       <button class="twin-primary-button" type="button" id="twin-copy-prompt" data-semantic-action="prompt.copy" disabled>Copy exact prompt</button>
