@@ -2,7 +2,7 @@
   "schema": "kodyw-public-twin/1.0",
   "normalizationVersion": "plain-text/1",
   "sourceManifestSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-  "corpusSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "corpusSha256": "a3fee235a3eab0af7258f2396ef325c7d783e2bf405c5ce90217651fe2a92809",
   "stats": {
     "total": 6,
     "post": 4,

@@ -4,12 +4,14 @@ on:
   push:
     paths:
       - '_posts/**'
+      - '_twin_posts/**'
       - '_layouts/**'
       - '_includes/**'
       - 'js/**'
       - 'css/**'
       - 'twin/**'
       - 'api/twin-corpus.json'
+      - 'api/works.json'
       - 'docs/twin-contract.md'
       - 'scripts/build_twin.py'
       - 'scripts/benchmark_twin.js'
@@ -21,12 +23,14 @@ on:
   pull_request:
     paths:
       - '_posts/**'
+      - '_twin_posts/**'
       - '_layouts/**'
       - '_includes/**'
       - 'js/**'
       - 'css/**'
       - 'twin/**'
       - 'api/twin-corpus.json'
+      - 'api/works.json'
       - 'docs/twin-contract.md'
       - 'scripts/build_twin.py'
       - 'scripts/benchmark_twin.js'

@@ -38,6 +38,13 @@ test('rejects missing provenance and protocol-relative source URLs', () => {
   assert.equal(Engine.validateCorpus(unsafeUrl).ok, false);
 });
 
+test('rejects a mutated corpus carrying stale declared hashes', () => {
+  const forged = structuredClone(fixture);
+  forged.records[0].text = 'FORGED PERSONAL CLAIM: I secretly endorse this.';
+  assert.equal(Engine.validateCorpus(forged).ok, false);
+  assert.throws(() => Engine.createEngine(forged));
+});
+
 test('search and answers are deterministic exact evidence', () => {
   const engine = Engine.createEngine(fixture);
   const first = engine.answer('Where is the source of truth?');
@@ -53,6 +60,18 @@ test('unsupported questions abstain instead of manufacturing a voice', () => {
   const answer = engine.answer("What is Kody's favorite pizza?");
   assert.equal(answer.status, 'insufficient-evidence');
   assert.deepEqual(answer.claims, []);
+});
+
+test('answer evidence itself supports the meaningful query tokens', () => {
+  const engine = Engine.createEngine(fixture);
+  const answer = engine.answer('agents evidence');
+  assert.equal(answer.status, 'answered');
+  assert.ok(answer.claims.length > 0);
+  answer.claims.forEach((claim) => {
+    const evidence = String(claim.citation.quote || claim.citation.value).toLowerCase();
+    assert.match(evidence, /agents/);
+    assert.match(evidence, /evidence/);
+  });
 });
 
 test('evolution uses distinct sources in ascending time order', () => {
@@ -77,6 +96,13 @@ test('challenge uses an explicit relation and never challenges with itself', () 
     assert.equal(item.relation, 'qualifies');
     assert.equal(thesisIds.has(item.citation.sourceId), false);
     citationIsExact(item.citation);
+  });
+
+  test('challenge abstains when no explicit corpus relation applies', () => {
+    const engine = Engine.createEngine(fixture);
+    const result = engine.challenge('agents evidence');
+    assert.equal(result.counterevidence.length, 0);
+    assert.notEqual(result.status, 'evidence-found');
   });
 });
 

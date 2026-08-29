@@ -84,3 +84,20 @@ test('real unsupported question abstains', () => {
   assert.equal(answer.status, 'insufficient-evidence');
   assert.deepEqual(answer.claims, []);
 });
+
+test('real answer quotes support the meaningful question terms', () => {
+  const answer = engine.answer('evidence not demos');
+  assert.equal(answer.status, 'answered');
+  assert.ok(answer.claims.length > 0);
+  answer.claims.forEach((claim) => {
+    const evidence = String(claim.citation.quote || claim.citation.value).toLowerCase();
+    assert.match(evidence, /evidence/);
+    assert.match(evidence, /demo/);
+  });
+});
+
+test('real challenge does not manufacture relations from transition words', () => {
+  const challenge = engine.challenge('agent autonomy');
+  assert.equal(challenge.counterevidence.length, 0);
+  assert.notEqual(challenge.status, 'evidence-found');
+});

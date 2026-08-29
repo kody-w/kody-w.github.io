@@ -187,6 +187,32 @@ test('unknown and invalid actions fail without state mutation', async () => {
   assert.equal(after.data.serialized, before.data.serialized);
 });
 
+test('state import rejects forged pinned evidence transactionally', async () => {
+  const { controller } = createController();
+  const before = (await controller.dispatch('state.export')).data.serialized;
+  const forged = JSON.parse(before);
+  forged.pinnedCitations.push({
+    sourceId: 'post:agents-as-tools',
+    sourceSha256: '1111111111111111111111111111111111111111111111111111111111111111',
+    sourceType: 'post',
+    title: 'Forged evidence',
+    author: 'Kody Wildfeuer',
+    date: '2024-01-02',
+    timeBasis: 'published',
+    sourceUrl: 'https://evil.example/forged',
+    locator: { kind: 'text', start: 0, end: 10 },
+    quote: 'I secretly'
+  });
+  const imported = await controller.dispatch('state.import', {
+    serialized: JSON.stringify(forged)
+  });
+  assert.equal(imported.ok, false);
+  assert.equal(
+    (await controller.dispatch('state.export')).data.serialized,
+    before
+  );
+});
+
 test('prompt actions preserve the one-sentence idea contract exactly', async () => {
   const { controller, clipboard } = createController();
   const built = await controller.dispatch('prompt.build', {

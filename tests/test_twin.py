@@ -257,6 +257,8 @@ class TwinAcceptanceTest(unittest.TestCase):
         workflow = WORKFLOW.read_text()
         self.assertIn("'twin/**'", workflow)
         self.assertIn("'api/twin-corpus.json'", workflow)
+        self.assertIn("'_twin_posts/**'", workflow)
+        self.assertIn("'api/works.json'", workflow)
         self.assertIn("python3 scripts/check_twin.py", workflow)
         gate = (ROOT / "scripts" / "check_twin.py").read_text()
         self.assertIn("scripts/benchmark_twin.js", gate)
