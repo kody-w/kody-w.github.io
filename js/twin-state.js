@@ -285,7 +285,7 @@
       try {
         return storage.getItem(key) === expected;
       } catch (error) {
-        return true;
+        return false;
       }
     }
 

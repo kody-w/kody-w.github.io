@@ -18,6 +18,7 @@ var SHELL_PATHS = [
   '/twin/icon-192.png',
   '/twin/icon-512.png',
   '/twin/one-sentence-prompt.txt',
+  '/twin/sw.js',
   '/css/main.css',
   '/js/theme.js',
   '/js/search.js',
@@ -340,18 +341,32 @@ function shellResponse(request) {
 }
 
 function navigationResponse(request) {
+  var pathname = new URL(request.url).pathname;
   return fetch(request).then(function (response) {
     if (!response.ok) {
       throw new Error('Navigation request failed');
     }
+    var contentType = response.headers.get('Content-Type') || '';
+    var isAppPath = pathname === '/twin' || pathname === '/twin/';
+    var isAppDocument = isAppPath &&
+      contentType.toLowerCase().indexOf('text/html') !== -1;
     return caches.open(SHELL_CACHE).then(function (cache) {
-      return cache.put('/twin/', response.clone()).then(function () {
-        return response;
-      });
+      if (isAppDocument) {
+        return cache.put('/twin/', response.clone()).then(function () {
+          return response;
+        });
+      }
+      if (!isAppPath && SHELL_PATH_SET[pathname]) {
+        return cache.put(pathname, response.clone()).then(function () {
+          return response;
+        });
+      }
+      return response;
     });
   }).catch(function () {
     return caches.open(SHELL_CACHE).then(function (cache) {
-      return cache.match('/twin/');
+      var fallback = SHELL_PATH_SET[pathname] ? pathname : '/twin/';
+      return cache.match(fallback);
     }).then(function (response) {
       return response || new Response('Twin is unavailable offline.', {
         status: 503,
