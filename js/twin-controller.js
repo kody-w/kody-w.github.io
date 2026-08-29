@@ -70,6 +70,7 @@
 
   var CAPABILITIES = {
     version: VERSION,
+    apiVersion: '1.0',
     interface: 'kody-twin-controller/1.0',
     jsonOnly: true,
     missionRunner: {
@@ -78,67 +79,125 @@
       maximumSteps: MAX_MISSION_STEPS
     },
     actions: [
-      { name: 'corpus.status', input: { required: [], optional: [] }, mutatesState: false },
+      {
+        name: 'corpus.status',
+        description: 'Report the loaded public corpus status and statistics.',
+        input: { required: [], optional: [] },
+        inputSchema: noInputSchema(),
+        mutatesState: false
+      },
       {
         name: 'search.query',
+        description: 'Search the public corpus for exact evidence.',
         input: { required: ['query'], optional: ['limit', 'sourceTypes'] },
+        inputSchema: queryInputSchema('query'),
         mutatesState: true
       },
       {
         name: 'answer.ask',
+        description: 'Answer a question using only cited public evidence.',
         input: { required: ['question'], optional: ['limit', 'sourceTypes'] },
+        inputSchema: queryInputSchema('question'),
         mutatesState: true
       },
       {
         name: 'evolution.compare',
+        description: 'Compare cited evidence across declared source times.',
         input: { required: ['question'], optional: ['limit', 'sourceTypes'] },
+        inputSchema: queryInputSchema('question'),
         mutatesState: true
       },
       {
         name: 'challenge.run',
+        description: 'Find explicit qualifying or counterevidence for a question.',
         input: { required: ['question'], optional: ['limit', 'sourceTypes'] },
+        inputSchema: queryInputSchema('question'),
         mutatesState: true
       },
       {
         name: 'sources.get',
+        description: 'Resolve one or more public source records by citation or identifier.',
         input: {
           requiredOneOf: ['sourceId', 'sourceIds', 'citations'],
           optional: []
         },
+        inputSchema: sourcesInputSchema(),
         mutatesState: false
       },
       {
         name: 'citation.open',
+        description: 'Validate a citation and open its source through the view adapter.',
         input: { required: ['citation'], optional: [] },
+        inputSchema: citationInputSchema(),
         mutatesState: false
       },
       {
         name: 'citation.pin',
+        description: 'Validate and save a citation in local twin state.',
         input: { required: ['citation'], optional: [] },
+        inputSchema: citationInputSchema(),
         mutatesState: true
       },
-      { name: 'state.get', input: { required: [], optional: [] }, mutatesState: false },
-      { name: 'state.export', input: { required: [], optional: [] }, mutatesState: false },
+      {
+        name: 'state.get',
+        description: 'Read the current JSON-only twin state.',
+        input: { required: [], optional: [] },
+        inputSchema: noInputSchema(),
+        mutatesState: false
+      },
+      {
+        name: 'state.export',
+        description: 'Export the current twin state as deterministic JSON.',
+        input: { required: [], optional: [] },
+        inputSchema: noInputSchema(),
+        mutatesState: false
+      },
       {
         name: 'state.import',
+        description: 'Replace twin state from a validated deterministic JSON export.',
         input: { required: ['serialized'], optional: [] },
+        inputSchema: objectInputSchema(
+          ['serialized'],
+          { serialized: { type: 'string', minLength: 1, maxLength: MAX_IMPORT_LENGTH } }
+        ),
         mutatesState: true
       },
-      { name: 'state.reset', input: { required: [], optional: [] }, mutatesState: true },
+      {
+        name: 'state.reset',
+        description: 'Reset twin state to its deterministic initial value.',
+        input: { required: [], optional: [] },
+        inputSchema: noInputSchema(),
+        mutatesState: true
+      },
       {
         name: 'ui.setMode',
+        description: 'Set the active semantic investigation mode.',
         input: { required: ['mode'], optional: [] },
+        inputSchema: objectInputSchema(
+          ['mode'],
+          { mode: { type: 'string', enum: MODES.slice() } }
+        ),
         mutatesState: true
       },
-      { name: 'prompt.get', input: { required: [], optional: [] }, mutatesState: false },
+      {
+        name: 'prompt.get',
+        description: 'Read the canonical one-sentence product prompt.',
+        input: { required: [], optional: [] },
+        inputSchema: noInputSchema(),
+        mutatesState: false
+      },
       {
         name: 'prompt.build',
+        description: 'Replace the prompt placeholder with one validated app idea.',
         input: { required: ['app'], optional: [] },
+        inputSchema: promptInputSchema(),
         mutatesState: false
       },
       {
         name: 'prompt.copy',
+        description: 'Build and copy the canonical prompt through the injected copier.',
         input: { required: ['app'], optional: [] },
+        inputSchema: promptInputSchema(),
         mutatesState: false
       }
     ]
@@ -154,6 +213,7 @@
     var corpusSha256 = typeof dependencies.corpusSha256 === 'string'
       ? dependencies.corpusSha256
       : '';
+    var activeResultId = null;
 
     requireMethod(engine, 'stats', 'engine');
     requireMethod(engine, 'search', 'engine');
@@ -190,12 +250,24 @@
       } catch (error) {
         state = { error: errorMessage(error) };
       }
+      var preferences = state && isPlainObject(state.preferences)
+        ? state.preferences
+        : {};
       return {
         version: VERSION,
+        apiVersion: '1.0',
+        ready: true,
+        route: '/twin/',
+        mode: MODES.indexOf(preferences.mode) !== -1 ? preferences.mode : 'answer',
         corpusSha256: corpusSha256,
         corpus: corpus,
         state: state,
         storageMode: storageMode(),
+        stateRevision: state && Number.isInteger(state.revision) ? state.revision : 0,
+        activeResultId: activeResultId,
+        controls: ACTION_NAMES.map(function (action) {
+          return { action: action, enabled: true };
+        }),
         prompt: {
           available: true,
           placeholderCount: countPlaceholder(prompt)
@@ -245,6 +317,7 @@
           value = jsonResult(engine.search(input.query, options));
           render(action, value);
           recordActivity(action, input.query, value);
+          setActiveResult(action, value);
           return value;
 
         case 'answer.ask':
@@ -252,6 +325,7 @@
           value = jsonResult(engine.answer(input.question, options));
           render(action, value);
           recordActivity(action, input.question, value, true);
+          setActiveResult(action, value);
           return value;
 
         case 'evolution.compare':
@@ -259,6 +333,7 @@
           value = jsonResult(engine.evolution(input.question, options));
           render(action, value);
           recordActivity(action, input.question, value);
+          setActiveResult(action, value);
           return value;
 
         case 'challenge.run':
@@ -266,6 +341,7 @@
           value = jsonResult(engine.challenge(input.question, options));
           render(action, value);
           recordActivity(action, input.question, value, true);
+          setActiveResult(action, value);
           return value;
 
         case 'sources.get':
@@ -277,7 +353,14 @@
           assertValidCitation(input.citation);
           value = sourceForCitation(input.citation);
           if (typeof view.openSource === 'function') {
-            view.openSource(cloneJson(value));
+            try {
+              view.openSource({
+                source: cloneJson(value),
+                citation: cloneJson(input.citation)
+              });
+            } catch (error) {
+              throw viewError('open the citation source');
+            }
           }
           return {
             opened: true,
@@ -288,10 +371,13 @@
         case 'citation.pin':
           assertValidCitation(input.citation);
           value = {
-            pinned: pinCitation(input.citation),
+            pinned: !hasPinnedCitation(input.citation),
             citation: cloneJson(input.citation)
           };
           render(action, value);
+          if (value.pinned) {
+            pinCitation(input.citation);
+          }
           return value;
 
         case 'state.get':
@@ -321,6 +407,7 @@
             serialized: exportedState(),
             storageMode: storageMode()
           };
+          activeResultId = null;
           render(action, value);
           return value;
 
@@ -331,14 +418,19 @@
             serialized: exportedState(),
             storageMode: storageMode()
           };
+          activeResultId = null;
           render(action, value);
           return value;
 
         case 'ui.setMode':
-          if (typeof view.setMode === 'function') {
-            view.setMode(input.mode);
-          }
           setMode(input.mode);
+          if (typeof view.setMode === 'function') {
+            try {
+              view.setMode(input.mode);
+            } catch (error) {
+              throw viewError('set the semantic mode');
+            }
+          }
           return { mode: input.mode };
 
         case 'prompt.get':
@@ -429,12 +521,23 @@
         var missing = ACTION_NAMES.filter(function (name) {
           return names.indexOf(name) === -1;
         });
+        var inspectable = actionCapabilities.actions.filter(function (action) {
+          return typeof action.description === 'string' &&
+            action.description.length > 0 &&
+            isPlainObject(action.inputSchema) &&
+            typeof action.mutatesState === 'boolean';
+        }).length;
         checks.push({
           name: 'capabilities',
-          passed: missing.length === 0 && names.length === ACTION_NAMES.length,
+          passed: actionCapabilities.apiVersion === '1.0' &&
+            missing.length === 0 &&
+            names.length === ACTION_NAMES.length &&
+            inspectable === ACTION_NAMES.length,
           evidence: {
+            apiVersion: actionCapabilities.apiVersion,
             declaredActions: names.length,
             requiredActions: ACTION_NAMES.length,
+            inspectableActions: inspectable,
             missing: missing
           }
         });
@@ -581,15 +684,7 @@
     }
 
     function pinCitation(citation) {
-      var serialized = stableStringify(citation);
-      var current = store.get();
-      var pinned = Array.isArray(current.pinnedCitations)
-        ? current.pinnedCitations
-        : [];
-      var exists = pinned.some(function (item) {
-        return stableStringify(item) === serialized;
-      });
-      if (exists) {
+      if (hasPinnedCitation(citation)) {
         return false;
       }
       store.update(function (state) {
@@ -599,6 +694,17 @@
         state.pinnedCitations.push(cloneJson(citation));
       });
       return true;
+    }
+
+    function hasPinnedCitation(citation) {
+      var serialized = stableStringify(citation);
+      var current = store.get();
+      var pinned = Array.isArray(current.pinnedCitations)
+        ? current.pinnedCitations
+        : [];
+      return pinned.some(function (item) {
+        return stableStringify(item) === serialized;
+      });
     }
 
     function recordActivity(action, text, result, save) {
@@ -646,8 +752,14 @@
       try {
         view.render(cloneJson(data), action);
       } catch (error) {
-        return;
+        throw viewError('render ' + action);
       }
+    }
+
+    function setActiveResult(action, result) {
+      activeResultId = result && typeof result.id === 'string' && result.id
+        ? result.id
+        : action + ':' + stateRevision();
     }
 
     function storageMode() {
@@ -715,6 +827,77 @@
       runMission: runMission,
       selfTest: selfTest
     });
+  }
+
+  function noInputSchema() {
+    return objectInputSchema([], {});
+  }
+
+  function queryInputSchema(field) {
+    var properties = {
+      limit: { type: 'integer', minimum: 1, maximum: 100 },
+      sourceTypes: {
+        type: 'array',
+        minItems: 1,
+        maxItems: SOURCE_TYPES.length,
+        uniqueItems: true,
+        items: { type: 'string', enum: SOURCE_TYPES.slice() }
+      }
+    };
+    properties[field] = {
+      type: 'string',
+      minLength: 1,
+      maxLength: MAX_TEXT_LENGTH
+    };
+    return objectInputSchema([field], properties);
+  }
+
+  function citationInputSchema() {
+    return objectInputSchema(
+      ['citation'],
+      { citation: { type: 'object' } }
+    );
+  }
+
+  function sourcesInputSchema() {
+    var schema = objectInputSchema([], {
+      sourceId: { type: 'string', minLength: 1, maxLength: 500 },
+      sourceIds: {
+        type: 'array',
+        minItems: 1,
+        maxItems: 100,
+        uniqueItems: true,
+        items: { type: 'string', minLength: 1, maxLength: 500 }
+      },
+      citations: {
+        type: 'array',
+        minItems: 1,
+        maxItems: 100,
+        items: { type: 'object' }
+      }
+    });
+    schema.oneOf = [
+      { required: ['sourceId'] },
+      { required: ['sourceIds'] },
+      { required: ['citations'] }
+    ];
+    return schema;
+  }
+
+  function promptInputSchema() {
+    return objectInputSchema(
+      ['app'],
+      { app: { type: 'string', minLength: 1, maxLength: 500 } }
+    );
+  }
+
+  function objectInputSchema(required, properties) {
+    return {
+      type: 'object',
+      required: required.slice(),
+      additionalProperties: false,
+      properties: properties
+    };
   }
 
   function validateInput(action, input) {
@@ -1114,6 +1297,14 @@
     error.code = code;
     error.retryable = Boolean(retryable);
     return error;
+  }
+
+  function viewError(effect) {
+    return controllerError(
+      'VIEW_ERROR',
+      'The view adapter could not ' + effect + '.',
+      false
+    );
   }
 
   function invalidInput(message) {
