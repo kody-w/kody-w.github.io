@@ -66,6 +66,8 @@ graph TD
 - **`index.html`** — Homepage. A Liquid `{% for post in site.posts %}` loop that lists every post by date.
 - **`digital-twin/index.html`** — Separate index for the digital twin blog, powered by the `twin_posts` collection.
 - **`public-twin/index.html`** — Citation-first public evidence application with exact-source answers, evolution and challenge modes, local state, offline operation, and a semantic browser API.
+- **`papers/index.html`** — Append-only publication ledger for long-form technical preprints.
+- **`verified-frame-worlds/paper.html`** — Self-contained paper on deterministic local applications whose visible state is projected from verified frame chains.
 - **`api/twin-corpus.json`** — Deterministic public corpus generated from posts, field notes, and `api/works.json`.
 - **`scripts/build_twin_release.py`** — Rebuilds the corpus, trusted app digests, signed shell manifest, and service-worker release as one atomic unit.
 - **`public-twin/shell-manifest.json`** — Pinned MIME and SHA-256 contract for every offline shell asset.

@@ -56,6 +56,8 @@ LOCKSTEP_TWIN_PAGE = ROOT / "lockstep-digital-twin.md"
 LOCKSTEP_TWIN_SCRIPT = ROOT / "js" / "lockstep-twin.js"
 LOCKSTEP_TWIN_DATA = ROOT / "js" / "lockstep-twin-data.js"
 TWIN_INDEX_PAGE = ROOT / "digital-twin" / "index.html"
+PAPERS_INDEX_PAGE = ROOT / "papers" / "index.html"
+VERIFIED_FRAME_WORLDS_PAPER = ROOT / "verified-frame-worlds" / "paper.html"
 LOCALFIRSTTOOLS_BASE_URL = "https://kody-w.github.io/localFirstTools"
 LOCALFIRSTTOOLS_REPO_URL = "https://github.com/kody-w/localFirstTools"
 D365_FRAME_MACHINE_URL = f"{LOCALFIRSTTOOLS_BASE_URL}/dynamics365-frame-machine.html"
@@ -2777,6 +2779,7 @@ class SiteContentTests(unittest.TestCase):
         )
         self.assertRegex(layout, blog_link)
         self.assertRegex(layout, learn_link)
+        self.assertIn('href="/papers/"', layout)
 
         home = HOME_PAGE.read_text(encoding="utf-8")
         self.assertRegex(
@@ -2802,6 +2805,34 @@ class SiteContentTests(unittest.TestCase):
         self.assertRegex(home, r"{%\s*for\s+post\s+in\s+edition\.items\s*%}")
         self.assertNotIn("site.examples", home)
         self.assertNotIn("lwk-example-card", home)
+
+    def test_papers_log_and_verified_frame_worlds_paper(self):
+        papers = PAPERS_INDEX_PAGE.read_text(encoding="utf-8")
+        paper = VERIFIED_FRAME_WORLDS_PAPER.read_text(encoding="utf-8")
+
+        self.assertIn("Publication ledger", papers)
+        self.assertIn('href="/frame-chains/paper.html"', papers)
+        self.assertIn('href="/verified-frame-worlds/paper.html"', papers)
+        self.assertIn("append-only publication log", papers)
+
+        self.assertIn("<h1>Verified Frame Worlds</h1>", paper)
+        self.assertIn("First public disclosure: August&nbsp;29,&nbsp;2026", paper)
+        self.assertIn("<h2>Abstract</h2>", paper)
+        self.assertIn("Reduction to practice", paper)
+        self.assertIn("<h2>8&nbsp;·&nbsp;Limitations</h2>", paper)
+        self.assertIn("<h2>References</h2>", paper)
+        self.assertIn("rapp-1-reference-vectors.json", paper)
+        self.assertIn("https://kody-w.github.io/workroom/", paper)
+        self.assertIn("https://github.com/kody-w/workroom", paper)
+        self.assertIn("aace86710454648743ce46a5e63d512e4044f9ad", paper)
+        self.assertIn("aace86710454648743ce46a5e63d512e4044f9ad", papers)
+        self.assertIn("/frame-chains/paper.html", paper)
+        self.assertIn("/papers/", (ROOT / "llms.txt").read_text(encoding="utf-8"))
+
+        for artifact in (papers, paper):
+            self.assertIn('get("scoutTheme")', artifact)
+            self.assertIn("--cp-bg:", artifact)
+            self.assertIn('"Segoe UI", Aptos, Calibri', artifact)
 
     def test_full_catalog_is_the_only_examples_loop(self):
         hub = LEARN_HUB_PAGE.read_text(encoding="utf-8")

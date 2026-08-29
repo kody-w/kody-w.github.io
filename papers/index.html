@@ -1,0 +1,232 @@
+---
+layout: null
+title: Papers
+permalink: /papers/
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Papers — Kody Wildfeuer</title>
+<meta name="description" content="A durable publication log for papers on frame protocols, local-first systems, and verifiable AI infrastructure.">
+<script>
+  (() => {
+    const param = new URLSearchParams(window.location.search).get("scoutTheme");
+    const theme =
+      param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    document.documentElement.setAttribute("data-theme", theme);
+  })();
+</script>
+<style>
+:root {
+  color-scheme: light;
+  --cp-bg: #f7f4ef;
+  --cp-bg-elevated: #fcfbf8;
+  --cp-surface: #ffffff;
+  --cp-surface-soft: #f5f5f5;
+  --cp-border: #dedede;
+  --cp-border-strong: #919191;
+  --cp-text: #242424;
+  --cp-text-muted: #5c5c5c;
+  --cp-text-soft: #6f6f6f;
+  --cp-accent: #b11f4b;
+  --cp-accent-hover: #9a1a41;
+  --cp-accent-soft: rgba(177, 31, 75, 0.08);
+  --cp-accent-fg: #ffffff;
+  --cp-success: #16a34a;
+  --cp-danger: #dc2626;
+  --cp-warning: #f59e0b;
+  --cp-link: #0078d4;
+  --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+  --cp-overlay: rgba(255, 255, 255, 0.8);
+  --cp-panel: rgba(255, 255, 255, 0.86);
+  --cp-panel-strong: rgba(255, 255, 255, 0.96);
+  --cp-sheen: rgba(255, 255, 255, 0.55);
+  --cp-highlight: rgba(177, 31, 75, 0.12);
+}
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --cp-bg: #3d3b3a;
+  --cp-bg-elevated: #343231;
+  --cp-surface: #292929;
+  --cp-surface-soft: #2e2e2e;
+  --cp-border: #474747;
+  --cp-border-strong: #5f5f5f;
+  --cp-text: #dedede;
+  --cp-text-muted: #919191;
+  --cp-text-soft: #b0b0b0;
+  --cp-accent: #fd8ea1;
+  --cp-accent-hover: #fb7b91;
+  --cp-accent-soft: rgba(253, 142, 161, 0.14);
+  --cp-accent-fg: #1a1a1a;
+  --cp-success: #4ade80;
+  --cp-danger: #f87171;
+  --cp-warning: #fbbf24;
+  --cp-link: #4da6ff;
+  --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+  --cp-overlay: rgba(41, 41, 41, 0.88);
+  --cp-panel: rgba(41, 41, 41, 0.72);
+  --cp-panel-strong: rgba(41, 41, 41, 0.96);
+  --cp-sheen: rgba(255, 255, 255, 0.04);
+  --cp-highlight: rgba(253, 142, 161, 0.12);
+}
+:root {
+  --cp-card-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.14);
+  --cp-paper-muted: var(--cp-text-muted);
+  --cp-paper-link: var(--cp-link);
+  --cp-print-bg: #ffffff;
+  --cp-print-text: #242424;
+  --cp-print-muted: #5c5c5c;
+  --cp-print-border: #dedede;
+}
+html[data-theme="dark"] {
+  --cp-card-shadow: 0 0 2px rgba(0, 0, 0, 0.42), 0 1px 2px rgba(0, 0, 0, 0.36);
+  --cp-paper-muted: #b8b8b8;
+  --cp-paper-link: #6bb6ff;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--cp-bg);
+  color: var(--cp-text);
+  font: 16px/1.6 "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+a { color: var(--cp-paper-link); }
+a:hover { color: var(--cp-accent-hover); }
+.shell { max-width: 960px; margin: 0 auto; padding: 48px 20px 72px; }
+.topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 48px;
+}
+.brand { color: var(--cp-text); font-weight: 700; text-decoration: none; }
+.home { font-size: 14px; }
+.kicker {
+  margin: 0 0 8px;
+  color: var(--cp-accent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+h1 { max-width: 760px; margin: 0; font-size: clamp(40px, 8vw, 72px); line-height: 1.02; }
+.lede { max-width: 700px; margin: 20px 0 40px; color: var(--cp-paper-muted); font-size: 19px; }
+.ledger-note {
+  margin: 0 0 24px;
+  padding: 16px;
+  border: 1px solid var(--cp-border);
+  border-left: 4px solid var(--cp-accent);
+  border-radius: 0.625rem;
+  background: var(--cp-bg-elevated);
+  color: var(--cp-paper-muted);
+}
+.papers { display: grid; gap: 16px; }
+.paper {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 20px;
+  padding: 24px;
+  border: 1px solid var(--cp-border);
+  border-radius: 16px;
+  background: var(--cp-surface);
+  box-shadow: var(--cp-card-shadow);
+}
+.paper time {
+  color: var(--cp-paper-muted);
+  font: 13px/1.45 Consolas, "Courier New", Courier, monospace;
+}
+.paper h2 { margin: 0 0 8px; font-size: 22px; line-height: 1.25; }
+.paper h2 a { color: var(--cp-text); text-decoration: none; }
+.paper h2 a:hover { color: var(--cp-accent); }
+.paper p { margin: 0; color: var(--cp-paper-muted); }
+.tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.tag {
+  padding: 4px 8px;
+  border: 1px solid var(--cp-border);
+  border-radius: 0.625rem;
+  background: var(--cp-surface-soft);
+  color: var(--cp-text-soft);
+  font-size: 12px;
+}
+.links { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 16px; font-size: 14px; }
+footer { margin-top: 44px; padding-top: 20px; border-top: 1px solid var(--cp-border); color: var(--cp-paper-muted); font-size: 13px; }
+@media (max-width: 640px) {
+  .shell { padding-top: 28px; }
+  .topline { margin-bottom: 32px; }
+  .paper { grid-template-columns: 1fr; gap: 8px; padding: 20px; }
+}
+@media print {
+  :root, html[data-theme="dark"] {
+    --cp-bg: var(--cp-print-bg);
+    --cp-surface: var(--cp-print-bg);
+    --cp-surface-soft: var(--cp-print-bg);
+    --cp-text: var(--cp-print-text);
+    --cp-paper-muted: var(--cp-print-muted);
+    --cp-paper-link: var(--cp-print-text);
+    --cp-border: var(--cp-print-border);
+  }
+  body { background: var(--cp-bg); }
+  .paper { box-shadow: none; }
+}
+</style>
+</head>
+<body>
+<main class="shell">
+  <nav class="topline" aria-label="Paper navigation">
+    <a class="brand" href="/">Kody Wildfeuer</a>
+    <a class="home" href="/">Home</a>
+  </nav>
+
+  <p class="kicker">Publication ledger</p>
+  <h1>Papers</h1>
+  <p class="lede">Preprints on local-first AI systems, content-addressed histories, and interfaces whose claims can be replayed instead of merely trusted.</p>
+  <p class="ledger-note"><strong>This is an append-only publication log.</strong> New papers are added as new entries; prior disclosures remain linked in place.</p>
+
+  <section class="papers" aria-label="Published papers">
+    <article class="paper">
+      <time datetime="2026-08-29">2026-08-29</time>
+      <div>
+        <h2><a href="/verified-frame-worlds/paper.html">Verified Frame Worlds</a></h2>
+        <p>Local applications whose boards, rooms, matches, and timelines are deterministic projections of append-only content-addressed histories, with provenance-bearing forks and recordings bound to explicit frame anchors and byte hashes.</p>
+        <div class="tags" aria-label="Topics">
+          <span class="tag">local-first</span>
+          <span class="tag">event sourcing</span>
+          <span class="tag">deterministic replay</span>
+          <span class="tag">rapp/1</span>
+        </div>
+        <div class="links">
+          <a href="/verified-frame-worlds/paper.html">Read paper</a>
+          <a href="https://kody-w.github.io/workroom/">Open system</a>
+          <a href="https://github.com/kody-w/workroom/tree/aace86710454648743ce46a5e63d512e4044f9ad">Pinned source</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="paper">
+      <time datetime="2026-08-27">2026-08-27</time>
+      <div>
+        <h2><a href="/frame-chains/paper.html">Frame Chains</a></h2>
+        <p>Self-healing, leader-redundant orchestration of a distributed AI estate through signed content-addressed frame chains.</p>
+        <div class="tags" aria-label="Topics">
+          <span class="tag">distributed systems</span>
+          <span class="tag">agent orchestration</span>
+          <span class="tag">logical time</span>
+          <span class="tag">content addressing</span>
+        </div>
+        <div class="links">
+          <a href="/frame-chains/paper.html">Read paper</a>
+          <a href="https://github.com/kody-w/frame-chains">Source</a>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <footer>
+    <p>Preprints by Kody Wildfeuer · RapterBox LLC · The implementation and evidence links are part of each publication record.</p>
+  </footer>
+</main>
+</body>
+</html>
