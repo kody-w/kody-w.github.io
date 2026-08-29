@@ -3,6 +3,7 @@ import importlib.util
 import json
 import re
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -59,6 +60,7 @@ def source_manifest_hash():
 def load_builder():
     spec = importlib.util.spec_from_file_location("build_twin", BUILDER)
     module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
 
@@ -106,7 +108,8 @@ class TwinAcceptanceTest(unittest.TestCase):
                 check=True,
             )
             self.assertEqual(first.read_bytes(), second.read_bytes())
-            payload = json.loads(first.read_text())
+            corpus_bytes = first.read_bytes()
+            payload = json.loads(corpus_bytes)
 
         self.assertEqual(payload["schema"], "kodyw-public-twin/1.0")
         self.assertEqual(payload["normalizationVersion"], "plain-text/1")
@@ -139,7 +142,7 @@ class TwinAcceptanceTest(unittest.TestCase):
             self.assertTrue(record["title"])
             self.assertTrue(record["text"])
 
-        self.assertLessEqual(len(first.read_bytes()), 4 * 1024 * 1024)
+        self.assertLessEqual(len(corpus_bytes), 4 * 1024 * 1024)
 
     def test_committed_corpus_matches_builder(self):
         result = subprocess.run(
