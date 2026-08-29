@@ -22,6 +22,7 @@ APP = ROOT / "js" / "twin-app.js"
 DEFAULT_LAYOUT = ROOT / "_layouts" / "default.html"
 LEGACY_TWIN = ROOT / "digital-twin" / "index.html"
 WORKFLOW = ROOT / ".github" / "workflows" / "validate-posts.yml"
+BENCHMARK = ROOT / "scripts" / "benchmark_twin.js"
 
 EXPECTED_SOURCE_HASH = (
     "9b14903ad91282be2e962e97697479b04e8416da52b7b219afa0422e391d3e29"
@@ -86,6 +87,7 @@ class TwinAcceptanceTest(unittest.TestCase):
             STATE,
             CONTROLLER,
             APP,
+            BENCHMARK,
         ):
             self.assertTrue(path.is_file(), path)
 
@@ -232,6 +234,8 @@ class TwinAcceptanceTest(unittest.TestCase):
         self.assertIn("'twin/**'", workflow)
         self.assertIn("'api/twin-corpus.json'", workflow)
         self.assertIn("python3 scripts/check_twin.py", workflow)
+        gate = (ROOT / "scripts" / "check_twin.py").read_text()
+        self.assertIn("scripts/benchmark_twin.js", gate)
 
 
 if __name__ == "__main__":

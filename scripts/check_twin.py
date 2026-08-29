@@ -19,6 +19,7 @@ COMMANDS = [
         "tests/twin_state.test.js",
         "tests/twin_controller.test.js",
     ],
+    ["node", "scripts/benchmark_twin.js"],
 ]
 
 
