@@ -73,7 +73,7 @@ test('real repository evidence remains exact structured provenance', () => {
   );
   assert.ok(rapp);
   const search = engine.search('RAPP', { limit: 20 });
-  assert.ok(search.results.some((item) => item.citation.sourceId === rapp.id));
+  assert.ok(search.some((item) => item.citation.sourceId === rapp.id));
   const source = engine.source(rapp.id);
   assert.equal(source.id, rapp.id);
   assert.equal(source.structured.pointer.startsWith('/repos/'), true);
