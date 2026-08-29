@@ -15,7 +15,6 @@ var SHELL_PATHS = [
   '/twin/icon-512.png',
   '/twin/one-sentence-prompt.txt',
   '/css/main.css',
-  '/js/copy-accessibility.js',
   '/js/theme.js',
   '/js/search.js',
   '/js/twin-state.js',
