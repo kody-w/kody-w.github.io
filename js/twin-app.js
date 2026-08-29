@@ -177,7 +177,9 @@
       setItem() {
         throw new Error("Persistent browser storage is unavailable.");
       },
-      removeItem() {},
+      removeItem() {
+        throw new Error("Persistent browser storage is unavailable.");
+      },
     };
   }
 
@@ -671,6 +673,19 @@
     return objectValue(candidate.citation || candidate);
   }
 
+  function pinnedEvidenceText(citation) {
+    const source = objectValue(citation);
+    if (Object.prototype.hasOwnProperty.call(source, "quote")) {
+      return text(source.quote, "Exact evidence unavailable.");
+    }
+    if (Object.prototype.hasOwnProperty.call(source, "value")) {
+      return typeof source.value === "string"
+        ? source.value
+        : JSON.stringify(source.value);
+    }
+    return "Exact evidence unavailable.";
+  }
+
   function renderPinned(state) {
     const snapshot = objectValue(state);
     const pins = Array.isArray(snapshot.pinnedCitations) ? snapshot.pinnedCitations : [];
@@ -688,7 +703,7 @@
       label.type = "button";
       label.setAttribute("data-semantic-action", "citation.open");
       label.addEventListener("click", () => openCitation(citation, label));
-      row.append(label, create("span", "", evidenceText(item)));
+      row.append(label, create("span", "", pinnedEvidenceText(citation)));
       list.appendChild(row);
     });
     elements.pinned.appendChild(list);
