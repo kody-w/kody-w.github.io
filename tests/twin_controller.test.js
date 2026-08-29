@@ -15,13 +15,20 @@ const prompt = fs.readFileSync(
   'utf8'
 );
 
-function createController() {
+function createController(options = {}) {
   const clipboard = { value: '' };
-  const view = {
+  const view = options.view || {
     mode: 'answer',
     source: null,
-    render() {},
-    setMode(mode) { this.mode = mode; },
+    failRender: false,
+    failMode: false,
+    render() {
+      if (this.failRender) throw new Error('render failed');
+    },
+    setMode(mode) {
+      if (this.failMode) throw new Error('mode failed');
+      this.mode = mode;
+    },
     openSource(source) { this.source = source; }
   };
   const storage = {
@@ -50,6 +57,18 @@ function createController() {
 test('capabilities expose every semantic action without coordinate inputs', () => {
   const { controller } = createController();
   const capabilities = controller.capabilities();
+  assert.equal(capabilities.apiVersion, '1.0');
+  assert.equal(
+    capabilities.actions.every(
+      (action) =>
+        typeof action.description === 'string' &&
+        action.description.length > 0 &&
+        action.inputSchema &&
+        typeof action.inputSchema === 'object' &&
+        typeof action.mutatesState === 'boolean'
+    ),
+    true
+  );
   const names = capabilities.actions.map((action) => action.name);
   for (const required of [
     'search.query',
@@ -72,6 +91,71 @@ test('capabilities expose every semantic action without coordinate inputs', () =
   for (const forbidden of ['"x"', '"y"', '"selector"', '"xpath"', '"javascript"']) {
     assert.equal(serialized.includes(forbidden), false, forbidden);
   }
+});
+
+test('inspection and citation opening expose semantic provenance', async () => {
+  const { controller, view } = createController();
+  const answer = await controller.dispatch('answer.ask', {
+    question: 'Where is the source of truth?'
+  });
+  const citation = answer.data.claims[0].citation;
+  const opened = await controller.dispatch('citation.open', { citation });
+  assert.equal(opened.ok, true);
+  assert.equal(view.source.citation.sourceId, citation.sourceId);
+  assert.equal(view.source.source.id, citation.sourceId);
+
+  const inspection = controller.inspect();
+  assert.equal(inspection.ready, true);
+  assert.equal(inspection.route, '/twin/');
+  assert.equal(inspection.mode, 'answer');
+  assert.equal(inspection.stateRevision > 0, true);
+  assert.equal(typeof inspection.activeResultId, 'string');
+  assert.equal(
+    inspection.controls.some(
+      (control) => control.action === 'citation.open' && control.enabled
+    ),
+    true
+  );
+});
+
+test('view failures roll back state-changing semantic actions', async () => {
+  const { controller, view } = createController();
+  await controller.dispatch('answer.ask', { question: 'source truth' });
+  const populated = (await controller.dispatch('state.export')).data.serialized;
+
+  view.failRender = true;
+  const reset = await controller.dispatch('state.reset');
+  assert.equal(reset.ok, false);
+  assert.equal(reset.error.code, 'VIEW_ERROR');
+  assert.equal(
+    (await controller.dispatch('state.export')).data.serialized,
+    populated
+  );
+
+  view.failRender = false;
+  await controller.dispatch('state.reset');
+  const empty = (await controller.dispatch('state.export')).data.serialized;
+  view.failRender = true;
+  const imported = await controller.dispatch('state.import', {
+    serialized: populated
+  });
+  assert.equal(imported.ok, false);
+  assert.equal(imported.error.code, 'VIEW_ERROR');
+  assert.equal(
+    (await controller.dispatch('state.export')).data.serialized,
+    empty
+  );
+
+  view.failRender = false;
+  view.failMode = true;
+  const beforeMode = (await controller.dispatch('state.export')).data.serialized;
+  const mode = await controller.dispatch('ui.setMode', { mode: 'challenge' });
+  assert.equal(mode.ok, false);
+  assert.equal(mode.error.code, 'VIEW_ERROR');
+  assert.equal(
+    (await controller.dispatch('state.export')).data.serialized,
+    beforeMode
+  );
 });
 
 test('semantic mission completes without selectors or coordinates', async () => {
