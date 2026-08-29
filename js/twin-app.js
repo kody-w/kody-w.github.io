@@ -17,6 +17,7 @@
     indexed: false,
     stateInitialized: false,
     serviceWorkerHandled: false,
+    serviceWorkerActivated: false,
     offlineReady: false,
     serviceWorkerControlled: false,
     serviceWorkerError: null,
@@ -34,6 +35,7 @@
     storageDetail: document.getElementById("twin-storage-detail"),
     offlineStatus: document.getElementById("twin-offline-status"),
     offlineDetail: document.getElementById("twin-offline-detail"),
+    offlineReload: document.getElementById("twin-offline-reload"),
     liveStatus: document.getElementById("twin-live-status"),
     form: document.getElementById("twin-question-form"),
     question: document.getElementById("twin-question"),
@@ -207,6 +209,7 @@
       indexed: runtime.indexed,
       stateInitialized: runtime.stateInitialized,
       serviceWorkerHandled: runtime.serviceWorkerHandled,
+      serviceWorkerActivated: runtime.serviceWorkerActivated,
       offlineReady: runtime.offlineReady,
       serviceWorkerControlled: runtime.serviceWorkerControlled,
       online: navigator.onLine,
@@ -243,20 +246,25 @@
 
     if (elements.offlineStatus) {
       elements.offlineStatus.textContent = runtime.offlineReady
-        ? "Cached"
+        ? "Offline ready"
+        : runtime.serviceWorkerActivated
+          ? "Reload required"
         : runtime.serviceWorkerHandled
           ? "Online only"
           : "Checking…";
-      if (runtime.offlineReady && runtime.serviceWorkerControlled) {
+      if (runtime.offlineReady) {
         elements.offlineDetail.textContent = navigator.onLine
           ? "Offline shell is active"
           : "Working from the local cache";
-      } else if (runtime.offlineReady) {
-        elements.offlineDetail.textContent = "Cached; reload once for control";
+      } else if (runtime.serviceWorkerActivated) {
+        elements.offlineDetail.textContent = "Cache installed; this page is not controlled yet";
       } else if (runtime.serviceWorkerHandled) {
         elements.offlineDetail.textContent = "Offline use is not confirmed";
       } else {
         elements.offlineDetail.textContent = "Not yet confirmed";
+      }
+      if (elements.offlineReload) {
+        elements.offlineReload.hidden = !runtime.serviceWorkerActivated || runtime.serviceWorkerControlled;
       }
     }
   }
@@ -770,6 +778,12 @@
     elements.exportButton.addEventListener("click", exportState);
     elements.importInput.addEventListener("change", () => importState(elements.importInput.files[0]));
     elements.resetButton.addEventListener("click", resetState);
+    elements.offlineReload.addEventListener("click", async () => {
+      elements.offlineReload.disabled = true;
+      setLive("Confirming corpus status, then reloading once under service-worker control.");
+      await dispatchAction("corpus.status");
+      window.location.reload();
+    });
     elements.buildPrompt.addEventListener("click", buildProductPrompt);
     elements.copyPrompt.addEventListener("click", copyProductPrompt);
     elements.appIdea.addEventListener("input", () => {
@@ -830,13 +844,38 @@
       const active = readyRegistration && readyRegistration.active
         ? readyRegistration.active
         : registration.active;
-      runtime.offlineReady = Boolean(active);
       runtime.serviceWorkerControlled = Boolean(navigator.serviceWorker.controller);
+      runtime.serviceWorkerActivated = Boolean(active || runtime.serviceWorkerControlled);
+      runtime.offlineReady = runtime.serviceWorkerActivated && runtime.serviceWorkerControlled;
+
+      const pendingWorker = registration.installing || registration.waiting;
+      if (!active && pendingWorker) {
+        pendingWorker.addEventListener("statechange", () => {
+          if (pendingWorker.state === "activated") {
+            runtime.serviceWorkerActivated = true;
+            runtime.serviceWorkerControlled = Boolean(navigator.serviceWorker.controller);
+            runtime.offlineReady = runtime.serviceWorkerControlled;
+            updateRuntimeStatus();
+            if (!runtime.serviceWorkerControlled) {
+              setLive("Offline cache installed. Reload once to activate offline mode for this page.");
+            }
+          }
+        });
+      }
+
       navigator.serviceWorker.addEventListener("controllerchange", () => {
         runtime.serviceWorkerControlled = Boolean(navigator.serviceWorker.controller);
+        runtime.serviceWorkerActivated = runtime.serviceWorkerControlled || runtime.serviceWorkerActivated;
+        runtime.offlineReady = runtime.serviceWorkerControlled;
         updateRuntimeStatus();
-        setLive("Offline shell control is active for /twin/.");
+        if (runtime.serviceWorkerControlled) {
+          setLive("Offline shell control is active for /twin/.");
+        }
       });
+
+      if (runtime.serviceWorkerActivated && !runtime.serviceWorkerControlled) {
+        setLive("Offline cache installed. Reload once to activate offline mode for this page.");
+      }
     } catch (error) {
       runtime.offlineReady = false;
       runtime.serviceWorkerError = {
@@ -995,8 +1034,10 @@
       elements.buildPrompt.disabled = !runtime.ready || !elements.appIdea.value.trim();
       await refreshState();
       setLive(runtime.offlineReady
-        ? "Public twin ready. Corpus validated, indexed, and cached for offline use."
-        : "Public twin ready in online mode. Offline readiness is not confirmed.");
+        ? "Public twin ready. Corpus validated, indexed, and under offline service-worker control."
+        : runtime.serviceWorkerActivated
+          ? "Public twin ready. Reload once to place this page under offline service-worker control."
+          : "Public twin ready in online mode. Offline readiness is not confirmed.");
     } catch (error) {
       exposeFailure(error);
     }

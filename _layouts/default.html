@@ -94,7 +94,9 @@
 
 <footer class="site-footer">
   <div class="wrap">
+    {% unless page.offline_shell %}
     {% include newsletter_form.html %}
+    {% endunless %}
     <p class="copy-accessibility-note">Code examples and clearly labeled AI prompts are intentionally copyable. Paste prompts into your favorite AI and adapt them to your context.</p>
     <p>&copy; {{ site.time | date: '%Y' }} {{ site.title }}</p>
   </div>
