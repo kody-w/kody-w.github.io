@@ -1,6 +1,6 @@
 {
   "schema": "kodyw-twin-shell/1.0",
-  "sourceSha256": "1e7db2f91a86577b14de157c5e51c962d9ae781a94d1919ef23590738ecd1ee4",
+  "sourceSha256": "f8844aca2bd3aad318d0a2ae3f7ba607e9246b8dafb53631d387644df01c1899",
   "documents": [
     {
       "url": "/public-twin/",
@@ -104,7 +104,7 @@
     },
     {
       "url": "/js/twin-app.js",
-      "sha256": "59fc009e6816e5b516887272002c9e38629d6880589ab7967c60f722c8216abd",
+      "sha256": "3513baa25ae53aa465d8ca1368e45d288437f17ea49c965c6a0efd53f2b2accf",
       "contentTypes": [
         "text/javascript",
         "application/javascript"
