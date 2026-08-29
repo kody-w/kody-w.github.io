@@ -234,7 +234,7 @@
     }
 
     if (elements.storageStatus) {
-      elements.storageStatus.textContent = runtime.storageMode === "local"
+      elements.storageStatus.textContent = runtime.storageMode === "localStorage"
         ? "Local persistence"
         : runtime.storageMode === "memory"
           ? "Memory mode"
