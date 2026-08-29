@@ -15,8 +15,10 @@ function memoryStorage(options = {}) {
       values.set(key, value);
     },
     removeItem(key) {
+      if (options.failRemove) throw new Error('remove denied');
       values.delete(key);
-    }
+    },
+    values
   };
 }
 
@@ -71,4 +73,50 @@ test('invalid imports are transactional and reject pollution keys', () => {
     assert.throws(() => store.importState(invalid));
     assert.equal(store.exportState(), before);
   }
+});
+
+test('reset fails rather than leaving stale durable state to resurrect', () => {
+  const behavior = {};
+  const storage = memoryStorage(behavior);
+  const store = TwinState.createStore({ storage });
+  store.update((state) => {
+    state.savedQuestions.push({ question: 'persisted question' });
+  });
+
+  behavior.failSet = true;
+  store.update((state) => {
+    state.savedQuestions.push({ question: 'memory-only question' });
+  });
+  assert.equal(store.storageMode(), 'memory');
+
+  behavior.failRemove = true;
+  assert.throws(() => store.reset(), /persist|storage|reset/i);
+  assert.equal(store.get().savedQuestions.length, 2);
+
+  behavior.failSet = false;
+  behavior.failRemove = false;
+  const restarted = TwinState.createStore({ storage });
+  assert.deepEqual(restarted.get().savedQuestions, [
+    { question: 'persisted question' }
+  ]);
+});
+
+test('reset clears stale durable state when removal remains available', () => {
+  const behavior = {};
+  const storage = memoryStorage(behavior);
+  const store = TwinState.createStore({ storage });
+  store.update((state) => {
+    state.savedQuestions.push({ question: 'persisted question' });
+  });
+
+  behavior.failSet = true;
+  store.update((state) => {
+    state.savedQuestions.push({ question: 'memory-only question' });
+  });
+  assert.equal(store.storageMode(), 'memory');
+  assert.doesNotThrow(() => store.reset());
+
+  behavior.failSet = false;
+  const restarted = TwinState.createStore({ storage });
+  assert.deepEqual(restarted.get().savedQuestions, []);
 });

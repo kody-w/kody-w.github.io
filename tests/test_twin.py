@@ -168,6 +168,8 @@ class TwinAcceptanceTest(unittest.TestCase):
 
     def test_public_page_declares_private_local_runtime(self):
         page = PAGE.read_text()
+        corpus = json.loads(CORPUS.read_text())
+        app = APP.read_text()
         self.assertIn("permalink: /twin/", page)
         self.assertIn("offline_shell: true", page)
         self.assertIn('id="twin-question"', page)
@@ -182,6 +184,8 @@ class TwinAcceptanceTest(unittest.TestCase):
         self.assertIn("/js/twin-controller.js", page)
         self.assertIn("/js/twin-app.js", page)
         self.assertNotIn("innerHTML", page)
+        self.assertIn(corpus["corpusSha256"], app)
+        self.assertIn(corpus["sourceManifestSha256"], app)
 
         layout = DEFAULT_LAYOUT.read_text()
         self.assertIn("page.offline_shell", layout)

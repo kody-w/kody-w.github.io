@@ -101,3 +101,38 @@ test('real challenge does not manufacture relations from transition words', () =
   assert.equal(challenge.counterevidence.length, 0);
   assert.notEqual(challenge.status, 'evidence-found');
 });
+
+test('negation remains a material answer constraint', () => {
+  const evidence = engine.answer('What is not evidence?');
+  assert.equal(evidence.status, 'answered');
+  assert.ok(evidence.claims.length > 0);
+  evidence.claims.forEach((claim) => {
+    const text = String(claim.citation.quote || claim.citation.value).toLowerCase();
+    assert.match(text, /\bnot\b/);
+    assert.match(text, /\bevidence\b/);
+  });
+
+  const source = engine.answer('What is not the source of truth?');
+  if (source.status === 'answered') {
+    source.claims.forEach((claim) => {
+      const text = String(claim.citation.quote || claim.citation.value).toLowerCase();
+      assert.match(text, /\bnot\b|\bnever\b|\bwithout\b/);
+      assert.match(text, /\bsource\b/);
+      assert.match(text, /\btruth\b/);
+    });
+  } else {
+    assert.equal(source.status, 'insufficient-evidence');
+    assert.deepEqual(source.claims, []);
+  }
+});
+
+test('unsupported material qualifiers force abstention', () => {
+  for (const question of [
+    'local machine source truth pizza unicorn',
+    'source of truth passwords secrets'
+  ]) {
+    const answer = engine.answer(question);
+    assert.equal(answer.status, 'insufficient-evidence', question);
+    assert.deepEqual(answer.claims, [], question);
+  }
+});
