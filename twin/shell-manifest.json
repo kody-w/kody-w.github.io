@@ -1,0 +1,119 @@
+{
+  "schema": "kodyw-twin-shell/1.0",
+  "sourceSha256": "99cdf59830291a2b52b791efc0233daaa6d92b6627feff4c975db9492fce22e9",
+  "documents": [
+    {
+      "url": "/twin/",
+      "contentTypes": [
+        "text/html"
+      ],
+      "requiredText": [
+        "id=\"public-twin\"",
+        "http-equiv=\"Content-Security-Policy\""
+      ]
+    },
+    {
+      "url": "/twin/index.html",
+      "contentTypes": [
+        "text/html"
+      ],
+      "requiredText": [
+        "id=\"public-twin\"",
+        "http-equiv=\"Content-Security-Policy\""
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "url": "/twin/manifest.webmanifest",
+      "sha256": "b13b3997631e38b3cde16d82e9706af8c453698e18b6a366a0ea23fe2e9ddbfa",
+      "contentTypes": [
+        "application/manifest+json",
+        "application/json"
+      ]
+    },
+    {
+      "url": "/twin/icon-192.png",
+      "sha256": "fbd1f9ea495b93eab9ed5c9c2372d3b3af6b702278625122d9670479e1c286f8",
+      "contentTypes": [
+        "image/png"
+      ]
+    },
+    {
+      "url": "/twin/icon-512.png",
+      "sha256": "8ffc33fe5fd0c7321091b89db3a0164ea1dbe27162603de281ed1c0781f674d4",
+      "contentTypes": [
+        "image/png"
+      ]
+    },
+    {
+      "url": "/twin/one-sentence-prompt.txt",
+      "sha256": "b25f674bc8bc0bdfd84c02ee405421fd5570ef055ef61f661e6892ce07206a24",
+      "contentTypes": [
+        "text/plain"
+      ]
+    },
+    {
+      "url": "/css/main.css",
+      "sha256": "608dd94d6fb67ab854105aa664e99a96bab1cc10f455674cbc295f09dceb2ee0",
+      "contentTypes": [
+        "text/css"
+      ]
+    },
+    {
+      "url": "/js/theme.js",
+      "sha256": "77cc82688206cf5a699472c8f51c0a84250f2617a12e7e3c9120f9447163f005",
+      "contentTypes": [
+        "text/javascript",
+        "application/javascript"
+      ]
+    },
+    {
+      "url": "/js/twin-state.js",
+      "sha256": "503058885b262a1fdfd47df310e2a05c247224229728a6809b1d70f0d367caf4",
+      "contentTypes": [
+        "text/javascript",
+        "application/javascript"
+      ]
+    },
+    {
+      "url": "/js/twin-engine.js",
+      "sha256": "11d63c7274f37c78e4abc21cc92f98f88743708d0eb51bb9671073aedb946102",
+      "contentTypes": [
+        "text/javascript",
+        "application/javascript"
+      ]
+    },
+    {
+      "url": "/js/twin-controller.js",
+      "sha256": "0423b794e596c8b490eefaf61fec2a25a149f5aad2d6ff194548fbe395e2e0c1",
+      "contentTypes": [
+        "text/javascript",
+        "application/javascript"
+      ]
+    },
+    {
+      "url": "/js/twin-app.js",
+      "sha256": "cb90efd5bcfba0236e6980557952006eb111b42b195a3ca9efa8d1d3c1d3a129",
+      "contentTypes": [
+        "text/javascript",
+        "application/javascript"
+      ]
+    },
+    {
+      "url": "/favicon.ico",
+      "sha256": "576c99048648717b0dc723b2d8ee01eb4d28499106cdd004d2353d5862621fb9",
+      "contentTypes": [
+        "image/x-icon",
+        "image/vnd.microsoft.icon"
+      ]
+    },
+    {
+      "url": "/apple-touch-icon.png",
+      "sha256": "2ee0fd4816b215f97d9f760b795d6635dff0fafb23fbb570278e56f6bb0317fc",
+      "contentTypes": [
+        "image/png"
+      ]
+    }
+  ]
+}

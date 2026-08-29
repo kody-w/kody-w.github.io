@@ -8,32 +8,10 @@ var BASELINE_SOURCE_MANIFEST_SHA256 =
 var BASELINE_CORPUS_SHA256 =
   '0d6badcd9364761804d7e77f2f5695185ed8e8254a80650f9d57a09695dd7f9d';
 var SHELL_RELEASE_SHA256 =
-  'c15c2090f66de48f94902e1d8f14b8c6d4b5d15ad3b5e12e02db8650b9bc73c7';
+  '0462099a4ce7f5f4a3dfad1deef31a2743ebd59340c3b81efdf1d7b0b9522b4d';
 var SHELL_CACHE = 'kody-twin-shell-' + SHELL_RELEASE_SHA256.slice(0, 16);
 var CORPUS_CACHE = 'kody-twin-corpus-' + BASELINE_CORPUS_SHA256.slice(0, 16);
-var SHELL_PATHS = [
-  '/twin/',
-  '/twin/index.html',
-  '/twin/manifest.webmanifest',
-  '/twin/icon-192.png',
-  '/twin/icon-512.png',
-  '/twin/one-sentence-prompt.txt',
-  '/twin/sw.js',
-  '/css/main.css',
-  '/js/theme.js',
-  '/js/search.js',
-  '/js/twin-state.js',
-  '/js/twin-engine.js',
-  '/js/twin-controller.js',
-  '/js/twin-app.js',
-  '/search.json',
-  '/favicon.ico',
-  '/apple-touch-icon.png'
-];
-var SHELL_PATH_SET = SHELL_PATHS.reduce(function (paths, path) {
-  paths[path] = true;
-  return paths;
-}, Object.create(null));
+var SHELL_MANIFEST_PATH = '/twin/shell-manifest.json';
 var SHA256 = /^[0-9a-f]{64}$/;
 
 function isObject(value) {
@@ -138,6 +116,150 @@ function validSourceManifest(manifest) {
     var path = entry.path || entry.sourcePath;
     var hash = entry.sha256 || entry.sourceSha256;
     return isNonEmptyString(path) && SHA256.test(hash);
+  });
+}
+
+function responseType(response) {
+  return (response.headers.get('Content-Type') || '')
+    .split(';', 1)[0]
+    .trim()
+    .toLowerCase();
+}
+
+function allowedType(response, types) {
+  var actual = responseType(response);
+  return Array.isArray(types) && types.some(function (type) {
+    return actual === String(type).toLowerCase();
+  });
+}
+
+function bytesHex(buffer) {
+  return Array.from(new Uint8Array(buffer)).map(function (value) {
+    return value.toString(16).padStart(2, '0');
+  }).join('');
+}
+
+function responseSha256(response) {
+  return response.clone().arrayBuffer().then(function (buffer) {
+    return crypto.subtle.digest('SHA-256', buffer);
+  }).then(bytesHex);
+}
+
+function validShellUrl(value) {
+  return isNonEmptyString(value) &&
+    value.charAt(0) === '/' &&
+    value.charAt(1) !== '/' &&
+    value.indexOf('\\') === -1 &&
+    value.indexOf('..') === -1;
+}
+
+function validShellManifest(manifest) {
+  if (!isObject(manifest) ||
+      manifest.schema !== 'kodyw-twin-shell/1.0' ||
+      !SHA256.test(manifest.sourceSha256) ||
+      !Array.isArray(manifest.documents) ||
+      manifest.documents.length === 0 ||
+      !Array.isArray(manifest.assets) ||
+      manifest.assets.length === 0) {
+    return false;
+  }
+  var seen = Object.create(null);
+  var documentsValid = manifest.documents.every(function (document) {
+    if (!isObject(document) ||
+        !validShellUrl(document.url) ||
+        seen[document.url] ||
+        !Array.isArray(document.contentTypes) ||
+        document.contentTypes.length === 0 ||
+        !document.contentTypes.every(isNonEmptyString) ||
+        !Array.isArray(document.requiredText) ||
+        document.requiredText.length === 0 ||
+        !document.requiredText.every(isNonEmptyString)) {
+      return false;
+    }
+    seen[document.url] = true;
+    return true;
+  });
+  if (!documentsValid) {
+    return false;
+  }
+  return manifest.assets.every(function (asset) {
+    if (!isObject(asset) ||
+        !validShellUrl(asset.url) ||
+        seen[asset.url] ||
+        !SHA256.test(asset.sha256) ||
+        !Array.isArray(asset.contentTypes) ||
+        asset.contentTypes.length === 0 ||
+        !asset.contentTypes.every(isNonEmptyString)) {
+      return false;
+    }
+    seen[asset.url] = true;
+    return true;
+  });
+}
+
+function parseShellManifest(response) {
+  if (!response || !response.ok ||
+      !allowedType(response, ['application/json'])) {
+    return Promise.reject(new Error('Invalid twin shell manifest response'));
+  }
+  return Promise.all([
+    responseSha256(response),
+    response.clone().text()
+  ]).then(function (values) {
+    if (values[0] !== SHELL_RELEASE_SHA256) {
+      throw new Error('Twin shell manifest digest mismatch');
+    }
+    var manifest = JSON.parse(values[1]);
+    if (!validShellManifest(manifest)) {
+      throw new Error('Invalid twin shell manifest');
+    }
+    return {
+      manifest: manifest,
+      response: response
+    };
+  });
+}
+
+function fetchShellManifest() {
+  return fetch(SHELL_MANIFEST_PATH, {
+    cache: 'no-store',
+    credentials: 'same-origin'
+  }).then(parseShellManifest);
+}
+
+function cachedShellManifest() {
+  return caches.open(SHELL_CACHE).then(function (cache) {
+    return cache.match(SHELL_MANIFEST_PATH);
+  }).then(function (response) {
+    return response ? parseShellManifest(response) : null;
+  }).catch(function () {
+    return null;
+  });
+}
+
+function verifyShellResponse(specification, response) {
+  if (!response || !response.ok ||
+      !allowedType(response, specification.contentTypes)) {
+    return Promise.reject(new Error(
+      'Invalid shell response for ' + specification.url
+    ));
+  }
+  if (specification.sha256) {
+    return responseSha256(response).then(function (digest) {
+      if (digest !== specification.sha256) {
+        throw new Error('Shell digest mismatch for ' + specification.url);
+      }
+      return response;
+    });
+  }
+  return response.clone().text().then(function (body) {
+    var valid = specification.requiredText.every(function (required) {
+      return body.indexOf(required) !== -1;
+    });
+    if (!valid) {
+      throw new Error('Shell document markers missing for ' + specification.url);
+    }
+    return response;
   });
 }
 
@@ -272,15 +394,31 @@ function requireValidatedCorpus() {
   });
 }
 
+function shellSpecifications(manifest) {
+  return manifest.documents.concat(manifest.assets);
+}
+
 function shellIsCached() {
-  return caches.open(SHELL_CACHE).then(function (cache) {
-    return Promise.all(SHELL_PATHS.map(function (path) {
-      return cache.match(path);
-    }));
-  }).then(function (responses) {
-    return responses.every(function (response) {
-      return Boolean(response);
+  return cachedShellManifest().then(function (bundle) {
+    if (!bundle) {
+      return false;
+    }
+    return caches.open(SHELL_CACHE).then(function (cache) {
+      return Promise.all(shellSpecifications(bundle.manifest).map(
+        function (specification) {
+          return cache.match(specification.url).then(function (response) {
+            if (!response) {
+              throw new Error('Missing shell asset ' + specification.url);
+            }
+            return verifyShellResponse(specification, response);
+          });
+        }
+      ));
+    }).then(function () {
+      return true;
     });
+  }).catch(function () {
+    return false;
   });
 }
 
@@ -311,16 +449,35 @@ function deleteOldCaches() {
 }
 
 function precacheShell() {
-  return caches.open(SHELL_CACHE).then(function (cache) {
-    return Promise.all(SHELL_PATHS.map(function (path) {
-      return fetch(path, { cache: 'reload', credentials: 'same-origin' })
-        .then(function (response) {
-          if (!response.ok) {
-            throw new Error('Unable to cache ' + path);
-          }
-          return cache.put(path, response);
+  return fetchShellManifest().then(function (bundle) {
+    var specifications = shellSpecifications(bundle.manifest);
+    return Promise.all(specifications.map(function (specification) {
+      return fetch(specification.url, {
+        cache: 'reload',
+        credentials: 'same-origin'
+      }).then(function (response) {
+        return verifyShellResponse(specification, response);
+      }).then(function (response) {
+        return {
+          specification: specification,
+          response: response
+        };
+      });
+    })).then(function (verified) {
+      return caches.open(SHELL_CACHE).then(function (cache) {
+        var writes = verified.map(function (item) {
+          return cache.put(
+            item.specification.url,
+            item.response.clone()
+          );
         });
-    }));
+        writes.push(cache.put(
+          SHELL_MANIFEST_PATH,
+          bundle.response.clone()
+        ));
+        return Promise.all(writes);
+      });
+    });
   });
 }
 
@@ -330,43 +487,38 @@ function shellResponse(request) {
       if (cached) {
         return cached;
       }
-      return fetch(request).then(function (response) {
-        if (response.ok) {
-          cache.put(request, response.clone());
-        }
-        return response;
-      });
+      return fetch(request);
     });
   });
 }
 
 function navigationResponse(request) {
   var pathname = new URL(request.url).pathname;
+  var isAppPath = pathname === '/twin' || pathname === '/twin/';
+  if (!isAppPath) {
+    return shellResponse(request).catch(function () {
+      return new Response('Twin resource is unavailable offline.', {
+        status: 503,
+        headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+      });
+    });
+  }
   return fetch(request).then(function (response) {
-    if (!response.ok) {
-      throw new Error('Navigation request failed');
-    }
-    var contentType = response.headers.get('Content-Type') || '';
-    var isAppPath = pathname === '/twin' || pathname === '/twin/';
-    var isAppDocument = isAppPath &&
-      contentType.toLowerCase().indexOf('text/html') !== -1;
-    return caches.open(SHELL_CACHE).then(function (cache) {
-      if (isAppDocument) {
-        return cache.put('/twin/', response.clone()).then(function () {
-          return response;
-        });
+    return cachedShellManifest().then(function (bundle) {
+      if (!bundle) {
+        throw new Error('Verified shell manifest is unavailable');
       }
-      if (!isAppPath && SHELL_PATH_SET[pathname]) {
-        return cache.put(pathname, response.clone()).then(function () {
-          return response;
-        });
+      var specification = bundle.manifest.documents.find(function (item) {
+        return item.url === '/twin/';
+      });
+      if (!specification) {
+        throw new Error('Canonical twin document is not declared');
       }
-      return response;
+      return verifyShellResponse(specification, response);
     });
   }).catch(function () {
     return caches.open(SHELL_CACHE).then(function (cache) {
-      var fallback = SHELL_PATH_SET[pathname] ? pathname : '/twin/';
-      return cache.match(fallback);
+      return cache.match('/twin/');
     }).then(function (response) {
       return response || new Response('Twin is unavailable offline.', {
         status: 503,
@@ -412,7 +564,5 @@ self.addEventListener('fetch', function (event) {
     event.respondWith(navigationResponse(request));
     return;
   }
-  if (SHELL_PATH_SET[url.pathname]) {
-    event.respondWith(shellResponse(request));
-  }
+  event.respondWith(shellResponse(request));
 });

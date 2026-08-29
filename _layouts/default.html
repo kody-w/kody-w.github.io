@@ -74,6 +74,7 @@
   </div>
 </header>
 
+{% unless page.offline_shell %}
 <!-- Search overlay -->
 <div class="search-overlay" id="search-overlay">
   <div class="search-container">
@@ -82,6 +83,7 @@
       <input type="text" id="search-input" aria-label="Search posts" placeholder="Search posts..." autocomplete="off">
       <kbd>Esc</kbd>
     </div>
+    {% endunless %}
     <div id="search-results" class="search-results"></div>
   </div>
 </div>
@@ -106,6 +108,8 @@
 <script src="/js/copy-accessibility.js" defer></script>
 {% endunless %}
 <script src="/js/theme.js"></script>
+{% unless page.offline_shell %}
 <script src="/js/search.js"></script>
+{% endunless %}
 </body>
 </html>

@@ -9,13 +9,17 @@ import tempfile
 import unittest
 from pathlib import Path
 
+sys.dont_write_bytecode = True
+
 
 ROOT = Path(__file__).resolve().parents[1]
 BUILDER = ROOT / "scripts" / "build_twin.py"
+RELEASE_BUILDER = ROOT / "scripts" / "build_twin_release.py"
 CORPUS = ROOT / "api" / "twin-corpus.json"
 PAGE = ROOT / "twin" / "index.html"
 WORKER = ROOT / "twin" / "sw.js"
 MANIFEST = ROOT / "twin" / "manifest.webmanifest"
+SHELL_MANIFEST = ROOT / "twin" / "shell-manifest.json"
 ICON_192 = ROOT / "twin" / "icon-192.png"
 ICON_512 = ROOT / "twin" / "icon-512.png"
 PROMPT = ROOT / "twin" / "one-sentence-prompt.txt"
@@ -26,11 +30,9 @@ APP = ROOT / "js" / "twin-app.js"
 DEFAULT_LAYOUT = ROOT / "_layouts" / "default.html"
 LEGACY_TWIN = ROOT / "digital-twin" / "index.html"
 WORKFLOW = ROOT / ".github" / "workflows" / "validate-posts.yml"
+REFRESH_WORKFLOW = ROOT / ".github" / "workflows" / "refresh-works.yml"
 BENCHMARK = ROOT / "scripts" / "benchmark_twin.js"
 
-EXPECTED_SOURCE_HASH = (
-    "9b14903ad91282be2e962e97697479b04e8416da52b7b219afa0422e391d3e29"
-)
 EXPECTED_LEGACY_TWIN_HASH = (
     "943c32d6539fd9486eb4a18b331c05d62849f3723d8a7bca724ea7de4a5f9ae8"
 )
@@ -44,12 +46,10 @@ TWIN_SHELL_SOURCES = (
     "twin/one-sentence-prompt.txt",
     "css/main.css",
     "js/theme.js",
-    "js/search.js",
     "js/twin-state.js",
     "js/twin-engine.js",
     "js/twin-controller.js",
     "js/twin-app.js",
-    "search.json",
     "favicon.ico",
     "apple-touch-icon.png",
 )
@@ -79,6 +79,20 @@ def source_manifest_hash():
     return digest.hexdigest()
 
 
+def source_counts():
+    works = json.loads((ROOT / "api" / "works.json").read_text())
+    posts = len(list((ROOT / "_posts").glob("*.md")))
+    field_notes = len(list((ROOT / "_twin_posts").glob("*.md")))
+    work = len(works["repos"])
+    return {
+        "post": posts,
+        "field_note": field_notes,
+        "work": work,
+        "total": posts + field_notes + work,
+        "manifest": posts + field_notes + 1,
+    }
+
+
 def twin_shell_hash():
     digest = hashlib.sha256()
     for relative in sorted(TWIN_SHELL_SOURCES):
@@ -98,13 +112,28 @@ def load_builder():
     return module
 
 
+def load_release_builder():
+    spec = importlib.util.spec_from_file_location(
+        "build_twin_release_test",
+        RELEASE_BUILDER,
+    )
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 class TwinAcceptanceTest(unittest.TestCase):
     def test_baseline_inputs_are_unchanged(self):
-        self.assertEqual(len(list((ROOT / "_posts").glob("*.md"))), 312)
-        self.assertEqual(len(list((ROOT / "_twin_posts").glob("*.md"))), 116)
-        works = json.loads((ROOT / "api" / "works.json").read_text())
-        self.assertEqual(len(works["repos"]), 409)
-        self.assertEqual(source_manifest_hash(), EXPECTED_SOURCE_HASH)
+        counts = source_counts()
+        self.assertGreaterEqual(counts["post"], 312)
+        self.assertGreaterEqual(counts["field_note"], 116)
+        self.assertGreaterEqual(counts["work"], 409)
+        corpus = json.loads(CORPUS.read_text())
+        self.assertEqual(
+            corpus["sourceManifestSha256"],
+            source_manifest_hash(),
+        )
         self.assertEqual(
             hashlib.sha256(LEGACY_TWIN.read_bytes()).hexdigest(),
             EXPECTED_LEGACY_TWIN_HASH,
@@ -113,10 +142,12 @@ class TwinAcceptanceTest(unittest.TestCase):
     def test_required_twin_artifacts_exist(self):
         for path in (
             BUILDER,
+            RELEASE_BUILDER,
             CORPUS,
             PAGE,
             WORKER,
             MANIFEST,
+            SHELL_MANIFEST,
             ICON_192,
             ICON_512,
             PROMPT,
@@ -148,13 +179,14 @@ class TwinAcceptanceTest(unittest.TestCase):
 
         self.assertEqual(payload["schema"], "kodyw-public-twin/1.0")
         self.assertEqual(payload["normalizationVersion"], "plain-text/1")
-        self.assertEqual(payload["sourceManifestSha256"], EXPECTED_SOURCE_HASH)
-        self.assertEqual(payload["stats"]["total"], 837)
-        self.assertEqual(payload["stats"]["post"], 312)
-        self.assertEqual(payload["stats"]["field_note"], 116)
-        self.assertEqual(payload["stats"]["work"], 409)
-        self.assertEqual(len(payload["records"]), 837)
-        self.assertEqual(len(payload["sourceManifest"]), 429)
+        counts = source_counts()
+        self.assertEqual(payload["sourceManifestSha256"], source_manifest_hash())
+        self.assertEqual(payload["stats"]["total"], counts["total"])
+        self.assertEqual(payload["stats"]["post"], counts["post"])
+        self.assertEqual(payload["stats"]["field_note"], counts["field_note"])
+        self.assertEqual(payload["stats"]["work"], counts["work"])
+        self.assertEqual(len(payload["records"]), counts["total"])
+        self.assertEqual(len(payload["sourceManifest"]), counts["manifest"])
 
         ids = [record["id"] for record in payload["records"]]
         self.assertEqual(len(ids), len(set(ids)))
@@ -188,13 +220,33 @@ class TwinAcceptanceTest(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
+    def test_complete_release_and_shell_manifest_are_current(self):
+        result = subprocess.run(
+            ["python3", str(RELEASE_BUILDER), "--check"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+        module = load_release_builder()
+        manifest = json.loads(SHELL_MANIFEST.read_text())
+        entries = {asset["url"]: asset for asset in manifest["assets"]}
+        for url, relative, content_types in module.STATIC_ASSETS:
+            self.assertIn(url, entries)
+            self.assertEqual(
+                entries[url]["sha256"],
+                hashlib.sha256((ROOT / relative).read_bytes()).hexdigest(),
+            )
+            self.assertEqual(entries[url]["contentTypes"], list(content_types))
+
     def test_corpus_builder_has_no_network_dependency(self):
         source = BUILDER.read_text()
         for token in ("urllib", "requests", "http.client", "socket.", "urlopen"):
             self.assertNotIn(token, source)
         module = load_builder()
         payload = module.build(ROOT)
-        self.assertEqual(payload["stats"]["total"], 837)
+        self.assertEqual(payload["stats"]["total"], source_counts()["total"])
 
     def test_public_page_declares_private_local_runtime(self):
         page = PAGE.read_text()
@@ -225,12 +277,20 @@ class TwinAcceptanceTest(unittest.TestCase):
     def test_service_worker_and_manifest_are_scope_limited(self):
         worker = WORKER.read_text()
         corpus = json.loads(CORPUS.read_text())
+        shell_manifest_bytes = SHELL_MANIFEST.read_bytes()
+        shell_manifest = json.loads(shell_manifest_bytes)
         self.assertIn("kody-twin-", worker)
         self.assertIn("/api/twin-corpus.json", worker)
-        self.assertIn("/twin/one-sentence-prompt.txt", worker)
         self.assertIn(corpus["corpusSha256"], worker)
         self.assertIn(corpus["sourceManifestSha256"], worker)
-        self.assertIn(twin_shell_hash(), worker)
+        self.assertEqual(shell_manifest["schema"], "kodyw-twin-shell/1.0")
+        self.assertEqual(shell_manifest["sourceSha256"], twin_shell_hash())
+        self.assertIn(hashlib.sha256(shell_manifest_bytes).hexdigest(), worker)
+        self.assertIn("/twin/shell-manifest.json", worker)
+        self.assertIn(
+            "/twin/one-sentence-prompt.txt",
+            [asset["url"] for asset in shell_manifest["assets"]],
+        )
         self.assertNotIn("kody-twin-shell-v1", worker)
         self.assertNotIn("kody-twin-corpus-v1", worker)
         self.assertNotIn("scope: '/'", worker)
@@ -299,8 +359,22 @@ class TwinAcceptanceTest(unittest.TestCase):
         self.assertIn("'_twin_posts/**'", workflow)
         self.assertIn("'api/works.json'", workflow)
         self.assertIn("python3 scripts/check_twin.py", workflow)
+        self.assertIn("'scripts/build_twin_release.py'", workflow)
         gate = (ROOT / "scripts" / "check_twin.py").read_text()
         self.assertIn("scripts/benchmark_twin.js", gate)
+        self.assertIn("scripts/build_twin_release.py", gate)
+
+        refresh = REFRESH_WORKFLOW.read_text()
+        self.assertIn("python3 scripts/build_twin_release.py", refresh)
+        self.assertIn("python3 scripts/check_twin.py", refresh)
+        for release_path in (
+            "api/works.json",
+            "api/twin-corpus.json",
+            "js/twin-app.js",
+            "twin/shell-manifest.json",
+            "twin/sw.js",
+        ):
+            self.assertIn(release_path, refresh)
 
     @staticmethod
     def png_dimensions(path):

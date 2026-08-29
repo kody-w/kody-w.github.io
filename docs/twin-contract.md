@@ -35,8 +35,8 @@ Work records store structured provenance as
 pointer's resolved catalog scalar and `value` must be identical.
 
 Challenge relationships are conservative and explicit. A related search result
-is not automatically counterevidence. If no curated or textually explicit
-relationship can be proved, the result is `missing-evidence`.
+is not automatically counterevidence. If no curated corpus relationship can be
+proved, the result is `missing-evidence`.
 
 ## Browser API
 
@@ -119,6 +119,13 @@ After one successful online load, `/twin/` and its complete corpus work through
 a service worker scoped only to `/twin/`. The app sends no telemetry, stores no
 credentials, uses no external APIs, and requires no remote runtime dependency.
 User-activated source links may leave the application.
+
+`scripts/build_twin_release.py` is the release authority. It regenerates the
+corpus, trusted app and worker digests, and `twin/shell-manifest.json`
+together. The shell manifest pins expected MIME types and SHA-256 values for
+every static asset. Content-addressed caches are populated under a new release
+name and are immutable after activation. The scheduled works-catalog refresh
+must commit the full generated release or nothing.
 
 ## Acceptance
 

@@ -8,6 +8,19 @@ const corpus = JSON.parse(
   fs.readFileSync(path.join(__dirname, '..', 'api', 'twin-corpus.json'), 'utf8')
 );
 const engine = Engine.createEngine(corpus);
+const root = path.join(__dirname, '..');
+
+function markdownFiles(directory) {
+  return fs.readdirSync(path.join(root, directory))
+    .filter((name) => name.endsWith('.md'));
+}
+
+function declaredAuthor(directory, name) {
+  const source = fs.readFileSync(path.join(root, directory, name), 'utf8');
+  const frontMatter = source.split(/^---\s*$/m)[1] || '';
+  const match = frontMatter.match(/^author:\s*(.+?)\s*$/m);
+  return match ? match[1].replace(/^['"]|['"]$/g, '') : null;
+}
 
 function recordBySuffix(suffix) {
   const record = corpus.records.find((item) => item.sourcePath.endsWith(suffix));
@@ -23,19 +36,41 @@ function hasSingleClauseWith(text, terms) {
 }
 
 test('real corpus preserves source counts and authorship boundaries', () => {
-  assert.equal(corpus.records.length, 837);
-  assert.equal(corpus.records.filter((item) => item.sourceType === 'post').length, 312);
-  assert.equal(corpus.records.filter((item) => item.sourceType === 'field_note').length, 116);
-  assert.equal(corpus.records.filter((item) => item.sourceType === 'work').length, 409);
+  const posts = markdownFiles('_posts');
+  const fieldNotes = markdownFiles('_twin_posts');
+  const works = JSON.parse(
+    fs.readFileSync(path.join(root, 'api', 'works.json'), 'utf8')
+  ).repos;
+  assert.equal(corpus.records.length, posts.length + fieldNotes.length + works.length);
+  assert.equal(
+    corpus.records.filter((item) => item.sourceType === 'post').length,
+    posts.length
+  );
+  assert.equal(
+    corpus.records.filter((item) => item.sourceType === 'field_note').length,
+    fieldNotes.length
+  );
+  assert.equal(
+    corpus.records.filter((item) => item.sourceType === 'work').length,
+    works.length
+  );
 
   const authoredFieldNotes = corpus.records.filter(
     (item) => item.sourceType === 'field_note' && item.author === 'obsidian'
   );
-  assert.equal(authoredFieldNotes.length, 104);
+  assert.equal(
+    authoredFieldNotes.length,
+    fieldNotes.filter(
+      (name) => declaredAuthor('_twin_posts', name) === 'obsidian'
+    ).length
+  );
   const unattributedPosts = corpus.records.filter(
     (item) => item.sourceType === 'post' && item.author === null
   );
-  assert.equal(unattributedPosts.length, 220);
+  assert.equal(
+    unattributedPosts.length,
+    posts.filter((name) => declaredAuthor('_posts', name) === null).length
+  );
 });
 
 test('real answer returns the exact deployment-pattern evidence', () => {

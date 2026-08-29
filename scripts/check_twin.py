@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = [
-    ["python3", "scripts/build_twin.py", "--check"],
+    ["python3", "scripts/build_twin_release.py", "--check"],
     ["python3", "-m", "unittest", "tests.test_twin"],
     [
         "node",

@@ -1,4 +1,5 @@
 const assert = require('node:assert/strict');
+const { webcrypto } = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const test = require('node:test');
@@ -14,6 +15,54 @@ const corpus = JSON.parse(
 );
 const ORIGIN = 'https://kody-w.github.io';
 const CORPUS_PATH = '/api/twin-corpus.json';
+const shellManifest = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '..', 'twin', 'shell-manifest.json'), 'utf8')
+);
+const assetFiles = {
+  '/twin/manifest.webmanifest': 'twin/manifest.webmanifest',
+  '/twin/icon-192.png': 'twin/icon-192.png',
+  '/twin/icon-512.png': 'twin/icon-512.png',
+  '/twin/one-sentence-prompt.txt': 'twin/one-sentence-prompt.txt',
+  '/css/main.css': 'css/main.css',
+  '/js/theme.js': 'js/theme.js',
+  '/js/twin-state.js': 'js/twin-state.js',
+  '/js/twin-engine.js': 'js/twin-engine.js',
+  '/js/twin-controller.js': 'js/twin-controller.js',
+  '/js/twin-app.js': 'js/twin-app.js',
+  '/favicon.ico': 'favicon.ico',
+  '/apple-touch-icon.png': 'apple-touch-icon.png'
+};
+
+function defaultShellResponse(pathname) {
+  if (pathname === '/twin/shell-manifest.json') {
+    return new Response(
+      fs.readFileSync(path.join(__dirname, '..', 'twin', 'shell-manifest.json')),
+      {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
+  }
+  if (pathname === '/twin/' || pathname === '/twin/index.html') {
+    return new Response(
+      '<!doctype html><meta http-equiv="Content-Security-Policy"><main id="public-twin"></main>',
+      {
+        status: 200,
+        headers: { 'Content-Type': 'text/html' }
+      }
+    );
+  }
+  const relative = assetFiles[pathname];
+  if (!relative) {
+    return new Response('not found', { status: 404 });
+  }
+  const specification = shellManifest.assets.find((asset) => asset.url === pathname);
+  assert.ok(specification, pathname);
+  return new Response(fs.readFileSync(path.join(__dirname, '..', relative)), {
+    status: 200,
+    headers: { 'Content-Type': specification.contentTypes[0] }
+  });
+}
 
 function requestPath(request) {
   const value = typeof request === 'string' ? request : request.url;
@@ -87,10 +136,7 @@ function loadWorker(corpusResponse, options = {}) {
       if (pathname === CORPUS_PATH) {
         return corpusResponse.clone();
       }
-      return new Response('shell', {
-        status: 200,
-        headers: { 'Content-Type': 'text/plain' }
-      });
+      return defaultShellResponse(pathname);
     },
     Response,
     Request,
@@ -101,7 +147,9 @@ function loadWorker(corpusResponse, options = {}) {
     Object,
     Array,
     String,
-    Error
+    Error,
+    crypto: webcrypto,
+    Uint8Array
   };
   vm.runInNewContext(workerSource, context, { filename: 'twin/sw.js' });
   return {
@@ -247,4 +295,59 @@ test('asset navigation cannot replace the canonical cached app shell', async () 
   assert.equal(await response.text(), '{"name":"manifest"}');
   const preserved = await cache.match('/twin/');
   assert.match(await preserved.text(), /app shell/);
+});
+
+test('HTML fallbacks and tampered bytes cannot install as shell assets', async () => {
+  for (const response of [
+    new Response('<!doctype html><title>fallback</title>', {
+      status: 200,
+      headers: { 'Content-Type': 'text/html' }
+    }),
+    new Response('console.log("tampered")', {
+      status: 200,
+      headers: { 'Content-Type': 'text/javascript' }
+    })
+  ]) {
+    const runtime = loadWorker(
+      new Response(JSON.stringify(corpus), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      }),
+      { responses: { '/js/twin-app.js': response } }
+    );
+    await assert.rejects(runInstall(runtime));
+    assert.equal(runtime.state.skipWaiting, 0);
+  }
+});
+
+test('successful root navigation cannot mutate the installed release cache', async () => {
+  const runtime = loadWorker(
+    new Response(JSON.stringify(corpus), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    }),
+    {
+      responses: {
+        '/twin/': new Response(
+          '<!doctype html><meta http-equiv="Content-Security-Policy"><main id="public-twin">new network body</main>',
+          {
+            status: 200,
+            headers: { 'Content-Type': 'text/html' }
+          }
+        )
+      }
+    }
+  );
+  await runInstall(runtime);
+  const cache = await runtime.caches.open(runtime.shellCache);
+  const installed = await cache.match('/twin/');
+  const before = await installed.text();
+  const response = await runFetch(runtime, {
+    method: 'GET',
+    mode: 'navigate',
+    url: `${ORIGIN}/twin/`
+  });
+  assert.match(await response.text(), /new network body/);
+  const after = await (await cache.match('/twin/')).text();
+  assert.equal(after, before);
 });
