@@ -34,6 +34,25 @@ EXPECTED_SOURCE_HASH = (
 EXPECTED_LEGACY_TWIN_HASH = (
     "943c32d6539fd9486eb4a18b331c05d62849f3723d8a7bca724ea7de4a5f9ae8"
 )
+TWIN_SHELL_SOURCES = (
+    "_config.yml",
+    "_layouts/default.html",
+    "twin/index.html",
+    "twin/manifest.webmanifest",
+    "twin/icon-192.png",
+    "twin/icon-512.png",
+    "twin/one-sentence-prompt.txt",
+    "css/main.css",
+    "js/theme.js",
+    "js/search.js",
+    "js/twin-state.js",
+    "js/twin-engine.js",
+    "js/twin-controller.js",
+    "js/twin-app.js",
+    "search.json",
+    "favicon.ico",
+    "apple-touch-icon.png",
+)
 CANONICAL_PROMPT = (
     "Autonomously build {APP} as a local-first semantic app with named, "
     "inspectable actions instead of coordinate scraping, then send a separate "
@@ -54,6 +73,17 @@ def source_manifest_hash():
     digest = hashlib.sha256()
     for path in source_paths():
         digest.update(path.relative_to(ROOT).as_posix().encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
+def twin_shell_hash():
+    digest = hashlib.sha256()
+    for relative in sorted(TWIN_SHELL_SOURCES):
+        path = ROOT / relative
+        digest.update(relative.encode("utf-8"))
         digest.update(b"\0")
         digest.update(path.read_bytes())
         digest.update(b"\0")
@@ -200,6 +230,9 @@ class TwinAcceptanceTest(unittest.TestCase):
         self.assertIn("/twin/one-sentence-prompt.txt", worker)
         self.assertIn(corpus["corpusSha256"], worker)
         self.assertIn(corpus["sourceManifestSha256"], worker)
+        self.assertIn(twin_shell_hash(), worker)
+        self.assertNotIn("kody-twin-shell-v1", worker)
+        self.assertNotIn("kody-twin-corpus-v1", worker)
         self.assertNotIn("scope: '/'", worker)
 
         manifest = json.loads(MANIFEST.read_text())

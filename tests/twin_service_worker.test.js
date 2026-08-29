@@ -49,7 +49,7 @@ function createCacheStorage() {
   };
 }
 
-function loadWorker(corpusResponse) {
+function loadWorker(corpusResponse, options = {}) {
   const handlers = {};
   const caches = createCacheStorage();
   const state = {
@@ -78,6 +78,9 @@ function loadWorker(corpusResponse) {
     caches,
     fetch: async (request) => {
       const pathname = requestPath(request);
+      if ((options.failPaths || []).includes(pathname)) {
+        return new Response('failed', { status: 503 });
+      }
       if (pathname === CORPUS_PATH) {
         return corpusResponse.clone();
       }
@@ -98,7 +101,13 @@ function loadWorker(corpusResponse) {
     Error
   };
   vm.runInNewContext(workerSource, context, { filename: 'twin/sw.js' });
-  return { handlers, caches, state };
+  return {
+    handlers,
+    caches,
+    state,
+    shellCache: context.SHELL_CACHE,
+    corpusCache: context.CORPUS_CACHE
+  };
 }
 
 async function runInstall(runtime) {
@@ -121,7 +130,7 @@ test('valid corpus installs and is cached before skipWaiting', async () => {
   );
   await runInstall(runtime);
   assert.equal(runtime.state.skipWaiting, 1);
-  const cache = await runtime.caches.open('kody-twin-corpus-v1');
+  const cache = await runtime.caches.open(runtime.corpusCache);
   const cached = await cache.match(CORPUS_PATH);
   assert.ok(cached);
   assert.equal((await cached.json()).corpusSha256, corpus.corpusSha256);
@@ -138,7 +147,7 @@ test('forged corpus with copied digest fields cannot install', async () => {
   );
   await assert.rejects(runInstall(runtime));
   assert.equal(runtime.state.skipWaiting, 0);
-  const cache = await runtime.caches.open('kody-twin-corpus-v1');
+  const cache = await runtime.caches.open(runtime.corpusCache);
   assert.equal(await cache.match(CORPUS_PATH), undefined);
 });
 
@@ -151,6 +160,42 @@ test('missing network and cached corpus prevents activation', async () => {
   );
   await assert.rejects(runInstall(runtime));
   assert.equal(runtime.state.skipWaiting, 0);
-  const cache = await runtime.caches.open('kody-twin-corpus-v1');
+  const cache = await runtime.caches.open(runtime.corpusCache);
   assert.equal(await cache.match(CORPUS_PATH), undefined);
+});
+
+test('cache names are content-addressed release identifiers', () => {
+  const runtime = loadWorker(
+    new Response(JSON.stringify(corpus), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    })
+  );
+  assert.match(runtime.shellCache, /^kody-twin-shell-[0-9a-f]{12,}$/);
+  assert.match(runtime.corpusCache, /^kody-twin-corpus-[0-9a-f]{12,}$/);
+  assert.notEqual(runtime.shellCache, 'kody-twin-shell-v1');
+  assert.notEqual(runtime.corpusCache, 'kody-twin-corpus-v1');
+});
+
+test('interrupted upgrade leaves the active shell cache untouched', async () => {
+  const runtime = loadWorker(
+    new Response(JSON.stringify(corpus), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    }),
+    { failPaths: ['/css/main.css'] }
+  );
+  const active = await runtime.caches.open('kody-twin-shell-v1');
+  await active.put(
+    '/twin/',
+    new Response('old-shell', {
+      status: 200,
+      headers: { 'Content-Type': 'text/html' }
+    })
+  );
+
+  await assert.rejects(runInstall(runtime));
+  assert.equal(runtime.state.skipWaiting, 0);
+  const preserved = await active.match('/twin/');
+  assert.equal(await preserved.text(), 'old-shell');
 });
