@@ -304,6 +304,7 @@
     async function execute(action, input) {
       var value;
       var options;
+      var snapshot;
       switch (action) {
         case 'corpus.status':
           return {
@@ -393,41 +394,61 @@
           };
 
         case 'state.import':
+          snapshot = stateSnapshot();
           try {
             store.importState(input.serialized);
           } catch (error) {
+            restoreStateSnapshot(snapshot);
             throw controllerError(
               'INVALID_INPUT',
               'serialized is not a valid supported state export.',
               false
             );
           }
-          value = {
-            state: cloneJson(store.get()),
-            serialized: exportedState(),
-            storageMode: storageMode()
-          };
-          activeResultId = null;
-          render(action, value);
-          return value;
+          try {
+            value = {
+              state: cloneJson(store.get()),
+              serialized: exportedState(),
+              storageMode: storageMode()
+            };
+            activeResultId = null;
+            render(action, value);
+            return value;
+          } catch (error) {
+            restoreStateSnapshot(snapshot);
+            throw error;
+          }
 
         case 'state.reset':
-          store.reset();
-          value = {
-            state: cloneJson(store.get()),
-            serialized: exportedState(),
-            storageMode: storageMode()
-          };
-          activeResultId = null;
-          render(action, value);
-          return value;
+          snapshot = stateSnapshot();
+          try {
+            store.reset();
+            value = {
+              state: cloneJson(store.get()),
+              serialized: exportedState(),
+              storageMode: storageMode()
+            };
+            activeResultId = null;
+            render(action, value);
+            return value;
+          } catch (error) {
+            restoreStateSnapshot(snapshot);
+            throw error;
+          }
 
         case 'ui.setMode':
-          setMode(input.mode);
+          snapshot = stateSnapshot();
+          try {
+            setMode(input.mode);
+          } catch (error) {
+            restoreStateSnapshot(snapshot);
+            throw error;
+          }
           if (typeof view.setMode === 'function') {
             try {
               view.setMode(input.mode);
             } catch (error) {
+              restoreStateSnapshot(snapshot);
               throw viewError('set the semantic mode');
             }
           }
@@ -760,6 +781,22 @@
       activeResultId = result && typeof result.id === 'string' && result.id
         ? result.id
         : action + ':' + stateRevision();
+    }
+
+    function stateSnapshot() {
+      return {
+        serialized: exportedState(),
+        activeResultId: activeResultId
+      };
+    }
+
+    function restoreStateSnapshot(snapshot) {
+      try {
+        store.importState(snapshot.serialized);
+      } catch (error) {
+        // Preserve the original action error.
+      }
+      activeResultId = snapshot.activeResultId;
     }
 
     function storageMode() {
