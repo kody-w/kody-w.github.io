@@ -54,7 +54,7 @@ content_security_policy: "default-src 'self'; script-src 'self'; style-src 'self
     <form class="twin-query" id="twin-question-form" data-semantic-action="answer.ask">
       <label for="twin-question">Question for the public corpus</label>
       <div class="twin-query-row">
-        <textarea id="twin-question" name="question" rows="3" maxlength="600" required data-semantic-action="search.query" placeholder="Example: Where does Kody describe the source of truth?"></textarea>
+        <textarea id="twin-question" name="question" rows="3" maxlength="500" required data-semantic-action="search.query" placeholder="Example: Where does Kody describe the source of truth?"></textarea>
         <button class="twin-primary-button" id="twin-submit" type="submit" disabled data-semantic-action="answer.ask">Inspect evidence</button>
       </div>
     </form>
@@ -77,7 +77,7 @@ content_security_policy: "default-src 'self'; script-src 'self'; style-src 'self
     <div class="twin-result-shell">
       <div class="twin-result-header">
         <div>
-          <p class="twin-kicker">Inspectible output</p>
+          <p class="twin-kicker">Inspectable output</p>
           <h3 id="twin-result-title">Ready for a question</h3>
         </div>
         <span class="twin-result-count" id="twin-result-count">0 citations</span>
@@ -151,7 +151,7 @@ content_security_policy: "default-src 'self'; script-src 'self'; style-src 'self
     </div>
     <div class="twin-api-grid">
       <div>
-        <h3>Inspectible actions</h3>
+        <h3>Inspectable actions</h3>
         <ul class="twin-action-list">
           <li><code>answer.ask</code><span>Return exact supported claims or abstain.</span></li>
           <li><code>evolution.compare</code><span>Order distinct evidence by its declared time basis.</span></li>

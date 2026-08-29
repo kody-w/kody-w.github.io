@@ -661,7 +661,7 @@
     renderResult(activeMode, response);
     elements.submit.disabled = !runtime.ready;
     if (response.ok) {
-      setLive(`${action} completed with inspectible evidence.`);
+      setLive(`${action} completed with inspectable evidence.`);
       await refreshState();
     } else {
       setLive(`${response.error.code}: ${response.error.message}`);
@@ -927,7 +927,12 @@
   function exposeApi(capabilities) {
     const api = {
       version: VERSION,
-      capabilities: deepFreeze(capabilities),
+      capabilities: () => {
+        if (controller && typeof controller.capabilities === "function") {
+          return deepFreeze(controller.capabilities());
+        }
+        return deepFreeze(capabilities);
+      },
       inspect: inspectRuntime,
       dispatch: (action, input) => dispatchAction(action, input),
       runMission: (mission) => {
