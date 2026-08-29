@@ -4771,6 +4771,13 @@ a.stat:hover {
   flex: 0 0 auto;
 }
 
+.twin-field-help {
+  margin-top: 8px;
+  color: var(--twin-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 .twin-prompt-output {
   justify-content: space-between;
   gap: 20px;

@@ -74,6 +74,7 @@
   let activeCitation = null;
   let lastDialogTrigger = null;
   let currentPrompt = "";
+  let activeAppIdeaCompletion = null;
 
   function text(value, fallback = "") {
     return value == null ? fallback : String(value);
@@ -847,6 +848,84 @@
     elements.promptStatus.textContent = "Exact canonical prompt copied.";
   }
 
+  function appIdeaCompletion() {
+    const value = elements.appIdea.value;
+    const suggestion = text(elements.appIdea.dataset.autocompleteExample);
+    if (!value || value.length >= suggestion.length) {
+      return null;
+    }
+    if (!suggestion.toLowerCase().startsWith(value.toLowerCase())) {
+      return null;
+    }
+    return {
+      prefix: value,
+      value: value + suggestion.slice(value.length),
+    };
+  }
+
+  function hasSelectedAppIdeaCompletion() {
+    return activeAppIdeaCompletion !== null
+      && elements.appIdea.value === activeAppIdeaCompletion.value
+      && elements.appIdea.selectionStart === activeAppIdeaCompletion.prefix.length
+      && elements.appIdea.selectionEnd === activeAppIdeaCompletion.value.length;
+  }
+
+  function dismissAppIdeaCompletion() {
+    if (!hasSelectedAppIdeaCompletion()) {
+      return false;
+    }
+    const prefix = elements.appIdea.value.slice(
+      0,
+      elements.appIdea.selectionStart,
+    );
+    elements.appIdea.value = prefix;
+    elements.appIdea.setSelectionRange(prefix.length, prefix.length);
+    activeAppIdeaCompletion = null;
+    return true;
+  }
+
+  function acceptAppIdeaCompletion() {
+    if (!hasSelectedAppIdeaCompletion()) {
+      return false;
+    }
+    const end = activeAppIdeaCompletion.value.length;
+    elements.appIdea.setSelectionRange(end, end);
+    activeAppIdeaCompletion = null;
+    return true;
+  }
+
+  function updateAppIdeaControls(message = "") {
+    const hasIdea = Boolean(elements.appIdea.value.trim());
+    currentPrompt = "";
+    elements.buildPrompt.disabled = !runtime.ready || !hasIdea;
+    elements.copyPrompt.disabled = true;
+    elements.promptText.textContent = hasIdea
+      ? "Press Enter or choose Build prompt when the idea is ready."
+      : "Enter an app idea to replace the canonical {APP} token.";
+    elements.promptStatus.textContent = message;
+  }
+
+  function autocompleteAppIdea(event) {
+    const inputType = text(event && event.inputType);
+    if ((event && event.isComposing) || inputType.indexOf("delete") === 0) {
+      activeAppIdeaCompletion = null;
+      return false;
+    }
+    const completion = appIdeaCompletion();
+    if (!completion) {
+      activeAppIdeaCompletion = null;
+      return false;
+    }
+    elements.appIdea.value = completion.value;
+    elements.appIdea.setSelectionRange(
+      completion.prefix.length,
+      completion.value.length,
+      "forward",
+    );
+    activeAppIdeaCompletion = completion;
+    return true;
+  }
+
   function bindEvents() {
     elements.form.addEventListener("submit", (event) => {
       event.preventDefault();
@@ -884,19 +963,24 @@
     });
     elements.buildPrompt.addEventListener("click", buildProductPrompt);
     elements.copyPrompt.addEventListener("click", copyProductPrompt);
-    elements.appIdea.addEventListener("input", () => {
-      const hasIdea = Boolean(elements.appIdea.value.trim());
-      currentPrompt = "";
-      elements.buildPrompt.disabled = !runtime.ready || !hasIdea;
-      elements.copyPrompt.disabled = true;
-      elements.promptText.textContent = hasIdea
-        ? "Build the prompt to replace {APP} with this exact idea."
-        : "Enter an app idea to replace the canonical {APP} token.";
-      elements.promptStatus.textContent = "";
+    elements.appIdea.addEventListener("input", (event) => {
+      const completed = autocompleteAppIdea(event);
+      updateAppIdeaControls(completed
+        ? "Suggestion completed inline. Keep typing to replace the selected ending, or press Enter to build."
+        : "");
     });
     elements.appIdea.addEventListener("keydown", (event) => {
+      if (event.isComposing || event.keyCode === 229) {
+        return;
+      }
+      if (event.key === "Escape" && dismissAppIdeaCompletion()) {
+        event.preventDefault();
+        updateAppIdeaControls("Suggestion dismissed. Keep typing your own idea.");
+        return;
+      }
       if (event.key === "Enter") {
         event.preventDefault();
+        acceptAppIdeaCompletion();
         buildProductPrompt();
       }
     });
