@@ -1073,7 +1073,7 @@
       var safeOptions = normalizeOptions(options);
       var internal = typeof question === 'string'
         ? searchInternal(question, {
-          limit: Math.min(12, safeOptions.limit),
+          limit: 12,
           sourceTypes: safeOptions.sourceTypeList,
           tags: safeOptions.tagList,
           from: safeOptions.from,
@@ -1089,38 +1089,50 @@
           counterevidence: []
         };
       }
-      var thesisHit = publicHit(internal[0]);
+      var queryTokens = uniqueMeaningfulTokens(tokenize(question));
+      var queryPhrases = phraseCandidates(tokenize(question), queryTokens);
+      var thesisInternal = internal[0];
+      var selectedRelation = null;
+
+      for (var hitIndex = 0;
+           hitIndex < internal.length && !selectedRelation;
+           hitIndex += 1) {
+        if (!isAnswerable(internal[hitIndex])) {
+          continue;
+        }
+        for (var relationIndex = 0;
+             relationIndex < corpus.relations.length;
+             relationIndex += 1) {
+          var candidateRelation = corpus.relations[relationIndex];
+          if (candidateRelation.from ===
+                internal[hitIndex].indexed.record.id &&
+              relationApplies(candidateRelation, queryTokens) &&
+              recordAllowed(byId[candidateRelation.from], safeOptions) &&
+              recordAllowed(byId[candidateRelation.to], safeOptions)) {
+            thesisInternal = internal[hitIndex];
+            selectedRelation = candidateRelation;
+            break;
+          }
+        }
+      }
+
+      var thesisHit = publicHit(thesisInternal);
       var thesis = [{
         evidence: thesisHit.evidence,
         citation: thesisHit.citation
       }];
       var thesisId = thesisHit.sourceId;
-      var queryTokens = uniqueMeaningfulTokens(tokenize(question));
       var counter = null;
 
-      for (var relationIndex = 0;
-           relationIndex < corpus.relations.length;
-           relationIndex += 1) {
-        var relation = corpus.relations[relationIndex];
-        var otherId = null;
-        if (relation.from === thesisId) {
-          otherId = relation.to;
-        } else if (relation.to === thesisId) {
-          otherId = relation.from;
-        }
-        if (!otherId || !relationApplies(relation, queryTokens) ||
-            !recordAllowed(byId[otherId], safeOptions)) {
-          continue;
-        }
-        var related = byId[otherId];
+      if (selectedRelation) {
+        var related = byId[selectedRelation.to];
         var relatedCitation = makeCitation(related, queryTokens,
-          phraseCandidates(tokenize(question), queryTokens));
+          queryPhrases);
         counter = {
-          relation: relation.relation,
+          relation: selectedRelation.relation,
           evidence: citationEvidence(relatedCitation),
           citation: relatedCitation
         };
-        break;
       }
 
       if (!counter) {
