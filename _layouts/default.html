@@ -7,6 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | truncatewords: 50 }}{% else %}{{ site.description }}{% endif %}">
     <link rel="canonical" href="{{ page.url | prepend: site.url }}">
+    {% if page.content_security_policy %}
+    <meta http-equiv="Content-Security-Policy" content="{{ page.content_security_policy }}">
+    {% endif %}
+    {% if page.offline_shell %}
+    <link rel="manifest" href="{{ page.manifest | default: '/twin/manifest.webmanifest' }}">
+    <meta name="theme-color" content="#fdfdfd">
+    {% endif %}
 
     <!-- Every page on the site was throwing a 404 for /favicon.ico, because
          nothing declared an icon and that is the path a browser asks for when
@@ -30,10 +37,12 @@
 
     <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="{{ site.title }} posts" />
     <link href="/newsletter/feed.xml" type="application/atom+xml" rel="alternate" title="{{ site.title }} date editions" />
+    {% unless page.offline_shell %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% endunless %}
     <link rel="stylesheet" href="/css/main.css">
 </head>
-<body>
+<body{% if page.offline_shell %} class="offline-shell-page"{% endif %}>
 
 <header class="site-header">
   <div class="wrap">
@@ -50,24 +59,31 @@
         <a class="page-link" href="/tags/">Tags</a>
         <a class="page-link" href="/idea4blog/">Idea4Blog</a>
         <a class="page-link" href="/digital-twin/">Digital Twin</a>
+        <a class="page-link" href="/twin/">Ask Twin</a>
         <a class="page-link newsletter-link" href="{{ site.newsletter_url }}">Newsletter</a>
         <a class="page-link" href="/about/">About</a>
         <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+          {% if page.offline_shell %}
+          <span aria-hidden="true">◐</span>
+          {% else %}
           <i class="fas fa-moon"></i>
+          {% endif %}
         </button>
       </div>
     </nav>
   </div>
 </header>
 
+{% unless page.offline_shell %}
 <!-- Search overlay -->
 <div class="search-overlay" id="search-overlay">
   <div class="search-container">
     <div class="search-input-wrap">
       <i class="fas fa-search"></i>
-      <input type="text" id="search-input" placeholder="Search posts..." autocomplete="off">
+      <input type="text" id="search-input" aria-label="Search posts" placeholder="Search posts..." autocomplete="off">
       <kbd>Esc</kbd>
     </div>
+    {% endunless %}
     <div id="search-results" class="search-results"></div>
   </div>
 </div>
@@ -80,14 +96,20 @@
 
 <footer class="site-footer">
   <div class="wrap">
+    {% unless page.offline_shell %}
     {% include newsletter_form.html %}
+    {% endunless %}
     <p class="copy-accessibility-note">Code examples and clearly labeled AI prompts are intentionally copyable. Paste prompts into your favorite AI and adapt them to your context.</p>
     <p>&copy; {{ site.time | date: '%Y' }} {{ site.title }}</p>
   </div>
 </footer>
 
+{% unless page.offline_shell %}
 <script src="/js/copy-accessibility.js" defer></script>
+{% endunless %}
 <script src="/js/theme.js"></script>
+{% unless page.offline_shell %}
 <script src="/js/search.js"></script>
+{% endunless %}
 </body>
 </html>

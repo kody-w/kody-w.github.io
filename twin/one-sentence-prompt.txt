@@ -1,0 +1,1 @@
+Autonomously build {APP} as a local-first semantic app with named, inspectable actions instead of coordinate scraping, then send a separate blind, read-only buzzsaw adversary through every surface and keep rebuilding until a mutation-proven machine gate passes every acceptance invariant.

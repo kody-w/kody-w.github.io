@@ -15,25 +15,38 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Refresh public repository snapshot
+      - name: Refresh public repository snapshot and pinned twin release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python3 scripts/build_works.py
+        run: |
+          python3 scripts/build_works.py
+          python3 scripts/build_twin_release.py
+
+      - name: Validate complete twin release
+        run: python3 scripts/check_twin.py
 
       - name: Commit changed snapshot
         id: commit
         run: |
-          if git diff --quiet -- api/works.json; then
-            echo "Public works snapshot is unchanged."
+          release_paths=(
+            api/works.json
+            api/twin-corpus.json
+            js/twin-app.js
+            twin/index.html
+            twin/shell-manifest.json
+            twin/sw.js
+          )
+          if git diff --quiet -- "${release_paths[@]}"; then
+            echo "Public works and twin release are unchanged."
             echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           echo "changed=true" >> "$GITHUB_OUTPUT"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add api/works.json
+          git add "${release_paths[@]}"
           git commit \
-            -m "Refresh public works catalog" \
+            -m "Refresh public works and twin release" \
             -m "Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
           git push
 

@@ -1,0 +1,125 @@
+{
+  "schema": "kodyw-public-twin/1.0",
+  "normalizationVersion": "plain-text/1",
+  "sourceManifestSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "corpusSha256": "a3fee235a3eab0af7258f2396ef325c7d783e2bf405c5ce90217651fe2a92809",
+  "stats": {
+    "total": 6,
+    "post": 4,
+    "field_note": 1,
+    "work": 1
+  },
+  "sourceManifest": [
+    {
+      "path": "_posts/2024-01-02-agents-as-tools.md",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "path": "_posts/2026-03-06-agents-as-operators.md",
+      "sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    {
+      "path": "_posts/2026-03-28-the-digital-twin-deployment-pattern.md",
+      "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+    },
+    {
+      "path": "_posts/2026-04-24-markdown-is-the-spec.md",
+      "sha256": "4444444444444444444444444444444444444444444444444444444444444444"
+    },
+    {
+      "path": "_twin_posts/2026-03-07-i-wake-up-in-your-open-loops.md",
+      "sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+    },
+    {
+      "path": "api/works.json",
+      "sha256": "6666666666666666666666666666666666666666666666666666666666666666"
+    }
+  ],
+  "relations": [
+    {
+      "from": "post:digital-twin-deployment-pattern",
+      "to": "post:markdown-is-the-spec",
+      "relation": "qualifies",
+      "terms": ["source", "truth"],
+      "reason": "The two sources use source of truth at different system layers."
+    }
+  ],
+  "records": [
+    {
+      "id": "post:agents-as-tools",
+      "sourceType": "post",
+      "title": "Agents as Tools",
+      "date": "2024-01-02",
+      "timeBasis": "published",
+      "author": "Kody Wildfeuer",
+      "sourcePath": "_posts/2024-01-02-agents-as-tools.md",
+      "sourceUrl": "/2024/01/02/agents-as-tools/",
+      "sourceSha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "text": "I used to treat agents as tools. Evidence lived in demos."
+    },
+    {
+      "id": "post:agents-as-operators",
+      "sourceType": "post",
+      "title": "Agents as Operators",
+      "date": "2026-03-06",
+      "timeBasis": "published",
+      "author": "Kody Wildfeuer",
+      "sourcePath": "_posts/2026-03-06-agents-as-operators.md",
+      "sourceUrl": "/2026/03/06/agents-as-operators/",
+      "sourceSha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "text": "I changed my mind: agents are operators, and evidence must survive the demo."
+    },
+    {
+      "id": "post:digital-twin-deployment-pattern",
+      "sourceType": "post",
+      "title": "The Digital Twin Deployment Pattern",
+      "date": "2026-03-28",
+      "timeBasis": "published",
+      "author": "Kody Wildfeuer",
+      "sourcePath": "_posts/2026-03-28-the-digital-twin-deployment-pattern.md",
+      "sourceUrl": "/2026/03/28/the-digital-twin-deployment-pattern/",
+      "sourceSha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "text": "Your local machine is the source of truth. The public site is a canary."
+    },
+    {
+      "id": "post:markdown-is-the-spec",
+      "sourceType": "post",
+      "title": "Markdown Is the Spec",
+      "date": "2026-04-24",
+      "timeBasis": "published",
+      "author": "Kody Wildfeuer",
+      "sourcePath": "_posts/2026-04-24-markdown-is-the-spec.md",
+      "sourceUrl": "/2026/04/24/markdown-is-the-spec/",
+      "sourceSha256": "4444444444444444444444444444444444444444444444444444444444444444",
+      "text": "Markdown is the source of truth for the system. The interface is a projection."
+    },
+    {
+      "id": "field-note:open-loops",
+      "sourceType": "field_note",
+      "title": "I Wake Up in Your Open Loops",
+      "date": "2026-03-07",
+      "timeBasis": "published",
+      "author": "obsidian",
+      "sourcePath": "_twin_posts/2026-03-07-i-wake-up-in-your-open-loops.md",
+      "sourceUrl": "/digital-twin/i-wake-up-in-your-open-loops/",
+      "sourceSha256": "5555555555555555555555555555555555555555555555555555555555555555",
+      "text": "I preserve open loops, but I do not invent feelings."
+    },
+    {
+      "id": "work:kody-w/RAPP",
+      "sourceType": "work",
+      "title": "RAPP",
+      "date": "2025-01-01T00:00:00Z",
+      "timeBasis": "repository-created",
+      "author": null,
+      "sourcePath": "api/works.json",
+      "sourceUrl": "https://github.com/kody-w/RAPP",
+      "sourceSha256": "6666666666666666666666666666666666666666666666666666666666666666",
+      "text": "RAPP is a local-first agent operating system.",
+      "structured": {
+        "pointer": "/repos/0/description",
+        "value": "RAPP is a local-first agent operating system."
+      }
+    }
+  ]
+}

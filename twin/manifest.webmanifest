@@ -1,0 +1,26 @@
+{
+  "name": "Kody Public Digital Twin",
+  "short_name": "Kody Twin",
+  "description": "A local-first, citation-first explorer of Kody Wildfeuer's public work.",
+  "start_url": "/twin/",
+  "scope": "/twin/",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "background_color": "#fdfdfd",
+  "theme_color": "#333333",
+  "icons": [
+    {
+      "src": "/twin/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/twin/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -4,10 +4,19 @@ on:
   push:
     paths:
       - '_posts/**'
+      - '_twin_posts/**'
       - '_layouts/**'
       - '_includes/**'
       - 'js/**'
       - 'css/**'
+      - 'twin/**'
+      - 'api/twin-corpus.json'
+      - 'api/works.json'
+      - 'docs/twin-contract.md'
+      - 'scripts/build_twin.py'
+      - 'scripts/build_twin_release.py'
+      - 'scripts/benchmark_twin.js'
+      - 'scripts/check_twin.py'
       - 'tests/**'
       - 'README.md'
       - '_config.yml'
@@ -15,10 +24,19 @@ on:
   pull_request:
     paths:
       - '_posts/**'
+      - '_twin_posts/**'
       - '_layouts/**'
       - '_includes/**'
       - 'js/**'
       - 'css/**'
+      - 'twin/**'
+      - 'api/twin-corpus.json'
+      - 'api/works.json'
+      - 'docs/twin-contract.md'
+      - 'scripts/build_twin.py'
+      - 'scripts/build_twin_release.py'
+      - 'scripts/benchmark_twin.js'
+      - 'scripts/check_twin.py'
       - 'tests/**'
       - 'README.md'
       - '_config.yml'
@@ -84,6 +102,7 @@ jobs:
           python -m pip install -r tests/requirements.txt
           python -m unittest discover -s tests -p 'test_*.py'
           node --test tests/copy_accessibility.test.js
+          python3 scripts/check_twin.py
 
       - name: Build Jekyll site
         run: |
