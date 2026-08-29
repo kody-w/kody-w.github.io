@@ -1,5 +1,7 @@
 'use strict';
 
+importScripts('/js/twin-engine.js');
+
 var SHELL_CACHE = 'kody-twin-shell-v1';
 var CORPUS_CACHE = 'kody-twin-corpus-v1';
 var CORPUS_PATH = '/api/twin-corpus.json';
@@ -178,11 +180,34 @@ function validCorpus(corpus) {
     counts.work === corpus.stats.work;
 }
 
+function engineValidCorpus(corpus) {
+  if (!self.KodyTwinEngine ||
+      typeof self.KodyTwinEngine.validateCorpus !== 'function') {
+    return Promise.resolve(false);
+  }
+  try {
+    return Promise.resolve(self.KodyTwinEngine.validateCorpus(corpus))
+      .then(function (result) {
+        return result === true ||
+          Boolean(result && result.ok === true);
+      }, function () {
+        return false;
+      });
+  } catch (error) {
+    return Promise.resolve(false);
+  }
+}
+
 function validateResponse(response) {
   if (!response || !response.ok) {
     return Promise.resolve(false);
   }
-  return response.clone().json().then(validCorpus, function () {
+  return response.clone().json().then(function (corpus) {
+    if (!validCorpus(corpus)) {
+      return false;
+    }
+    return engineValidCorpus(corpus);
+  }, function () {
     return false;
   });
 }
@@ -200,7 +225,7 @@ function cachedCorpus() {
   });
 }
 
-function refreshCorpus() {
+function fetchAndPromoteCorpus() {
   return fetch(CORPUS_PATH, { cache: 'no-store', credentials: 'same-origin' })
     .then(function (response) {
       return validateResponse(response).then(function (valid) {
@@ -213,21 +238,73 @@ function refreshCorpus() {
           });
         });
       });
-    })
-    .catch(function () {
-      return cachedCorpus().then(function (response) {
-        if (response) {
-          return response;
-        }
-        return new Response(
-          JSON.stringify({ error: 'Twin corpus is unavailable' }),
-          {
-            status: 503,
-            headers: { 'Content-Type': 'application/json; charset=utf-8' }
-          }
-        );
-      });
     });
+}
+
+function refreshCorpus() {
+  return fetchAndPromoteCorpus().catch(function () {
+    return cachedCorpus().then(function (response) {
+      if (response) {
+        return response;
+      }
+      return new Response(
+        JSON.stringify({ error: 'Twin corpus is unavailable' }),
+        {
+          status: 503,
+          headers: { 'Content-Type': 'application/json; charset=utf-8' }
+        }
+      );
+    });
+  });
+}
+
+function requireValidatedCorpus() {
+  return fetchAndPromoteCorpus().catch(function (networkError) {
+    return cachedCorpus().then(function (response) {
+      if (!response) {
+        throw networkError;
+      }
+      return response;
+    });
+  });
+}
+
+function shellIsCached() {
+  return caches.open(SHELL_CACHE).then(function (cache) {
+    return Promise.all(SHELL_PATHS.map(function (path) {
+      return cache.match(path);
+    }));
+  }).then(function (responses) {
+    return responses.every(function (response) {
+      return Boolean(response);
+    });
+  });
+}
+
+function requireActivationCaches() {
+  return Promise.all([
+    shellIsCached(),
+    cachedCorpus()
+  ]).then(function (results) {
+    if (!results[0] || !results[1]) {
+      throw new Error('Twin shell and validated corpus must be cached');
+    }
+  });
+}
+
+function deleteOldCaches() {
+  return caches.keys().then(function (names) {
+    return Promise.all(names.map(function (name) {
+      var oldShell = name.indexOf('kody-twin-shell-') === 0 &&
+        name !== SHELL_CACHE;
+      var oldCorpus = name.indexOf('kody-twin-corpus-') === 0 &&
+        name !== CORPUS_CACHE;
+      if (oldShell || oldCorpus) {
+        return caches.delete(name);
+      }
+      return Promise.resolve(false);
+    }));
+  });
 }
 
 function precacheShell() {
@@ -285,24 +362,15 @@ function navigationResponse(request) {
 self.addEventListener('install', function (event) {
   event.waitUntil(Promise.all([
     precacheShell(),
-    refreshCorpus()
+    requireValidatedCorpus()
   ]).then(function () {
     return self.skipWaiting();
   }));
 });
 
 self.addEventListener('activate', function (event) {
-  event.waitUntil(caches.keys().then(function (names) {
-    return Promise.all(names.map(function (name) {
-      var oldShell = name.indexOf('kody-twin-shell-') === 0 &&
-        name !== SHELL_CACHE;
-      var oldCorpus = name.indexOf('kody-twin-corpus-') === 0 &&
-        name !== CORPUS_CACHE;
-      if (oldShell || oldCorpus) {
-        return caches.delete(name);
-      }
-      return Promise.resolve(false);
-    }));
+  event.waitUntil(requireActivationCaches().then(function () {
+    return deleteOldCaches();
   }).then(function () {
     return self.clients.claim();
   }));
