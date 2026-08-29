@@ -2,7 +2,7 @@
 
 ## Product boundary
 
-`/twin/` is a static, citation-first evidence explorer built only from public
+`/public-twin/` is a static, citation-first evidence explorer built only from public
 files already present in this repository:
 
 - `_posts/*.md`
@@ -19,11 +19,9 @@ unchanged publishing surface.
 ## Corpus
 
 The deterministic builder writes `api/twin-corpus.json` with schema
-`kodyw-public-twin/1.0`. The current baseline contains exactly 837 records:
-
-- 312 `post`
-- 116 `field_note`
-- 409 `work`
+`kodyw-public-twin/1.0`. Its counts are derived from every current `_posts`,
+`_twin_posts`, and `api/works.json` record rather than frozen to a historical
+snapshot.
 
 Text citations index the exact normalized `record.text` stored in the corpus.
 Structured work citations use JSON Pointers into `api/works.json`. Source
@@ -115,13 +113,13 @@ explicit `memory` storage mode. Memory mode does not claim restart persistence.
 
 ## Offline and privacy
 
-After one successful online load, `/twin/` and its complete corpus work through
-a service worker scoped only to `/twin/`. The app sends no telemetry, stores no
+After one successful online load, `/public-twin/` and its complete corpus work
+through a service worker scoped only to `/public-twin/`. The app sends no telemetry, stores no
 credentials, uses no external APIs, and requires no remote runtime dependency.
 User-activated source links may leave the application.
 
 `scripts/build_twin_release.py` is the release authority. It regenerates the
-corpus, trusted app and worker digests, and `twin/shell-manifest.json`
+corpus, trusted app and worker digests, and `public-twin/shell-manifest.json`
 together. The shell manifest pins expected MIME types and SHA-256 values for
 every static asset. Content-addressed caches are populated under a new release
 name and are immutable after activation. The scheduled works-catalog refresh

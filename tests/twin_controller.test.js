@@ -11,7 +11,7 @@ const corpus = JSON.parse(
   fs.readFileSync(path.join(__dirname, 'fixtures', 'twin-corpus.json'), 'utf8')
 );
 const prompt = fs.readFileSync(
-  path.join(__dirname, '..', 'twin', 'one-sentence-prompt.txt'),
+  path.join(__dirname, '..', 'public-twin', 'one-sentence-prompt.txt'),
   'utf8'
 );
 
@@ -106,7 +106,7 @@ test('inspection and citation opening expose semantic provenance', async () => {
 
   const inspection = controller.inspect();
   assert.equal(inspection.ready, true);
-  assert.equal(inspection.route, '/twin/');
+  assert.equal(inspection.route, '/public-twin/');
   assert.equal(inspection.mode, 'answer');
   assert.equal(inspection.stateRevision > 0, true);
   assert.equal(typeof inspection.activeResultId, 'string');

@@ -17,9 +17,9 @@ sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[1]
 CORPUS_PATH = ROOT / "api" / "twin-corpus.json"
 APP_PATH = ROOT / "js" / "twin-app.js"
-PAGE_PATH = ROOT / "twin" / "index.html"
-WORKER_PATH = ROOT / "twin" / "sw.js"
-SHELL_MANIFEST_PATH = ROOT / "twin" / "shell-manifest.json"
+PAGE_PATH = ROOT / "public-twin" / "index.html"
+WORKER_PATH = ROOT / "public-twin" / "sw.js"
+SHELL_MANIFEST_PATH = ROOT / "public-twin" / "shell-manifest.json"
 DOCUMENT_MARKER = re.compile(
     r'(data-twin-document-sha256=")[0-9a-f]{64}(")'
 )
@@ -27,11 +27,11 @@ DOCUMENT_MARKER = re.compile(
 SHELL_SOURCES = (
     "_config.yml",
     "_layouts/default.html",
-    "twin/index.html",
-    "twin/manifest.webmanifest",
-    "twin/icon-192.png",
-    "twin/icon-512.png",
-    "twin/one-sentence-prompt.txt",
+    "public-twin/index.html",
+    "public-twin/manifest.webmanifest",
+    "public-twin/icon-192.png",
+    "public-twin/icon-512.png",
+    "public-twin/one-sentence-prompt.txt",
     "css/main.css",
     "js/theme.js",
     "js/twin-state.js",
@@ -44,15 +44,23 @@ SHELL_SOURCES = (
 
 STATIC_ASSETS = (
     (
-        "/twin/manifest.webmanifest",
-        "twin/manifest.webmanifest",
+        "/public-twin/manifest.webmanifest",
+        "public-twin/manifest.webmanifest",
         ("application/manifest+json", "application/json"),
     ),
-    ("/twin/icon-192.png", "twin/icon-192.png", ("image/png",)),
-    ("/twin/icon-512.png", "twin/icon-512.png", ("image/png",)),
     (
-        "/twin/one-sentence-prompt.txt",
-        "twin/one-sentence-prompt.txt",
+        "/public-twin/icon-192.png",
+        "public-twin/icon-192.png",
+        ("image/png",),
+    ),
+    (
+        "/public-twin/icon-512.png",
+        "public-twin/icon-512.png",
+        ("image/png",),
+    ),
+    (
+        "/public-twin/one-sentence-prompt.txt",
+        "public-twin/one-sentence-prompt.txt",
         ("text/plain",),
     ),
     ("/css/main.css", "css/main.css", ("text/css",)),
@@ -141,7 +149,7 @@ def document_contract(page_source: str) -> tuple[str, bytes]:
     for relative, data in (
         ("_config.yml", (ROOT / "_config.yml").read_bytes()),
         ("_layouts/default.html", (ROOT / "_layouts/default.html").read_bytes()),
-        ("twin/index.html", normalized.encode("utf-8")),
+        ("public-twin/index.html", normalized.encode("utf-8")),
     ):
         digest.update(relative.encode("utf-8"))
         digest.update(b"\0")
@@ -171,7 +179,7 @@ def document_specs(document_sha256: str) -> list[dict]:
             "contentTypes": ["text/html"],
             "requiredText": required,
         }
-        for url in ("/twin/", "/twin/index.html")
+        for url in ("/public-twin/", "/public-twin/index.html")
     ]
 
 
@@ -224,7 +232,7 @@ def build_outputs() -> tuple[dict[Path, bytes], dict[str, str]]:
     )
     overrides = {
         "js/twin-app.js": expected_app,
-        "twin/index.html": expected_page,
+        "public-twin/index.html": expected_page,
     }
     expected_manifest = shell_manifest_bytes(overrides, document_sha256)
     shell_release = sha256(expected_manifest)
