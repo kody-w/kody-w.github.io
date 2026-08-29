@@ -5,6 +5,8 @@ var CORPUS_CACHE = 'kody-twin-corpus-v1';
 var CORPUS_PATH = '/api/twin-corpus.json';
 var BASELINE_SOURCE_MANIFEST_SHA256 =
   '9b14903ad91282be2e962e97697479b04e8416da52b7b219afa0422e391d3e29';
+var BASELINE_CORPUS_SHA256 =
+  'c04711d2a2783f04b1e6bebc3cc7d630522a8c6080ebfde3f233228ab33ffdc5';
 var SHELL_PATHS = [
   '/twin/',
   '/twin/index.html',
@@ -123,7 +125,7 @@ function validCorpus(corpus) {
       corpus.schema !== 'kodyw-public-twin/1.0' ||
       corpus.normalizationVersion !== 'plain-text/1' ||
       corpus.sourceManifestSha256 !== BASELINE_SOURCE_MANIFEST_SHA256 ||
-      !SHA256.test(corpus.corpusSha256) ||
+      corpus.corpusSha256 !== BASELINE_CORPUS_SHA256 ||
       !isObject(corpus.stats) ||
       !hasOnlyKeys(corpus.stats, ['total', 'post', 'field_note', 'work']) ||
       !Array.isArray(corpus.relations) ||
