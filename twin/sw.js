@@ -38,6 +38,13 @@ function isNonEmptyString(value) {
   return typeof value === 'string' && value.length > 0;
 }
 
+function isJsonPrimitive(value) {
+  return value === null ||
+    typeof value === 'string' ||
+    typeof value === 'boolean' ||
+    (typeof value === 'number' && Number.isFinite(value));
+}
+
 function hasOnlyKeys(value, keys) {
   var actual = Object.keys(value).sort();
   var expected = keys.slice().sort();
@@ -85,11 +92,19 @@ function validRecord(record) {
       !isNonEmptyString(record.text)) {
     return false;
   }
-  if (Object.prototype.hasOwnProperty.call(record, 'structured')) {
+  var hasStructured = Object.prototype.hasOwnProperty.call(record, 'structured');
+  if (record.sourceType === 'work' && !hasStructured) {
+    return false;
+  }
+  if (record.sourceType !== 'work' && hasStructured) {
+    return false;
+  }
+  if (hasStructured) {
     var structured = record.structured;
     if (!isObject(structured) ||
-        !isNonEmptyString(structured.description) ||
-        !isNonEmptyString(structured.pointer)) {
+        !hasOnlyKeys(structured, ['pointer', 'value']) ||
+        !isNonEmptyString(structured.pointer) ||
+        !isJsonPrimitive(structured.value)) {
       return false;
     }
   }
