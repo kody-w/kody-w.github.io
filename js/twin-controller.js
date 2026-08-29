@@ -258,7 +258,7 @@
         version: VERSION,
         apiVersion: '1.0',
         ready: true,
-        route: '/twin/',
+        route: '/public-twin/',
         mode: MODES.indexOf(preferences.mode) !== -1 ? preferences.mode : 'answer',
         corpusSha256: corpusSha256,
         corpus: corpus,

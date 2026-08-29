@@ -16,13 +16,13 @@ ROOT = Path(__file__).resolve().parents[1]
 BUILDER = ROOT / "scripts" / "build_twin.py"
 RELEASE_BUILDER = ROOT / "scripts" / "build_twin_release.py"
 CORPUS = ROOT / "api" / "twin-corpus.json"
-PAGE = ROOT / "twin" / "index.html"
-WORKER = ROOT / "twin" / "sw.js"
-MANIFEST = ROOT / "twin" / "manifest.webmanifest"
-SHELL_MANIFEST = ROOT / "twin" / "shell-manifest.json"
-ICON_192 = ROOT / "twin" / "icon-192.png"
-ICON_512 = ROOT / "twin" / "icon-512.png"
-PROMPT = ROOT / "twin" / "one-sentence-prompt.txt"
+PAGE = ROOT / "public-twin" / "index.html"
+WORKER = ROOT / "public-twin" / "sw.js"
+MANIFEST = ROOT / "public-twin" / "manifest.webmanifest"
+SHELL_MANIFEST = ROOT / "public-twin" / "shell-manifest.json"
+ICON_192 = ROOT / "public-twin" / "icon-192.png"
+ICON_512 = ROOT / "public-twin" / "icon-512.png"
+PROMPT = ROOT / "public-twin" / "one-sentence-prompt.txt"
 ENGINE = ROOT / "js" / "twin-engine.js"
 STATE = ROOT / "js" / "twin-state.js"
 CONTROLLER = ROOT / "js" / "twin-controller.js"
@@ -39,11 +39,11 @@ EXPECTED_LEGACY_TWIN_HASH = (
 TWIN_SHELL_SOURCES = (
     "_config.yml",
     "_layouts/default.html",
-    "twin/index.html",
-    "twin/manifest.webmanifest",
-    "twin/icon-192.png",
-    "twin/icon-512.png",
-    "twin/one-sentence-prompt.txt",
+    "public-twin/index.html",
+    "public-twin/manifest.webmanifest",
+    "public-twin/icon-192.png",
+    "public-twin/icon-512.png",
+    "public-twin/one-sentence-prompt.txt",
     "css/main.css",
     "js/theme.js",
     "js/twin-state.js",
@@ -252,7 +252,7 @@ class TwinAcceptanceTest(unittest.TestCase):
         page = PAGE.read_text()
         corpus = json.loads(CORPUS.read_text())
         app = APP.read_text()
-        self.assertIn("permalink: /twin/", page)
+        self.assertIn("permalink: /public-twin/", page)
         self.assertIn("offline_shell: true", page)
         self.assertIn('id="twin-question"', page)
         self.assertIn('id="twin-results"', page)
@@ -278,7 +278,7 @@ class TwinAcceptanceTest(unittest.TestCase):
         layout = DEFAULT_LAYOUT.read_text()
         self.assertIn("page.offline_shell", layout)
         self.assertIn("page.content_security_policy", layout)
-        self.assertIn('href="/twin/"', layout)
+        self.assertIn('href="/public-twin/"', layout)
 
     def test_service_worker_and_manifest_are_scope_limited(self):
         worker = WORKER.read_text()
@@ -312,9 +312,9 @@ class TwinAcceptanceTest(unittest.TestCase):
         ):
             self.assertIn(marker, required_document_text)
         self.assertIn(hashlib.sha256(shell_manifest_bytes).hexdigest(), worker)
-        self.assertIn("/twin/shell-manifest.json", worker)
+        self.assertIn("/public-twin/shell-manifest.json", worker)
         self.assertIn(
-            "/twin/one-sentence-prompt.txt",
+            "/public-twin/one-sentence-prompt.txt",
             [asset["url"] for asset in shell_manifest["assets"]],
         )
         self.assertNotIn("kody-twin-shell-v1", worker)
@@ -322,8 +322,8 @@ class TwinAcceptanceTest(unittest.TestCase):
         self.assertNotIn("scope: '/'", worker)
 
         manifest = json.loads(MANIFEST.read_text())
-        self.assertEqual(manifest["start_url"], "/twin/")
-        self.assertEqual(manifest["scope"], "/twin/")
+        self.assertEqual(manifest["start_url"], "/public-twin/")
+        self.assertEqual(manifest["scope"], "/public-twin/")
         self.assertIn(manifest["display"], {"standalone", "minimal-ui"})
         self.assertTrue(manifest["icons"])
         for icon in manifest["icons"]:
@@ -380,7 +380,7 @@ class TwinAcceptanceTest(unittest.TestCase):
         shell_bytes = sum(path.stat().st_size for path in shell_files)
         self.assertLessEqual(shell_bytes, 350 * 1024)
         workflow = WORKFLOW.read_text()
-        self.assertIn("'twin/**'", workflow)
+        self.assertIn("'public-twin/**'", workflow)
         self.assertIn("'api/twin-corpus.json'", workflow)
         self.assertIn("'_twin_posts/**'", workflow)
         self.assertIn("'api/works.json'", workflow)
@@ -397,9 +397,9 @@ class TwinAcceptanceTest(unittest.TestCase):
             "api/works.json",
             "api/twin-corpus.json",
             "js/twin-app.js",
-            "twin/index.html",
-            "twin/shell-manifest.json",
-            "twin/sw.js",
+            "public-twin/index.html",
+            "public-twin/shell-manifest.json",
+            "public-twin/sw.js",
         ):
             self.assertIn(release_path, refresh)
 

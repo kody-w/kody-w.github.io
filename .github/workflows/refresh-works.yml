@@ -32,9 +32,9 @@ jobs:
             api/works.json
             api/twin-corpus.json
             js/twin-app.js
-            twin/index.html
-            twin/shell-manifest.json
-            twin/sw.js
+            public-twin/index.html
+            public-twin/shell-manifest.json
+            public-twin/sw.js
           )
           if git diff --quiet -- "${release_paths[@]}"; then
             echo "Public works and twin release are unchanged."

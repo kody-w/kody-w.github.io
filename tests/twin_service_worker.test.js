@@ -7,7 +7,7 @@ const vm = require('node:vm');
 
 const Engine = require('../js/twin-engine.js');
 const workerSource = fs.readFileSync(
-  path.join(__dirname, '..', 'twin', 'sw.js'),
+  path.join(__dirname, '..', 'public-twin', 'sw.js'),
   'utf8'
 );
 const corpus = JSON.parse(
@@ -16,13 +16,17 @@ const corpus = JSON.parse(
 const ORIGIN = 'https://kody-w.github.io';
 const CORPUS_PATH = '/api/twin-corpus.json';
 const shellManifest = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '..', 'twin', 'shell-manifest.json'), 'utf8')
+  fs.readFileSync(
+    path.join(__dirname, '..', 'public-twin', 'shell-manifest.json'),
+    'utf8'
+  )
 );
 const assetFiles = {
-  '/twin/manifest.webmanifest': 'twin/manifest.webmanifest',
-  '/twin/icon-192.png': 'twin/icon-192.png',
-  '/twin/icon-512.png': 'twin/icon-512.png',
-  '/twin/one-sentence-prompt.txt': 'twin/one-sentence-prompt.txt',
+  '/public-twin/manifest.webmanifest': 'public-twin/manifest.webmanifest',
+  '/public-twin/icon-192.png': 'public-twin/icon-192.png',
+  '/public-twin/icon-512.png': 'public-twin/icon-512.png',
+  '/public-twin/one-sentence-prompt.txt':
+    'public-twin/one-sentence-prompt.txt',
   '/css/main.css': 'css/main.css',
   '/js/theme.js': 'js/theme.js',
   '/js/twin-state.js': 'js/twin-state.js',
@@ -56,16 +60,19 @@ function validDocumentResponse(content = '') {
 }
 
 function defaultShellResponse(pathname) {
-  if (pathname === '/twin/shell-manifest.json') {
+  if (pathname === '/public-twin/shell-manifest.json') {
     return new Response(
-      fs.readFileSync(path.join(__dirname, '..', 'twin', 'shell-manifest.json')),
+      fs.readFileSync(
+        path.join(__dirname, '..', 'public-twin', 'shell-manifest.json')
+      ),
       {
         status: 200,
         headers: { 'Content-Type': 'application/json' }
       }
     );
   }
-  if (pathname === '/twin/' || pathname === '/twin/index.html') {
+  if (pathname === '/public-twin/' ||
+      pathname === '/public-twin/index.html') {
     return validDocumentResponse();
   }
   const relative = assetFiles[pathname];
@@ -167,7 +174,9 @@ function loadWorker(corpusResponse, options = {}) {
     crypto: webcrypto,
     Uint8Array
   };
-  vm.runInNewContext(workerSource, context, { filename: 'twin/sw.js' });
+  vm.runInNewContext(workerSource, context, {
+    filename: 'public-twin/sw.js'
+  });
   return {
     handlers,
     caches,
@@ -266,7 +275,7 @@ test('interrupted upgrade leaves the active shell cache untouched', async () => 
   );
   const active = await runtime.caches.open('kody-twin-shell-v1');
   await active.put(
-    '/twin/',
+    '/public-twin/',
     new Response('old-shell', {
       status: 200,
       headers: { 'Content-Type': 'text/html' }
@@ -275,7 +284,7 @@ test('interrupted upgrade leaves the active shell cache untouched', async () => 
 
   await assert.rejects(runInstall(runtime));
   assert.equal(runtime.state.skipWaiting, 0);
-  const preserved = await active.match('/twin/');
+  const preserved = await active.match('/public-twin/');
   assert.equal(await preserved.text(), 'old-shell');
 });
 
@@ -287,7 +296,9 @@ test('asset navigation cannot replace the canonical cached app shell', async () 
     }),
     {
       responses: {
-        '/twin/manifest.webmanifest': new Response('{"name":"manifest"}', {
+        '/public-twin/manifest.webmanifest': new Response(
+          '{"name":"manifest"}',
+          {
           status: 200,
           headers: { 'Content-Type': 'application/manifest+json' }
         })
@@ -296,7 +307,7 @@ test('asset navigation cannot replace the canonical cached app shell', async () 
   );
   const cache = await runtime.caches.open(runtime.shellCache);
   await cache.put(
-    '/twin/',
+    '/public-twin/',
     new Response('<!doctype html><title>app shell</title>', {
       status: 200,
       headers: { 'Content-Type': 'text/html' }
@@ -306,10 +317,10 @@ test('asset navigation cannot replace the canonical cached app shell', async () 
   const response = await runFetch(runtime, {
     method: 'GET',
     mode: 'navigate',
-    url: `${ORIGIN}/twin/manifest.webmanifest`
+    url: `${ORIGIN}/public-twin/manifest.webmanifest`
   });
   assert.equal(await response.text(), '{"name":"manifest"}');
-  const preserved = await cache.match('/twin/');
+  const preserved = await cache.match('/public-twin/');
   assert.match(await preserved.text(), /app shell/);
 });
 
@@ -351,8 +362,8 @@ test('generic HTML without the release document contract cannot install', async 
     }),
     {
       responses: {
-        '/twin/': generic,
-        '/twin/index.html': generic
+        '/public-twin/': generic,
+        '/public-twin/index.html': generic
       }
     }
   );
@@ -368,20 +379,20 @@ test('successful root navigation cannot mutate the installed release cache', asy
     }),
     {
       responses: {
-        '/twin/': validDocumentResponse('new network body')
+        '/public-twin/': validDocumentResponse('new network body')
       }
     }
   );
   await runInstall(runtime);
   const cache = await runtime.caches.open(runtime.shellCache);
-  const installed = await cache.match('/twin/');
+  const installed = await cache.match('/public-twin/');
   const before = await installed.text();
   const response = await runFetch(runtime, {
     method: 'GET',
     mode: 'navigate',
-    url: `${ORIGIN}/twin/`
+    url: `${ORIGIN}/public-twin/`
   });
   assert.match(await response.text(), /new network body/);
-  const after = await (await cache.match('/twin/')).text();
+  const after = await (await cache.match('/public-twin/')).text();
   assert.equal(after, before);
 });

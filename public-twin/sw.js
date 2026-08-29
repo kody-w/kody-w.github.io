@@ -8,10 +8,10 @@ var BASELINE_SOURCE_MANIFEST_SHA256 =
 var BASELINE_CORPUS_SHA256 =
   '0d6badcd9364761804d7e77f2f5695185ed8e8254a80650f9d57a09695dd7f9d';
 var SHELL_RELEASE_SHA256 =
-  '303ebdcb5215c4ae83df4571c831c7907470aaaccb90e8ae545e43c1b6693930';
+  '6691ad95a0f500aa829f1dbd734a3ecfd0841f279d5c2039a25187222decc774';
 var SHELL_CACHE = 'kody-twin-shell-' + SHELL_RELEASE_SHA256.slice(0, 16);
 var CORPUS_CACHE = 'kody-twin-corpus-' + BASELINE_CORPUS_SHA256.slice(0, 16);
-var SHELL_MANIFEST_PATH = '/twin/shell-manifest.json';
+var SHELL_MANIFEST_PATH = '/public-twin/shell-manifest.json';
 var SHA256 = /^[0-9a-f]{64}$/;
 
 function isObject(value) {
@@ -494,7 +494,8 @@ function shellResponse(request) {
 
 function navigationResponse(request) {
   var pathname = new URL(request.url).pathname;
-  var isAppPath = pathname === '/twin' || pathname === '/twin/';
+  var isAppPath = pathname === '/public-twin' ||
+    pathname === '/public-twin/';
   if (!isAppPath) {
     return shellResponse(request).catch(function () {
       return new Response('Twin resource is unavailable offline.', {
@@ -509,7 +510,7 @@ function navigationResponse(request) {
         throw new Error('Verified shell manifest is unavailable');
       }
       var specification = bundle.manifest.documents.find(function (item) {
-        return item.url === '/twin/';
+        return item.url === '/public-twin/';
       });
       if (!specification) {
         throw new Error('Canonical twin document is not declared');
@@ -518,7 +519,7 @@ function navigationResponse(request) {
     });
   }).catch(function () {
     return caches.open(SHELL_CACHE).then(function (cache) {
-      return cache.match('/twin/');
+      return cache.match('/public-twin/');
     }).then(function (response) {
       return response || new Response('Twin is unavailable offline.', {
         status: 503,
@@ -560,7 +561,8 @@ self.addEventListener('fetch', function (event) {
     return;
   }
   if (request.mode === 'navigate' &&
-      (url.pathname === '/twin' || url.pathname.indexOf('/twin/') === 0)) {
+      (url.pathname === '/public-twin' ||
+       url.pathname.indexOf('/public-twin/') === 0)) {
     event.respondWith(navigationResponse(request));
     return;
   }
