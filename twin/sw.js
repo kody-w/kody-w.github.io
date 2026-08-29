@@ -3,6 +3,8 @@
 var SHELL_CACHE = 'kody-twin-shell-v1';
 var CORPUS_CACHE = 'kody-twin-corpus-v1';
 var CORPUS_PATH = '/api/twin-corpus.json';
+var BASELINE_SOURCE_MANIFEST_SHA256 =
+  '9b14903ad91282be2e962e97697479b04e8416da52b7b219afa0422e391d3e29';
 var SHELL_PATHS = [
   '/twin/',
   '/twin/index.html',
@@ -120,12 +122,13 @@ function validCorpus(corpus) {
   if (!isObject(corpus) ||
       corpus.schema !== 'kodyw-public-twin/1.0' ||
       corpus.normalizationVersion !== 'plain-text/1' ||
-      !SHA256.test(corpus.sourceManifestSha256) ||
+      corpus.sourceManifestSha256 !== BASELINE_SOURCE_MANIFEST_SHA256 ||
       !SHA256.test(corpus.corpusSha256) ||
       !isObject(corpus.stats) ||
       !hasOnlyKeys(corpus.stats, ['total', 'post', 'field_note', 'work']) ||
       !Array.isArray(corpus.relations) ||
       !corpus.relations.every(validRelation) ||
+      !validSourceManifest(corpus.sourceManifest) ||
       !Array.isArray(corpus.records)) {
     return false;
   }
@@ -142,11 +145,6 @@ function validCorpus(corpus) {
         corpus.stats.field_note + corpus.stats.work) {
     return false;
   }
-  if (Object.prototype.hasOwnProperty.call(corpus, 'sourceManifest') &&
-      !validSourceManifest(corpus.sourceManifest)) {
-    return false;
-  }
-
   var counts = { post: 0, field_note: 0, work: 0 };
   var ids = Object.create(null);
   for (var j = 0; j < corpus.records.length; j += 1) {
@@ -278,11 +276,17 @@ self.addEventListener('install', function (event) {
 self.addEventListener('activate', function (event) {
   event.waitUntil(caches.keys().then(function (names) {
     return Promise.all(names.map(function (name) {
-      if (name.indexOf('kody-twin-shell-') === 0 && name !== SHELL_CACHE) {
+      var oldShell = name.indexOf('kody-twin-shell-') === 0 &&
+        name !== SHELL_CACHE;
+      var oldCorpus = name.indexOf('kody-twin-corpus-') === 0 &&
+        name !== CORPUS_CACHE;
+      if (oldShell || oldCorpus) {
         return caches.delete(name);
       }
       return Promise.resolve(false);
     }));
+  }).then(function () {
+    return self.clients.claim();
   }));
 });
 

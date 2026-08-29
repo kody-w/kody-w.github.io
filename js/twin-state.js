@@ -253,9 +253,15 @@
       }
     }
 
-    function replaceState(candidate) {
+    function replaceState(candidate, shouldBoundHistory) {
       validateState(candidate);
-      var next = boundHistory(clone(candidate));
+      if (!shouldBoundHistory && candidate.history.length > maxHistory) {
+        throw new RangeError('Imported history exceeds maxHistory');
+      }
+      var next = clone(candidate);
+      if (shouldBoundHistory) {
+        boundHistory(next);
+      }
       state = next;
       persist();
       return clone(state);
@@ -280,14 +286,14 @@
         }
         draft.schema = SCHEMA;
         draft.revision = state.revision + 1;
-        return replaceState(draft);
+        return replaceState(draft, true);
       },
 
       replace: function (candidate) {
         if (typeof candidate === 'string') {
-          return replaceState(parseImport(candidate));
+          return replaceState(parseImport(candidate), false);
         }
-        return replaceState(candidate);
+        return replaceState(candidate, false);
       },
 
       exportState: function () {
@@ -295,7 +301,7 @@
       },
 
       importState: function (serialized) {
-        return replaceState(parseImport(serialized));
+        return replaceState(parseImport(serialized), false);
       },
 
       reset: function () {
