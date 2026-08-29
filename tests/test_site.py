@@ -34,6 +34,9 @@ NEWSLETTER_PAGE = ROOT / "newsletter" / "index.html"
 NEWSLETTER_FORM = ROOT / "_includes" / "newsletter_form.html"
 NEWSLETTER_FEED = ROOT / "newsletter" / "feed.xml"
 NEWSLETTER_SCRIPT = ROOT / "js" / "newsletter.js"
+START_PAGE = ROOT / "start" / "index.html"
+START_DATA = ROOT / "_data" / "reading_paths.yml"
+START_SCRIPT = ROOT / "js" / "start-here.js"
 STAGING_WORKFLOW = ROOT / ".github" / "workflows" / "staging-canary.yml"
 CONFIG_FILE = ROOT / "_config.yml"
 README_FILE = ROOT / "README.md"
@@ -3267,6 +3270,57 @@ class SiteContentTests(unittest.TestCase):
         )
         self.assertIn("pages: write", workflow)
         self.assertIn('pages/builds"', workflow)
+
+    def test_start_here_paths_are_ordered_valid_and_locally_trackable(self):
+        paths = yaml.safe_load(START_DATA.read_text(encoding="utf-8"))
+        self.assertEqual(len(paths), 6)
+        self.assertEqual(len({path["id"] for path in paths}), 6)
+        self.assertEqual(sum(len(path["posts"]) for path in paths), 36)
+
+        post_urls = set()
+        for post_path in POSTS_DIR.glob("*.md"):
+            front_matter, _ = parse_front_matter(post_path)
+            year, month, day = front_matter["date"][:10].split("-")
+            post_urls.add(f"/{year}/{month}/{day}/{post_path.stem[11:]}/")
+        for path in paths:
+            self.assertGreaterEqual(path["minutes"], 20)
+            self.assertGreaterEqual(len(path["posts"]), 5)
+            self.assertEqual(
+                len({step["url"] for step in path["posts"]}),
+                len(path["posts"]),
+            )
+            for step in path["posts"]:
+                self.assertIn(step["url"], post_urls)
+                self.assertGreater(len(step["why"]), 30)
+
+        front_matter, body = parse_front_matter(START_PAGE)
+        self.assertEqual(front_matter.get("layout"), "default")
+        self.assertEqual(front_matter.get("title"), "Start Here")
+        self.assertEqual(front_matter.get("permalink"), "/start/")
+        for marker in (
+            "site.data.reading_paths",
+            "data-reading-path",
+            "data-reading-step",
+            "data-path-progress",
+            "start-overall-meter",
+            'id="start-top"',
+            "/js/start-here.js",
+        ):
+            self.assertIn(marker, body)
+
+        script = START_SCRIPT.read_text(encoding="utf-8")
+        self.assertIn("localStorage", script)
+        self.assertIn("try {", script)
+        self.assertIn("data-reset-path", script)
+        self.assertIn("start-reset-all", script)
+        self.assertIn("aria-pressed", script)
+        self.assertIn("validStepIds", script)
+        self.assertIn('data-reading-step="{{ path.id }}:{{ step.url }}"', body)
+
+        default = DEFAULT_LAYOUT.read_text(encoding="utf-8")
+        self.assertIn('href="/start/">Start Here</a>', default)
+        home = HOME_PAGE.read_text(encoding="utf-8")
+        self.assertIn('class="home-stream home-stream-start"', home)
 
     def test_prompt_include_is_accessible_inert_and_vendor_neutral(self):
         prompt = PROMPT_INCLUDE.read_text(encoding="utf-8")

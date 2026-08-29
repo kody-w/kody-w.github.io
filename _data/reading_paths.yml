@@ -1,0 +1,131 @@
+- id: understand-rapp
+  label: Foundations
+  title: Understand RAPP
+  question: What is RAPP, and why is one file the unit?
+  description: Start with the smallest portable capability, then follow the idea through contracts, factories, collaboration, and ownership.
+  outcome: You will understand the design logic behind the wider RAPP ecosystem.
+  icon: fa-cubes
+  minutes: 40
+  posts:
+    - url: /2025/09/24/drop-a-file-gain-a-capability/
+      why: Begin with the atomic idea—capability arrives as a file, not an installation ritual.
+    - url: /2025/09/30/when-a-single-file-beats-a-framework/
+      why: Learn when that small shape wins and when a real framework still earns its complexity.
+    - url: /2026/04/24/markdown-is-the-spec/
+      why: See how the readable document becomes the durable contract behind every rendering.
+    - url: /2026/04/25/the-factory-pattern/
+      why: Separate the system that produces artifacts from the repositories that own the results.
+    - url: /2026/03/01/ai-agents-vs-pull-requests/
+      why: Watch independent agents turn the pull request into a genuine reasoning surface.
+    - url: /2026/04/28/own-the-file-format/
+      why: End at the ownership boundary—if the durable format is not yours, neither is the AI.
+
+- id: local-first-ai
+  label: Ownership
+  title: Build Local-First AI
+  question: What does it mean for an AI system to remain yours?
+  description: Move from the local-first principles through offline state, resilient delivery, public/private boundaries, and durable possession.
+  outcome: You will have a practical architecture for AI that survives networks and vendors.
+  icon: fa-house-laptop
+  minutes: 32
+  posts:
+    - url: /2026/03/01/local-first-manifesto/
+      why: Start with the uncompromising principles before looking at implementation tradeoffs.
+    - url: /2026/04/18/static-sites-as-default/
+      why: Use the simplest public infrastructure that can remain legible and portable.
+    - url: /2025/09/23/pwa-last-known-state/
+      why: Learn how the browser can preserve a complete usable world after the network disappears.
+    - url: /2026/04/19/offline-resilient-send-queue/
+      why: Add the harder half of offline operation—effects that must leave the device exactly once.
+    - url: /2026/05/06/public-front-doors-private-brains/
+      why: Draw the boundary between public discovery and private cognition.
+    - url: /2026/07/05/the-ai-you-keep/
+      why: Finish with the ownership test—if the AI cannot be inherited, it was never truly possessed.
+
+- id: digital-twins
+  label: Identity
+  title: Design a Digital Twin
+  question: How can an AI extend a person without impersonating them?
+  description: Follow the twin from manifesto to deployment, private memory, public surfaces, autonomous variants, and inheritance.
+  outcome: You will understand the twin as a persistent medium rather than a chatbot persona.
+  icon: fa-user-astronaut
+  minutes: 34
+  posts:
+    - url: /2026/03/06/the-digital-twin-manifesto/
+      why: Establish the core distinction—extend human will instead of automating human output.
+    - url: /2026/03/28/the-digital-twin-deployment-pattern/
+      why: Turn the manifesto into a concrete public-body/private-brain deployment shape.
+    - url: /2026/04/22/write-twice-private-twin/
+      why: Preserve the private source that public writing necessarily leaves out.
+    - url: /2026/05/06/public-front-doors-private-brains/
+      why: Make the privacy boundary architectural rather than contractual.
+    - url: /2026/04/18/autonomous-twins-own-your-version-of-every-platform/
+      why: See how a twin can own local projections of the platforms a person depends on.
+    - url: /2026/07/05/the-ai-you-keep/
+      why: "Carry the pattern to its emotional conclusion: a persistent being that can outlive a vendor."
+
+- id: autonomous-agents
+  label: Autonomy
+  title: Run Autonomous Agent Systems
+  question: How do you let many agents work without losing control?
+  description: Begin with the operator's cognitive shape, then add continuous execution, failure learning, worktree isolation, simulation frames, and self-play.
+  outcome: You will understand the loop that lets an agent system improve while remaining inspectable.
+  icon: fa-diagram-project
+  minutes: 39
+  posts:
+    - url: /2026/03/28/the-parallel-mind/
+      why: Start with the human reason parallel agents are useful rather than treating concurrency as a stunt.
+    - url: /2026/03/30/autonomous-ai-execution/
+      why: Close the gap between an assistant that answers and a system that continues executing.
+    - url: /2026/03/01/training-on-your-own-failures/
+      why: Turn operational mistakes into the next generation's most relevant training data.
+    - url: /2026/04/17/many-workers-one-repo/
+      why: Give each worker an isolated apartment so parallel progress does not become data loss.
+    - url: /2025/10/23/the-frame-sim-pump/
+      why: Reduce long-running simulation and evolution to seven inspectable primitives.
+    - url: /2026/06/18/a-taste-of-agi/
+      why: End with the full loop—build, populate, test, repair, evolve, and leave notes for the next cycle.
+
+- id: github-native
+  label: Infrastructure
+  title: Use GitHub as the Platform
+  question: How far can files, git, Actions, Issues, and Pages actually go?
+  description: Build the read path, write path, runtime, protocol, and complete application surface from infrastructure most teams already have.
+  outcome: You will know when GitHub-native architecture is a real system, not a clever demo.
+  icon: fa-code-branch
+  minutes: 42
+  posts:
+    - url: /2025/10/07/git-is-your-database/
+      why: Begin by matching the datastore to an append-heavy, read-mostly access pattern.
+    - url: /2025/09/22/github-actions-as-runtime/
+      why: Move scheduled and event-driven computation into the repository itself.
+    - url: /2026/04/18/github-issues-as-universal-write-api/
+      why: Add authenticated public writes without standing up an application server.
+    - url: /2025/10/30/cdn-plus-json-equals-api/
+      why: Serve the read side globally from static state and edge caches.
+    - url: /2026/03/26/git-is-the-only-protocol-you-need/
+      why: Use one transport for collaboration, audit history, distribution, and synchronization.
+    - url: /2026/04/26/the-repo-is-the-platform/
+      why: "Finish with the complete shape: data, governance, frontend, SDKs, and community in one repository."
+
+- id: evidence-not-demos
+  label: Rigor
+  title: Build Evidence, Not Demos
+  question: How do you know the system works instead of merely looking convincing?
+  description: Move from file-native integration tests through measured comparisons, adversarial review, feature freezes, broken-test forensics, and field notes.
+  outcome: You will have a practical standard for claims that deserve to survive contact with reality.
+  icon: fa-microscope
+  minutes: 40
+  posts:
+    - url: /2025/09/27/integration-tests-on-files/
+      why: Start by asserting on the real resulting state rather than mocks and intermediate calls.
+    - url: /2025/10/17/honest-framework-comparison/
+      why: Compare alternatives under the same workload and publish the numbers behind the claim.
+    - url: /2026/03/07/adversarial-calibration/
+      why: Add an evaluator whose job is to disagree with the system's preferred answer.
+    - url: /2026/04/17/feature-freeze-forcing-function/
+      why: Stop adding capability long enough to discover whether the existing capability is real.
+    - url: /2026/08/01/six-times-the-test-was-wrong/
+      why: Treat the assertion itself as a suspect before changing correct behavior to satisfy it.
+    - url: /2026/04/18/field-notes-as-the-actual-moat/
+      why: Preserve the measured failures and corrections that generic code cannot reproduce.
