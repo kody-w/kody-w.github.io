@@ -1,0 +1,66 @@
+name: WordPress Draft Sync
+
+on:
+  schedule:
+    - cron: "20 15 * * 1"
+  workflow_dispatch:
+    inputs:
+      surface:
+        description: Content to mirror as WordPress drafts
+        required: true
+        default: pages
+        type: choice
+        options:
+          - pages
+          - weekly
+          - posts
+          - all
+      since:
+        description: Optional earliest post date (YYYY-MM-DD)
+        required: false
+        type: string
+permissions:
+  contents: read
+
+concurrency:
+  group: wordpress-draft-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: >-
+      github.ref == 'refs/heads/master' &&
+      (github.event_name != 'schedule' ||
+       vars.WORDPRESS_WEEKLY_SYNC_ENABLED == 'true')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: wordpress-production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - name: Validate configured secrets
+        env:
+          WP_URL: ${{ secrets.WP_URL }}
+          WP_USER: ${{ secrets.WP_USER }}
+          WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
+        run: |
+          test -n "$WP_URL"
+          test -n "$WP_USER"
+          test -n "$WP_APP_PASSWORD"
+
+      - name: Mirror approved content as drafts
+        env:
+          WP_URL: ${{ secrets.WP_URL }}
+          WP_USER: ${{ secrets.WP_USER }}
+          WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
+          INPUT_SURFACE: ${{ github.event_name == 'schedule' && 'weekly' || inputs.surface }}
+          INPUT_SINCE: ${{ inputs.since }}
+        run: |
+          surface="${INPUT_SURFACE:-weekly}"
+          args=(--apply --surface "$surface")
+          if [ -n "$INPUT_SINCE" ]; then
+            args+=(--since "$INPUT_SINCE")
+          fi
+          python3 scripts/sync_wordpress.py "${args[@]}"
