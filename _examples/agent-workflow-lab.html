@@ -1,0 +1,79 @@
+---
+title: "Agent Workflow Lab — Compose Plans Without Executing Imported Code"
+slug: "agent-workflow-lab"
+order: 361
+tagline: "A local-first workflow composer where agents, skills, prompts, parameters, and source specimens stay inspectable—and execution is always a deterministic simulation."
+category: "tool"
+difficulty: "advanced"
+status: "live"
+tags:
+  - "agent-workflows"
+  - "local-first"
+  - "clean-room"
+  - "safe-import"
+  - "deterministic-simulation"
+stack:
+  - "Inline HTML, CSS, and JavaScript"
+  - "Strict JSON schema validation"
+  - "Local persistence with memory fallback"
+  - "Deterministic simulation"
+demo: "/learnwithkody/demos/367-agent-workflow-lab.html"
+repo: "https://github.com/kody-w/kody-w.github.io/blob/master/learnwithkody/demos/367-agent-workflow-lab.html"
+highlights:
+  - "IMPORTED CODE IS EVIDENCE, NOT AUTHORITY. Python and JavaScript specimens are read as bounded text, preserved in workflow JSON, and summarized by inert metadata; the lab has no code-evaluation path."
+  - "INVALID PARAMETERS CANNOT QUIETLY POISON SAVED STATE. The editor keeps an unsaved draft separate from the validated workflow and commits only after JSON parses as an object."
+  - "A RUN IS A REPEATABLE PLAN REVIEW. Each enabled step emits exactly one deterministic receipt derived from its saved configuration, while disabled steps remain visible but produce no result."
+  - "THE WORKFLOW FILE IS A CONTRACT. Strict import rejects unknown keys, duplicate step IDs, unavailable agents or skills, malformed settings, and oversized source specimens before replacing current state."
+prompt: |
+  Using the public Agent Workflow System only as a black-box behavioral reference, build an original local-first workflow designer with an agent palette, ordered configurable steps, agent and skill selection, prompt and JSON parameter editors, JSON import and export, persistence and deterministic simulated execution. Do not copy source, wording, styling or assets, and do not execute imported Python or JavaScript.
+lessons:
+  - "A workflow editor is safer when draft input and committed configuration are separate states: validation becomes a transaction boundary instead of a warning after mutation."
+  - "Treating imported code as inert data preserves useful evidence without granting an unknown file execution authority."
+  - "Deterministic simulation makes plans reviewable: the same enabled steps and settings yield the same ordered receipts without a network, clock, or random dependency."
+---
+
+<section class="lwk-section">
+  <h2>What this rebuild studies</h2>
+  <p>The historical <a href="https://kodyw.com/wp-content/uploads/2025/03/Agent-Workflow-System.html" target="_blank" rel="noopener">Agent Workflow System</a> exposed a compact behavioral idea: choose from an agent palette, arrange a sequential workflow, configure its steps, save or exchange the plan, and inspect results. Agent Workflow Lab rebuilds that interaction model as an original offline teaching tool rather than reviving the historical implementation.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>Clean-room boundary</h2>
+  <p>The linked artifact was used only as a black-box behavioral reference. This lesson does not copy its source, wording, styling, branding, agent catalog, or assets. The new palette, workflow schema, visual language, validation rules, simulation receipts, semantic API, and accessibility behavior were designed independently.</p>
+  <p>Imported Python or JavaScript is treated only as data because an unknown file should not gain execution authority merely by entering a planning tool. The demo reads a bounded specimen as plain text, records inert metadata such as language, character count, and line count, and round-trips that text in JSON. It never uses <code>eval</code>, dynamic functions, script injection, event-handler markup, or a network-backed runner.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>The exact clean-room prompt</h2>
+  <blockquote>
+    <p>Using the public Agent Workflow System only as a black-box behavioral reference, build an original local-first workflow designer with an agent palette, ordered configurable steps, agent and skill selection, prompt and JSON parameter editors, JSON import and export, persistence and deterministic simulated execution. Do not copy source, wording, styling or assets, and do not execute imported Python or JavaScript.</p>
+  </blockquote>
+</section>
+
+<section class="lwk-section">
+  <h2>Acceptance checks</h2>
+  <ul>
+    <li>Users can add, reorder, edit, enable, disable and delete at least three steps.</li>
+    <li>Invalid JSON parameters produce a validation message without changing saved state.</li>
+    <li>Export followed by import reproduces workflow name, order and settings.</li>
+    <li>Running displays one deterministic result for each enabled step only.</li>
+    <li>No network request occurs during workflow execution.</li>
+  </ul>
+</section>
+
+<section class="lwk-section">
+  <h2>What to notice</h2>
+  <p>Start with the seeded four-step plan, disable one step, reorder another, and edit a prompt. Enter malformed parameter JSON and inspect the unchanged saved-value preview. Then export the workflow, reset it, and import the export again. The run receipts should return in the same order with the same signatures for every enabled step.</p>
+</section>
+
+<aside class="lwk-try-embed">
+  <div class="lwk-try-embed-head">
+    <span class="lwk-try-embed-label">Live demo</span>
+    <a href="/learnwithkody/demos/367-agent-workflow-lab.html" target="_blank" rel="noopener" class="lwk-try-embed-open">Open in new tab ↗</a>
+  </div>
+  <iframe
+    src="/learnwithkody/demos/367-agent-workflow-lab.html"
+    title="Agent Workflow Lab — live demo"
+    loading="lazy"
+    sandbox="allow-scripts allow-same-origin"></iframe>
+</aside>
