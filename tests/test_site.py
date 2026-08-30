@@ -2824,8 +2824,8 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("rapp-1-reference-vectors.json", paper)
         self.assertIn("https://kody-w.github.io/workroom/", paper)
         self.assertIn("https://github.com/kody-w/workroom", paper)
-        self.assertIn("aace86710454648743ce46a5e63d512e4044f9ad", paper)
-        self.assertIn("aace86710454648743ce46a5e63d512e4044f9ad", papers)
+        self.assertIn("2815ba24d9fbeeba247ffd5b8b06f115820e559e", paper)
+        self.assertIn("2815ba24d9fbeeba247ffd5b8b06f115820e559e", papers)
         self.assertIn("/frame-chains/paper.html", paper)
         self.assertIn("/papers/", (ROOT / "llms.txt").read_text(encoding="utf-8"))
 
