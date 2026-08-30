@@ -20,6 +20,8 @@ on:
       - 'api/weekly-signal*.json'
       - 'weekly-signal/**'
       - 'api/lost-apps-lessons.json'
+      - 'api/lost-apps-museum.json'
+      - 'lost-apps/**'
       - 'learnwithkody/**'
       - 'docs/twin-contract.md'
       - 'scripts/build_twin.py'
@@ -27,6 +29,7 @@ on:
       - 'scripts/benchmark_twin.js'
       - 'scripts/check_twin.py'
       - 'scripts/build_weekly_signal.py'
+      - 'scripts/build_lost_apps_museum.py'
       - 'scripts/sync_wordpress.py'
       - '.github/workflows/refresh-weekly-signal.yml'
       - '.github/workflows/wordpress-draft-sync.yml'
@@ -54,6 +57,8 @@ on:
       - 'api/weekly-signal*.json'
       - 'weekly-signal/**'
       - 'api/lost-apps-lessons.json'
+      - 'api/lost-apps-museum.json'
+      - 'lost-apps/**'
       - 'learnwithkody/**'
       - 'docs/twin-contract.md'
       - 'scripts/build_twin.py'
@@ -61,6 +66,7 @@ on:
       - 'scripts/benchmark_twin.js'
       - 'scripts/check_twin.py'
       - 'scripts/build_weekly_signal.py'
+      - 'scripts/build_lost_apps_museum.py'
       - 'scripts/sync_wordpress.py'
       - '.github/workflows/refresh-weekly-signal.yml'
       - '.github/workflows/wordpress-draft-sync.yml'
@@ -132,7 +138,8 @@ jobs:
           python3 scripts/build_weekly_signal.py \
             --as-of "$(python3 -c 'import json; print(json.load(open("api/weekly-signal.json"))["as_of"])')" \
             --check
-          node --test tests/copy_accessibility.test.js
+          python3 scripts/build_lost_apps_museum.py --check
+          node --test tests/copy_accessibility.test.js tests/lost_apps_museum.test.js
           python3 scripts/check_twin.py
 
       - name: Build Jekyll site

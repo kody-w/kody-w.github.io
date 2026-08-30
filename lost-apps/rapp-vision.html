@@ -1,0 +1,100 @@
+---
+layout: default
+title: Lost Apps RAPP Vision Briefs
+permalink: /lost-apps/rapp-vision/
+description: Grounded 16:9 episode and 9:16 short production briefs for every curated Lost Apps Museum exhibit.
+---
+{% assign museum = site.data.lost_apps_museum %}
+<main class="lost-apps lost-apps-vision">
+  <header class="lost-apps-hero">
+    <p class="lost-apps-kicker">RAPP Vision · Production slate</p>
+    <h1>{{ museum.apps.size }} Lost Apps, two formats each</h1>
+    <p class="lost-apps-lede">
+      Every brief is grounded in the verified public-artifact audit. Each episode
+      starts from observed behavior, names the proof shots, and keeps claims that
+      still need live verification explicit.
+    </p>
+    <div class="lost-apps-actions">
+      <a class="lost-apps-primary" href="/lost-apps/">Return to the museum</a>
+      <a href="/learnwithkody/rappvision/lost-apps-briefs.json">Download the production feed</a>
+    </div>
+  </header>
+
+  <nav class="lost-apps-vision-index" aria-label="RAPP Vision brief index">
+    {% for app in museum.apps %}
+    <a href="#{{ app.id | escape }}">{{ forloop.index }}. {{ app.title | escape }}</a>
+    {% endfor %}
+  </nav>
+
+  <section aria-labelledby="lost-apps-vision-title">
+    <div class="lost-apps-section-heading">
+      <div>
+        <p class="lost-apps-kicker">Grounded briefs</p>
+        <h2 id="lost-apps-vision-title">Episode and short treatments</h2>
+      </div>
+      <p>{{ museum.apps.size }} episodes · {{ museum.apps.size }} shorts</p>
+    </div>
+
+    <div class="lost-apps-vision-list">
+      {% for app in museum.apps %}
+      <article class="lost-app-vision-card" id="{{ app.id | escape }}">
+        <header>
+          <p class="lost-apps-kicker">{{ forloop.index | prepend: "0" | slice: -2, 2 }} · {{ app.category_title | escape }}</p>
+          <h3>{{ app.title | escape }}</h3>
+          <p class="lost-app-vision-hook">{{ app.rapp_vision.hook | escape }}</p>
+        </header>
+
+        <div class="lost-app-formats">
+          <section aria-labelledby="{{ app.id | escape }}-landscape">
+            <p class="lost-app-format-label">16:9 episode</p>
+            <h4 id="{{ app.id | escape }}-landscape">{{ app.rapp_vision.episode_16x9 | escape }}</h4>
+            <ol>
+              {% for beat in app.rapp_vision.scene_beats %}
+              <li>{{ beat | escape }}</li>
+              {% endfor %}
+            </ol>
+          </section>
+          <section aria-labelledby="{{ app.id | escape }}-vertical">
+            <p class="lost-app-format-label">9:16 short</p>
+            <h4 id="{{ app.id | escape }}-vertical">{{ app.rapp_vision.short_9x16 | escape }}</h4>
+            <p><strong>Proof shots:</strong></p>
+            <ul>
+              {% for shot in app.rapp_vision.proof_shots limit:3 %}
+              <li>{{ shot | escape }}</li>
+              {% endfor %}
+            </ul>
+          </section>
+        </div>
+
+        <details>
+          <summary>Evidence and claims-to-verify checklist</summary>
+          <div class="lost-app-detail-grid">
+            <section>
+              <h4>Audit evidence</h4>
+              <ul class="lost-app-evidence-list">
+                {% for evidence in app.evidence %}
+                <li><code>{{ evidence | escape }}</code></li>
+                {% endfor %}
+              </ul>
+              <a href="{{ app.source_url | escape }}" target="_blank" rel="noopener noreferrer">Open the historical source ↗</a>
+            </section>
+            <section>
+              <h4>Verify before recording</h4>
+              <ul>
+                {% for claim in app.rapp_vision.claims_to_verify %}
+                <li>{{ claim | escape }}</li>
+                {% endfor %}
+              </ul>
+            </section>
+          </div>
+        </details>
+
+        <nav class="lost-app-related" aria-label="Related links for {{ app.title | escape }}">
+          <a href="/lost-apps/#app-{{ app.id | escape }}">Museum record</a>
+          {% if app.lesson %}<a href="{{ app.lesson.lesson_url | escape }}">Clean-room lesson</a>{% endif %}
+        </nav>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+</main>

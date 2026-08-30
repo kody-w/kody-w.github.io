@@ -13,6 +13,10 @@
   {
    "label": "Learn with Kody",
    "url": "https://kody-w.github.io/learnwithkody/"
+  },
+  {
+   "label": "Lost Apps production slate",
+   "url": "https://kody-w.github.io/lost-apps/rapp-vision/"
   }
  ],
  "_hosting": "This channel lives inside the kody-w.github.io repo. GitHub Pages serves every repo of a user from one origin, so it plays in the RAPP Vision player at /rapp-vision while being published, versioned and owned right here next to the examples it documents.",

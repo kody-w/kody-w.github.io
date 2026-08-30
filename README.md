@@ -149,8 +149,14 @@ jekyll serve
 
 ```bash
 python3 -m unittest discover -s tests -p 'test_*.py'
+python3 scripts/build_lost_apps_museum.py --check
 jekyll build --destination _site
 ```
+
+The Lost Apps Museum is generated from the checked-in verified audit snapshot
+at `_data/lost_apps_audit.json`. Run `python3 scripts/build_lost_apps_museum.py`
+after changing that evidence, the curation overlay, or the lesson registry. The
+command rewrites the Jekyll data, public museum API, and RAPP Vision brief feed.
 
 ### 6. Publish
 

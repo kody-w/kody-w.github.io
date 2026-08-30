@@ -33,6 +33,10 @@ WORK_PAGE = ROOT / "work" / "index.html"
 WORK_DATA = ROOT / "api" / "works.json"
 WORK_SCRIPT = ROOT / "js" / "work.js"
 WORK_BUILDER = ROOT / "scripts" / "build_works.py"
+LOST_APPS_PAGE = ROOT / "lost-apps" / "index.html"
+LOST_APPS_VISION_PAGE = ROOT / "lost-apps" / "rapp-vision.html"
+LOST_APPS_DATA = ROOT / "_data" / "lost_apps_museum.json"
+LOST_APPS_SCRIPT = ROOT / "js" / "lost-apps-museum.js"
 NEWSLETTER_PAGE = ROOT / "newsletter" / "index.html"
 NEWSLETTER_FORM = ROOT / "_includes" / "newsletter_form.html"
 NEWSLETTER_FEED = ROOT / "newsletter" / "feed.xml"
@@ -3413,6 +3417,57 @@ class SiteContentTests(unittest.TestCase):
         )
         self.assertIn("pages: write", workflow)
         self.assertIn('pages/builds"', workflow)
+
+    def test_lost_apps_museum_is_a_public_discovery_surface(self):
+        front_matter, body = parse_front_matter(LOST_APPS_PAGE)
+        self.assertEqual(front_matter.get("layout"), "default")
+        self.assertEqual(front_matter.get("title"), "Lost Apps Museum")
+        self.assertEqual(front_matter.get("permalink"), "/lost-apps/")
+        for marker in (
+            "site.data.lost_apps_museum",
+            'id="lost-apps-search"',
+            'id="lost-apps-category"',
+            'id="lost-apps-readiness"',
+            'id="lost-apps-result-count" role="status" aria-live="polite"',
+            "data-lost-app-card",
+            "data-lost-app-preview",
+            'sandbox="allow-scripts allow-downloads"',
+            "referrerpolicy=\"no-referrer\"",
+            "/lost-apps/rapp-vision/",
+            "/api/lost-apps-museum.json",
+            "/js/lost-apps-museum.js",
+        ):
+            self.assertIn(marker, body)
+        self.assertNotIn("allow-same-origin", body)
+        self.assertNotIn('src="{{ app.source_url }}"', body)
+
+        vision_front_matter, vision_body = parse_front_matter(LOST_APPS_VISION_PAGE)
+        self.assertEqual(vision_front_matter.get("layout"), "default")
+        self.assertEqual(
+            vision_front_matter.get("permalink"), "/lost-apps/rapp-vision/"
+        )
+        self.assertIn("episode_16x9", vision_body)
+        self.assertIn("short_9x16", vision_body)
+        self.assertIn("claims_to_verify", vision_body)
+        self.assertIn("app.evidence", vision_body)
+
+        payload = json.loads(LOST_APPS_DATA.read_text(encoding="utf-8"))
+        self.assertEqual(payload.get("schema"), "kodyw-lost-apps-museum/1.0")
+        self.assertEqual(payload["stats"]["curated_apps"], 22)
+        self.assertEqual(len(payload["apps"]), 22)
+
+        script = LOST_APPS_SCRIPT.read_text(encoding="utf-8")
+        self.assertIn("allowedPreview", script)
+        self.assertIn("URLSearchParams", script)
+        self.assertIn("aria-live", body)
+        self.assertNotIn("innerHTML", script)
+
+        default = DEFAULT_LAYOUT.read_text(encoding="utf-8")
+        self.assertIn('href="/lost-apps/"', default)
+        work = WORK_PAGE.read_text(encoding="utf-8")
+        self.assertIn("Lost Apps Museum", work)
+        learn = LEARN_HUB_PAGE.read_text(encoding="utf-8")
+        self.assertIn("/lost-apps/", learn)
 
     def test_start_here_paths_are_ordered_valid_and_locally_trackable(self):
         paths = yaml.safe_load(START_DATA.read_text(encoding="utf-8"))
