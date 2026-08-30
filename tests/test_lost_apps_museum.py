@@ -17,7 +17,7 @@ API = ROOT / "api" / "lost-apps-museum.json"
 BRIEFS = ROOT / "learnwithkody" / "rappvision" / "lost-apps-briefs.json"
 BUILDER = ROOT / "scripts" / "build_lost_apps_museum.py"
 EXPECTED_AUDIT_SHA256 = (
-    "d2aa9c867b7caf974ed39e3d29fd155e2c39d169637952f7acdb3d78de072257"
+    "6e6daec82e55977985df613e45f23a076ec53a8c7775b64c533408784a238884"
 )
 RESTORED = {
     "agent-workflow-system": "agent-workflow-lab",
@@ -56,6 +56,22 @@ class LostAppsMuseumTests(unittest.TestCase):
         )
         self.assertEqual(self.audit["source_stats"]["html_attachments"], 96)
         self.assertEqual(self.audit["source_stats"]["byte_distinct_html"], 27)
+        addressing = self.audit["content_addressing"]
+        self.assertEqual(
+            addressing["schema"], "kodyw-lost-apps-content-addressing/1.0"
+        )
+        self.assertEqual(addressing["hash_algorithm"], "sha256")
+        self.assertEqual(addressing["byte_distinct_html"], 27)
+        self.assertEqual(len(addressing["media"]), 96)
+        self.assertEqual(len(addressing["content_groups"]), 27)
+        self.assertEqual(
+            {record["media_id"] for record in addressing["media"]},
+            {
+                media_id
+                for family in self.audit["families"]
+                for media_id in family["media_ids"]
+            },
+        )
 
     def test_builder_outputs_are_deterministic_and_current(self):
         expected_museum, expected_briefs = self.builder.build_payloads(
@@ -83,6 +99,19 @@ class LostAppsMuseumTests(unittest.TestCase):
                 self.assertEqual(app["source_url"], source["representative_url"])
                 self.assertEqual(app["aliases"], source["aliases"])
                 self.assertEqual(app["media_ids"], source["media_ids"])
+                self.assertEqual(
+                    {record["media_id"] for record in app["media_integrity"]},
+                    set(source["media_ids"]),
+                )
+                self.assertTrue(
+                    all(
+                        len(record["sha256"]) == 64
+                        and record["source_url"].startswith(
+                            "https://kodyw.com/wp-content/uploads/2025/03/"
+                        )
+                        for record in app["media_integrity"]
+                    )
+                )
                 self.assertEqual(app["evidence"], source["evidence"])
                 self.assertTrue(app["source_url"].startswith("https://kodyw.com/"))
                 self.assertGreaterEqual(len(app["related"]), 2)
@@ -145,6 +174,46 @@ class LostAppsMuseumTests(unittest.TestCase):
         with self.assertRaises(self.builder.BuildError):
             self.builder.build_payloads(
                 self.audit, unsafe_curation, self.lessons, self.audit_bytes
+            )
+
+    def test_builder_rejects_altered_or_missing_media_hashes(self):
+        altered = copy.deepcopy(self.audit)
+        altered["content_addressing"]["media"][0]["sha256"] = "0" * 64
+        with self.assertRaises(self.builder.BuildError):
+            self.builder.build_payloads(
+                altered, self.curation, self.lessons, self.audit_bytes
+            )
+
+        missing = copy.deepcopy(self.audit)
+        del missing["content_addressing"]["media"][0]["sha256"]
+        with self.assertRaises(self.builder.BuildError):
+            self.builder.build_payloads(
+                missing, self.curation, self.lessons, self.audit_bytes
+            )
+
+    def test_builder_rejects_wrong_hash_to_family_grouping(self):
+        wrong_group = copy.deepcopy(self.audit)
+        wrong_group["content_addressing"]["content_groups"][0]["family_ids"] = [
+            "wrong-family"
+        ]
+        with self.assertRaises(self.builder.BuildError):
+            self.builder.build_payloads(
+                wrong_group, self.curation, self.lessons, self.audit_bytes
+            )
+
+    def test_builder_recomputes_and_rejects_changed_distinct_counts(self):
+        wrong_stats = copy.deepcopy(self.audit)
+        wrong_stats["source_stats"]["byte_distinct_html"] = 26
+        with self.assertRaises(self.builder.BuildError):
+            self.builder.build_payloads(
+                wrong_stats, self.curation, self.lessons, self.audit_bytes
+            )
+
+        wrong_addressing = copy.deepcopy(self.audit)
+        wrong_addressing["content_addressing"]["byte_distinct_html"] = 28
+        with self.assertRaises(self.builder.BuildError):
+            self.builder.build_payloads(
+                wrong_addressing, self.curation, self.lessons, self.audit_bytes
             )
 
     def test_clean_room_demos_never_receive_historical_embed_permission(self):

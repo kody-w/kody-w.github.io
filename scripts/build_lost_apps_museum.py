@@ -26,8 +26,10 @@ CURATION_SCHEMA = "kodyw-lost-apps-curation/1.0"
 LESSON_SCHEMA = "kodyw-lost-apps-lessons/1.0"
 MUSEUM_SCHEMA = "kodyw-lost-apps-museum/1.0"
 VISION_SCHEMA = "rapp-vision-production-briefs/1.0"
+CONTENT_ADDRESSING_SCHEMA = "kodyw-lost-apps-content-addressing/1.0"
 EXPECTED_FAMILIES = 22
 SITE_URL = "https://kody-w.github.io"
+SHA256_PATTERN = re.compile(r"[0-9a-f]{64}")
 
 
 class BuildError(RuntimeError):
@@ -177,6 +179,136 @@ def normalize_brief(family: dict) -> dict:
     return brief
 
 
+def validate_content_addressing(
+    value: object,
+    family_by_media: dict[int, str],
+    declared_distinct: object,
+) -> tuple[list[dict], list[dict]]:
+    if not isinstance(value, dict):
+        raise BuildError("audit content_addressing must be a mapping")
+    if value.get("schema") != CONTENT_ADDRESSING_SCHEMA:
+        raise BuildError("unsupported Lost Apps content-addressing schema")
+    if value.get("hash_algorithm") != "sha256":
+        raise BuildError("Lost Apps content addressing must use SHA-256")
+    require_nonempty(value.get("captured_at"), "content-addressing capture date")
+    api_endpoint = validate_https_url(
+        value.get("wordpress_api_endpoint"), "content-addressing API endpoint"
+    )
+    if api_endpoint != "https://kodyw.com/wp-json/wp/v2/media":
+        raise BuildError("content addressing uses an unexpected API endpoint")
+    require_nonempty(value.get("retrieval"), "content-addressing retrieval method")
+    media = value.get("media")
+    groups = value.get("content_groups")
+    if not isinstance(media, list) or not isinstance(groups, list):
+        raise BuildError("content addressing must include media and content_groups")
+
+    normalized_media = []
+    records_by_id = {}
+    source_urls = set()
+    computed_groups: dict[str, dict[str, set | list]] = {}
+    for record in media:
+        if not isinstance(record, dict):
+            raise BuildError("content-addressed media records must be mappings")
+        media_id = record.get("media_id")
+        if not isinstance(media_id, int) or media_id <= 0:
+            raise BuildError("content-addressed media_id must be a positive integer")
+        if media_id in records_by_id:
+            raise BuildError(f"duplicate content-addressed media ID: {media_id}")
+        if media_id not in family_by_media:
+            raise BuildError(f"unknown content-addressed media ID: {media_id}")
+        family_id = require_slug(
+            record.get("family_id"), f"media {media_id} family_id"
+        )
+        if family_id != family_by_media[media_id]:
+            raise BuildError(f"media {media_id} is assigned to the wrong family")
+        source_url = validate_https_url(
+            record.get("source_url"), f"media {media_id} source URL"
+        )
+        parsed = urlparse(source_url)
+        if (
+            parsed.netloc != "kodyw.com"
+            or not parsed.path.startswith("/wp-content/uploads/2025/03/")
+        ):
+            raise BuildError(f"media {media_id} source is outside the audited path")
+        if source_url in source_urls:
+            raise BuildError(f"duplicate content-addressed source URL: {source_url}")
+        source_urls.add(source_url)
+        digest = require_nonempty(record.get("sha256"), f"media {media_id} SHA-256")
+        if not SHA256_PATTERN.fullmatch(digest):
+            raise BuildError(f"media {media_id} has an invalid SHA-256")
+        size_bytes = record.get("size_bytes")
+        if not isinstance(size_bytes, int) or size_bytes <= 0:
+            raise BuildError(f"media {media_id} size_bytes must be positive")
+        normalized = {
+            "family_id": family_id,
+            "media_id": media_id,
+            "sha256": digest,
+            "size_bytes": size_bytes,
+            "source_url": source_url,
+        }
+        normalized_media.append(normalized)
+        records_by_id[media_id] = normalized
+        computed = computed_groups.setdefault(
+            digest, {"family_ids": set(), "media_ids": []}
+        )
+        computed["family_ids"].add(family_id)
+        computed["media_ids"].append(media_id)
+
+    if set(records_by_id) != set(family_by_media):
+        missing = sorted(set(family_by_media) - set(records_by_id))
+        raise BuildError(f"content addressing is missing media IDs: {missing}")
+    normalized_media.sort(key=lambda item: item["media_id"])
+    expected_groups = [
+        {
+            "family_ids": sorted(group["family_ids"]),
+            "media_ids": sorted(group["media_ids"]),
+            "sha256": digest,
+        }
+        for digest, group in sorted(computed_groups.items())
+    ]
+    normalized_groups = []
+    seen_group_hashes = set()
+    for group in groups:
+        if not isinstance(group, dict):
+            raise BuildError("content groups must be mappings")
+        digest = require_nonempty(group.get("sha256"), "content group SHA-256")
+        if not SHA256_PATTERN.fullmatch(digest):
+            raise BuildError("content group has an invalid SHA-256")
+        if digest in seen_group_hashes:
+            raise BuildError(f"duplicate content group SHA-256: {digest}")
+        seen_group_hashes.add(digest)
+        media_ids = group.get("media_ids")
+        family_ids = group.get("family_ids")
+        if not isinstance(media_ids, list) or not isinstance(family_ids, list):
+            raise BuildError(f"content group {digest} is malformed")
+        if not all(
+            isinstance(media_id, int) and media_id > 0 for media_id in media_ids
+        ):
+            raise BuildError(f"content group {digest} has invalid media IDs")
+        if len(media_ids) != len(set(media_ids)):
+            raise BuildError(f"content group {digest} repeats media IDs")
+        normalized_groups.append(
+            {
+                "family_ids": sorted(
+                    require_slug(item, f"content group {digest} family")
+                    for item in family_ids
+                ),
+                "media_ids": sorted(media_ids),
+                "sha256": digest,
+            }
+        )
+    normalized_groups.sort(key=lambda item: item["sha256"])
+    if normalized_groups != expected_groups:
+        raise BuildError("declared content groups do not match per-media hashes")
+
+    observed_distinct = len(expected_groups)
+    if value.get("byte_distinct_html") != observed_distinct:
+        raise BuildError("content-addressing distinct count does not match hashes")
+    if declared_distinct != observed_distinct:
+        raise BuildError("source_stats distinct count does not match hashes")
+    return normalized_media, expected_groups
+
+
 def build_payloads(
     audit: dict, curation: dict, lessons_payload: dict, audit_bytes: bytes
 ) -> tuple[dict, dict]:
@@ -221,6 +353,7 @@ def build_payloads(
     seen_urls = set()
     seen_aliases = set()
     seen_media_ids = set()
+    family_by_media = {}
     apps = []
     for position, family in enumerate(families, start=1):
         family_id = require_slug(family.get("id"), "family id")
@@ -278,6 +411,7 @@ def build_payloads(
                 f"{family_id} reuses WordPress media IDs: {sorted(duplicate_media_ids)}"
             )
         seen_media_ids.update(media_ids)
+        family_by_media.update({media_id: family_id for media_id in media_ids})
         if family.get("safe_embed") is not False:
             raise BuildError(f"{family_id} unexpectedly permits historical embedding")
 
@@ -401,6 +535,21 @@ def build_payloads(
         raise BuildError("audit source statistics or embedding policy is missing")
     if source_stats.get("curated_application_families") != len(apps):
         raise BuildError("audit family count does not match curated records")
+    media_integrity, content_groups = validate_content_addressing(
+        audit.get("content_addressing"),
+        family_by_media,
+        source_stats.get("byte_distinct_html"),
+    )
+    integrity_by_family = {app["id"]: [] for app in apps}
+    for record in media_integrity:
+        integrity_by_family[record["family_id"]].append(record)
+    for app in apps:
+        app["media_integrity"] = integrity_by_family[app["id"]]
+        family_urls = {record["source_url"] for record in app["media_integrity"]}
+        if app["source_url"] not in family_urls:
+            raise BuildError(
+                f"{app['id']} representative URL has no content-addressed media record"
+            )
     restored = sum(app["preview"]["kind"] == "clean-room" for app in apps)
     held = sum(app["readiness_label"] == "Context only" for app in apps)
     audit_digest = sha256_bytes(audit_bytes)
@@ -412,6 +561,17 @@ def build_payloads(
         "source": {
             "audit_schema": audit["schema"],
             "audit_sha256": audit_digest,
+            "content_addressing": {
+                "byte_distinct_html": len(content_groups),
+                "captured_at": audit["content_addressing"]["captured_at"],
+                "content_groups": content_groups,
+                "hash_algorithm": "sha256",
+                "media_records": len(media_integrity),
+                "schema": CONTENT_ADDRESSING_SCHEMA,
+                "wordpress_api_endpoint": audit["content_addressing"][
+                    "wordpress_api_endpoint"
+                ],
+            },
             "deduplication": source_stats.get("deduplication"),
             "scope": source_stats.get("scope"),
         },

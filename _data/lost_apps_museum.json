@@ -45,6 +45,36 @@
         598,
         625
       ],
+      "media_integrity": [
+        {
+          "family_id": "agent-workflow-system",
+          "media_id": 544,
+          "sha256": "3593f9701403bec952020ee9907323050cdd8dbf534a1377541202a7e8df5e8f",
+          "size_bytes": 42579,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/Agent-Workflow-System.html"
+        },
+        {
+          "family_id": "agent-workflow-system",
+          "media_id": 588,
+          "sha256": "3593f9701403bec952020ee9907323050cdd8dbf534a1377541202a7e8df5e8f",
+          "size_bytes": 42579,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/Agent-Workflow-System-1.html"
+        },
+        {
+          "family_id": "agent-workflow-system",
+          "media_id": 598,
+          "sha256": "3593f9701403bec952020ee9907323050cdd8dbf534a1377541202a7e8df5e8f",
+          "size_bytes": 42579,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/Agent-Workflow-System-2.html"
+        },
+        {
+          "family_id": "agent-workflow-system",
+          "media_id": 625,
+          "sha256": "3593f9701403bec952020ee9907323050cdd8dbf534a1377541202a7e8df5e8f",
+          "size_bytes": 42579,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/Agent-Workflow-System-3.html"
+        }
+      ],
       "museum_blurb": "A browser-based agent workflow workshop that could assemble and simulate multi-step agent plans without a live agent backend.",
       "observed_controls": [
         "Import Agent",
@@ -171,6 +201,43 @@
         583,
         599,
         626
+      ],
+      "media_integrity": [
+        {
+          "family_id": "automated-actions",
+          "media_id": 543,
+          "sha256": "0156fb1d56d85e4365858a82d003e65063547e2383ddadf24cbe0f30ba44d3c1",
+          "size_bytes": 81303,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/automated-actions-ui.html"
+        },
+        {
+          "family_id": "automated-actions",
+          "media_id": 545,
+          "sha256": "0156fb1d56d85e4365858a82d003e65063547e2383ddadf24cbe0f30ba44d3c1",
+          "size_bytes": 81303,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/automated-actions-ui-1.html"
+        },
+        {
+          "family_id": "automated-actions",
+          "media_id": 583,
+          "sha256": "0156fb1d56d85e4365858a82d003e65063547e2383ddadf24cbe0f30ba44d3c1",
+          "size_bytes": 81303,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/automated-actions-ui-2.html"
+        },
+        {
+          "family_id": "automated-actions",
+          "media_id": 599,
+          "sha256": "0156fb1d56d85e4365858a82d003e65063547e2383ddadf24cbe0f30ba44d3c1",
+          "size_bytes": 81303,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/automated-actions-ui-3.html"
+        },
+        {
+          "family_id": "automated-actions",
+          "media_id": 626,
+          "sha256": "0156fb1d56d85e4365858a82d003e65063547e2383ddadf24cbe0f30ba44d3c1",
+          "size_bytes": 81303,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/automated-actions-ui-4.html"
+        }
       ],
       "museum_blurb": "A persuasive enterprise automation prototype whose safest feature is that its emails, CRM changes and memory operations are simulated.",
       "observed_controls": [
@@ -332,6 +399,106 @@
         627,
         628
       ],
+      "media_integrity": [
+        {
+          "family_id": "retroplay-console",
+          "media_id": 534,
+          "sha256": "decd9c2e42ca2df25056e0b40b15e3558543e35c92e4c168c081ab5588fc6850",
+          "size_bytes": 106564,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/complete-retroplay-console-ios.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 535,
+          "sha256": "8275bd57e7395111db713d9157f509be5f685cc1abcacc350fd0b25681f61d2e",
+          "size_bytes": 77739,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/complete-retroplay-console.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 536,
+          "sha256": "5b08a5f3576cb00397422ccfafc4731505654428a9463dc2af74233a31645968",
+          "size_bytes": 103424,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/gameboy-clone.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 546,
+          "sha256": "decd9c2e42ca2df25056e0b40b15e3558543e35c92e4c168c081ab5588fc6850",
+          "size_bytes": 106564,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/complete-retroplay-console-ios-1.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 547,
+          "sha256": "8275bd57e7395111db713d9157f509be5f685cc1abcacc350fd0b25681f61d2e",
+          "size_bytes": 77739,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/complete-retroplay-console-1.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 551,
+          "sha256": "5b08a5f3576cb00397422ccfafc4731505654428a9463dc2af74233a31645968",
+          "size_bytes": 103424,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/gameboy-clone-1.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 574,
+          "sha256": "decd9c2e42ca2df25056e0b40b15e3558543e35c92e4c168c081ab5588fc6850",
+          "size_bytes": 106564,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/complete-retroplay-console-ios-2.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 575,
+          "sha256": "8275bd57e7395111db713d9157f509be5f685cc1abcacc350fd0b25681f61d2e",
+          "size_bytes": 77739,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/complete-retroplay-console-2.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 576,
+          "sha256": "5b08a5f3576cb00397422ccfafc4731505654428a9463dc2af74233a31645968",
+          "size_bytes": 103424,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/gameboy-clone-2.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 600,
+          "sha256": "decd9c2e42ca2df25056e0b40b15e3558543e35c92e4c168c081ab5588fc6850",
+          "size_bytes": 106564,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/complete-retroplay-console-ios-3.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 601,
+          "sha256": "8275bd57e7395111db713d9157f509be5f685cc1abcacc350fd0b25681f61d2e",
+          "size_bytes": 77739,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/complete-retroplay-console-3.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 605,
+          "sha256": "5b08a5f3576cb00397422ccfafc4731505654428a9463dc2af74233a31645968",
+          "size_bytes": 103424,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/gameboy-clone-3.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 627,
+          "sha256": "decd9c2e42ca2df25056e0b40b15e3558543e35c92e4c168c081ab5588fc6850",
+          "size_bytes": 106564,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/complete-retroplay-console-ios-4.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 628,
+          "sha256": "8275bd57e7395111db713d9157f509be5f685cc1abcacc350fd0b25681f61d2e",
+          "size_bytes": 77739,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/complete-retroplay-console-4.html"
+        }
+      ],
       "museum_blurb": "A Game Boy-shaped browser app store that treated JSON files as downloadable game cartridges.",
       "observed_controls": [
         "D-pad",
@@ -449,6 +616,43 @@
         602,
         629
       ],
+      "media_integrity": [
+        {
+          "family_id": "crm-questionnaire-viewer",
+          "media_id": 540,
+          "sha256": "e99d519ceda61dc39d2e6ad742ab25289d02a6d67b2ea33731567d6683621d15",
+          "size_bytes": 109780,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/crm-questionnaire-viewer.html"
+        },
+        {
+          "family_id": "crm-questionnaire-viewer",
+          "media_id": 548,
+          "sha256": "e99d519ceda61dc39d2e6ad742ab25289d02a6d67b2ea33731567d6683621d15",
+          "size_bytes": 109780,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/crm-questionnaire-viewer-1.html"
+        },
+        {
+          "family_id": "crm-questionnaire-viewer",
+          "media_id": 580,
+          "sha256": "e99d519ceda61dc39d2e6ad742ab25289d02a6d67b2ea33731567d6683621d15",
+          "size_bytes": 109780,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/crm-questionnaire-viewer-2.html"
+        },
+        {
+          "family_id": "crm-questionnaire-viewer",
+          "media_id": 602,
+          "sha256": "e99d519ceda61dc39d2e6ad742ab25289d02a6d67b2ea33731567d6683621d15",
+          "size_bytes": 109780,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/crm-questionnaire-viewer-3.html"
+        },
+        {
+          "family_id": "crm-questionnaire-viewer",
+          "media_id": 629,
+          "sha256": "e99d519ceda61dc39d2e6ad742ab25289d02a6d67b2ea33731567d6683621d15",
+          "size_bytes": 109780,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/crm-questionnaire-viewer-4.html"
+        }
+      ],
       "museum_blurb": "A single-file CRM assessment workstation combining progress measurement, evidence tracking, editing and report export.",
       "observed_controls": [
         "Upload JSON File",
@@ -565,6 +769,36 @@
         549,
         582,
         603
+      ],
+      "media_integrity": [
+        {
+          "family_id": "mac-automated-actions",
+          "media_id": 542,
+          "sha256": "c830180c94b29e8288cf81c4c46f6ff1c666160bd588c0ffcbf48441145b39dd",
+          "size_bytes": 48441,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/custom-copilot-ui.html"
+        },
+        {
+          "family_id": "mac-automated-actions",
+          "media_id": 549,
+          "sha256": "c830180c94b29e8288cf81c4c46f6ff1c666160bd588c0ffcbf48441145b39dd",
+          "size_bytes": 48441,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/custom-copilot-ui-1.html"
+        },
+        {
+          "family_id": "mac-automated-actions",
+          "media_id": 582,
+          "sha256": "c830180c94b29e8288cf81c4c46f6ff1c666160bd588c0ffcbf48441145b39dd",
+          "size_bytes": 48441,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/custom-copilot-ui-2.html"
+        },
+        {
+          "family_id": "mac-automated-actions",
+          "media_id": 603,
+          "sha256": "c830180c94b29e8288cf81c4c46f6ff1c666160bd588c0ffcbf48441145b39dd",
+          "size_bytes": 48441,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/custom-copilot-ui-3.html"
+        }
       ],
       "museum_blurb": "A pocket-sized Copilot action launcher that convincingly demonstrated enterprise outcomes with canned local responses.",
       "observed_controls": [
@@ -690,6 +924,29 @@
         550,
         597,
         604
+      ],
+      "media_integrity": [
+        {
+          "family_id": "emdr-therapy-assistant",
+          "media_id": 550,
+          "sha256": "9a02b6e7ef3a512c98dffae434c544cf6571c3bb130e1b38e50e3fc8742f37ae",
+          "size_bytes": 95061,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/emdr-complete.html"
+        },
+        {
+          "family_id": "emdr-therapy-assistant",
+          "media_id": 597,
+          "sha256": "9a02b6e7ef3a512c98dffae434c544cf6571c3bb130e1b38e50e3fc8742f37ae",
+          "size_bytes": 95061,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/emdr-complete-1.html"
+        },
+        {
+          "family_id": "emdr-therapy-assistant",
+          "media_id": 604,
+          "sha256": "9a02b6e7ef3a512c98dffae434c544cf6571c3bb130e1b38e50e3fc8742f37ae",
+          "size_bytes": 95061,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/emdr-complete-2.html"
+        }
       ],
       "museum_blurb": "A technically ambitious but sensitive browser experiment combining guided motion, self-rating, reflection, charting and portable session files.",
       "observed_controls": [
@@ -826,6 +1083,71 @@
         616,
         617
       ],
+      "media_integrity": [
+        {
+          "family_id": "slipspace-business-dashboard",
+          "media_id": 552,
+          "sha256": "ec38b460ade7ef0e6e0d582b078ba0063075a7b859fbacbb18cc79633a2146c3",
+          "size_bytes": 28470,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/improved-dashboard.html"
+        },
+        {
+          "family_id": "slipspace-business-dashboard",
+          "media_id": 562,
+          "sha256": "e7fa0f3aaff274f91314854f5c79d5e4c30d681c2e39a0648710006a7c016bab",
+          "size_bytes": 190070,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/splitspace-copy.html"
+        },
+        {
+          "family_id": "slipspace-business-dashboard",
+          "media_id": 563,
+          "sha256": "7db069e6c3d4ccc4d6ea6052a2f3672c7c486eea08bae18ec3b649e12bfac66b",
+          "size_bytes": 230340,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/splitspace-1.html"
+        },
+        {
+          "family_id": "slipspace-business-dashboard",
+          "media_id": 571,
+          "sha256": "ec38b460ade7ef0e6e0d582b078ba0063075a7b859fbacbb18cc79633a2146c3",
+          "size_bytes": 28470,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/improved-dashboard-1.html"
+        },
+        {
+          "family_id": "slipspace-business-dashboard",
+          "media_id": 572,
+          "sha256": "e7fa0f3aaff274f91314854f5c79d5e4c30d681c2e39a0648710006a7c016bab",
+          "size_bytes": 190070,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/splitspace-copy-1.html"
+        },
+        {
+          "family_id": "slipspace-business-dashboard",
+          "media_id": 573,
+          "sha256": "7db069e6c3d4ccc4d6ea6052a2f3672c7c486eea08bae18ec3b649e12bfac66b",
+          "size_bytes": 230340,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/splitspace-2.html"
+        },
+        {
+          "family_id": "slipspace-business-dashboard",
+          "media_id": 606,
+          "sha256": "ec38b460ade7ef0e6e0d582b078ba0063075a7b859fbacbb18cc79633a2146c3",
+          "size_bytes": 28470,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/improved-dashboard-2.html"
+        },
+        {
+          "family_id": "slipspace-business-dashboard",
+          "media_id": 616,
+          "sha256": "e7fa0f3aaff274f91314854f5c79d5e4c30d681c2e39a0648710006a7c016bab",
+          "size_bytes": 190070,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/splitspace-copy-2.html"
+        },
+        {
+          "family_id": "slipspace-business-dashboard",
+          "media_id": 617,
+          "sha256": "7db069e6c3d4ccc4d6ea6052a2f3672c7c486eea08bae18ec3b649e12bfac66b",
+          "size_bytes": 230340,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/splitspace-3.html"
+        }
+      ],
       "museum_blurb": "A sales dashboard imagined as a universe-switching agent platform, preserved alongside two visibly unfinished fragments.",
       "observed_controls": [
         "Dashboard",
@@ -941,6 +1263,29 @@
         554,
         596,
         608
+      ],
+      "media_integrity": [
+        {
+          "family_id": "utility-apps-hub",
+          "media_id": 554,
+          "sha256": "9578f513595dc391d1141dbcc38c51087d10a01271870b4219cb15af68323fde",
+          "size_bytes": 23193,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/index.html"
+        },
+        {
+          "family_id": "utility-apps-hub",
+          "media_id": 596,
+          "sha256": "9578f513595dc391d1141dbcc38c51087d10a01271870b4219cb15af68323fde",
+          "size_bytes": 23193,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/index-1.html"
+        },
+        {
+          "family_id": "utility-apps-hub",
+          "media_id": 608,
+          "sha256": "9578f513595dc391d1141dbcc38c51087d10a01271870b4219cb15af68323fde",
+          "size_bytes": 23193,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/index-2.html"
+        }
       ],
       "museum_blurb": "A tiny local app store for organizing standalone HTML utilities without a server or database.",
       "observed_controls": [
@@ -1072,6 +1417,29 @@
         553,
         590,
         607
+      ],
+      "media_integrity": [
+        {
+          "family_id": "migration-assessment-copilot",
+          "media_id": 553,
+          "sha256": "c277a263d88c914492d80c73bd7ea816c81abf48733217ba25934b12f6d1ad1d",
+          "size_bytes": 89721,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/index_MAC.html"
+        },
+        {
+          "family_id": "migration-assessment-copilot",
+          "media_id": 590,
+          "sha256": "c277a263d88c914492d80c73bd7ea816c81abf48733217ba25934b12f6d1ad1d",
+          "size_bytes": 89721,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/index_MAC-1.html"
+        },
+        {
+          "family_id": "migration-assessment-copilot",
+          "media_id": 607,
+          "sha256": "c277a263d88c914492d80c73bd7ea816c81abf48733217ba25934b12f6d1ad1d",
+          "size_bytes": 89721,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/index_MAC-2.html"
+        }
       ],
       "museum_blurb": "A migration chat prototype with multiple identities and a branching Time Machine for replaying alternate conversation paths.",
       "observed_controls": [
@@ -1217,6 +1585,29 @@
         589,
         609
       ],
+      "media_integrity": [
+        {
+          "family_id": "github-repository-viewer",
+          "media_id": 555,
+          "sha256": "48e2bc7fd8cd87adc5534a809d2eab919930371bac4497cf7ad77d8b9b6ce21f",
+          "size_bytes": 15400,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/local-browser.html"
+        },
+        {
+          "family_id": "github-repository-viewer",
+          "media_id": 589,
+          "sha256": "48e2bc7fd8cd87adc5534a809d2eab919930371bac4497cf7ad77d8b9b6ce21f",
+          "size_bytes": 15400,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/local-browser-1.html"
+        },
+        {
+          "family_id": "github-repository-viewer",
+          "media_id": 609,
+          "sha256": "48e2bc7fd8cd87adc5534a809d2eab919930371bac4497cf7ad77d8b9b6ce21f",
+          "size_bytes": 15400,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/local-browser-2.html"
+        }
+      ],
       "museum_blurb": "A one-page attempt to turn a public GitHub repository into an instant application gallery.",
       "observed_controls": [
         "Apps Tab",
@@ -1351,6 +1742,64 @@
         610,
         611
       ],
+      "media_integrity": [
+        {
+          "family_id": "magentic-copilot",
+          "media_id": 537,
+          "sha256": "a061df78d7f0b5479675557714a253f1ea00e9690437c56454926201edbc1be6",
+          "size_bytes": 125221,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magentic-copilot.html"
+        },
+        {
+          "family_id": "magentic-copilot",
+          "media_id": 538,
+          "sha256": "8fe846a698753c11877d2f5a635036ea29b25a3180cced649923bbe311bc62c0",
+          "size_bytes": 62172,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magentic-agents-ui.html"
+        },
+        {
+          "family_id": "magentic-copilot",
+          "media_id": 556,
+          "sha256": "8fe846a698753c11877d2f5a635036ea29b25a3180cced649923bbe311bc62c0",
+          "size_bytes": 62172,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magentic-agents-ui-1.html"
+        },
+        {
+          "family_id": "magentic-copilot",
+          "media_id": 557,
+          "sha256": "a061df78d7f0b5479675557714a253f1ea00e9690437c56454926201edbc1be6",
+          "size_bytes": 125221,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magentic-copilot-1.html"
+        },
+        {
+          "family_id": "magentic-copilot",
+          "media_id": 577,
+          "sha256": "a061df78d7f0b5479675557714a253f1ea00e9690437c56454926201edbc1be6",
+          "size_bytes": 125221,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magentic-copilot-2.html"
+        },
+        {
+          "family_id": "magentic-copilot",
+          "media_id": 578,
+          "sha256": "8fe846a698753c11877d2f5a635036ea29b25a3180cced649923bbe311bc62c0",
+          "size_bytes": 62172,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magentic-agents-ui-2.html"
+        },
+        {
+          "family_id": "magentic-copilot",
+          "media_id": 610,
+          "sha256": "8fe846a698753c11877d2f5a635036ea29b25a3180cced649923bbe311bc62c0",
+          "size_bytes": 62172,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magentic-agents-ui-3.html"
+        },
+        {
+          "family_id": "magentic-copilot",
+          "media_id": 611,
+          "sha256": "a061df78d7f0b5479675557714a253f1ea00e9690437c56454926201edbc1be6",
+          "size_bytes": 125221,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magentic-copilot-3.html"
+        }
+      ],
       "museum_blurb": "An agent marketplace and workflow editor that could transform a visual workflow into an editable command queue.",
       "observed_controls": [
         "App Store",
@@ -1481,6 +1930,36 @@
         581,
         612
       ],
+      "media_integrity": [
+        {
+          "family_id": "storytelling-workflows",
+          "media_id": 541,
+          "sha256": "96096271f362a2d82b603712266851e7c7ed9dd262befbdf435a9b44bcdf1bbf",
+          "size_bytes": 154436,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magnetic-agents-ui.html"
+        },
+        {
+          "family_id": "storytelling-workflows",
+          "media_id": 558,
+          "sha256": "96096271f362a2d82b603712266851e7c7ed9dd262befbdf435a9b44bcdf1bbf",
+          "size_bytes": 154436,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magnetic-agents-ui-1.html"
+        },
+        {
+          "family_id": "storytelling-workflows",
+          "media_id": 581,
+          "sha256": "96096271f362a2d82b603712266851e7c7ed9dd262befbdf435a9b44bcdf1bbf",
+          "size_bytes": 154436,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magnetic-agents-ui-2.html"
+        },
+        {
+          "family_id": "storytelling-workflows",
+          "media_id": 612,
+          "sha256": "96096271f362a2d82b603712266851e7c7ed9dd262befbdf435a9b44bcdf1bbf",
+          "size_bytes": 154436,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magnetic-agents-ui-3.html"
+        }
+      ],
       "museum_blurb": "A visual storytelling metaphor for composing multi-agent work by dragging characters onto a stage and connecting their handoffs.",
       "observed_controls": [
         "Import",
@@ -1600,6 +2079,29 @@
         595,
         613
       ],
+      "media_integrity": [
+        {
+          "family_id": "mermaid-diagram-viewer",
+          "media_id": 559,
+          "sha256": "3d211262b42e3773fb32bb9b64e6e574da3924a961f2779d1963d017a270f993",
+          "size_bytes": 6412,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/mermaid-viewer.html"
+        },
+        {
+          "family_id": "mermaid-diagram-viewer",
+          "media_id": 595,
+          "sha256": "3d211262b42e3773fb32bb9b64e6e574da3924a961f2779d1963d017a270f993",
+          "size_bytes": 6412,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/mermaid-viewer-1.html"
+        },
+        {
+          "family_id": "mermaid-diagram-viewer",
+          "media_id": 613,
+          "sha256": "3d211262b42e3773fb32bb9b64e6e574da3924a961f2779d1963d017a270f993",
+          "size_bytes": 6412,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/mermaid-viewer-2.html"
+        }
+      ],
       "museum_blurb": "A minimal diagram laboratory whose loose renderer configuration turns a simple utility into a clear security lesson.",
       "observed_controls": [
         "Mermaid Code",
@@ -1709,6 +2211,29 @@
         560,
         585,
         614
+      ],
+      "media_integrity": [
+        {
+          "family_id": "severance-refiner",
+          "media_id": 560,
+          "sha256": "5556d967b661d52b6a1a2308e37d9b22f0e592e8e5de72af14da09e75da9a707",
+          "size_bytes": 10814,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/severance-refiner.html"
+        },
+        {
+          "family_id": "severance-refiner",
+          "media_id": 585,
+          "sha256": "5556d967b661d52b6a1a2308e37d9b22f0e592e8e5de72af14da09e75da9a707",
+          "size_bytes": 10814,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/severance-refiner-1.html"
+        },
+        {
+          "family_id": "severance-refiner",
+          "media_id": 614,
+          "sha256": "5556d967b661d52b6a1a2308e37d9b22f0e592e8e5de72af14da09e75da9a707",
+          "size_bytes": 10814,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/severance-refiner-2.html"
+        }
       ],
       "museum_blurb": "A mysterious retro-corporate number game built around selecting values that simply feel wrong.",
       "observed_controls": [
@@ -1821,6 +2346,29 @@
         593,
         615
       ],
+      "media_integrity": [
+        {
+          "family_id": "worm-game-deluxe",
+          "media_id": 561,
+          "sha256": "0e173ff705a0728907a3a279cb1f5249d0d4d1296cfc63c570d449ed9e9daf33",
+          "size_bytes": 12584,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/snake-2-game.html"
+        },
+        {
+          "family_id": "worm-game-deluxe",
+          "media_id": 593,
+          "sha256": "0e173ff705a0728907a3a279cb1f5249d0d4d1296cfc63c570d449ed9e9daf33",
+          "size_bytes": 12584,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/snake-2-game-1.html"
+        },
+        {
+          "family_id": "worm-game-deluxe",
+          "media_id": 615,
+          "sha256": "0e173ff705a0728907a3a279cb1f5249d0d4d1296cfc63c570d449ed9e9daf33",
+          "size_bytes": 12584,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/snake-2-game-2.html"
+        }
+      ],
       "museum_blurb": "A playful inversion of Snake where the player controls lunch instead of the creature chasing it.",
       "observed_controls": [
         "Start Game",
@@ -1918,6 +2466,29 @@
         564,
         584,
         618
+      ],
+      "media_integrity": [
+        {
+          "family_id": "pomodoro-kanban-board",
+          "media_id": 564,
+          "sha256": "eb3accd067a34255d7c759e8589dc5336c98ce20518a7070d65ba83759d58661",
+          "size_bytes": 14340,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/task-flow.html"
+        },
+        {
+          "family_id": "pomodoro-kanban-board",
+          "media_id": 584,
+          "sha256": "eb3accd067a34255d7c759e8589dc5336c98ce20518a7070d65ba83759d58661",
+          "size_bytes": 14340,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/task-flow-1.html"
+        },
+        {
+          "family_id": "pomodoro-kanban-board",
+          "media_id": 618,
+          "sha256": "eb3accd067a34255d7c759e8589dc5336c98ce20518a7070d65ba83759d58661",
+          "size_bytes": 14340,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/task-flow-2.html"
+        }
       ],
       "museum_blurb": "A focused productivity experiment linking Kanban status directly to completed Pomodoro sessions.",
       "observed_controls": [
@@ -2035,6 +2606,29 @@
         565,
         594,
         619
+      ],
+      "media_integrity": [
+        {
+          "family_id": "task-tracker",
+          "media_id": 565,
+          "sha256": "5077e521da999c4fa58fa8ad92f03c3d898c08ee059b2d609e7a5e165438d0dd",
+          "size_bytes": 14291,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/task-tracker.html"
+        },
+        {
+          "family_id": "task-tracker",
+          "media_id": 594,
+          "sha256": "5077e521da999c4fa58fa8ad92f03c3d898c08ee059b2d609e7a5e165438d0dd",
+          "size_bytes": 14291,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/task-tracker-1.html"
+        },
+        {
+          "family_id": "task-tracker",
+          "media_id": 619,
+          "sha256": "5077e521da999c4fa58fa8ad92f03c3d898c08ee059b2d609e7a5e165438d0dd",
+          "size_bytes": 14291,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/task-tracker-2.html"
+        }
       ],
       "museum_blurb": "A durable offline task manager that appears to work despite losing its only referenced third-party script.",
       "observed_controls": [
@@ -2165,6 +2759,29 @@
         566,
         586,
         620
+      ],
+      "media_integrity": [
+        {
+          "family_id": "teacher-learner-replay",
+          "media_id": 566,
+          "sha256": "4d25956b992802bf6eb1713d802d0e9c0d061b298b4bacec7da0cca8879626ba",
+          "size_bytes": 79739,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/teacher-learner-app.html"
+        },
+        {
+          "family_id": "teacher-learner-replay",
+          "media_id": 586,
+          "sha256": "4d25956b992802bf6eb1713d802d0e9c0d061b298b4bacec7da0cca8879626ba",
+          "size_bytes": 79739,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/teacher-learner-app-1.html"
+        },
+        {
+          "family_id": "teacher-learner-replay",
+          "media_id": 620,
+          "sha256": "4d25956b992802bf6eb1713d802d0e9c0d061b298b4bacec7da0cca8879626ba",
+          "size_bytes": 79739,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/teacher-learner-app-2.html"
+        }
       ],
       "museum_blurb": "A replay laboratory for comparing a teacher prompt, its original answer and a newly generated answer step by step.",
       "observed_controls": [
@@ -2298,6 +2915,29 @@
         591,
         621
       ],
+      "media_integrity": [
+        {
+          "family_id": "dynamic-teaching-simulation",
+          "media_id": 567,
+          "sha256": "ac71881152aff1cf152baf59cd29275af65443cd92f4e421f81f1cd698c35590",
+          "size_bytes": 69220,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/teacher-learner.html"
+        },
+        {
+          "family_id": "dynamic-teaching-simulation",
+          "media_id": 591,
+          "sha256": "ac71881152aff1cf152baf59cd29275af65443cd92f4e421f81f1cd698c35590",
+          "size_bytes": 69220,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/teacher-learner-1.html"
+        },
+        {
+          "family_id": "dynamic-teaching-simulation",
+          "media_id": 621,
+          "sha256": "ac71881152aff1cf152baf59cd29275af65443cd92f4e421f81f1cd698c35590",
+          "size_bytes": 69220,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/teacher-learner-2.html"
+        }
+      ],
       "museum_blurb": "A configurable teacher-and-student loop modeling knowledge transfer as alternating conversational turns.",
       "observed_controls": [
         "Configure",
@@ -2426,6 +3066,36 @@
         568,
         579,
         622
+      ],
+      "media_integrity": [
+        {
+          "family_id": "terminal-log-visualizer",
+          "media_id": 539,
+          "sha256": "a75cfe27ef65fed52e28bec18c8f4163ba6b8194eef9f278351439109ef1ceb1",
+          "size_bytes": 48856,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/terminal-viewer.html"
+        },
+        {
+          "family_id": "terminal-log-visualizer",
+          "media_id": 568,
+          "sha256": "a75cfe27ef65fed52e28bec18c8f4163ba6b8194eef9f278351439109ef1ceb1",
+          "size_bytes": 48856,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/terminal-viewer-1.html"
+        },
+        {
+          "family_id": "terminal-log-visualizer",
+          "media_id": 579,
+          "sha256": "a75cfe27ef65fed52e28bec18c8f4163ba6b8194eef9f278351439109ef1ceb1",
+          "size_bytes": 48856,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/terminal-viewer-2.html"
+        },
+        {
+          "family_id": "terminal-log-visualizer",
+          "media_id": 622,
+          "sha256": "a75cfe27ef65fed52e28bec18c8f4163ba6b8194eef9f278351439109ef1ceb1",
+          "size_bytes": 48856,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/terminal-viewer-3.html"
+        }
       ],
       "museum_blurb": "A dense terminal-output utility that reorganizes pasted logs into searchable incident views and service counts.",
       "observed_controls": [
@@ -2560,6 +3230,29 @@
         569,
         592,
         623
+      ],
+      "media_integrity": [
+        {
+          "family_id": "agent-workflow-executor",
+          "media_id": 569,
+          "sha256": "a117eba267b4f4515bdb59b8cad4c82f62d7930ce73518a10e91fa90a97aee76",
+          "size_bytes": 218662,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/workflow-executor-app.html"
+        },
+        {
+          "family_id": "agent-workflow-executor",
+          "media_id": 592,
+          "sha256": "a117eba267b4f4515bdb59b8cad4c82f62d7930ce73518a10e91fa90a97aee76",
+          "size_bytes": 218662,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/workflow-executor-app-1.html"
+        },
+        {
+          "family_id": "agent-workflow-executor",
+          "media_id": 623,
+          "sha256": "a117eba267b4f4515bdb59b8cad4c82f62d7930ce73518a10e91fa90a97aee76",
+          "size_bytes": 218662,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/workflow-executor-app-2.html"
+        }
       ],
       "museum_blurb": "The collection's most ambitious single-file workflow IDE, combining graph editing, templates, execution history and replay.",
       "observed_controls": [
@@ -2696,6 +3389,29 @@
         587,
         624
       ],
+      "media_integrity": [
+        {
+          "family_id": "youtube-webcam-sync",
+          "media_id": 570,
+          "sha256": "b50bec9590ef241805258d0b0572f2a3fe9b65be8bb52a48b2c5353a890d6dc0",
+          "size_bytes": 20635,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/youtube-webcam-sync-fixed.html"
+        },
+        {
+          "family_id": "youtube-webcam-sync",
+          "media_id": 587,
+          "sha256": "b50bec9590ef241805258d0b0572f2a3fe9b65be8bb52a48b2c5353a890d6dc0",
+          "size_bytes": 20635,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/youtube-webcam-sync-fixed-1.html"
+        },
+        {
+          "family_id": "youtube-webcam-sync",
+          "media_id": 624,
+          "sha256": "b50bec9590ef241805258d0b0572f2a3fe9b65be8bb52a48b2c5353a890d6dc0",
+          "size_bytes": 20635,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/youtube-webcam-sync-fixed-2.html"
+        }
+      ],
       "museum_blurb": "A clever but technically blocked attempt to record a YouTube video and webcam together as a browser-generated split-screen file.",
       "observed_controls": [
         "YouTube URL",
@@ -2805,7 +3521,329 @@
   "schema": "kodyw-lost-apps-museum/1.0",
   "source": {
     "audit_schema": "kodyw-lost-apps/1.0",
-    "audit_sha256": "d2aa9c867b7caf974ed39e3d29fd155e2c39d169637952f7acdb3d78de072257",
+    "audit_sha256": "6e6daec82e55977985df613e45f23a076ec53a8c7775b64c533408784a238884",
+    "content_addressing": {
+      "byte_distinct_html": 27,
+      "captured_at": "2026-08-30",
+      "content_groups": [
+        {
+          "family_ids": [
+            "automated-actions"
+          ],
+          "media_ids": [
+            543,
+            545,
+            583,
+            599,
+            626
+          ],
+          "sha256": "0156fb1d56d85e4365858a82d003e65063547e2383ddadf24cbe0f30ba44d3c1"
+        },
+        {
+          "family_ids": [
+            "worm-game-deluxe"
+          ],
+          "media_ids": [
+            561,
+            593,
+            615
+          ],
+          "sha256": "0e173ff705a0728907a3a279cb1f5249d0d4d1296cfc63c570d449ed9e9daf33"
+        },
+        {
+          "family_ids": [
+            "agent-workflow-system"
+          ],
+          "media_ids": [
+            544,
+            588,
+            598,
+            625
+          ],
+          "sha256": "3593f9701403bec952020ee9907323050cdd8dbf534a1377541202a7e8df5e8f"
+        },
+        {
+          "family_ids": [
+            "mermaid-diagram-viewer"
+          ],
+          "media_ids": [
+            559,
+            595,
+            613
+          ],
+          "sha256": "3d211262b42e3773fb32bb9b64e6e574da3924a961f2779d1963d017a270f993"
+        },
+        {
+          "family_ids": [
+            "github-repository-viewer"
+          ],
+          "media_ids": [
+            555,
+            589,
+            609
+          ],
+          "sha256": "48e2bc7fd8cd87adc5534a809d2eab919930371bac4497cf7ad77d8b9b6ce21f"
+        },
+        {
+          "family_ids": [
+            "teacher-learner-replay"
+          ],
+          "media_ids": [
+            566,
+            586,
+            620
+          ],
+          "sha256": "4d25956b992802bf6eb1713d802d0e9c0d061b298b4bacec7da0cca8879626ba"
+        },
+        {
+          "family_ids": [
+            "task-tracker"
+          ],
+          "media_ids": [
+            565,
+            594,
+            619
+          ],
+          "sha256": "5077e521da999c4fa58fa8ad92f03c3d898c08ee059b2d609e7a5e165438d0dd"
+        },
+        {
+          "family_ids": [
+            "severance-refiner"
+          ],
+          "media_ids": [
+            560,
+            585,
+            614
+          ],
+          "sha256": "5556d967b661d52b6a1a2308e37d9b22f0e592e8e5de72af14da09e75da9a707"
+        },
+        {
+          "family_ids": [
+            "retroplay-console"
+          ],
+          "media_ids": [
+            536,
+            551,
+            576,
+            605
+          ],
+          "sha256": "5b08a5f3576cb00397422ccfafc4731505654428a9463dc2af74233a31645968"
+        },
+        {
+          "family_ids": [
+            "slipspace-business-dashboard"
+          ],
+          "media_ids": [
+            563,
+            573,
+            617
+          ],
+          "sha256": "7db069e6c3d4ccc4d6ea6052a2f3672c7c486eea08bae18ec3b649e12bfac66b"
+        },
+        {
+          "family_ids": [
+            "retroplay-console"
+          ],
+          "media_ids": [
+            535,
+            547,
+            575,
+            601,
+            628
+          ],
+          "sha256": "8275bd57e7395111db713d9157f509be5f685cc1abcacc350fd0b25681f61d2e"
+        },
+        {
+          "family_ids": [
+            "magentic-copilot"
+          ],
+          "media_ids": [
+            538,
+            556,
+            578,
+            610
+          ],
+          "sha256": "8fe846a698753c11877d2f5a635036ea29b25a3180cced649923bbe311bc62c0"
+        },
+        {
+          "family_ids": [
+            "utility-apps-hub"
+          ],
+          "media_ids": [
+            554,
+            596,
+            608
+          ],
+          "sha256": "9578f513595dc391d1141dbcc38c51087d10a01271870b4219cb15af68323fde"
+        },
+        {
+          "family_ids": [
+            "storytelling-workflows"
+          ],
+          "media_ids": [
+            541,
+            558,
+            581,
+            612
+          ],
+          "sha256": "96096271f362a2d82b603712266851e7c7ed9dd262befbdf435a9b44bcdf1bbf"
+        },
+        {
+          "family_ids": [
+            "emdr-therapy-assistant"
+          ],
+          "media_ids": [
+            550,
+            597,
+            604
+          ],
+          "sha256": "9a02b6e7ef3a512c98dffae434c544cf6571c3bb130e1b38e50e3fc8742f37ae"
+        },
+        {
+          "family_ids": [
+            "magentic-copilot"
+          ],
+          "media_ids": [
+            537,
+            557,
+            577,
+            611
+          ],
+          "sha256": "a061df78d7f0b5479675557714a253f1ea00e9690437c56454926201edbc1be6"
+        },
+        {
+          "family_ids": [
+            "agent-workflow-executor"
+          ],
+          "media_ids": [
+            569,
+            592,
+            623
+          ],
+          "sha256": "a117eba267b4f4515bdb59b8cad4c82f62d7930ce73518a10e91fa90a97aee76"
+        },
+        {
+          "family_ids": [
+            "terminal-log-visualizer"
+          ],
+          "media_ids": [
+            539,
+            568,
+            579,
+            622
+          ],
+          "sha256": "a75cfe27ef65fed52e28bec18c8f4163ba6b8194eef9f278351439109ef1ceb1"
+        },
+        {
+          "family_ids": [
+            "dynamic-teaching-simulation"
+          ],
+          "media_ids": [
+            567,
+            591,
+            621
+          ],
+          "sha256": "ac71881152aff1cf152baf59cd29275af65443cd92f4e421f81f1cd698c35590"
+        },
+        {
+          "family_ids": [
+            "youtube-webcam-sync"
+          ],
+          "media_ids": [
+            570,
+            587,
+            624
+          ],
+          "sha256": "b50bec9590ef241805258d0b0572f2a3fe9b65be8bb52a48b2c5353a890d6dc0"
+        },
+        {
+          "family_ids": [
+            "migration-assessment-copilot"
+          ],
+          "media_ids": [
+            553,
+            590,
+            607
+          ],
+          "sha256": "c277a263d88c914492d80c73bd7ea816c81abf48733217ba25934b12f6d1ad1d"
+        },
+        {
+          "family_ids": [
+            "mac-automated-actions"
+          ],
+          "media_ids": [
+            542,
+            549,
+            582,
+            603
+          ],
+          "sha256": "c830180c94b29e8288cf81c4c46f6ff1c666160bd588c0ffcbf48441145b39dd"
+        },
+        {
+          "family_ids": [
+            "retroplay-console"
+          ],
+          "media_ids": [
+            534,
+            546,
+            574,
+            600,
+            627
+          ],
+          "sha256": "decd9c2e42ca2df25056e0b40b15e3558543e35c92e4c168c081ab5588fc6850"
+        },
+        {
+          "family_ids": [
+            "slipspace-business-dashboard"
+          ],
+          "media_ids": [
+            562,
+            572,
+            616
+          ],
+          "sha256": "e7fa0f3aaff274f91314854f5c79d5e4c30d681c2e39a0648710006a7c016bab"
+        },
+        {
+          "family_ids": [
+            "crm-questionnaire-viewer"
+          ],
+          "media_ids": [
+            540,
+            548,
+            580,
+            602,
+            629
+          ],
+          "sha256": "e99d519ceda61dc39d2e6ad742ab25289d02a6d67b2ea33731567d6683621d15"
+        },
+        {
+          "family_ids": [
+            "pomodoro-kanban-board"
+          ],
+          "media_ids": [
+            564,
+            584,
+            618
+          ],
+          "sha256": "eb3accd067a34255d7c759e8589dc5336c98ce20518a7070d65ba83759d58661"
+        },
+        {
+          "family_ids": [
+            "slipspace-business-dashboard"
+          ],
+          "media_ids": [
+            552,
+            571,
+            606
+          ],
+          "sha256": "ec38b460ade7ef0e6e0d582b078ba0063075a7b859fbacbb18cc79633a2146c3"
+        }
+      ],
+      "hash_algorithm": "sha256",
+      "media_records": 96,
+      "schema": "kodyw-lost-apps-content-addressing/1.0",
+      "wordpress_api_endpoint": "https://kodyw.com/wp-json/wp/v2/media"
+    },
     "deduplication": "Numbered filename variants were grouped and SHA-256 compared; obvious product revisions were then curated into broader application families.",
     "scope": "Public, unauthenticated WordPress REST API and passive HTTP retrieval only."
   },

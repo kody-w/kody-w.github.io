@@ -156,7 +156,9 @@ jekyll build --destination _site
 The Lost Apps Museum is generated from the checked-in verified audit snapshot
 at `_data/lost_apps_audit.json`. Run `python3 scripts/build_lost_apps_museum.py`
 after changing that evidence, the curation overlay, or the lesson registry. The
-command rewrites the Jekyll data, public museum API, and RAPP Vision brief feed.
+command validates all 96 source URL/SHA-256 bindings and the resulting 27
+content groups, then rewrites the Jekyll data, public museum API, and RAPP
+Vision brief feed.
 
 ### 6. Publish
 

@@ -3437,6 +3437,8 @@ class SiteContentTests(unittest.TestCase):
             'id="lost-apps-result-count" role="status" aria-live="polite"',
             "data-lost-app-card",
             "data-lost-app-preview",
+            "app.media_integrity",
+            "museum.source.content_addressing.media_records",
             'sandbox="allow-scripts allow-downloads"',
             "referrerpolicy=\"no-referrer\"",
             "/lost-apps/rapp-vision/",
