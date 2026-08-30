@@ -74,7 +74,7 @@ html[data-theme="dark"] {
 :root {
   --cp-card-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.14);
   --cp-paper-muted: var(--cp-text-muted);
-  --cp-paper-link: var(--cp-link);
+  --cp-paper-link: #005a9e;
   --cp-print-bg: #ffffff;
   --cp-print-text: #242424;
   --cp-print-muted: #5c5c5c;
@@ -169,13 +169,30 @@ figcaption { margin-top: 8px; color: var(--cp-paper-muted); font-size: 13px; lin
   box-shadow: var(--cp-card-shadow);
 }
 .claim strong { color: var(--cp-accent); }
+.exercise-block {
+  margin: 24px 0 30px;
+  padding: 14px;
+  border: 1px solid var(--cp-border);
+  border-radius: 16px;
+  background: var(--cp-bg-elevated);
+}
+.exercise-label { margin: 0 0 8px; color: var(--cp-accent); font-size: 13px; font-weight: 700; }
+.exercise-block iframe {
+  display: block;
+  width: 100%;
+  height: 540px;
+  border: 1px solid var(--cp-border);
+  border-radius: 0.625rem;
+  background: var(--cp-surface);
+}
 .references { padding-left: 24px; }
 .references li { margin: 8px 0; }
 footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--cp-border); color: var(--cp-paper-muted); font-size: 13px; }
 @media (max-width: 640px) {
   .paper { padding-top: 28px; }
   p { text-align: left; }
-  .evidence { display: block; overflow-x: auto; white-space: nowrap; }
+  .evidence { display: block; overflow-x: auto; white-space: normal; }
+  .evidence th, .evidence td { min-width: 150px; white-space: normal; }
 }
 @media print {
   :root, html[data-theme="dark"] {
@@ -200,7 +217,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--cp-bor
 <main class="paper">
 <nav class="paper-nav" aria-label="Publication navigation">
   <a href="/papers/">All papers</a>
-  <a href="https://kody-w.github.io/workroom/">Live system</a>
+  <a href="/verified-frame-worlds/demo.html">Start with the guided demo</a>
   <a href="https://github.com/kody-w/workroom/tree/2815ba24d9fbeeba247ffd5b8b06f115820e559e">Pinned source</a>
   <a href="/frame-chains/paper.html">Prior paper: Frame Chains</a>
 </nav>
@@ -208,7 +225,8 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--cp-bor
 <h1>Verified Frame Worlds</h1>
 <p class="subtitle">Local applications as deterministic projections of append-only content-addressed histories</p>
 <p class="meta">Kody Wildfeuer · RapterBox LLC · First public disclosure: August&nbsp;29,&nbsp;2026</p>
-<p class="notice">Preprint. Conceived and reduced to practice in the browser-based Workroom system. The evidence release is pinned at <a href="https://github.com/kody-w/workroom/tree/2815ba24d9fbeeba247ffd5b8b06f115820e559e"><code>2815ba24d9fbeeba247ffd5b8b06f115820e559e</code></a> and tagged <code>verified-frame-worlds-v1.0.1</code>. The underlying <code>rapp/1</code> frame protocol and the distributed orchestration methods called <em>frame chains</em> are published separately. This paper concerns the application architecture built when a frame chain is the sole record and every visible world is only its projection. © 2026 RapterBox LLC.</p>
+<p class="notice"><strong>RAPP paper.</strong> This format combines cited technical claims and explicit limitations with embedded live proof exercises and copyable prompts that let a reader reproduce or challenge the claim using any LLM. Conceived and reduced to practice in the browser-based Workroom system. The evidence release is pinned at <a href="https://github.com/kody-w/workroom/tree/2815ba24d9fbeeba247ffd5b8b06f115820e559e"><code>2815ba24d9fbeeba247ffd5b8b06f115820e559e</code></a> and tagged <code>verified-frame-worlds-v1.0.1</code>. The underlying <code>rapp/1</code> frame protocol and the distributed orchestration methods called <em>frame chains</em> are published separately. © 2026 RapterBox LLC.</p>
+<div class="claim"><strong>New to the project?</strong> Do not open the raw demos cold. The <a href="/verified-frame-worlds/demo.html">five-minute guided evidence path</a> explains what each screen is, what to click, what to watch, and what claim the result is meant to support.</div>
 
 <h2>Abstract</h2>
 <p class="abstract">Most interactive applications keep mutable state as the authority and write an event log beside it. The log can describe what happened, but deleting the state and replaying the log is rarely the operation that reconstructs the product. We present <strong>verified frame worlds</strong>, an inversion in which an append-only content-addressed frame chain is the sole origin-persisted application record, while boards, rooms, matches, timelines, and exports are deterministic projections of that chain. Recordings are nondeterministic media artifacts associated with explicit frame anchors and byte hashes. The implementation is a static browser application with no application server and no build step. Human and agent actions enter through the same transition validator, and the writer and verifier enforce the same lifecycle rules. The Workroom board atomically commits its current record, per-stream high-water marks, and recent archived dimensions; the smaller Nexus and Arena worlds atomically commit their active stream and preserve rejected bytes separately. Concurrent writers serialize through Web Locks and fail closed when safe exclusion is unavailable. Any verified frame can become the branch point of a new dimension whose genesis names its parent frame.</p>
@@ -249,12 +267,16 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--cp-bor
   <rect class="svg-soft" x="550" y="24" width="182" height="195" rx="12"/>
   <text class="svg-text" x="641" y="72" text-anchor="middle" font-weight="700">same accepted history</text>
   <text class="svg-muted" x="641" y="104" text-anchor="middle">different presentation</text>
-  <text class="svg-muted" x="641" y="132" text-anchor="middle">different moment</text>
-  <text class="svg-muted" x="641" y="160" text-anchor="middle">different machine</text>
-  <text class="svg-text" x="641" y="194" text-anchor="middle" font-weight="700">same reduced state</text>
+  <text class="svg-muted" x="641" y="132" text-anchor="middle">different machine</text>
+  <text class="svg-muted" x="641" y="160" text-anchor="middle">same prefix F[0..k]</text>
+  <text class="svg-text" x="641" y="194" text-anchor="middle" font-weight="700">same reduced state Pₖ</text>
 </svg>
 <figcaption><strong>Figure 1 · The record is upstream of the picture.</strong> Multiple interfaces may render one chain, but none becomes an independent authority merely because it is visible.</figcaption>
 </figure>
+<div class="exercise-block">
+  <p class="exercise-label">Try it · 30 seconds</p>
+  <iframe src="/verified-frame-worlds/exercise.html?lesson=chain" title="Interactive exercise: put a frame chain in order" loading="lazy" sandbox="allow-scripts"></iframe>
+</div>
 
 <h3>2.2 One transition rule at both doors</h3>
 <p>Hash validity is necessary but insufficient. A correctly re-hashed frame can still assert an impossible transition: moving a card that was removed, joining outside a room boundary, consuming one shot three times, or declaring death under a different attacker. Verified frame worlds apply one semantic transition function at append time and again during replay. The rule is:</p>
@@ -287,6 +309,10 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--cp-bor
 </svg>
 <figcaption><strong>Figure 2 · No second door.</strong> The highest-yield failures occurred when one entry path enforced a rule and the adjacent path did not. The repair is structural: one validator and one atomic adoption boundary.</figcaption>
 </figure>
+<div class="exercise-block">
+  <p class="exercise-label">Try it · choose what the write gate should accept</p>
+  <iframe src="/verified-frame-worlds/exercise.html?lesson=gate" title="Interactive exercise: choose a valid state transition" loading="lazy" sandbox="allow-scripts"></iframe>
+</div>
 
 <h3>2.3 Atomic local authority</h3>
 <p>In the Workroom board implementation, browser storage is one versioned envelope containing the current stream, its frames, per-stream high-water marks, and recent archived dimensions. Mutations serialize in one operation queue and across tabs through Web Locks. The commit compares the stored raw revision and head inside the lock before replacing the envelope. If storage is full, the board opens a verified seeded example in a labeled read-only mode rather than presenting an empty world as healthy.</p>
@@ -319,10 +345,18 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--cp-bor
 </svg>
 <figcaption><strong>Figure 3 · A historical frame is a branch point.</strong> The child does not rewrite the selected parent frame or copy an unverified object graph. Its genesis carries explicit provenance; local retention of the complete parent chain is a separate policy.</figcaption>
 </figure>
+<div class="exercise-block">
+  <p class="exercise-label">Try it · choose a fork point</p>
+  <iframe src="/verified-frame-worlds/exercise.html?lesson=fork" title="Interactive exercise: fork a world from a historical frame" loading="lazy" sandbox="allow-scripts"></iframe>
+</div>
 
 <h2>3&nbsp;·&nbsp;System</h2>
 <h3>3.1 Workroom</h3>
 <p><a href="https://kody-w.github.io/workroom/">The Workroom</a> is a four-lane collaborative board that opens on real, pre-sealed example chains rather than an empty canvas. People and autonomous agents append the same card events. Rebuild discards the board projection and derives it again from frame zero. Replay animates each accepted transition. The dry run performs work through the public append path, emits one artifact per completed card, and produces a receipt containing the complete independently verifiable chain and artifact hashes.</p>
+<div class="exercise-block">
+  <p class="exercise-label">Try it · rebuild a board from three facts</p>
+  <iframe src="/verified-frame-worlds/exercise.html?lesson=projection" title="Interactive exercise: replay frames to rebuild a board" loading="lazy" sandbox="allow-scripts"></iframe>
+</div>
 
 <h3>3.2 Broadcast studio</h3>
 <p><a href="https://kody-w.github.io/workroom/broadcast.html">The Studio</a> transports frames rather than pixels. The local board sends committed frames to its containing studio; optional remote watchers receive them through PeerJS, independently validate schema, hashes, lifecycle, stream identity, and per-stream high-water, then rebuild the board with their own reducer. A rejected frame or rollback leaves the last good chain and board intact. Recording produces a WebM and a sidecar of ordered, independently verified stream segments frozen at the stop boundary, while the interface states only that browser downloads were requested because a page cannot prove where the browser saved them.</p>
@@ -336,6 +370,10 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--cp-bor
     <tr><td><a href="https://kody-w.github.io/workroom/arena.html">Frame Arena</a></td><td>Spawn, move, shot, hit, death, and respawn frames</td><td>Each hit consumes one exact shot; death names the exact lethal hit and attacker</td></tr>
   </tbody>
 </table>
+<div class="exercise-block">
+  <p class="exercise-label">Try it · match cause to effect</p>
+  <iframe src="/verified-frame-worlds/exercise.html?lesson=cause" title="Interactive exercise: match a hit to its exact shot" loading="lazy" sandbox="allow-scripts"></iframe>
+</div>
 
 <h2>4&nbsp;·&nbsp;Adversarial method</h2>
 <p>The engineering process assumed that a builder cannot reliably see its own blind spots. Separate reviewers owned disjoint surfaces, reproduced failures in Chromium, and were not allowed to edit until their findings were accepted. The governing rules were: inspect the assertion before changing the implementation; measure visible output rather than an intermediate variable; treat an unmeasurable check as failure, not skip; and prove critical assertions can turn red through mutation.</p>
@@ -363,16 +401,16 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--cp-bor
 
 <h2>5&nbsp;·&nbsp;Reduction to practice</h2>
 <ol>
-  <li><strong>Protocol parity.</strong> The shipped JavaScript canonicalizer and hash functions are extracted independently from Workroom, Studio, Nexus, and Arena, then checked against eight committed vectors generated by <code>rapp.py</code> at <code>kody-w/rapp-1@67dacce4f8ce5909aa1fd6dd401d0f8183d730a8</code>. Mutating either an expected vector or the Nexus/Arena result makes the gate fail.</li>
-  <li><strong>Clean installation.</strong> A clean directory containing only release <code>2815ba24d9fbeeba247ffd5b8b06f115820e559e</code> completed <code>npm ci</code>, installed Chromium through Playwright, and passed the complete <code>npm test</code> command without another repository or private symlink. The recorded release environment was Node 25.2.0, Playwright 1.62.1, Chromium 151, and macOS 26.6.2. GitHub Actions then passed the full Chromium gate and Chromium, Firefox, and WebKit smoke jobs for the same commit.</li>
-  <li><strong>Thirteen executable gates.</strong> The release command runs protocol parity; the board's corruption, seed, replay, playback, artifact, fork, studio, gate, and archive checks; and the Heist, Nexus, and Arena world checks.</li>
-  <li><strong>Atomic failure.</strong> Controlled write failures, malformed JSON, hash-invalid chains, quota exhaustion, stale tabs, and cancelled queued replacements preserve either the prior verified envelope or the original recovery bytes.</li>
-  <li><strong>Concurrency.</strong> Barrier-driven two-tab tests show one acknowledged writer and one explicit stale refusal under Web Locks. Where safe exclusion is absent, the affected world acknowledges zero writes.</li>
-  <li><strong>Causality.</strong> Arena frames bind each hit to one exact, unconsumed shot and each death to one exact lethal hit from the same attacker. Re-hashed wrong-target and wrong-attacker mutations are refused.</li>
-  <li><strong>Wall-clock behavior.</strong> Bounded Chromium smoke tests show the Heist advancing close to ideal elapsed-time ticks under normal execution, 20× CPU throttling, and a 1.5-second main-thread stall. Nexus resident activity remains stable under slowed rendering. Arena movement covers approximately the same distance per real second at normal and 250 ms render cadence, with bounded catch-up after a long stall.</li>
-  <li><strong>Independent projection.</strong> Watcher, Nexus, and Arena tests compare rendered output with independent reducers rather than the production projector. Render-killed and constant-projector mutations fail.</li>
-  <li><strong>Recording provenance.</strong> Chain-replacing controls are blocked in single-authority worlds while same-lineage Step/Play may continue. Studio recordings that cross streams preserve ordered verified segments. Sidecars freeze at stop and carry complete chain material, explicit frame boundaries, and the produced video's byte length and SHA-256. The video itself remains browser- and codec-dependent.</li>
-  <li><strong>Responsive operation.</strong> Bounded Chromium smoke tests exercise the board and three worlds at narrow phone-sized viewports with reachable controls, visible status, and no horizontal desktop-canvas overflow.</li>
+  <li><strong>Protocol parity.</strong> The shipped JavaScript canonicalizer and hash functions are extracted independently from Workroom, Studio, Nexus, and Arena, then checked against eight committed vectors generated by <code>rapp.py</code> at <code>kody-w/rapp-1@67dacce4f8ce5909aa1fd6dd401d0f8183d730a8</code>. Mutations prove the gate turns red. <a href="https://github.com/kody-w/workroom/blob/2815ba24d9fbeeba247ffd5b8b06f115820e559e/verify_parity.mjs">Gate</a> · <a href="https://github.com/kody-w/workroom/blob/2815ba24d9fbeeba247ffd5b8b06f115820e559e/rapp-1-reference-vectors.json">vectors</a></li>
+  <li><strong>Clean installation.</strong> A clean directory containing only release <code>2815ba24d9fbeeba247ffd5b8b06f115820e559e</code> completed <code>npm ci</code>, installed Chromium through Playwright, and passed the complete <code>npm test</code> command without another repository or private symlink. The recorded release environment was Node 25.2.0, Playwright 1.62.1, Chromium 151, and macOS 26.6.2. GitHub Actions then passed the full Chromium gate and Chromium, Firefox, and WebKit smoke jobs for the same commit. <a href="https://github.com/kody-w/workroom/actions/runs/33286137346">CI evidence</a></li>
+  <li><strong>Thirteen executable gates.</strong> The release command runs protocol parity; the board's corruption, seed, replay, playback, artifact, fork, studio, gate, and archive checks; and the Heist, Nexus, and Arena world checks. <a href="https://github.com/kody-w/workroom/blob/2815ba24d9fbeeba247ffd5b8b06f115820e559e/package.json">Command ledger</a></li>
+  <li><strong>Atomic failure.</strong> Controlled write failures, malformed JSON, hash-invalid chains, quota exhaustion, stale tabs, and cancelled queued replacements preserve either the prior verified envelope or the original recovery bytes. <a href="https://github.com/kody-w/workroom/blob/2815ba24d9fbeeba247ffd5b8b06f115820e559e/gatecheck.mjs">Replacement gate</a> · <a href="https://github.com/kody-w/workroom/blob/2815ba24d9fbeeba247ffd5b8b06f115820e559e/archivecheck.mjs">quota gate</a></li>
+  <li><strong>Concurrency.</strong> Barrier-driven two-tab tests show one acknowledged writer and one explicit stale refusal under Web Locks. Where safe exclusion is absent, the affected world acknowledges zero writes. <a href="https://github.com/kody-w/workroom/blob/2815ba24d9fbeeba247ffd5b8b06f115820e559e/nexuscheck.mjs">Nexus concurrency</a> · <a href="https://github.com/kody-w/workroom/blob/2815ba24d9fbeeba247ffd5b8b06f115820e559e/arenacheck.mjs">Arena concurrency</a></li>
+  <li><strong>Causality.</strong> Arena frames bind each hit to one exact, unconsumed shot and each death to one exact lethal hit from the same attacker. Re-hashed wrong-target and wrong-attacker mutations are refused. <a href="https://github.com/kody-w/workroom/blob/2815ba24d9fbeeba247ffd5b8b06f115820e559e/arenacheck.mjs">Causality gate</a></li>
+  <li><strong>Wall-clock behavior.</strong> Bounded Chromium smoke tests show the Heist advancing close to ideal elapsed-time ticks under normal execution, 20× CPU throttling, and a 1.5-second main-thread stall. Nexus resident activity remains stable under slowed rendering. Arena's pure movement budget produces identical distance for equal elapsed schedules and caps stalled samples. <a href="https://github.com/kody-w/workroom/blob/2815ba24d9fbeeba247ffd5b8b06f115820e559e/heistcheck.mjs">Heist timing</a> · <a href="https://github.com/kody-w/workroom/blob/2815ba24d9fbeeba247ffd5b8b06f115820e559e/arenacheck.mjs">Arena timing</a></li>
+  <li><strong>Independent projection.</strong> Watcher, Nexus, and Arena tests compare rendered output with independent reducers rather than the production projector. Render-killed and constant-projector mutations fail. <a href="https://github.com/kody-w/workroom/blob/2815ba24d9fbeeba247ffd5b8b06f115820e559e/studiocheck.mjs">Studio oracle</a></li>
+  <li><strong>Recording provenance.</strong> Chain-replacing controls are blocked in single-authority worlds while same-lineage Step/Play may continue. Studio recordings that cross streams preserve ordered verified segments. Sidecars freeze at stop and carry complete chain material, explicit frame boundaries, and the produced video's byte length and SHA-256. Runtime recorder failures emit no success-shaped evidence. <a href="https://github.com/kody-w/workroom/blob/2815ba24d9fbeeba247ffd5b8b06f115820e559e/studiocheck.mjs">Recording gate</a></li>
+  <li><strong>Responsive operation.</strong> Bounded browser checks exercise every public surface at a narrow viewport, while CI boots all five surfaces in Chromium, Firefox, and WebKit. <a href="https://github.com/kody-w/workroom/blob/2815ba24d9fbeeba247ffd5b8b06f115820e559e/browsercheck.mjs">Browser smoke gate</a></li>
 </ol>
 
 <h2>6&nbsp;·&nbsp;Observed failure classes</h2>

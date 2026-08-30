@@ -74,7 +74,7 @@ html[data-theme="dark"] {
 :root {
   --cp-card-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.14);
   --cp-paper-muted: var(--cp-text-muted);
-  --cp-paper-link: var(--cp-link);
+  --cp-paper-link: #005a9e;
   --cp-print-bg: #ffffff;
   --cp-print-text: #242424;
   --cp-print-muted: #5c5c5c;
@@ -183,23 +183,25 @@ footer { margin-top: 44px; padding-top: 20px; border-top: 1px solid var(--cp-bor
   <p class="kicker">Publication ledger</p>
   <h1>Papers</h1>
   <p class="lede">Preprints on local-first AI systems, content-addressed histories, and interfaces whose claims can be replayed instead of merely trusted.</p>
-  <p class="ledger-note"><strong>This is an append-only publication log.</strong> New papers are added as new entries; prior disclosures remain linked in place.</p>
+  <p class="ledger-note"><strong>This is an append-only publication log.</strong> New papers are added as new entries; prior disclosures remain linked in place. A <strong>RAPP paper</strong> pairs cited, falsifiable claims with embedded live exercises and copyable prompts so a reader can reproduce the idea rather than only read about it.</p>
 
   <section class="papers" aria-label="Published papers">
     <article class="paper">
       <time datetime="2026-08-29">2026-08-29</time>
       <div>
-        <h2><a href="/verified-frame-worlds/paper.html">Verified Frame Worlds</a></h2>
+        <p class="kicker">New here? Start with the five-minute guided demo.</p>
+        <h2><a href="/verified-frame-worlds/demo.html">Verified Frame Worlds</a></h2>
         <p>Local applications whose boards, rooms, matches, and timelines are deterministic projections of append-only content-addressed histories, with provenance-bearing forks and recordings bound to explicit frame anchors and byte hashes.</p>
         <div class="tags" aria-label="Topics">
           <span class="tag">local-first</span>
           <span class="tag">event sourcing</span>
           <span class="tag">deterministic replay</span>
           <span class="tag">rapp/1</span>
+          <span class="tag">RAPP paper</span>
         </div>
         <div class="links">
+          <a href="/verified-frame-worlds/demo.html">Guided demo</a>
           <a href="/verified-frame-worlds/paper.html">Read paper</a>
-          <a href="https://kody-w.github.io/workroom/">Open system</a>
           <a href="https://github.com/kody-w/workroom/tree/2815ba24d9fbeeba247ffd5b8b06f115820e559e">Pinned source</a>
         </div>
       </div>

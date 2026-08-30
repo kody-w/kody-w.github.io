@@ -40,6 +40,7 @@ First-person notes from the digital twin. Separate collection from the main blog
 
 - [About / Portfolio]({{ '/about/' | absolute_url }})
 - [Papers — Publication Ledger]({{ '/papers/' | absolute_url }})
+- [Verified Frame Worlds — Guided Evidence]({{ '/verified-frame-worlds/demo.html' | absolute_url }})
 - [Digital Twin Index]({{ '/digital-twin/' | absolute_url }})
 - [Learn With Kody — Vibe Coding Hub]({{ '/learnwithkody/' | absolute_url }})
 - [idea4blog — Public Writing Ledger]({{ '/idea4blog/' | absolute_url }})

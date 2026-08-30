@@ -1,0 +1,719 @@
+---
+layout: null
+title: "Verified Frame Worlds — Interactive Exercise"
+permalink: /verified-frame-worlds/exercise.html
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verified Frame Worlds — Interactive Exercise</title>
+<script>
+  (() => {
+    const param = new URLSearchParams(window.location.search).get("scoutTheme");
+    const theme =
+      param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    document.documentElement.setAttribute("data-theme", theme);
+  })();
+</script>
+<style>
+:root {
+  color-scheme: light;
+  --cp-bg: #f7f4ef;
+  --cp-bg-elevated: #fcfbf8;
+  --cp-surface: #ffffff;
+  --cp-surface-soft: #f5f5f5;
+  --cp-border: #dedede;
+  --cp-border-strong: #919191;
+  --cp-text: #242424;
+  --cp-text-muted: #5c5c5c;
+  --cp-text-soft: #6f6f6f;
+  --cp-accent: #b11f4b;
+  --cp-accent-hover: #9a1a41;
+  --cp-accent-soft: rgba(177, 31, 75, 0.08);
+  --cp-accent-fg: #ffffff;
+  --cp-success: #16a34a;
+  --cp-danger: #dc2626;
+  --cp-warning: #f59e0b;
+  --cp-link: #0078d4;
+  --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+  --cp-overlay: rgba(255, 255, 255, 0.8);
+  --cp-panel: rgba(255, 255, 255, 0.86);
+  --cp-panel-strong: rgba(255, 255, 255, 0.96);
+  --cp-sheen: rgba(255, 255, 255, 0.55);
+  --cp-highlight: rgba(177, 31, 75, 0.12);
+}
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --cp-bg: #3d3b3a;
+  --cp-bg-elevated: #343231;
+  --cp-surface: #292929;
+  --cp-surface-soft: #2e2e2e;
+  --cp-border: #474747;
+  --cp-border-strong: #5f5f5f;
+  --cp-text: #dedede;
+  --cp-text-muted: #919191;
+  --cp-text-soft: #b0b0b0;
+  --cp-accent: #fd8ea1;
+  --cp-accent-hover: #fb7b91;
+  --cp-accent-soft: rgba(253, 142, 161, 0.14);
+  --cp-accent-fg: #1a1a1a;
+  --cp-success: #4ade80;
+  --cp-danger: #f87171;
+  --cp-warning: #fbbf24;
+  --cp-link: #4da6ff;
+  --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+  --cp-overlay: rgba(41, 41, 41, 0.88);
+  --cp-panel: rgba(41, 41, 41, 0.72);
+  --cp-panel-strong: rgba(41, 41, 41, 0.96);
+  --cp-sheen: rgba(255, 255, 255, 0.04);
+  --cp-highlight: rgba(253, 142, 161, 0.12);
+}
+:root {
+  --cp-exercise-muted: var(--cp-text-muted);
+  --cp-exercise-link: #005a9e;
+  --cp-card-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.14);
+}
+html[data-theme="dark"] {
+  --cp-exercise-muted: #b8b8b8;
+  --cp-exercise-link: #6bb6ff;
+  --cp-card-shadow: 0 0 2px rgba(0, 0, 0, 0.42), 0 1px 2px rgba(0, 0, 0, 0.36);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--cp-bg);
+  color: var(--cp-text);
+  font: 15px/1.5 "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+button {
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid var(--cp-border-strong);
+  border-radius: 0.625rem;
+  background: var(--cp-surface);
+  color: var(--cp-text);
+  font: inherit;
+  cursor: pointer;
+}
+button:hover { border-color: var(--cp-accent); }
+button:focus-visible { outline: 3px solid var(--cp-accent); outline-offset: 2px; }
+button[disabled] { cursor: default; opacity: .55; }
+.shell { max-width: 760px; margin: 0 auto; padding: 18px; }
+.eyebrow { margin: 0 0 4px; color: var(--cp-accent); font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 5vw, 30px); line-height: 1.15; }
+.instruction { margin: 8px 0 16px; color: var(--cp-exercise-muted); }
+.lesson-map {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.lesson-map div {
+  padding: 10px;
+  border: 1px solid var(--cp-border);
+  border-radius: 0.625rem;
+  background: var(--cp-bg-elevated);
+}
+.lesson-map strong { display: block; margin-bottom: 4px; color: var(--cp-accent); font-size: 12px; text-transform: uppercase; }
+.lesson-map span { color: var(--cp-exercise-muted); font-size: 13px; }
+.stage {
+  min-height: 180px;
+  padding: 16px;
+  border: 1px solid var(--cp-border);
+  border-radius: 16px;
+  background: var(--cp-surface);
+  box-shadow: var(--cp-card-shadow);
+}
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; }
+.frame {
+  flex: 1 1 150px;
+  padding: 12px;
+  border: 1px solid var(--cp-border);
+  border-radius: 0.625rem;
+  background: var(--cp-surface-soft);
+}
+.frame strong { display: block; }
+.frame small { color: var(--cp-exercise-muted); }
+.sequence {
+  min-height: 52px;
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px dashed var(--cp-border-strong);
+  border-radius: 0.625rem;
+  color: var(--cp-exercise-muted);
+}
+.frame-log {
+  max-height: 145px;
+  overflow: auto;
+  margin-top: 10px;
+  padding: 8px;
+  border: 1px solid var(--cp-border);
+  border-radius: 0.625rem;
+  background: var(--cp-surface-soft);
+  font: 12px/1.45 Consolas, "Courier New", Courier, monospace;
+}
+.lanes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.lane { min-height: 100px; padding: 10px; border: 1px solid var(--cp-border); border-radius: 0.625rem; background: var(--cp-surface-soft); }
+.lane h2 { margin: 0 0 8px; font-size: 14px; }
+.card { padding: 9px; border: 1px solid var(--cp-border-strong); border-radius: 0.625rem; background: var(--cp-surface); font-weight: 700; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.primary { border-color: var(--cp-accent); background: var(--cp-accent); color: var(--cp-accent-fg); font-weight: 700; }
+.primary:hover { background: var(--cp-accent-hover); color: var(--cp-accent-fg); }
+.choice.correct { border-color: var(--cp-success); }
+.choice.rejected { border-color: var(--cp-danger); }
+.gate { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; }
+.gate-box { padding: 14px; border: 1px solid var(--cp-border); border-radius: 0.625rem; background: var(--cp-surface-soft); }
+.gate-arrow { color: var(--cp-accent); font-size: 24px; font-weight: 700; }
+.worlds { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.world { min-height: 110px; padding: 12px; border: 1px solid var(--cp-border); border-radius: 0.625rem; background: var(--cp-surface-soft); }
+.world h2 { margin: 0 0 8px; font-size: 14px; }
+.chip { display: inline-block; margin: 3px; padding: 5px 8px; border-radius: 0.625rem; background: var(--cp-accent-soft); }
+.feedback {
+  min-height: 52px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-left: 4px solid var(--cp-border-strong);
+  border-radius: 0.625rem;
+  background: var(--cp-bg-elevated);
+  color: var(--cp-exercise-muted);
+}
+.feedback.good { border-color: var(--cp-success); color: var(--cp-text); }
+.feedback.try { border-color: var(--cp-warning); }
+.why { margin-top: 8px; font-weight: 700; }
+.prompt {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid var(--cp-border);
+  border-radius: 0.625rem;
+  background: var(--cp-bg-elevated);
+}
+.prompt summary { cursor: pointer; color: var(--cp-exercise-link); font-weight: 700; }
+.prompt p { margin: 8px 0; color: var(--cp-exercise-muted); }
+.prompt pre {
+  max-height: 210px;
+  overflow: auto;
+  white-space: pre-wrap;
+  padding: 10px;
+  border: 1px solid var(--cp-border);
+  border-radius: 0.625rem;
+  background: var(--cp-surface);
+  color: var(--cp-text);
+  font: 12px/1.45 Consolas, "Courier New", Courier, monospace;
+}
+.copy { border-color: var(--cp-accent); color: var(--cp-accent); font-weight: 700; }
+@media (max-width: 560px) {
+  .shell { padding: 14px; }
+  .lesson-map { grid-template-columns: 1fr; }
+  .gate { grid-template-columns: 1fr; }
+  .gate-arrow { transform: rotate(90deg); text-align: center; }
+  .worlds { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+<main class="shell">
+  <p class="eyebrow" id="eyebrow">Interactive evidence</p>
+  <h1 id="title">Loading exercise…</h1>
+  <p class="instruction" id="instruction"></p>
+  <section class="lesson-map" aria-label="How to use this exercise">
+    <div><strong>Do this</strong><span id="do-this"></span></div>
+    <div><strong>Watch for</strong><span id="watch-for"></span></div>
+    <div><strong>What this demonstrates</strong><span id="demonstrates"></span></div>
+  </section>
+  <section class="stage" id="stage" aria-labelledby="title"></section>
+  <div class="feedback" id="feedback" role="status" aria-live="polite">Choose an action to begin.</div>
+  <button id="reset-exercise" type="button">Reset exercise</button>
+  <details class="prompt">
+    <summary>Prove this with any LLM</summary>
+    <p>Copy this prompt into any model. It asks for a runnable proof, not an explanation.</p>
+    <pre id="prompt-text"></pre>
+    <button class="copy" id="copy-prompt" type="button">Copy proof prompt</button>
+  </details>
+</main>
+<script>
+const lesson = new URLSearchParams(location.search).get("lesson") || "chain";
+const title = document.getElementById("title");
+const instruction = document.getElementById("instruction");
+const stage = document.getElementById("stage");
+const feedback = document.getElementById("feedback");
+const promptText = document.getElementById("prompt-text");
+const copyPrompt = document.getElementById("copy-prompt");
+const doThis = document.getElementById("do-this");
+const watchFor = document.getElementById("watch-for");
+const demonstrates = document.getElementById("demonstrates");
+const resetExercise = document.getElementById("reset-exercise");
+
+const prompts = {
+  chain: `Create one self-contained HTML file with no dependencies that teaches content-linked history.
+
+Requirements:
+- Use Web Crypto SHA-256 and canonical JSON with recursively sorted object keys.
+- Each frame must contain exactly: seq, payload, payload_hash, prev, and frame_hash.
+- payload_hash = SHA-256(canonical(payload)).
+- frame_hash = SHA-256(canonical(frame without frame_hash)).
+- Show three shuffled frame cards with their computed short fingerprints and prev values.
+- Let me click the cards into order using keyboard-accessible buttons.
+- Refuse an order when the held fingerprint does not match.
+- Add a Tamper button that changes a payload after it was hashed, then independently recompute every payload hash, frame hash, sequence, and prev link.
+- Include explicit assertions that start green and turn red after tampering.
+- End with one plain sentence explaining what was proved.
+
+Do not only explain or give snippets. Return the complete runnable HTML, then tell me one way to deliberately break the invariant.`,
+  projection: `Create one self-contained HTML file with no dependencies that proves a screen can be rebuilt from an append-only history.
+
+Requirements:
+- Use a tiny two-lane board: Next and Done.
+- Keep only a JSON event list as the source of truth: add card, move card, rename card.
+- Implement a pure reducer: reduce(events) -> board state. Rendering must read only the reducer result.
+- Include Step, Replay, and "Delete projection and rebuild" controls.
+- After deletion, reconstruct the exact same board only by replaying the events.
+- Compare canonical JSON for before and after and display PASS only when they are byte-identical.
+- Make every control keyboard accessible.
+
+Return the complete runnable HTML, not a prose explanation.`,
+  gate: `Create one self-contained HTML file with no dependencies that demonstrates one transition validator at both the write and replay doors.
+
+Start with a board containing Alpha in Next. Offer these actions:
+1. Move Alpha to Done.
+2. Move missing Beta to Done.
+3. Add Alpha a second time.
+
+Requirements:
+- Implement one correct transition validator used by both normal append and replay verification.
+- The valid action appends a JSON frame; invalid actions append nothing.
+- Invalid actions are visibly refused and append nothing.
+- Display frame count before and after every attempt.
+- Include a "buggy writer" button that bypasses the writer only and appends one invalid frame while leaving the replay verifier correct.
+- Require an independent assertion to turn red when replay rejects that bad history.
+
+Return the complete runnable HTML and label every accepted or refused decision.`,
+  fork: `Create one self-contained HTML file with no dependencies that demonstrates forking an event history.
+
+Requirements:
+- Show a parent timeline with at least four frames.
+- Let me choose any frame as the branch point.
+- Compute every parent frame hash with canonical JSON and Web Crypto SHA-256.
+- Create a new child stream whose genesis records the exact parent stream id, sequence, and computed frame hash.
+- Rebuild the child world from the selected parent state as fresh child frames.
+- Keep the parent visible and unchanged.
+- Independently verify both histories and show a clear failure if the recorded parent hash is altered.
+
+Return the complete runnable HTML, with simple controls suitable for a first-time reader.`,
+  cause: `Create one self-contained HTML file with no dependencies that proves causal history rather than simple chronological order.
+
+Model shots, hits, and deaths as separate frames.
+
+Rules:
+- Give every frame a computed SHA-256 hash over canonical JSON.
+- A hit must reference one exact earlier shot frame hash with the same attacker and target.
+- One shot may be consumed only once.
+- A death must reference the exact lethal hit frame hash and the same attacker.
+- Wrong-attacker, wrong-target, reused-shot, and free-death actions must be refused.
+
+Make this an interactive matching puzzle with a visible verified frame list and explicit pass/fail assertions. Return the complete runnable HTML, not pseudocode.`,
+};
+
+const guides = {
+  chain: {
+    do: "Choose the first frame, then follow each computed prev fingerprint. Tamper after verification.",
+    watch: "The verified order turns green; changing one payload makes a recomputed hash turn red.",
+    proves: "Order and tamper evidence come from computed content links, not a hidden answer key.",
+  },
+  projection: {
+    do: "Step through three JSON events, then delete the visible board and rebuild it.",
+    watch: "The board disappears and returns byte-identically from the event log.",
+    proves: "The projection is disposable; the event history is sufficient to recreate state.",
+  },
+  gate: {
+    do: "Try valid and invalid changes, then use the buggy-writer control.",
+    watch: "Invalid attempts do not increase frame count; the independent replay oracle catches the injected bad frame.",
+    proves: "A write is trustworthy only when replay applies the same transition rules.",
+  },
+  fork: {
+    do: "Choose a parent frame, inspect the child genesis, then alter its parent hash.",
+    watch: "The child starts from the selected state; provenance verification fails after alteration.",
+    proves: "A branch can name its exact origin without rewriting the parent history.",
+  },
+  cause: {
+    do: "Match a hit to one shot, attempt to reuse it, then record the death.",
+    watch: "Wrong links and reuse append nothing; the death accepts only the lethal hit.",
+    proves: "The chain validates what caused an outcome, not merely which event came first.",
+  },
+};
+
+const encoder = new TextEncoder();
+function canonical(value) {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return "[" + value.map(canonical).join(",") + "]";
+  return "{" + Object.keys(value).sort().map(key => JSON.stringify(key) + ":" + canonical(value[key])).join(",") + "}";
+}
+async function digest(value) {
+  const bytes = typeof value === "string" ? encoder.encode(value) : encoder.encode(canonical(value));
+  const hash = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(hash)].map(byte => byte.toString(16).padStart(2, "0")).join("");
+}
+async function makeFrame(seq, payload, prev) {
+  const payload_hash = await digest(payload);
+  const preimage = { seq, payload, payload_hash, prev };
+  return { ...preimage, frame_hash: await digest(preimage) };
+}
+async function verifyFrames(frames) {
+  const problems = [];
+  for (let i = 0; i < frames.length; i++) {
+    const frame = frames[i];
+    if (frame.seq !== i) problems.push(`frame ${i}: wrong sequence`);
+    if (frame.prev !== (i ? frames[i - 1].frame_hash : null)) problems.push(`frame ${i}: broken prev link`);
+    if (await digest(frame.payload) !== frame.payload_hash) problems.push(`frame ${i}: payload hash changed`);
+    const { frame_hash, ...preimage } = frame;
+    if (await digest(preimage) !== frame_hash) problems.push(`frame ${i}: frame hash changed`);
+  }
+  return problems;
+}
+
+function setFeedback(message, state = "") {
+  feedback.className = "feedback" + (state ? " " + state : "");
+  feedback.textContent = message;
+}
+function button(text, onClick, className = "") {
+  const el = document.createElement("button");
+  el.type = "button";
+  el.textContent = text;
+  el.className = className;
+  el.addEventListener("click", onClick);
+  return el;
+}
+function box(className, html) {
+  const el = document.createElement("div");
+  el.className = className;
+  el.innerHTML = html;
+  return el;
+}
+
+async function chainLesson() {
+  title.textContent = "Put the history in order";
+  instruction.textContent = "The fingerprints below are computed from the frame contents. Follow the prev links, then tamper with a verified frame.";
+  const ordered = [];
+  let prev = null;
+  for (const [seq, label] of ["Add card", "Rename card", "Move card to Done"].entries()) {
+    const frame = await makeFrame(seq, { event: label }, prev);
+    ordered.push({ frame, label });
+    prev = frame.frame_hash;
+  }
+  const frames = [ordered[2], ordered[0], ordered[1]];
+  const picked = [];
+  const row = box("row", "");
+  const sequence = box("sequence", "Your chain: —");
+  for (const item of frames) {
+    const { frame, label } = item;
+    const short = frame.frame_hash.slice(0, 7);
+    const held = frame.prev ? frame.prev.slice(0, 7) : "START";
+    const control = button(`Frame ${frame.seq + 1} · ${label}`, async () => {
+      const prior = picked.at(-1);
+      const expectedPrev = prior ? prior.frame_hash : null;
+      if (frame.prev !== expectedPrev) {
+        setFeedback(`This frame holds ${held}. That does not match the current chain head—try another frame.`, "try");
+        return;
+      }
+      picked.push(frame);
+      control.disabled = true;
+      control.classList.add("correct");
+      sequence.textContent = "Your chain: " + picked.map(item => item.frame_hash.slice(0, 7)).join(" → ");
+      if (picked.length === ordered.length) {
+        const problems = await verifyFrames(picked);
+        setFeedback(problems.length ? problems[0] : "PASS. Every hash and prev link recomputed successfully.", problems.length ? "try" : "good");
+        tamper.disabled = false;
+      } else {
+        setFeedback(`${short} fits. Find the frame that holds ${short}.`, "good");
+      }
+    }, "choice");
+    const wrap = box("frame", `<strong>${short}</strong><small>holds ${held}</small><br>${label}`);
+    wrap.append(control);
+    row.append(wrap);
+  }
+  const tamper = button("Tamper with frame 2, then verify", async () => {
+    ordered[1].frame.payload.event = "Secretly changed";
+    const problems = await verifyFrames(ordered.map(item => item.frame));
+    setFeedback(problems.length ? `FAIL detected: ${problems.join("; ")}.` : "Unexpected pass.", problems.length ? "good" : "try");
+    tamper.disabled = true;
+  });
+  tamper.disabled = true;
+  stage.append(row, sequence, box("controls", ""));
+  stage.querySelector(".controls").append(tamper);
+}
+
+function projectionLesson() {
+  title.textContent = "Replay a board from three facts";
+  instruction.textContent = "The JSON event list is the only state. Step it forward, delete the visible board, and ask the reducer to recreate it.";
+  const lanes = box("lanes", '<div class="lane"><h2>Next</h2><div id="next-lane"></div></div><div class="lane"><h2>Done</h2><div id="done-lane"></div></div>');
+  const controls = box("controls", "");
+  const events = [
+    { event: "added", id: "card-1", lane: "next", title: "Idea" },
+    { event: "moved", id: "card-1", lane: "done" },
+    { event: "renamed", id: "card-1", title: "Shipped" },
+  ];
+  const labels = ["Add “Idea” to Next", "Move it to Done", "Rename it “Shipped”"];
+  const reduce = list => {
+    const state = { cards: {}, lanes: { next: [], done: [] } };
+    for (const event of list) {
+      if (event.event === "added") {
+        state.cards[event.id] = { id: event.id, title: event.title, lane: event.lane };
+        state.lanes[event.lane].push(event.id);
+      } else if (event.event === "moved") {
+        const card = state.cards[event.id];
+        state.lanes[card.lane] = state.lanes[card.lane].filter(id => id !== event.id);
+        card.lane = event.lane;
+        state.lanes[event.lane].push(event.id);
+      } else if (event.event === "renamed") state.cards[event.id].title = event.title;
+    }
+    return state;
+  };
+  const render = state => {
+    for (const lane of ["next", "done"]) {
+      document.getElementById(`${lane}-lane`).innerHTML = state.lanes[lane]
+        .map(id => `<div class="card">${state.cards[id].title}</div>`).join("");
+    }
+  };
+  let index = 0;
+  const next = button("Apply next frame", () => {
+    render(reduce(events.slice(0, index + 1)));
+    setFeedback(`Frame ${index + 1}: ${labels[index]}.`, "good");
+    index++;
+    next.disabled = index === events.length;
+    rebuild.disabled = index !== events.length;
+    if (index === events.length) setFeedback("History complete. Now delete the projection and rebuild it from the same JSON events.", "good");
+  }, "primary");
+  const rebuild = button("Delete projection and rebuild", () => {
+    const before = canonical(reduce(events));
+    document.getElementById("next-lane").innerHTML = "";
+    document.getElementById("done-lane").innerHTML = "";
+    const rebuilt = reduce(events);
+    render(rebuilt);
+    const after = canonical(rebuilt);
+    setFeedback(before === after
+      ? "PASS. The deleted board returned byte-identically from the event log."
+      : "FAIL. The rebuilt state differs.", before === after ? "good" : "try");
+  });
+  rebuild.disabled = true;
+  const reset = button("Reset replay", () => {
+    index = 0;
+    document.getElementById("next-lane").innerHTML = "";
+    document.getElementById("done-lane").innerHTML = "";
+    next.disabled = false;
+    rebuild.disabled = true;
+    setFeedback("Board cleared. Replay the same three frames and it will return to the same state.");
+  });
+  controls.append(next, rebuild, reset);
+  stage.append(lanes, controls);
+}
+
+function gateLesson() {
+  title.textContent = "Which change may enter the history?";
+  instruction.textContent = "The current board contains one card named Alpha in Next. Test each proposed frame.";
+  const gate = box("gate", '<div class="gate-box"><strong>Current world</strong><p>Alpha exists in Next.</p></div><div class="gate-arrow">→</div><div class="gate-box"><strong>Write gate</strong><p>Only possible transitions pass.</p></div>');
+  const controls = box("controls", "");
+  const log = [{ event: "added", id: "alpha", lane: "next" }];
+  const reduce = list => {
+    const state = { cards: {} };
+    for (const event of list) {
+      if (event.event === "added") state.cards[event.id] = { lane: event.lane };
+      if (event.event === "moved" && state.cards[event.id]) state.cards[event.id].lane = event.lane;
+    }
+    return state;
+  };
+  const transitionProblem = (state, event) => {
+    if (event.event === "added" && state.cards[event.id]) return `${event.id} already exists`;
+    if (event.event === "moved" && !state.cards[event.id]) return `${event.id} does not exist`;
+    if (event.event === "moved" && state.cards[event.id].lane === event.lane) return `${event.id} is already there`;
+    return null;
+  };
+  const verify = list => {
+    const accepted = [];
+    for (const event of list) {
+      const problem = transitionProblem(reduce(accepted), event);
+      if (problem) return `replay rejected frame ${accepted.length + 1}: ${problem}`;
+      accepted.push(event);
+    }
+    return null;
+  };
+  const options = [
+    ["Move Alpha to Done", { event: "moved", id: "alpha", lane: "done" }],
+    ["Move missing Beta to Done", { event: "moved", id: "beta", lane: "done" }],
+    ["Add Alpha again", { event: "added", id: "alpha", lane: "next" }],
+  ];
+  for (const [label, event] of options) {
+    const control = button(label, () => {
+      const before = log.length;
+      const problem = transitionProblem(reduce(log), event);
+      if (!problem) log.push(event);
+      control.classList.add(problem ? "rejected" : "correct");
+      setFeedback(problem
+        ? `Refused: ${problem}. Frame count stayed ${before}.`
+        : `Accepted. Frame count is now ${log.length}; replay verification: ${verify(log) || "PASS"}.`,
+      problem ? "try" : "good");
+    }, "choice");
+    controls.append(control);
+  }
+  controls.append(button("Simulate a buggy writer", () => {
+    const bad = { event: "moved", id: "missing", lane: "done" };
+    log.push(bad);
+    const problem = verify(log);
+    setFeedback(problem
+      ? `Independent replay oracle turned red: ${problem}.`
+      : "Unexpected pass: the oracle missed the invalid frame.",
+    problem ? "good" : "try");
+  }));
+  stage.append(gate, box("frame-log", "Accepted frame log begins with: add Alpha to Next"), controls);
+}
+
+async function forkLesson() {
+  title.textContent = "Choose where the new path begins";
+  instruction.textContent = "A fork starts from one recorded moment. Parent and child hashes below are computed, not decorative.";
+  const controls = box("controls", "");
+  const worlds = box("worlds", '<div class="world"><h2>Parent history</h2><span class="chip">1 · Apple</span><span class="chip">2 · Pear</span><span class="chip">3 · Apple moved</span></div><div class="world"><h2>New dimension</h2><div id="child-world">Choose a frame.</div></div>');
+  const payloads = [
+    { event: "opened", title: "Parent" },
+    { event: "added", item: "Apple" },
+    { event: "added", item: "Pear" },
+    { event: "moved", item: "Apple", lane: "Done" },
+  ];
+  const parent = [];
+  let prev = null;
+  for (const [seq, payload] of payloads.entries()) {
+    const frame = await makeFrame(seq, payload, prev);
+    parent.push(frame);
+    prev = frame.frame_hash;
+  }
+  const stateAt = seq => {
+    const items = [];
+    for (const frame of parent.slice(0, seq + 1)) {
+      if (frame.payload.event === "added") items.push(frame.payload.item);
+      if (frame.payload.event === "moved") {
+        const at = items.indexOf(frame.payload.item);
+        items[at] = `${frame.payload.item} in ${frame.payload.lane}`;
+      }
+    }
+    return items;
+  };
+  let child = null;
+  for (const frame of [1, 2, 3]) {
+    controls.append(button(`Fork at frame ${frame}`, async () => {
+      const from = { stream_id: "parent-stream", seq: frame, frame_hash: parent[frame].frame_hash };
+      child = [await makeFrame(0, { event: "fork.opened", from, state: stateAt(frame) }, null)];
+      document.getElementById("child-world").innerHTML = stateAt(frame).map(item => `<span class="chip">${item}</span>`).join("");
+      setFeedback(`PASS. Child genesis records parent frame ${frame} at ${from.frame_hash.slice(0, 8)}.`, "good");
+    }));
+  }
+  controls.append(button("Alter recorded parent hash", () => {
+    if (!child) { setFeedback("Create a fork first.", "try"); return; }
+    child[0].payload.from.frame_hash = "0".repeat(64);
+    const from = child[0].payload.from;
+    const valid = parent[from.seq]?.frame_hash === from.frame_hash;
+    setFeedback(valid ? "Unexpected pass." : "FAIL detected: child provenance no longer matches the parent frame.", valid ? "try" : "good");
+  }));
+  stage.append(worlds, controls);
+}
+
+async function causeLesson() {
+  title.textContent = "Find the shot that caused the hit";
+  instruction.textContent = "The hit says “You were hit by Atlas.” Choose the exact computed shot frame it may consume.";
+  const row = box("row", "");
+  const log = [];
+  for (const [seq, payload] of [
+    { event: "shot", by: "Atlas", target: "You" },
+    { event: "shot", by: "Cipher", target: "You" },
+    { event: "shot", by: "Atlas", target: "Scout" },
+  ].entries()) log.push(await makeFrame(seq, payload, log.at(-1)?.frame_hash || null));
+  const consumed = new Set();
+  let hitFrame = null;
+  const validateHit = shot => {
+    if (shot.payload.by !== "Atlas" || shot.payload.target !== "You") return "attacker or target does not match";
+    if (consumed.has(shot.frame_hash)) return "that shot was already consumed";
+    return null;
+  };
+  for (const [index, shot] of log.entries()) {
+    const name = `Shot ${String.fromCharCode(65 + index)}`;
+    const path = `${shot.payload.by} → ${shot.payload.target}`;
+    const control = button(`${name} · ${path}`, async () => {
+      const problem = validateHit(shot);
+      if (!problem) {
+        consumed.add(shot.frame_hash);
+        hitFrame = await makeFrame(log.length, {
+          event: "hit", by: "Atlas", target: "You", shot_hash: shot.frame_hash, lethal: true,
+        }, log.at(-1).frame_hash);
+        log.push(hitFrame);
+        control.classList.add("correct");
+        setFeedback(`Matched ${shot.frame_hash.slice(0, 8)}. The hit frame was appended and the shot is now consumed.`, "good");
+      } else {
+        control.classList.add("rejected");
+        setFeedback(`Refused: ${problem}. Frame count stayed ${log.length}.`, "try");
+      }
+    }, "choice");
+    row.append(control);
+  }
+  const actions = box("controls", "");
+  actions.append(
+    button("Try to reuse Shot A", () => {
+      const problem = validateHit(log[0]);
+      setFeedback(problem ? `Refused: ${problem}.` : "Unexpected pass.", problem ? "good" : "try");
+    }),
+    button("Record the death", async () => {
+      if (!hitFrame) { setFeedback("Append the matching lethal hit first.", "try"); return; }
+      const death = await makeFrame(log.length, {
+        event: "death", target: "You", by: "Atlas", hit_hash: hitFrame.frame_hash,
+      }, log.at(-1).frame_hash);
+      const valid = death.payload.hit_hash === hitFrame.frame_hash && death.payload.by === hitFrame.payload.by;
+      if (valid) log.push(death);
+      setFeedback(valid
+        ? `PASS. Death references lethal hit ${hitFrame.frame_hash.slice(0, 8)} from Atlas.`
+        : "FAIL. Death cause does not match.", valid ? "good" : "try");
+    })
+  );
+  const logView = box("frame-log", log.map(frame => `${frame.seq} ${frame.payload.event} ${frame.frame_hash.slice(0, 8)}`).join("<br>"));
+  const observer = new MutationObserver(() => {
+    logView.innerHTML = log.map(frame => `${frame.seq} ${frame.payload.event} ${frame.frame_hash.slice(0, 8)}`).join("<br>");
+  });
+  observer.observe(feedback, { childList: true });
+  stage.append(
+    box("gate-box", "<strong>Observed fact</strong><p>You were hit by Atlas.</p>"),
+    row, actions, logView
+  );
+}
+
+const lessons = {
+  chain: chainLesson,
+  projection: projectionLesson,
+  gate: gateLesson,
+  fork: forkLesson,
+  cause: causeLesson,
+};
+const guide = guides[lesson] || guides.chain;
+doThis.textContent = guide.do;
+watchFor.textContent = guide.watch;
+demonstrates.textContent = guide.proves;
+Promise.resolve((lessons[lesson] || chainLesson)()).catch(error => {
+  setFeedback("Exercise error: " + error.message, "try");
+});
+promptText.textContent = prompts[lesson] || prompts.chain;
+resetExercise.addEventListener("click", () => location.reload());
+copyPrompt.addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(promptText.textContent);
+    copyPrompt.textContent = "Copied";
+  } catch {
+    const selection = getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(promptText);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    copyPrompt.textContent = "Selected — copy normally";
+  }
+  setTimeout(() => { copyPrompt.textContent = "Copy proof prompt"; }, 1600);
+});
+</script>
+</body>
+</html>

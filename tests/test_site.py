@@ -58,6 +58,8 @@ LOCKSTEP_TWIN_DATA = ROOT / "js" / "lockstep-twin-data.js"
 TWIN_INDEX_PAGE = ROOT / "digital-twin" / "index.html"
 PAPERS_INDEX_PAGE = ROOT / "papers" / "index.html"
 VERIFIED_FRAME_WORLDS_PAPER = ROOT / "verified-frame-worlds" / "paper.html"
+VERIFIED_FRAME_WORLDS_DEMO = ROOT / "verified-frame-worlds" / "demo.html"
+VERIFIED_FRAME_WORLDS_EXERCISE = ROOT / "verified-frame-worlds" / "exercise.html"
 LOCALFIRSTTOOLS_BASE_URL = "https://kody-w.github.io/localFirstTools"
 LOCALFIRSTTOOLS_REPO_URL = "https://github.com/kody-w/localFirstTools"
 D365_FRAME_MACHINE_URL = f"{LOCALFIRSTTOOLS_BASE_URL}/dynamics365-frame-machine.html"
@@ -2809,10 +2811,13 @@ class SiteContentTests(unittest.TestCase):
     def test_papers_log_and_verified_frame_worlds_paper(self):
         papers = PAPERS_INDEX_PAGE.read_text(encoding="utf-8")
         paper = VERIFIED_FRAME_WORLDS_PAPER.read_text(encoding="utf-8")
+        demo = VERIFIED_FRAME_WORLDS_DEMO.read_text(encoding="utf-8")
+        exercise = VERIFIED_FRAME_WORLDS_EXERCISE.read_text(encoding="utf-8")
 
         self.assertIn("Publication ledger", papers)
         self.assertIn('href="/frame-chains/paper.html"', papers)
         self.assertIn('href="/verified-frame-worlds/paper.html"', papers)
+        self.assertIn('href="/verified-frame-worlds/demo.html"', papers)
         self.assertIn("append-only publication log", papers)
 
         self.assertIn("<h1>Verified Frame Worlds</h1>", paper)
@@ -2827,9 +2832,45 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("2815ba24d9fbeeba247ffd5b8b06f115820e559e", paper)
         self.assertIn("2815ba24d9fbeeba247ffd5b8b06f115820e559e", papers)
         self.assertIn("/frame-chains/paper.html", paper)
+        self.assertIn("/verified-frame-worlds/demo.html", paper)
         self.assertIn("/papers/", (ROOT / "llms.txt").read_text(encoding="utf-8"))
 
-        for artifact in (papers, paper):
+        self.assertIn("The idea in 20 seconds", demo)
+        self.assertIn("What you are looking at", demo)
+        self.assertIn("What this proves", demo)
+        self.assertIn("RAPP paper", paper)
+        self.assertIn("RAPP paper", papers)
+        self.assertIn("New here? Start with the five-minute guided demo.", papers)
+        for demo_id in ("workroom", "studio", "heist", "nexus", "arena"):
+            self.assertIn(f'id="{demo_id}"', demo)
+        for path in (
+            "https://kody-w.github.io/workroom/",
+            "https://kody-w.github.io/workroom/broadcast.html",
+            "https://kody-w.github.io/workroom/heist3d.html",
+            "https://kody-w.github.io/workroom/nexus3d.html",
+            "https://kody-w.github.io/workroom/arena.html",
+        ):
+            self.assertIn(path, demo)
+
+        for lesson in ("chain", "projection", "gate", "fork", "cause"):
+            self.assertIn(f"lesson={lesson}", paper)
+            self.assertIn(f"{lesson}Lesson", exercise)
+        self.assertEqual(paper.count("<iframe"), 5)
+        self.assertEqual(paper.count('sandbox="allow-scripts"'), 5)
+        self.assertIn('role="status"', exercise)
+        self.assertIn('aria-live="polite"', exercise)
+        self.assertIn("prefers-reduced-motion", exercise)
+        self.assertIn("Prove this with any LLM", exercise)
+        self.assertIn("Copy proof prompt", exercise)
+        self.assertEqual(exercise.count("Return the complete runnable HTML"), 5)
+        self.assertIn("Web Crypto SHA-256", exercise)
+        self.assertIn("Delete projection and rebuild", exercise)
+        self.assertIn("Simulate a buggy writer", exercise)
+        self.assertIn("Alter recorded parent hash", exercise)
+        self.assertIn("Try to reuse Shot A", exercise)
+        self.assertIn("What this proves", demo)
+
+        for artifact in (papers, paper, demo, exercise):
             self.assertIn('get("scoutTheme")', artifact)
             self.assertIn("--cp-bg:", artifact)
             self.assertIn('"Segoe UI", Aptos, Calibri', artifact)
