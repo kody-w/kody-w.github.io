@@ -92,6 +92,7 @@ body {
 }
 a { color: var(--cp-guide-link); }
 a:hover { color: var(--cp-accent-hover); }
+a:focus-visible { outline: 3px solid var(--cp-accent); outline-offset: 3px; border-radius: 0.625rem; }
 .shell { max-width: 1040px; margin: 0 auto; padding: 32px 20px 80px; }
 .topline { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 32px; font-size: 14px; }
 .kicker {
@@ -234,6 +235,10 @@ footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--cp-bor
   .explain { grid-template-columns: 1fr; }
   .demo img { min-height: 200px; max-height: 320px; }
 }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
 </style>
 </head>
 <body>
@@ -246,7 +251,7 @@ footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--cp-bor
 
   <p class="kicker">Guided evidence · no prior context required</p>
   <h1>See the idea before reading the machinery.</h1>
-  <p class="lede">These demos are not five random apps. Each one isolates a different claim. Follow the actions below and you will know what the screen is trying to prove before any protocol vocabulary appears. Every puzzle also includes a copyable prompt so you can build an independent proof with any LLM.</p>
+  <p class="lede">These demos are not five random apps. Each one isolates a different claim. Follow the actions below and you will know what the screen is trying to demonstrate before any protocol vocabulary appears. The small puzzles are explanatory models; the linked release applications and tests are the implementation evidence. Every puzzle also includes a copyable prompt so you can build an independent proof with any LLM.</p>
 
   <section class="plain-idea">
     <div>
@@ -277,7 +282,7 @@ footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--cp-bor
         <section><h3>What you are looking at</h3><p>A normal project board, except the cards are not the record. The frame ledger is.</p></section>
         <section><h3>Do this</h3><ol><li>Click <strong>Replay from frame 0</strong>.</li><li>Watch the empty board fill one action at a time.</li><li>Click <strong>Verify the chain</strong>.</li></ol></section>
         <section><h3>Watch for</h3><p>The board, ledger, caption, and highlighted card change together. Returning to now restores the exact live board.</p></section>
-        <section class="proof"><h3>What this proves</h3><p>The board can be deleted and re-derived. The history is upstream of the interface.</p></section>
+        <section class="proof"><h3>What this demonstrates</h3><p>For this event schema and reducer, the board can be deleted and re-derived. The history is upstream of the interface.</p></section>
       </div>
       <a class="launch" href="/verified-frame-worlds/exercise.html?lesson=projection">Try the replay puzzle</a>
       <a class="launch" href="https://kody-w.github.io/workroom/" target="_blank" rel="noopener">Open Workroom</a>
@@ -294,7 +299,7 @@ footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--cp-bor
         <section><h3>What you are looking at</h3><p>The board is on the left. The exact frames it commits appear on the wire at right.</p></section>
         <section><h3>Do this</h3><ol><li>Click <strong>Run the board</strong>.</li><li>Watch new wire rows arrive.</li><li>Click <strong>Go live</strong> and open the watcher link in a second tab.</li></ol></section>
         <section><h3>Watch for</h3><p>The watcher builds its own board from verified frames. It does not receive the first board's pixels.</p></section>
-        <section class="proof"><h3>What this proves</h3><p>Two browsers can independently derive the same reduced state from the same accepted history.</p></section>
+        <section class="proof"><h3>What this demonstrates</h3><p>Under the shared validator and reducer, two browsers can independently derive the same state from the same accepted history.</p></section>
       </div>
       <a class="launch" href="/verified-frame-worlds/exercise.html?lesson=chain">Try the chain puzzle</a>
       <a class="launch" href="https://kody-w.github.io/workroom/broadcast.html" target="_blank" rel="noopener">Open Studio</a>
@@ -311,7 +316,7 @@ footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--cp-bor
         <section><h3>What you are looking at</h3><p>A 3D projection of a separate game authority running inside the page.</p></section>
         <section><h3>Do this</h3><ol><li>Click <strong>Step</strong> several times.</li><li>Click <strong>Show game controls</strong>.</li><li>Move the timeline backward, then return live.</li></ol></section>
         <section><h3>Watch for</h3><p>The flat authority and the 3D scene describe the same selected snapshot. The 3D shell cannot invent a move.</p></section>
-        <section class="proof"><h3>What this proves</h3><p>A renderer can remain replaceable while one verified authority owns the state transitions.</p></section>
+        <section class="proof"><h3>What this demonstrates</h3><p>A renderer can remain replaceable while one verified authority owns this model's state transitions.</p></section>
       </div>
       <a class="launch" href="/verified-frame-worlds/exercise.html?lesson=gate">Try the write-gate puzzle</a>
       <a class="launch" href="https://kody-w.github.io/workroom/heist3d.html" target="_blank" rel="noopener">Open Heist</a>
@@ -328,7 +333,7 @@ footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--cp-bor
         <section><h3>What you are looking at</h3><p>A shared room whose residents and speech are reconstructed from frames.</p></section>
         <section><h3>Do this</h3><ol><li>Click <strong>Let them work</strong>.</li><li>Wait for movement or speech.</li><li>Drag the history slider backward, then press <strong>Replay</strong>.</li></ol></section>
         <section><h3>Watch for</h3><p>The roster, bodies, speech, and frame counter all return to the selected moment.</p></section>
-        <section class="proof"><h3>What this proves</h3><p>History can reconstruct a spatial social world, not just a list of database changes.</p></section>
+        <section class="proof"><h3>What this demonstrates</h3><p>The accepted event history can reconstruct this spatial social world, not just a list of database changes.</p></section>
       </div>
       <a class="launch" href="/verified-frame-worlds/exercise.html?lesson=fork">Try the fork puzzle</a>
       <a class="launch" href="https://kody-w.github.io/workroom/nexus3d.html" target="_blank" rel="noopener">Open Nexus</a>
@@ -345,7 +350,7 @@ footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--cp-bor
         <section><h3>What you are looking at</h3><p>A first-person match where movement, shots, hits, deaths, and respawns are separate frames.</p></section>
         <section><h3>Do this</h3><ol><li>Click <strong>Bots in</strong>.</li><li>Watch the frame ledger for <strong>fired</strong>, <strong>hit</strong>, and <strong>died</strong>.</li><li>Replay the match from frame 0.</li></ol></section>
         <section><h3>Watch for</h3><p>Each hit names one exact unconsumed shot. A death names the lethal hit and the same attacker.</p></section>
-        <section class="proof"><h3>What this proves</h3><p>The chain can validate causality—what produced an outcome—not merely sort events by time.</p></section>
+        <section class="proof"><h3>What this demonstrates</h3><p>The modeled transition rules can validate explicit shot→hit→death causality, not merely sort events by time.</p></section>
       </div>
       <a class="launch" href="/verified-frame-worlds/exercise.html?lesson=cause">Try the causality puzzle</a>
       <a class="launch" href="https://kody-w.github.io/workroom/arena.html" target="_blank" rel="noopener">Open Arena</a>

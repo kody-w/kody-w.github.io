@@ -2837,8 +2837,12 @@ class SiteContentTests(unittest.TestCase):
 
         self.assertIn("The idea in 20 seconds", demo)
         self.assertIn("What you are looking at", demo)
-        self.assertIn("What this proves", demo)
+        self.assertIn("What this demonstrates", demo)
         self.assertIn("RAPP paper", paper)
+        self.assertIn("explanatory models", paper)
+        self.assertIn("explanatory models", demo)
+        self.assertIn('id="vfw-ref-1"', paper)
+        self.assertIn('href="#vfw-ref-9"', paper)
         self.assertIn("RAPP paper", papers)
         self.assertIn("New here? Start with the five-minute guided demo.", papers)
         for demo_id in ("workroom", "studio", "heist", "nexus", "arena"):
@@ -2863,12 +2867,16 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("Prove this with any LLM", exercise)
         self.assertIn("Copy proof prompt", exercise)
         self.assertEqual(exercise.count("Return the complete runnable HTML"), 5)
+        self.assertIn("What you are looking at", exercise)
+        self.assertIn('id="scope-note"', exercise)
+        self.assertIn("/verified-frame-worlds/demo.html", exercise)
         self.assertIn("Web Crypto SHA-256", exercise)
         self.assertIn("Delete projection and rebuild", exercise)
         self.assertIn("Simulate a buggy writer", exercise)
         self.assertIn("Alter recorded parent hash", exercise)
         self.assertIn("Try to reuse Shot A", exercise)
-        self.assertIn("What this proves", demo)
+        self.assertIn("duplicate-death", exercise)
+        self.assertIn("What this demonstrates", demo)
 
         for artifact in (papers, paper, demo, exercise):
             self.assertIn('get("scoutTheme")', artifact)

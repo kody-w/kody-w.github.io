@@ -96,6 +96,7 @@ body {
 }
 a { color: var(--cp-paper-link); }
 a:hover { color: var(--cp-accent-hover); }
+a:focus-visible { outline: 3px solid var(--cp-accent); outline-offset: 3px; border-radius: 0.625rem; }
 .paper { max-width: 820px; margin: 0 auto; padding: 40px 20px 80px; }
 .paper-nav { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 40px; font-size: 14px; }
 .paper-nav a { text-decoration: none; }
@@ -180,7 +181,7 @@ figcaption { margin-top: 8px; color: var(--cp-paper-muted); font-size: 13px; lin
 .exercise-block iframe {
   display: block;
   width: 100%;
-  height: 540px;
+  height: 720px;
   border: 1px solid var(--cp-border);
   border-radius: 0.625rem;
   background: var(--cp-surface);
@@ -193,6 +194,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--cp-bor
   p { text-align: left; }
   .evidence { display: block; overflow-x: auto; white-space: normal; }
   .evidence th, .evidence td { min-width: 150px; white-space: normal; }
+  .exercise-block iframe { height: 780px; }
 }
 @media print {
   :root, html[data-theme="dark"] {
@@ -225,7 +227,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--cp-bor
 <h1>Verified Frame Worlds</h1>
 <p class="subtitle">Local applications as deterministic projections of append-only content-addressed histories</p>
 <p class="meta">Kody Wildfeuer · RapterBox LLC · First public disclosure: August&nbsp;29,&nbsp;2026</p>
-<p class="notice"><strong>RAPP paper.</strong> This format combines cited technical claims and explicit limitations with embedded live proof exercises and copyable prompts that let a reader reproduce or challenge the claim using any LLM. Conceived and reduced to practice in the browser-based Workroom system. The evidence release is pinned at <a href="https://github.com/kody-w/workroom/tree/2815ba24d9fbeeba247ffd5b8b06f115820e559e"><code>2815ba24d9fbeeba247ffd5b8b06f115820e559e</code></a> and tagged <code>verified-frame-worlds-v1.0.1</code>. The underlying <code>rapp/1</code> frame protocol and the distributed orchestration methods called <em>frame chains</em> are published separately. © 2026 RapterBox LLC.</p>
+<p class="notice"><strong>RAPP paper.</strong> This format combines cited technical claims and explicit limitations with embedded proof exercises and copyable prompts that let a reader reproduce or challenge each mechanism using any LLM. The embedded puzzles are explanatory models; the pinned source, executable gates, and live applications are the reduction-to-practice evidence. Conceived and reduced to practice in the browser-based Workroom system. The evidence release is pinned at <a href="https://github.com/kody-w/workroom/tree/2815ba24d9fbeeba247ffd5b8b06f115820e559e"><code>2815ba24d9fbeeba247ffd5b8b06f115820e559e</code></a> and tagged <code>verified-frame-worlds-v1.0.1</code>. The underlying <code>rapp/1</code> frame protocol and the distributed orchestration methods called <em>frame chains</em> are published separately. © 2026 RapterBox LLC.</p>
 <div class="claim"><strong>New to the project?</strong> Do not open the raw demos cold. The <a href="/verified-frame-worlds/demo.html">five-minute guided evidence path</a> explains what each screen is, what to click, what to watch, and what claim the result is meant to support.</div>
 
 <h2>Abstract</h2>
@@ -239,7 +241,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--cp-bor
 
 <h2>2&nbsp;·&nbsp;Frame-world model</h2>
 <h3>2.1 One record, many projections</h3>
-<p>Let <code>F = [f₀, f₁, …, fₙ]</code> be a stream of eleven-key <code>rapp/1</code> frames. Each frame contains a payload hash, its predecessor's payload hash, and a wave hash over the complete frame pre-image. Application state at sequence <code>k</code> is not stored separately:</p>
+<p>Let <code>F = [f₀, f₁, …, fₙ]</code> be a stream of eleven-key <code>rapp/1</code> frames <a href="#vfw-ref-3">[3]</a>. Each frame contains a payload hash, its predecessor's payload hash, and a wave hash over the complete canonical frame pre-image, using the JSON Canonicalization Scheme and SHA-256 <a href="#vfw-ref-1">[1]</a> <a href="#vfw-ref-2">[2]</a>. Application state at sequence <code>k</code> is not stored separately:</p>
 <pre>Pₖ = reduce(F[0..k])</pre>
 <p>The live world is <code>Pₙ</code>. Replay selects successive prefixes. Scrubbing selects one prefix. A watcher computes the same reducer over a transported copy. The renderer may interpolate between states, but interpolation never enters the chain.</p>
 
@@ -315,7 +317,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--cp-bor
 </div>
 
 <h3>2.3 Atomic local authority</h3>
-<p>In the Workroom board implementation, browser storage is one versioned envelope containing the current stream, its frames, per-stream high-water marks, and recent archived dimensions. Mutations serialize in one operation queue and across tabs through Web Locks. The commit compares the stored raw revision and head inside the lock before replacing the envelope. If storage is full, the board opens a verified seeded example in a labeled read-only mode rather than presenting an empty world as healthy.</p>
+<p>In the Workroom board implementation, browser storage is one versioned envelope containing the current stream, its frames, per-stream high-water marks, and recent archived dimensions. Mutations serialize in one operation queue and across tabs through Web Locks <a href="#vfw-ref-9">[9]</a>. The commit compares the stored raw revision and head inside the lock before replacing the Web Storage envelope <a href="#vfw-ref-7">[7]</a>. If storage is full, the board opens a verified seeded example in a labeled read-only mode rather than presenting an empty world as healthy.</p>
 <p>Nexus and Arena use smaller atomic envelopes for the active stream rather than the board's archive and high-water map; recovery quarantine is maintained separately. When storage or safe exclusion is unavailable, they report the limitation and acknowledge no mutation. Across the implementations, malformed bytes are not equivalent to missing data: they are excluded from projection and preserved for recovery rather than overwritten by automatic boot.</p>
 
 <h3>2.4 Time travel and dimensions</h3>
@@ -359,7 +361,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--cp-bor
 </div>
 
 <h3>3.2 Broadcast studio</h3>
-<p><a href="https://kody-w.github.io/workroom/broadcast.html">The Studio</a> transports frames rather than pixels. The local board sends committed frames to its containing studio; optional remote watchers receive them through PeerJS, independently validate schema, hashes, lifecycle, stream identity, and per-stream high-water, then rebuild the board with their own reducer. A rejected frame or rollback leaves the last good chain and board intact. Recording produces a WebM and a sidecar of ordered, independently verified stream segments frozen at the stop boundary, while the interface states only that browser downloads were requested because a page cannot prove where the browser saved them.</p>
+<p><a href="https://kody-w.github.io/workroom/broadcast.html">The Studio</a> transports frames rather than pixels. The local board sends committed frames to its containing studio; optional remote watchers receive them through PeerJS <a href="#vfw-ref-10">[10]</a>, independently validate schema, hashes, lifecycle, stream identity, and per-stream high-water, then rebuild the board with their own reducer. A rejected frame or rollback leaves the last good chain and board intact. Recording produces a WebM and a sidecar of ordered, independently verified stream segments frozen at the stop boundary, while the interface states only that browser downloads were requested because a page cannot prove where the browser saved them.</p>
 
 <h3>3.3 Three playable worlds</h3>
 <table class="evidence">
@@ -428,16 +430,16 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--cp-bor
 </table>
 
 <h2>7&nbsp;·&nbsp;Related work and position</h2>
-<p>The architecture is an application-level use of event sourcing, deterministic simulation, content addressing, and append-only logs. Its distinction is the strength of the boundary: the frame history is the primary application record; browser UI, 3D scenes, watcher replicas, and exports are downstream projections, while recordings are observational artifacts bound back to frame anchors. CRDTs provide convergence under concurrent updates; this work instead serializes one stream's authority and represents intentional divergence as a new, explicitly parented dimension. The companion <a href="/frame-chains/paper.html">Frame Chains</a> paper extends the same substrate to distributed orchestration, succession, re-attachment, and estate-scale homeostasis.</p>
+<p>The architecture is an application-level use of event sourcing <a href="#vfw-ref-4">[4]</a>, deterministic simulation, content addressing, and tamper-evident append-only logs <a href="#vfw-ref-8">[8]</a>. Its distinction is the strength of the boundary: the frame history is the primary application record; browser UI, 3D scenes, watcher replicas, and exports are downstream projections, while recordings are observational artifacts bound back to frame anchors. CRDTs provide convergence under concurrent updates <a href="#vfw-ref-5">[5]</a>; this work instead serializes one stream's authority and represents intentional divergence as a new, explicitly parented dimension. The local ownership goal follows the local-first tradition <a href="#vfw-ref-6">[6]</a>. The companion <a href="/frame-chains/paper.html">Frame Chains</a> paper extends the same substrate to distributed orchestration, succession, re-attachment, and estate-scale homeostasis.</p>
 
 <h2>8&nbsp;·&nbsp;Limitations</h2>
 <ul>
-  <li>The demonstrated memory streams use <code>sig: null</code>. Content integrity and causal linkage are verified; writer identity is not cryptographically authenticated.</li>
+  <li>The demonstrated memory streams use <code>sig: null</code>. Content integrity and causal linkage are verified relative to the retained chain and high-water evidence; writer identity is not cryptographically authenticated, and hash linkage alone cannot prevent wholesale replacement when no trusted checkpoint survives.</li>
   <li>Persistence remains browser-origin storage. The tests cover successful and failed Web Storage operations, not process crashes, power loss, browser eviction, profile clearing, or physical durability. Quota exhaustion and blocked storage fail safely, but a read-only fallback is not persistent progress.</li>
   <li>Safe concurrent writing depends on Web Locks in the demonstrated browser implementation. Unsupported browsers fail closed rather than attempting weaker exclusion.</li>
   <li>Remote Studio viewing uses PeerJS signaling. The board and local studio remain static/local; remote rendezvous is not serverless.</li>
-  <li>The evaluation is one implementation on one browser family, not a multi-engine compatibility or long-duration scale study.</li>
-  <li>The 3D worlds prove frame authority, replay, causality, and failure handling. They are deliberately small simulations, not general-purpose physics or networking engines.</li>
+  <li>The deep adversarial evaluation is one implementation exercised primarily in Chromium. Chromium, Firefox, and WebKit smoke jobs establish boot-level compatibility, not equivalent behavioral coverage or a long-duration multi-engine scale study.</li>
+  <li>The 3D worlds demonstrate frame authority, replay, causality, and failure handling within their tested transition models. They are deliberately small simulations, not general-purpose physics or networking engines.</li>
   <li>DOGG Heist uses the custom <code>dogg-frame-v1</code> snapshot format. It demonstrates single authority, verified projection, branching, and replay, but is not an implementation of the eleven-key <code>rapp/1</code> frame shape or its event-transition model.</li>
   <li>Recorded WebM bytes and rendered pixels are not deterministic across browsers, codecs, GPUs, or timing. Their sidecars provide content hashes and frame anchors rather than pixel equivalence.</li>
   <li>Fork provenance is recorded and shape-validated in the child. Independent proof of a parent hash requires access to the parent stream, and only the Workroom retains recent parents for in-app return.</li>
@@ -448,23 +450,33 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--cp-bor
 
 <h2>References</h2>
 <ol class="references">
-  <li>R. Rundgren, B. Jordan, and S. Erdtman. <a href="https://www.rfc-editor.org/rfc/rfc8785">RFC 8785: JSON Canonicalization Scheme</a>, 2020.</li>
-  <li>National Institute of Standards and Technology. <a href="https://csrc.nist.gov/pubs/fips/180-4/upd1/final">FIPS PUB 180-4: Secure Hash Standard</a>.</li>
-  <li>K. Wildfeuer. <a href="https://kody-w.github.io/rapp-1/">rapp/1 specification and reference implementation</a>, rev-6, 2026.</li>
-  <li>M. Fowler. <a href="https://martinfowler.com/eaaDev/EventSourcing.html">Event Sourcing</a>, 2005.</li>
-  <li>M. Shapiro et al. <a href="https://inria.hal.science/inria-00555588">A Comprehensive Study of Convergent and Commutative Replicated Data Types</a>, 2011.</li>
-  <li>M. Kleppmann et al. <a href="https://www.inkandswitch.com/local-first/">Local-first software: You own your data, in spite of the cloud</a>, 2019.</li>
-  <li>WHATWG. <a href="https://html.spec.whatwg.org/multipage/webstorage.html">Web Storage</a>.</li>
-  <li>B. Schneier and J. Kelsey. <a href="https://www.schneier.com/academic/archives/1999/05/secure_audit_logs_to.html">Secure Audit Logs to Support Computer Forensics</a>, 1999.</li>
-  <li>Web Incubator Community Group. <a href="https://wicg.github.io/web-locks/">Web Locks API</a>.</li>
-  <li>PeerJS contributors. <a href="https://peerjs.com/">PeerJS documentation</a>.</li>
-  <li>K. Wildfeuer. <a href="/frame-chains/paper.html">Frame Chains: Self-Healing, Leader-Redundant Orchestration of a Distributed AI Estate</a>, 2026.</li>
-  <li>K. Wildfeuer. <a href="https://github.com/kody-w/workroom/tree/2815ba24d9fbeeba247ffd5b8b06f115820e559e">Workroom source and executable acceptance gates, release <code>2815ba2</code></a>, 2026.</li>
+  <li id="vfw-ref-1">R. Rundgren, B. Jordan, and S. Erdtman. <a href="https://www.rfc-editor.org/rfc/rfc8785">RFC 8785: JSON Canonicalization Scheme</a>, 2020.</li>
+  <li id="vfw-ref-2">National Institute of Standards and Technology. <a href="https://csrc.nist.gov/pubs/fips/180-4/upd1/final">FIPS PUB 180-4: Secure Hash Standard</a>.</li>
+  <li id="vfw-ref-3">K. Wildfeuer. <a href="https://kody-w.github.io/rapp-1/">rapp/1 specification and reference implementation</a>, rev-6, 2026.</li>
+  <li id="vfw-ref-4">M. Fowler. <a href="https://martinfowler.com/eaaDev/EventSourcing.html">Event Sourcing</a>, 2005.</li>
+  <li id="vfw-ref-5">M. Shapiro et al. <a href="https://inria.hal.science/inria-00555588">A Comprehensive Study of Convergent and Commutative Replicated Data Types</a>, 2011.</li>
+  <li id="vfw-ref-6">M. Kleppmann et al. <a href="https://www.inkandswitch.com/local-first/">Local-first software: You own your data, in spite of the cloud</a>, 2019.</li>
+  <li id="vfw-ref-7">WHATWG. <a href="https://html.spec.whatwg.org/multipage/webstorage.html">Web Storage</a>.</li>
+  <li id="vfw-ref-8">B. Schneier and J. Kelsey. <a href="https://www.schneier.com/academic/archives/1999/05/secure_audit_logs_to.html">Secure Audit Logs to Support Computer Forensics</a>, 1999.</li>
+  <li id="vfw-ref-9">Web Incubator Community Group. <a href="https://wicg.github.io/web-locks/">Web Locks API</a>.</li>
+  <li id="vfw-ref-10">PeerJS contributors. <a href="https://peerjs.com/">PeerJS documentation</a>.</li>
+  <li id="vfw-ref-11">K. Wildfeuer. <a href="/frame-chains/paper.html">Frame Chains: Self-Healing, Leader-Redundant Orchestration of a Distributed AI Estate</a>, 2026.</li>
+  <li id="vfw-ref-12">K. Wildfeuer. <a href="https://github.com/kody-w/workroom/tree/2815ba24d9fbeeba247ffd5b8b06f115820e559e">Workroom source and executable acceptance gates, release <code>2815ba2</code></a>, 2026.</li>
 </ol>
 
 <footer>
   <p>First public disclosure 2026-08-29 · © 2026 RapterBox LLC · <a href="/papers/">publication ledger</a> · <a href="https://kody-w.github.io/workroom/">live reduction to practice</a></p>
 </footer>
 </main>
+<script>
+(() => {
+  const theme = document.documentElement.getAttribute("data-theme");
+  for (const frame of document.querySelectorAll(".exercise-block iframe")) {
+    const source = new URL(frame.getAttribute("src"), location.href);
+    source.searchParams.set("scoutTheme", theme);
+    frame.src = source.href;
+  }
+})();
+</script>
 </body>
 </html>

@@ -9,11 +9,18 @@ permalink: /verified-frame-worlds/exercise.html
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Verified Frame Worlds — Interactive Exercise</title>
+<meta name="description" content="Five standalone interactive proofs for verified frame worlds, with newcomer guidance and reproducible prompts.">
 <script>
   (() => {
     const param = new URLSearchParams(window.location.search).get("scoutTheme");
+    let inherited = "";
+    try {
+      inherited = window.parent !== window
+        ? window.parent.document.documentElement.getAttribute("data-theme") || ""
+        : "";
+    } catch {}
     const theme =
-      param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      param || inherited || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     document.documentElement.setAttribute("data-theme", theme);
   })();
 </script>
@@ -98,15 +105,17 @@ button {
   cursor: pointer;
 }
 button:hover { border-color: var(--cp-accent); }
-button:focus-visible { outline: 3px solid var(--cp-accent); outline-offset: 2px; }
+button:focus-visible, summary:focus-visible, a:focus-visible { outline: 3px solid var(--cp-accent); outline-offset: 2px; }
 button[disabled] { cursor: default; opacity: .55; }
 .shell { max-width: 760px; margin: 0 auto; padding: 18px; }
+.topline { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-bottom: 20px; font-size: 13px; }
+.topline a { color: var(--cp-exercise-link); font-weight: 650; text-underline-offset: .18em; }
 .eyebrow { margin: 0 0 4px; color: var(--cp-accent); font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
 h1 { margin: 0; font-size: clamp(22px, 5vw, 30px); line-height: 1.15; }
 .instruction { margin: 8px 0 16px; color: var(--cp-exercise-muted); }
 .lesson-map {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 8px;
   margin-bottom: 12px;
 }
@@ -118,6 +127,15 @@ h1 { margin: 0; font-size: clamp(22px, 5vw, 30px); line-height: 1.15; }
 }
 .lesson-map strong { display: block; margin-bottom: 4px; color: var(--cp-accent); font-size: 12px; text-transform: uppercase; }
 .lesson-map span { color: var(--cp-exercise-muted); font-size: 13px; }
+.scope-note {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-left: 4px solid var(--cp-warning);
+  border-radius: 0.625rem;
+  background: var(--cp-bg-elevated);
+  color: var(--cp-exercise-muted);
+  font-size: 13px;
+}
 .stage {
   min-height: 180px;
   padding: 16px;
@@ -217,14 +235,21 @@ h1 { margin: 0; font-size: clamp(22px, 5vw, 30px); line-height: 1.15; }
 </head>
 <body>
 <main class="shell">
+  <nav class="topline" aria-label="Publication navigation">
+    <a href="/verified-frame-worlds/demo.html">Guided evidence path</a>
+    <a href="/verified-frame-worlds/paper.html">Read the paper</a>
+    <a href="/papers/">All papers</a>
+  </nav>
   <p class="eyebrow" id="eyebrow">Interactive evidence</p>
   <h1 id="title">Loading exercise…</h1>
   <p class="instruction" id="instruction"></p>
   <section class="lesson-map" aria-label="How to use this exercise">
+    <div><strong>What you are looking at</strong><span id="looking-at"></span></div>
     <div><strong>Do this</strong><span id="do-this"></span></div>
     <div><strong>Watch for</strong><span id="watch-for"></span></div>
     <div><strong>What this demonstrates</strong><span id="demonstrates"></span></div>
   </section>
+  <p class="scope-note" id="scope-note"></p>
   <section class="stage" id="stage" aria-labelledby="title"></section>
   <div class="feedback" id="feedback" role="status" aria-live="polite">Choose an action to begin.</div>
   <button id="reset-exercise" type="button">Reset exercise</button>
@@ -243,9 +268,11 @@ const stage = document.getElementById("stage");
 const feedback = document.getElementById("feedback");
 const promptText = document.getElementById("prompt-text");
 const copyPrompt = document.getElementById("copy-prompt");
+const lookingAt = document.getElementById("looking-at");
 const doThis = document.getElementById("do-this");
 const watchFor = document.getElementById("watch-for");
 const demonstrates = document.getElementById("demonstrates");
+const scopeNote = document.getElementById("scope-note");
 const resetExercise = document.getElementById("reset-exercise");
 
 const prompts = {
@@ -313,36 +340,47 @@ Rules:
 - A hit must reference one exact earlier shot frame hash with the same attacker and target.
 - One shot may be consumed only once.
 - A death must reference the exact lethal hit frame hash and the same attacker.
-- Wrong-attacker, wrong-target, reused-shot, and free-death actions must be refused.
+- One lethal hit may produce at most one death.
+- Wrong-attacker, wrong-target, reused-shot, duplicate-death, and free-death actions must be refused.
 
 Make this an interactive matching puzzle with a visible verified frame list and explicit pass/fail assertions. Return the complete runnable HTML, not pseudocode.`,
 };
 
 const guides = {
   chain: {
+    looking: "Three shuffled records whose displayed SHA-256 hashes and predecessor links were computed in this page.",
     do: "Choose the first frame, then follow each computed prev fingerprint. Tamper after verification.",
     watch: "The verified order turns green; changing one payload makes a recomputed hash turn red.",
     proves: "Order and tamper evidence come from computed content links, not a hidden answer key.",
+    scope: "Scope: this isolates hash-linked order. It does not authenticate the writer or validate the meaning of a payload.",
   },
   projection: {
+    looking: "A two-lane board rendered only from three JSON events and a pure reducer.",
     do: "Step through three JSON events, then delete the visible board and rebuild it.",
     watch: "The board disappears and returns byte-identically from the event log.",
     proves: "The projection is disposable; the event history is sufficient to recreate state.",
+    scope: "Scope: equality is defined by canonical JSON for this small event schema; visual pixels and unrecorded browser state are outside the claim.",
   },
   gate: {
+    looking: "One board state, three proposed actions, and the same transition rule at write and replay time.",
     do: "Try valid and invalid changes, then use the buggy-writer control.",
     watch: "Invalid attempts do not increase frame count; the independent replay oracle catches the injected bad frame.",
     proves: "A write is trustworthy only when replay applies the same transition rules.",
+    scope: "Scope: the page covers three lifecycle rules. Production validators must enumerate and test every accepted event shape.",
   },
   fork: {
+    looking: "A computed parent chain and a child genesis that records one exact parent stream, sequence, and frame hash.",
     do: "Choose a parent frame, inspect the child genesis, then alter its parent hash.",
     watch: "The child starts from the selected state; provenance verification fails after alteration.",
     proves: "A branch can name its exact origin without rewriting the parent history.",
+    scope: "Scope: independent provenance verification still requires access to the retained parent history.",
   },
   cause: {
-    do: "Match a hit to one shot, attempt to reuse it, then record the death.",
+    looking: "Three computed shot frames and rules that admit one matching hit and one downstream death.",
+    do: "Try to record death first, match the correct shot, attempt to reuse it, then record death.",
     watch: "Wrong links and reuse append nothing; the death accepts only the lethal hit.",
     proves: "The chain validates what caused an outcome, not merely which event came first.",
+    scope: "Scope: this demonstrates the declared shot→hit→death references and one-shot consumption for a tiny lifecycle, not game physics or network fairness.",
   },
 };
 
@@ -630,6 +668,7 @@ async function causeLesson() {
   ].entries()) log.push(await makeFrame(seq, payload, log.at(-1)?.frame_hash || null));
   const consumed = new Set();
   let hitFrame = null;
+  let deathFrame = null;
   const validateHit = shot => {
     if (shot.payload.by !== "Atlas" || shot.payload.target !== "You") return "attacker or target does not match";
     if (consumed.has(shot.frame_hash)) return "that shot was already consumed";
@@ -663,11 +702,16 @@ async function causeLesson() {
     }),
     button("Record the death", async () => {
       if (!hitFrame) { setFeedback("Append the matching lethal hit first.", "try"); return; }
-      const death = await makeFrame(log.length, {
+      if (deathFrame) {
+        setFeedback(`Refused: lethal hit ${hitFrame.frame_hash.slice(0, 8)} already produced a death.`, "good");
+        return;
+      }
+      deathFrame = await makeFrame(log.length, {
         event: "death", target: "You", by: "Atlas", hit_hash: hitFrame.frame_hash,
       }, log.at(-1).frame_hash);
-      const valid = death.payload.hit_hash === hitFrame.frame_hash && death.payload.by === hitFrame.payload.by;
-      if (valid) log.push(death);
+      const valid = deathFrame.payload.hit_hash === hitFrame.frame_hash
+        && deathFrame.payload.by === hitFrame.payload.by;
+      if (valid) log.push(deathFrame);
       setFeedback(valid
         ? `PASS. Death references lethal hit ${hitFrame.frame_hash.slice(0, 8)} from Atlas.`
         : "FAIL. Death cause does not match.", valid ? "good" : "try");
@@ -692,9 +736,11 @@ const lessons = {
   cause: causeLesson,
 };
 const guide = guides[lesson] || guides.chain;
+lookingAt.textContent = guide.looking;
 doThis.textContent = guide.do;
 watchFor.textContent = guide.watch;
 demonstrates.textContent = guide.proves;
+scopeNote.textContent = guide.scope;
 Promise.resolve((lessons[lesson] || chainLesson)()).catch(error => {
   setFeedback("Exercise error: " + error.message, "try");
 });
