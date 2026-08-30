@@ -274,7 +274,7 @@
       font-weight: 500;
     }
 
-    .tile:hover:not(:disabled) {
+    .tile:hover:not([aria-disabled="true"]) {
       border-color: var(--aqua);
       color: var(--paper);
       transform: translateY(-2px);
@@ -307,7 +307,15 @@
       box-shadow: inset 0 0 0 2px rgba(120, 189, 242, .2);
     }
 
-    .tile:disabled { cursor: default; opacity: 1; }
+    .tile[aria-disabled="true"] { cursor: default; opacity: 1; }
+
+    .tile-outcome {
+      display: block;
+      margin-top: 5px;
+      font-size: .52rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
 
     .tile[data-fresh="true"] { animation: tile-in 420ms both; }
     .tile.d0 { animation-delay: 0ms; }
@@ -728,6 +736,7 @@
     const QUOTA = 5;
     const PASS_ACCURACY = 75;
     const MAX_BATCH_SERIAL = 500;
+    const MAX_STATE_CHARS = 1000000;
     const DEFAULT_SEED = 0x51a7c3d9;
 
     const elements = {
@@ -1073,9 +1082,25 @@
         button.dataset.fresh = String(fresh);
         if (outcome) button.dataset.outcome = outcome;
         button.setAttribute("aria-pressed", String(selected));
-        button.setAttribute("aria-label", "Code " + tile.value + (selected ? ", selected" : ""));
-        button.disabled = state.phase !== "playing";
-        button.textContent = tile.value;
+        const outcomeLabel = outcome === "correct"
+          ? "correct selection"
+          : outcome === "incorrect"
+            ? "incorrect selection"
+            : outcome === "missed" ? "missed target" : "";
+        button.setAttribute(
+          "aria-label",
+          "Code " + tile.value +
+          (selected ? ", selected" : "") +
+          (outcomeLabel ? ", " + outcomeLabel : "")
+        );
+        button.setAttribute("aria-disabled", String(state.phase !== "playing"));
+        button.appendChild(document.createTextNode(tile.value));
+        if (outcomeLabel) {
+          const status = document.createElement("span");
+          status.className = "tile-outcome";
+          status.textContent = outcomeLabel;
+          button.appendChild(status);
+        }
         button.addEventListener("click", () => toggleTile(tile.id));
         return button;
       });
@@ -1100,6 +1125,19 @@
       }
     }
 
+    function focusPhaseControl() {
+      if (state.phase === "complete") {
+        elements.completionRestart.focus();
+        return;
+      }
+      if (state.phase === "review") {
+        (elements.continueButton.disabled ? elements.restartButton : elements.continueButton).focus();
+        return;
+      }
+      const first = elements.tileGrid.querySelector("button[data-tile-id]");
+      if (first) first.focus();
+    }
+
     function render(fresh = false) {
       batch = generateBatch(state.seed, state.batchSerial);
       const completed = state.phase === "complete";
@@ -1113,9 +1151,13 @@
       elements.submitButton.disabled = state.phase !== "playing" || state.selection.length === 0;
       elements.submitButton.hidden = state.phase !== "playing";
       elements.continueButton.hidden = state.phase !== "review";
-      elements.continueButton.textContent = state.lastScore && state.lastScore.passed
-        ? "Begin round " + String(state.completed + 1)
-        : "Retry round " + String(state.completed + 1);
+      const batchLimitReached = state.phase === "review" && state.batchSerial >= MAX_BATCH_SERIAL;
+      elements.continueButton.disabled = batchLimitReached;
+      elements.continueButton.textContent = batchLimitReached
+        ? "Batch limit reached — restart above"
+        : state.lastScore && state.lastScore.passed
+          ? "Begin round " + String(state.completed + 1)
+          : "Retry round " + String(state.completed + 1);
       elements.reviewLegend.hidden = state.phase === "playing";
       elements.incorrectLegend.hidden = state.phase === "playing";
       elements.missedLegend.hidden = state.phase === "playing";
@@ -1135,7 +1177,13 @@
       if (index >= 0) state.selection.splice(index, 1);
       else state.selection.push(tileId);
       state.selection.sort();
-      renderTiles(false);
+      const button = Array.from(elements.tileGrid.querySelectorAll("button[data-tile-id]"))
+        .find((candidate) => candidate.dataset.tileId === tileId);
+      if (button) {
+        const selected = state.selection.includes(tileId);
+        button.setAttribute("aria-pressed", String(selected));
+        button.setAttribute("aria-label", "Code " + tile.value + (selected ? ", selected" : ""));
+      }
       elements.selectedValue.textContent = String(state.selection.length).padStart(2, "0") + " / " + String(TILE_COUNT);
       elements.selectionCounter.textContent = String(state.selection.length) + " chosen";
       elements.submitButton.disabled = state.selection.length === 0;
@@ -1153,6 +1201,7 @@
       if (score.passed) state.completed += 1;
       state.phase = state.completed === QUOTA ? "complete" : "review";
       render(false);
+      focusPhaseControl();
       announce(
         (score.passed ? "Round cleared. " : "Round held. ") +
         String(score.correct) + " correct, " +
@@ -1165,13 +1214,15 @@
 
     function continueBatch() {
       if (state.phase !== "review") throw new Error("Continue is available only after review");
+      if (state.batchSerial >= MAX_BATCH_SERIAL) {
+        throw new Error("Batch limit reached. Restart to begin a fresh run.");
+      }
       state.batchSerial += 1;
       state.phase = "playing";
       state.selection = [];
       state.lastScore = null;
       render(true);
-      const first = elements.tileGrid.querySelector("button");
-      if (first) first.focus();
+      focusPhaseControl();
       announce("Batch " + String(state.batchSerial + 1) + " ready for round " + String(state.completed + 1) + ".");
       return inspect();
     }
@@ -1180,6 +1231,7 @@
       state = freshState(DEFAULT_SEED);
       batch = generateBatch(state.seed, state.batchSerial);
       render(true);
+      focusPhaseControl();
       setPortMessage("Fresh run started. Import remains transactional.");
       elements.stateCapsule.value = "";
       announce("Pattern Quota restarted at round one.");
@@ -1192,7 +1244,7 @@
 
     function importState(serialized) {
       if (typeof serialized !== "string") throw new Error("Serialized state must be a JSON string");
-      if (serialized.length === 0 || serialized.length > 65536) throw new Error("Serialized state size is invalid");
+      if (serialized.length === 0 || serialized.length > MAX_STATE_CHARS) throw new Error("Serialized state size is invalid");
       let parsed;
       try {
         parsed = JSON.parse(serialized);
@@ -1203,6 +1255,7 @@
       state = candidate;
       batch = generateBatch(state.seed, state.batchSerial);
       render(true);
+      focusPhaseControl();
       announce("Validated state capsule imported.");
       return inspect();
     }
@@ -1252,6 +1305,10 @@
         targetCount: TARGET_COUNT,
         quota: QUOTA,
         passAccuracy: PASS_ACCURACY,
+        limits: {
+          batchSerial: MAX_BATCH_SERIAL,
+          stateCharacters: MAX_STATE_CHARS
+        },
         actions: [
           { name: "toggleTile", input: { tileId: "semantic tile id from inspect()" } },
           { name: "submit", input: {} },

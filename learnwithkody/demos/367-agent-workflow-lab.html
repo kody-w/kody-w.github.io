@@ -321,7 +321,7 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
 .result-copy p{margin:4px 0 0;color:var(--cp-text-muted);font-size:12px}
 .signature{color:var(--cp-accent);font:700 11px/1.4 Consolas,"Courier New",Courier,monospace}
 .tabs{display:flex;gap:6px}
-.tabs button[aria-selected="true"]{border-color:var(--cp-accent);background:var(--cp-accent-soft);color:var(--cp-accent)}
+.tabs button[aria-pressed="true"]{border-color:var(--cp-accent);background:var(--cp-accent-soft);color:var(--cp-accent)}
 .exchange-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:9px}
 .boundary{
   margin-top:14px;
@@ -511,9 +511,9 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
             <h2 id="exchange-title">Workflow JSON</h2>
             <p>Unknown or malformed fields are rejected.</p>
           </div>
-          <div class="tabs" role="tablist" aria-label="JSON mode">
-            <button class="compact" id="show-export" type="button" role="tab" aria-selected="true">Export</button>
-            <button class="compact" id="show-import" type="button" role="tab" aria-selected="false">Import</button>
+          <div class="tabs" aria-label="JSON mode">
+            <button class="compact" id="show-export" type="button" aria-pressed="true">Export</button>
+            <button class="compact" id="show-import" type="button" aria-pressed="false">Import</button>
           </div>
         </div>
         <div class="panel-body">
@@ -558,7 +558,8 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
 
   const STORAGE_KEY = "agent-workflow-lab/v1";
   const MAX_SOURCE = 12000;
-  const MAX_IMPORT = 80000;
+  const MAX_PARAMETERS = 12000;
+  const MAX_IMPORT = 3000000;
   const AGENTS = Object.freeze([
     Object.freeze({
       id: "signal-scout",
@@ -669,6 +670,7 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
   let selectedId = workflow.steps[0].id;
   let parameterDraft = JSON.stringify(workflow.steps[0].parameters, null, 2);
   let parameterDraftValid = true;
+  let parameterDraftError = "";
   let results = [];
   let exchangeMode = "export";
   let selfTestRuns = 0;
@@ -707,11 +709,13 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
     const errors = [];
     let serialized = "";
     try {
-      serialized = JSON.stringify(candidate);
+      const encoded = JSON.stringify(candidate);
+      if (typeof encoded === "string") serialized = encoded;
+      else errors.push("Workflow must be serializable JSON.");
     } catch (error) {
       errors.push("Workflow must be serializable JSON.");
     }
-    if (serialized.length > MAX_IMPORT) errors.push("Workflow exceeds the 80 KB import limit.");
+    if (serialized.length > MAX_IMPORT) errors.push("Workflow exceeds the 3 MB import limit.");
     if (!sameKeys(candidate, ["version", "name", "steps"])) {
       errors.push("Workflow must contain only version, name, and steps.");
       return {ok: false, errors};
@@ -748,6 +752,8 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
       }
       if (!isPlainObject(step.parameters) || !isJsonValue(step.parameters, 0)) {
         errors.push(label + " parameters must be a finite JSON object.");
+      } else if (JSON.stringify(step.parameters).length > MAX_PARAMETERS) {
+        errors.push(label + " parameters must be at most 12,000 characters.");
       }
       if (!sameKeys(step.source, ["language", "name", "text"])) {
         errors.push(label + " source must contain only language, name, and text.");
@@ -764,6 +770,28 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
       }
     });
     return {ok: errors.length === 0, errors};
+  }
+
+  function commitParameterDraft(stepId, draft) {
+    const stepIndex = workflow.steps.findIndex((step) => step.id === stepId);
+    if (stepIndex < 0) return {ok: false, error: "Unknown step."};
+    let parsed;
+    try {
+      parsed = JSON.parse(draft);
+    } catch (error) {
+      return {ok: false, error: error.message};
+    }
+    if (!isPlainObject(parsed) || !isJsonValue(parsed, 0)) {
+      return {ok: false, error: "Parameters must be a finite JSON object."};
+    }
+    const candidate = exportState();
+    candidate.steps[stepIndex].parameters = clone(parsed);
+    const verdict = validateWorkflow(candidate);
+    if (!verdict.ok) return {ok: false, error: verdict.errors.join(" ")};
+    workflow.steps[stepIndex].parameters = clone(parsed);
+    results = [];
+    persist();
+    return {ok: true, parameters: clone(parsed)};
   }
 
   function canonical(value) {
@@ -794,16 +822,22 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
   }
 
   function storageRead() {
+    let saved = null;
     try {
-      const value = window.localStorage.getItem(STORAGE_KEY);
-      window.localStorage.setItem(STORAGE_KEY + "/probe", "1");
-      window.localStorage.removeItem(STORAGE_KEY + "/probe");
-      storageMode = "local persistence";
-      return value;
+      saved = window.localStorage.getItem(STORAGE_KEY);
     } catch (error) {
       storageMode = "memory fallback";
       return memoryValue || null;
     }
+    try {
+      window.localStorage.setItem(STORAGE_KEY + "/probe", "1");
+      window.localStorage.removeItem(STORAGE_KEY + "/probe");
+      storageMode = "local persistence";
+    } catch (error) {
+      storageMode = "memory fallback";
+      if (saved !== null) memoryValue = saved;
+    }
+    return saved !== null ? saved : memoryValue || null;
   }
 
   function storageWrite(value) {
@@ -860,13 +894,40 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
     return workflow.steps.find((step) => step.id === selectedId) || null;
   }
 
-  function selectStep(id) {
+  function focusedControlKey() {
+    return document.activeElement && document.activeElement.dataset
+      ? document.activeElement.dataset.focusKey || ""
+      : "";
+  }
+
+  function restoreControlFocus(key, fallback = "") {
+    for (const candidate of [key, fallback]) {
+      if (!candidate) continue;
+      const control = Array.from(document.querySelectorAll("[data-focus-key]"))
+        .find((node) => node.dataset.focusKey === candidate);
+      if (control && !control.disabled) {
+        control.focus();
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function selectStep(id, restoreEditorFocus = false) {
     if (!workflow.steps.some((step) => step.id === id)) return;
+    const focusKey = focusedControlKey();
     selectedId = id;
     parameterDraft = JSON.stringify(getSelected().parameters, null, 2);
     parameterDraftValid = true;
+    parameterDraftError = "";
     renderSteps();
     renderEditor();
+    if (restoreEditorFocus) restoreControlFocus(focusKey, "editor:agent");
+  }
+
+  function clearResults() {
+    results = [];
+    renderResults(results);
   }
 
   function nextStepId() {
@@ -879,7 +940,7 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
   function addStep(agentId) {
     if (workflow.steps.length >= 24) {
       announce("The 24-step safety limit has been reached.");
-      return;
+      return {ok: false, error: "The 24-step safety limit has been reached."};
     }
     const agent = agentById(agentId) || AGENTS[0];
     const step = {
@@ -892,39 +953,59 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
       source: {language: "none", name: "", text: ""}
     };
     workflow.steps.push(step);
+    results = [];
     persist();
     selectStep(step.id);
-    renderResults([]);
+    renderResults(results);
     announce(agent.name + " added as step " + workflow.steps.length + ".");
+    return {ok: true};
   }
 
-  function removeStep(id) {
+  function removeStep(id, restoreKeyboardFocus = false) {
     if (workflow.steps.length === 1) {
       announce("A workflow must keep at least one step.");
       return;
     }
     const index = workflow.steps.findIndex((step) => step.id === id);
     if (index < 0) return;
+    const focusKey = focusedControlKey();
+    const deletingSelected = selectedId === id;
     workflow.steps.splice(index, 1);
-    selectedId = workflow.steps[Math.min(index, workflow.steps.length - 1)].id;
-    parameterDraft = JSON.stringify(getSelected().parameters, null, 2);
-    parameterDraftValid = true;
+    if (deletingSelected) {
+      selectedId = workflow.steps[Math.min(index, workflow.steps.length - 1)].id;
+      parameterDraft = JSON.stringify(getSelected().parameters, null, 2);
+      parameterDraftValid = true;
+      parameterDraftError = "";
+    }
+    results = [];
     persist();
     renderAll();
+    if (restoreKeyboardFocus) {
+      restoreControlFocus(focusKey, "step:" + selectedId + ":toggle");
+    }
     announce("Step deleted.");
   }
 
-  function moveStep(id, delta) {
+  function moveStep(id, delta, restoreKeyboardFocus = false) {
     const index = workflow.steps.findIndex((step) => step.id === id);
     const destination = index + delta;
-    if (index < 0 || destination < 0 || destination >= workflow.steps.length) return;
+    if (index < 0) return {ok: false, error: "Unknown step."};
+    if (destination < 0 || destination >= workflow.steps.length) {
+      return {ok: false, error: "Step is already at that workflow boundary."};
+    }
     const moved = workflow.steps.splice(index, 1)[0];
+    const focusKey = focusedControlKey();
     workflow.steps.splice(destination, 0, moved);
+    results = [];
     persist();
     renderSteps();
     renderEditor();
-    renderResults([]);
+    renderResults(results);
+    if (restoreKeyboardFocus) {
+      restoreControlFocus(focusKey, "step:" + id + ":toggle");
+    }
     announce("Step moved to position " + (destination + 1) + ".");
+    return {ok: true};
   }
 
   function renderPalette() {
@@ -958,13 +1039,16 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
       const toggle = document.createElement("input");
       toggle.type = "checkbox";
       toggle.checked = step.enabled;
+      toggle.dataset.focusKey = "step:" + step.id + ":toggle";
       toggle.setAttribute("aria-label", (step.enabled ? "Disable " : "Enable ") + "step " + (index + 1));
       toggle.addEventListener("change", () => {
+        const focusKey = focusedControlKey();
         step.enabled = toggle.checked;
         persist();
         renderSteps();
         renderEditor();
-        renderResults([]);
+        clearResults();
+        restoreControlFocus(focusKey, "step:" + step.id + ":toggle");
         announce("Step " + (index + 1) + (step.enabled ? " enabled." : " disabled."));
       });
       toggleLabel.append(toggle, create("span", "", step.enabled ? "On" : "Off"));
@@ -973,18 +1057,22 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
       const actions = create("div", "step-actions");
       const configure = button(step.id === selectedId ? "Editing" : "Configure", "compact configure");
       configure.disabled = step.id === selectedId;
-      configure.addEventListener("click", () => selectStep(step.id));
+      configure.dataset.focusKey = "step:" + step.id + ":configure";
+      configure.addEventListener("click", () => selectStep(step.id, true));
       const up = button("↑", "compact");
       up.disabled = index === 0;
+      up.dataset.focusKey = "step:" + step.id + ":up";
       up.setAttribute("aria-label", "Move step " + (index + 1) + " up");
-      up.addEventListener("click", () => moveStep(step.id, -1));
+      up.addEventListener("click", () => moveStep(step.id, -1, true));
       const down = button("↓", "compact");
       down.disabled = index === workflow.steps.length - 1;
+      down.dataset.focusKey = "step:" + step.id + ":down";
       down.setAttribute("aria-label", "Move step " + (index + 1) + " down");
-      down.addEventListener("click", () => moveStep(step.id, 1));
+      down.addEventListener("click", () => moveStep(step.id, 1, true));
       const remove = button("Delete", "compact danger");
+      remove.dataset.focusKey = "step:" + step.id + ":remove";
       remove.setAttribute("aria-label", "Delete step " + (index + 1));
-      remove.addEventListener("click", () => removeStep(step.id));
+      remove.addEventListener("click", () => removeStep(step.id, true));
       actions.append(configure, up, down, remove);
       item.append(top, actions);
       elements.steps.append(item);
@@ -1013,6 +1101,7 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
 
     const agentSelect = document.createElement("select");
     agentSelect.setAttribute("aria-label", "Agent");
+    agentSelect.dataset.focusKey = "editor:agent";
     AGENTS.forEach((optionAgent) => {
       const option = create("option", "", optionAgent.name);
       option.value = optionAgent.id;
@@ -1020,6 +1109,7 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
       agentSelect.append(option);
     });
     agentSelect.addEventListener("change", () => {
+      const focusKey = focusedControlKey();
       step.agent = agentSelect.value;
       const replacement = agentById(step.agent);
       step.skills = step.skills.filter((skill) => replacement.skills.includes(skill));
@@ -1027,7 +1117,8 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
       persist();
       renderSteps();
       renderEditor();
-      renderResults([]);
+      clearResults();
+      restoreControlFocus(focusKey, "editor:agent");
     });
     grid.append(fieldLabel("Agent", agentSelect));
 
@@ -1043,7 +1134,7 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
       step.enabled = enabledSelect.value === "true";
       persist();
       renderSteps();
-      renderResults([]);
+      clearResults();
     });
     grid.append(fieldLabel("Run status", enabledSelect));
 
@@ -1062,7 +1153,7 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
         });
         persist();
         renderSteps();
-        renderResults([]);
+        clearResults();
       });
       label.append(input, create("span", "", skill));
       skillBox.append(label);
@@ -1077,7 +1168,7 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
     prompt.addEventListener("input", () => {
       step.systemPrompt = prompt.value;
       persist();
-      renderResults([]);
+      clearResults();
     });
     const promptField = fieldLabel("System prompt", prompt);
     promptField.classList.add("span-two");
@@ -1087,25 +1178,30 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
     params.value = parameterDraft;
     params.rows = 7;
     params.spellcheck = false;
-    const paramMessage = create("p", "message ok", "Valid JSON object. Saved state matches this draft.");
+    const paramMessage = create(
+      "p",
+      parameterDraftValid ? "message ok" : "message error",
+      parameterDraftValid
+        ? "Valid JSON object. Saved state matches this draft."
+        : "Not saved: " + parameterDraftError
+    );
     paramMessage.setAttribute("aria-live", "polite");
     const savedPreview = create("div", "saved-preview", "Saved: " + JSON.stringify(step.parameters));
     params.addEventListener("input", () => {
       parameterDraft = params.value;
-      try {
-        const parsed = JSON.parse(parameterDraft);
-        if (!isPlainObject(parsed) || !isJsonValue(parsed, 0)) throw new Error("Parameters must be a finite JSON object.");
-        step.parameters = clone(parsed);
+      const outcome = commitParameterDraft(step.id, parameterDraft);
+      if (outcome.ok) {
         parameterDraftValid = true;
+        parameterDraftError = "";
         paramMessage.className = "message ok";
         paramMessage.textContent = "Valid JSON object. Saved state updated.";
-        savedPreview.textContent = "Saved: " + JSON.stringify(step.parameters);
-        persist();
-        renderResults([]);
-      } catch (error) {
+        savedPreview.textContent = "Saved: " + JSON.stringify(outcome.parameters);
+        renderResults(results);
+      } else {
         parameterDraftValid = false;
+        parameterDraftError = outcome.error;
         paramMessage.className = "message error";
-        paramMessage.textContent = "Not saved: " + error.message;
+        paramMessage.textContent = "Not saved: " + outcome.error;
         savedPreview.textContent = "Saved remains: " + JSON.stringify(step.parameters);
       }
     });
@@ -1115,6 +1211,7 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
     grid.append(paramField);
 
     const sourceLanguage = document.createElement("select");
+    sourceLanguage.dataset.focusKey = "editor:source-language";
     [["none", "None"], ["text", "Plain text"], ["python", "Python (inert)"], ["javascript", "JavaScript (inert)"]].forEach(([value, text]) => {
       const option = create("option", "", text);
       option.value = value;
@@ -1122,15 +1219,18 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
       sourceLanguage.append(option);
     });
     sourceLanguage.addEventListener("change", () => {
+      const focusKey = focusedControlKey();
       step.source.language = sourceLanguage.value;
       persist();
       renderEditor();
-      renderResults([]);
+      clearResults();
+      restoreControlFocus(focusKey, "editor:source-language");
     });
     grid.append(fieldLabel("Specimen language", sourceLanguage));
 
     const fileInput = document.createElement("input");
     fileInput.type = "file";
+    fileInput.dataset.focusKey = "editor:source-file";
     fileInput.accept = ".txt,.py,.js,.mjs,.cjs,text/plain,text/javascript";
     fileInput.setAttribute("aria-label", "Import a source specimen as inert text");
     fileInput.addEventListener("change", () => {
@@ -1143,6 +1243,7 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
       }
       const reader = new FileReader();
       reader.addEventListener("load", () => {
+        const focusKey = focusedControlKey();
         const text = typeof reader.result === "string" ? reader.result : "";
         step.source.name = file.name.slice(0, 100);
         step.source.text = text.slice(0, MAX_SOURCE);
@@ -1150,7 +1251,8 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
           /\.(js|mjs|cjs)$/i.test(file.name) ? "javascript" : "text";
         persist();
         renderEditor();
-        renderResults([]);
+        clearResults();
+        restoreControlFocus(focusKey, "editor:source-file");
         announce("Imported as inert text. Nothing was executed.");
       });
       reader.addEventListener("error", () => announce("The specimen could not be read."));
@@ -1166,10 +1268,13 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
     source.placeholder = "Paste Python, JavaScript, or notes here. Text is stored, never executed.";
     source.addEventListener("input", () => {
       step.source.text = source.value;
-      if (step.source.text && step.source.language === "none") step.source.language = "text";
+      if (step.source.text && step.source.language === "none") {
+        step.source.language = "text";
+        sourceLanguage.value = "text";
+      }
       persist();
       updateSourceMeta(sourceMeta, step.source);
-      renderResults([]);
+      clearResults();
     });
     const sourceField = fieldLabel("Source specimen (data only)", source);
     sourceField.classList.add("span-two");
@@ -1240,16 +1345,22 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
 
   function refreshExport() {
     if (exchangeMode !== "export") return;
-    elements.exchange.value = JSON.stringify(exportState(), null, 2);
+    elements.exchange.value = serializeForExport(exportState());
     elements.exchangeMessage.className = "message ok";
     elements.exchangeMessage.textContent = "Export mirrors the exact saved workflow state.";
+  }
+
+  function serializeForExport(value) {
+    const compact = JSON.stringify(value);
+    const pretty = JSON.stringify(value, null, 2);
+    return pretty.length <= MAX_IMPORT ? pretty : compact;
   }
 
   function setExchangeMode(mode) {
     exchangeMode = mode;
     const exporting = mode === "export";
-    elements.showExport.setAttribute("aria-selected", String(exporting));
-    elements.showImport.setAttribute("aria-selected", String(!exporting));
+    elements.showExport.setAttribute("aria-pressed", String(exporting));
+    elements.showImport.setAttribute("aria-pressed", String(!exporting));
     elements.exchangeLabel.textContent = exporting ? "Exact exported state" : "Paste workflow JSON";
     elements.refreshExport.disabled = !exporting;
     elements.importButton.disabled = exporting;
@@ -1272,7 +1383,7 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
   function importState(candidate) {
     let parsed = candidate;
     if (typeof candidate === "string") {
-      if (candidate.length > MAX_IMPORT) return {ok: false, errors: ["Import exceeds the 80 KB limit."]};
+      if (candidate.length > MAX_IMPORT) return {ok: false, errors: ["Import exceeds the 3 MB limit."]};
       try {
         parsed = JSON.parse(candidate);
       } catch (error) {
@@ -1285,6 +1396,8 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
     selectedId = workflow.steps[0].id;
     parameterDraft = JSON.stringify(workflow.steps[0].parameters, null, 2);
     parameterDraftValid = true;
+    parameterDraftError = "";
+    results = [];
     persist();
     renderAll();
     return {ok: true, state: exportState()};
@@ -1295,6 +1408,7 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
     selectedId = workflow.steps[0].id;
     parameterDraft = JSON.stringify(workflow.steps[0].parameters, null, 2);
     parameterDraftValid = true;
+    parameterDraftError = "";
     results = [];
     persist();
     renderAll();
@@ -1304,30 +1418,56 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
   function selfTest() {
     selfTestRuns += 1;
     const snapshot = exportState();
+    const runtimeSnapshot = {
+      selectedId,
+      parameterDraft,
+      parameterDraftValid,
+      parameterDraftError,
+      results: clone(results),
+      exchangeMode
+    };
     const validation = validateWorkflow(snapshot);
-    const encoded = JSON.stringify(snapshot);
-    const roundTrip = JSON.parse(encoded);
+    const encoded = serializeForExport(snapshot);
+    let importRoundTrip = false;
+    try {
+      const imported = importState(encoded);
+      importRoundTrip = imported.ok && canonical(exportState()) === canonical(snapshot);
+    } catch (error) {
+      importRoundTrip = false;
+    } finally {
+      workflow = clone(snapshot);
+      selectedId = workflow.steps.some((step) => step.id === runtimeSnapshot.selectedId)
+        ? runtimeSnapshot.selectedId
+        : workflow.steps[0].id;
+      parameterDraft = runtimeSnapshot.parameterDraft;
+      parameterDraftValid = runtimeSnapshot.parameterDraftValid;
+      parameterDraftError = runtimeSnapshot.parameterDraftError;
+      results = clone(runtimeSnapshot.results);
+      exchangeMode = runtimeSnapshot.exchangeMode;
+      persist();
+      renderAll();
+    }
     const firstRun = simulate(snapshot);
     const secondRun = simulate(snapshot);
     const enabledCount = snapshot.steps.filter((step) => step.enabled).length;
     const selected = snapshot.steps.find((step) => step.id === selectedId) || snapshot.steps[0];
-    const savedParameters = canonical(selected.parameters);
-    let invalidRejected = false;
-    try {
-      JSON.parse("{invalid");
-    } catch (error) {
-      invalidRejected = canonical(selected.parameters) === savedParameters;
-    }
+    const beforeInvalid = canonical(exportState());
+    const invalidOutcome = commitParameterDraft(selected.id, "{invalid");
+    const invalidRejected = !invalidOutcome.ok && canonical(exportState()) === beforeInvalid;
+    const oversizedDraft = JSON.stringify({value: "x".repeat(MAX_PARAMETERS)});
+    const oversizedOutcome = commitParameterDraft(selected.id, oversizedDraft);
+    const oversizedRejected = !oversizedOutcome.ok && canonical(exportState()) === beforeInvalid;
     const probeName = "__agentWorkflowLabProbe";
     const beforeProbe = Object.prototype.hasOwnProperty.call(window, probeName);
     analyzeSource({language: "javascript", name: "probe.js", text: "window." + probeName + " = true;"});
     const afterProbe = Object.prototype.hasOwnProperty.call(window, probeName);
     const checks = [
       {name: "Current workflow passes the strict schema", pass: validation.ok},
-      {name: "Export/import JSON preserves exact name, order, and settings", pass: canonical(snapshot) === canonical(roundTrip)},
+      {name: "Export/import JSON preserves exact name, order, and settings", pass: importRoundTrip},
       {name: "Simulation emits one result for every enabled step only", pass: firstRun.length === enabledCount},
       {name: "Repeated simulation returns identical receipts", pass: canonical(firstRun) === canonical(secondRun)},
       {name: "Invalid parameter JSON leaves saved parameters unchanged", pass: invalidRejected},
+      {name: "Oversized parameters cannot create an unimportable workflow", pass: oversizedRejected},
       {name: "JavaScript specimen remains inert data", pass: beforeProbe === false && afterProbe === false},
       {name: "Public semantic API is JSON serializable", pass: Boolean(JSON.stringify(capabilities()))}
     ];
@@ -1379,7 +1519,12 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
         {type: "workflow.export", payload: {}},
         {type: "lab.selfTest", payload: {}}
       ],
-      limits: {steps: 24, sourceCharacters: MAX_SOURCE, importCharacters: MAX_IMPORT},
+      limits: {
+        steps: 24,
+        sourceCharacters: MAX_SOURCE,
+        parameterCharacters: MAX_PARAMETERS,
+        importCharacters: MAX_IMPORT
+      },
       safety: {networkExecution: false, importedCodeExecution: false}
     };
   }
@@ -1388,7 +1533,11 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
     return {
       workflow: exportState(),
       selectedStepId: selectedId,
-      parameterDraft: {text: parameterDraft, valid: parameterDraftValid},
+      parameterDraft: {
+        text: parameterDraft,
+        valid: parameterDraftValid,
+        error: parameterDraftValid ? null : parameterDraftError
+      },
       results: clone(results),
       persistence: storageMode,
       exchangeMode,
@@ -1404,8 +1553,10 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
     switch (command.type) {
       case "workflow.add":
         if (!agentById(payload.agent)) return {ok: false, error: "Unknown agent."};
-        addStep(payload.agent);
-        return {ok: true, state: inspect()};
+        {
+          const added = addStep(payload.agent);
+          return added.ok ? {ok: true, state: inspect()} : added;
+        }
       case "workflow.select":
         if (!workflow.steps.some((step) => step.id === payload.stepId)) return {ok: false, error: "Unknown step."};
         selectStep(payload.stepId);
@@ -1414,8 +1565,10 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
         if (!workflow.steps.some((step) => step.id === payload.stepId) || !["up", "down"].includes(payload.direction)) {
           return {ok: false, error: "Move requires a known stepId and up/down direction."};
         }
-        moveStep(payload.stepId, payload.direction === "up" ? -1 : 1);
-        return {ok: true, state: inspect()};
+        {
+          const moved = moveStep(payload.stepId, payload.direction === "up" ? -1 : 1);
+          return moved.ok ? {ok: true, state: inspect()} : moved;
+        }
       case "workflow.update": {
         const stepIndex = workflow.steps.findIndex((step) => step.id === payload.stepId);
         if (stepIndex < 0 || !isPlainObject(payload.patch)) return {ok: false, error: "Update requires a known stepId and patch."};
@@ -1438,7 +1591,9 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
         if (selectedId === payload.stepId) {
           parameterDraft = JSON.stringify(workflow.steps[stepIndex].parameters, null, 2);
           parameterDraftValid = true;
+          parameterDraftError = "";
         }
+        results = [];
         persist();
         renderAll();
         return {ok: true, state: inspect()};
@@ -1448,6 +1603,7 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
           return {ok: false, error: "Name must contain 1–80 characters."};
         }
         workflow.name = payload.name;
+        results = [];
         persist();
         renderAll();
         return {ok: true, state: inspect()};
@@ -1492,7 +1648,7 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
     if (next.trim() && next.length <= 80) {
       workflow.name = next;
       persist();
-      renderResults([]);
+      clearResults();
     }
   });
   elements.name.addEventListener("blur", () => {
@@ -1542,6 +1698,7 @@ h1{margin:7px 0 0;font-size:clamp(38px,6vw,76px);line-height:.95;letter-spacing:
   loadSaved();
   selectedId = workflow.steps[0].id;
   parameterDraft = JSON.stringify(workflow.steps[0].parameters, null, 2);
+  parameterDraftError = "";
   storageWrite(JSON.stringify(workflow));
   setExchangeMode("export");
   renderAll();
