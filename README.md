@@ -162,8 +162,13 @@ Vision brief feed.
 
 To compare that frozen evidence with the current public WordPress bytes, run
 `python3 scripts/verify_lost_apps_evidence.py`. This read-only verifier queries
-each audited media ID independently and fails on URL, content-type, size, hash,
-or derived-group drift. Normal generation remains offline.
+the canonical media collection through every declared page, requires the known
+193-reported/192-unique inventory, and independently selects records whose MIME
+type is `text/html`, date is `2025-03-24`, and HTTPS source path begins
+`/wp-content/uploads/2025/03/` and ends in `.html`. It then requires the exact
+96-ID frozen set, maps filenames and slugs through a fixed family table, queries
+each ID independently, and fails on metadata, size, hash, or 27-group drift.
+Normal generation remains offline.
 
 ### 6. Publish
 
