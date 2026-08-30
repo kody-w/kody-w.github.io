@@ -3476,6 +3476,11 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("Lost Apps Museum", work)
         learn = LEARN_HUB_PAGE.read_text(encoding="utf-8")
         self.assertIn("/lost-apps/", learn)
+        workflow = (ROOT / ".github" / "workflows" / "validate-posts.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("scripts/verify_lost_apps_evidence.py", workflow)
+        self.assertIn("Verify frozen Lost Apps evidence", workflow)
 
     def test_start_here_paths_are_ordered_valid_and_locally_trackable(self):
         paths = yaml.safe_load(START_DATA.read_text(encoding="utf-8"))

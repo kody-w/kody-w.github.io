@@ -34,6 +34,10 @@ def load_builder():
     return module
 
 
+def encoded_audit(value):
+    return json.dumps(value, ensure_ascii=False, sort_keys=True).encode("utf-8")
+
+
 class LostAppsMuseumTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -155,7 +159,10 @@ class LostAppsMuseumTests(unittest.TestCase):
         unsafe_audit["families"][0]["safe_embed"] = True
         with self.assertRaises(self.builder.BuildError):
             self.builder.build_payloads(
-                unsafe_audit, self.curation, self.lessons, self.audit_bytes
+                unsafe_audit,
+                self.curation,
+                self.lessons,
+                encoded_audit(unsafe_audit),
             )
 
         duplicated_audit = copy.deepcopy(self.audit)
@@ -164,7 +171,10 @@ class LostAppsMuseumTests(unittest.TestCase):
         ][0]["aliases"][0]
         with self.assertRaises(self.builder.BuildError):
             self.builder.build_payloads(
-                duplicated_audit, self.curation, self.lessons, self.audit_bytes
+                duplicated_audit,
+                self.curation,
+                self.lessons,
+                encoded_audit(duplicated_audit),
             )
 
         unsafe_curation = copy.deepcopy(self.curation)
@@ -181,14 +191,14 @@ class LostAppsMuseumTests(unittest.TestCase):
         altered["content_addressing"]["media"][0]["sha256"] = "0" * 64
         with self.assertRaises(self.builder.BuildError):
             self.builder.build_payloads(
-                altered, self.curation, self.lessons, self.audit_bytes
+                altered, self.curation, self.lessons, encoded_audit(altered)
             )
 
         missing = copy.deepcopy(self.audit)
         del missing["content_addressing"]["media"][0]["sha256"]
         with self.assertRaises(self.builder.BuildError):
             self.builder.build_payloads(
-                missing, self.curation, self.lessons, self.audit_bytes
+                missing, self.curation, self.lessons, encoded_audit(missing)
             )
 
     def test_builder_rejects_wrong_hash_to_family_grouping(self):
@@ -198,7 +208,10 @@ class LostAppsMuseumTests(unittest.TestCase):
         ]
         with self.assertRaises(self.builder.BuildError):
             self.builder.build_payloads(
-                wrong_group, self.curation, self.lessons, self.audit_bytes
+                wrong_group,
+                self.curation,
+                self.lessons,
+                encoded_audit(wrong_group),
             )
 
     def test_builder_recomputes_and_rejects_changed_distinct_counts(self):
@@ -206,14 +219,48 @@ class LostAppsMuseumTests(unittest.TestCase):
         wrong_stats["source_stats"]["byte_distinct_html"] = 26
         with self.assertRaises(self.builder.BuildError):
             self.builder.build_payloads(
-                wrong_stats, self.curation, self.lessons, self.audit_bytes
+                wrong_stats,
+                self.curation,
+                self.lessons,
+                encoded_audit(wrong_stats),
             )
 
         wrong_addressing = copy.deepcopy(self.audit)
         wrong_addressing["content_addressing"]["byte_distinct_html"] = 28
         with self.assertRaises(self.builder.BuildError):
             self.builder.build_payloads(
-                wrong_addressing, self.curation, self.lessons, self.audit_bytes
+                wrong_addressing,
+                self.curation,
+                self.lessons,
+                encoded_audit(wrong_addressing),
+            )
+
+    def test_builder_rejects_audit_object_that_does_not_match_source_bytes(self):
+        altered = copy.deepcopy(self.audit)
+        altered["families"][0]["title"] = "Coordinated mutation"
+        with self.assertRaisesRegex(
+            self.builder.BuildError, "audit_bytes do not encode"
+        ):
+            self.builder.build_payloads(
+                altered, self.curation, self.lessons, self.audit_bytes
+            )
+
+    def test_builder_rejects_coordinated_media_record_removal(self):
+        altered = copy.deepcopy(self.audit)
+        media_id = altered["families"][0]["media_ids"].pop(0)
+        altered["source_stats"]["html_attachments"] = 95
+        altered["content_addressing"]["media"] = [
+            record
+            for record in altered["content_addressing"]["media"]
+            if record["media_id"] != media_id
+        ]
+        for group in altered["content_addressing"]["content_groups"]:
+            if media_id in group["media_ids"]:
+                group["media_ids"].remove(media_id)
+                break
+        with self.assertRaisesRegex(self.builder.BuildError, "exactly 96"):
+            self.builder.build_payloads(
+                altered, self.curation, self.lessons, encoded_audit(altered)
             )
 
     def test_clean_room_demos_never_receive_historical_embed_permission(self):

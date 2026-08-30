@@ -28,6 +28,7 @@ MUSEUM_SCHEMA = "kodyw-lost-apps-museum/1.0"
 VISION_SCHEMA = "rapp-vision-production-briefs/1.0"
 CONTENT_ADDRESSING_SCHEMA = "kodyw-lost-apps-content-addressing/1.0"
 EXPECTED_FAMILIES = 22
+EXPECTED_MEDIA_RECORDS = 96
 SITE_URL = "https://kody-w.github.io"
 SHA256_PATTERN = re.compile(r"[0-9a-f]{64}")
 
@@ -179,10 +180,38 @@ def normalize_brief(family: dict) -> dict:
     return brief
 
 
+def verify_audit_bytes(audit: dict, audit_bytes: bytes) -> None:
+    try:
+        parsed = json.loads(audit_bytes)
+    except (TypeError, json.JSONDecodeError) as error:
+        raise BuildError("audit_bytes must contain valid JSON") from error
+    if parsed != audit:
+        raise BuildError("audit_bytes do not encode the supplied audit object")
+
+
+def derive_content_groups(media: list[dict]) -> list[dict]:
+    grouped: dict[str, dict[str, set | list]] = {}
+    for record in media:
+        group = grouped.setdefault(
+            record["sha256"], {"family_ids": set(), "media_ids": []}
+        )
+        group["family_ids"].add(record["family_id"])
+        group["media_ids"].append(record["media_id"])
+    return [
+        {
+            "family_ids": sorted(group["family_ids"]),
+            "media_ids": sorted(group["media_ids"]),
+            "sha256": digest,
+        }
+        for digest, group in sorted(grouped.items())
+    ]
+
+
 def validate_content_addressing(
     value: object,
     family_by_media: dict[int, str],
     declared_distinct: object,
+    declared_media_records: object,
 ) -> tuple[list[dict], list[dict]]:
     if not isinstance(value, dict):
         raise BuildError("audit content_addressing must be a mapping")
@@ -201,11 +230,26 @@ def validate_content_addressing(
     groups = value.get("content_groups")
     if not isinstance(media, list) or not isinstance(groups, list):
         raise BuildError("content addressing must include media and content_groups")
+    if declared_media_records != EXPECTED_MEDIA_RECORDS:
+        raise BuildError(
+            f"source_stats must declare exactly {EXPECTED_MEDIA_RECORDS} HTML attachments"
+        )
+    if len(family_by_media) != EXPECTED_MEDIA_RECORDS:
+        raise BuildError(
+            f"families must reference exactly {EXPECTED_MEDIA_RECORDS} media IDs"
+        )
+    if len(media) != EXPECTED_MEDIA_RECORDS:
+        raise BuildError(
+            f"content addressing must contain exactly {EXPECTED_MEDIA_RECORDS} records"
+        )
+    if len(media) != declared_media_records:
+        raise BuildError(
+            "content-addressed media count does not match source_stats.html_attachments"
+        )
 
     normalized_media = []
     records_by_id = {}
     source_urls = set()
-    computed_groups: dict[str, dict[str, set | list]] = {}
     for record in media:
         if not isinstance(record, dict):
             raise BuildError("content-addressed media records must be mappings")
@@ -248,24 +292,12 @@ def validate_content_addressing(
         }
         normalized_media.append(normalized)
         records_by_id[media_id] = normalized
-        computed = computed_groups.setdefault(
-            digest, {"family_ids": set(), "media_ids": []}
-        )
-        computed["family_ids"].add(family_id)
-        computed["media_ids"].append(media_id)
 
     if set(records_by_id) != set(family_by_media):
         missing = sorted(set(family_by_media) - set(records_by_id))
         raise BuildError(f"content addressing is missing media IDs: {missing}")
     normalized_media.sort(key=lambda item: item["media_id"])
-    expected_groups = [
-        {
-            "family_ids": sorted(group["family_ids"]),
-            "media_ids": sorted(group["media_ids"]),
-            "sha256": digest,
-        }
-        for digest, group in sorted(computed_groups.items())
-    ]
+    expected_groups = derive_content_groups(normalized_media)
     normalized_groups = []
     seen_group_hashes = set()
     for group in groups:
@@ -312,6 +344,7 @@ def validate_content_addressing(
 def build_payloads(
     audit: dict, curation: dict, lessons_payload: dict, audit_bytes: bytes
 ) -> tuple[dict, dict]:
+    verify_audit_bytes(audit, audit_bytes)
     if audit.get("schema") != AUDIT_SCHEMA:
         raise BuildError("unsupported Lost Apps audit schema")
     if curation.get("schema") != CURATION_SCHEMA:
@@ -539,6 +572,7 @@ def build_payloads(
         audit.get("content_addressing"),
         family_by_media,
         source_stats.get("byte_distinct_html"),
+        source_stats.get("html_attachments"),
     )
     integrity_by_family = {app["id"]: [] for app in apps}
     for record in media_integrity:
