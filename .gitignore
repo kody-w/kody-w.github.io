@@ -9,4 +9,7 @@ _site/
 .jekyll-cache/
 .twin-release-render/
 .twin-release-clock.yml
+.stage-refresh-test/
 .bundle/
+__pycache__/
+*.py[cod]

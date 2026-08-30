@@ -49,22 +49,14 @@ jobs:
       - name: Commit changed snapshot
         id: commit
         run: |
-          mapfile -t twin_release_paths < <(
-            python3 scripts/build_twin_release.py --list-outputs
-          )
-          release_paths=(
-            api/works.json
-            "${twin_release_paths[@]}"
-          )
-          if git diff --quiet -- "${release_paths[@]}"; then
+          python3 scripts/stage_refresh_release.py \
+            --github-output "$GITHUB_OUTPUT"
+          if git diff --cached --quiet; then
             echo "Public works and twin release are unchanged."
-            echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          echo "changed=true" >> "$GITHUB_OUTPUT"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "${release_paths[@]}"
           git commit \
             -m "Refresh public works and twin release" \
             -m "Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"

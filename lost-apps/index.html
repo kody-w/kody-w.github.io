@@ -1,0 +1,236 @@
+---
+layout: default
+title: Lost Apps Museum
+permalink: /lost-apps/
+description: A searchable, evidence-backed catalog of 22 deduplicated public HTML application families, with safe restoration guidance and RAPP Vision briefs.
+---
+{% assign museum = site.data.lost_apps_museum %}
+<main class="lost-apps">
+  <header class="lost-apps-hero">
+    <p class="lost-apps-kicker">Public software archaeology · March 2025</p>
+    <h1>Lost Apps Museum</h1>
+    <p class="lost-apps-lede">
+      Ninety-six public WordPress HTML uploads resolved into
+      <strong>{{ museum.stats.byte_distinct_html }} byte-distinct files</strong> and
+      <strong>{{ museum.stats.curated_apps }} curated application families</strong>.
+      This museum preserves provenance and verified behavior without importing
+      historical code, branding, wording, or assets into the clean-room restorations.
+    </p>
+    <div class="lost-apps-actions">
+      <a class="lost-apps-primary" href="/lost-apps/rapp-vision/">Open all RAPP Vision briefs</a>
+      <a href="/api/lost-apps-museum.json">Download the museum API</a>
+    </div>
+    <dl class="lost-apps-stats" aria-label="Museum collection statistics">
+      <div><dt>{{ museum.stats.curated_apps }}</dt><dd>curated families</dd></div>
+      <div><dt>{{ museum.stats.html_attachments }}</dt><dd>public HTML uploads</dd></div>
+      <div><dt>{{ museum.stats.interactive_clean_room_restorations }}</dt><dd>clean-room restorations</dd></div>
+      <div><dt>{{ museum.stats.historical_embeds_approved }}</dt><dd>historical embeds approved</dd></div>
+    </dl>
+  </header>
+
+  <aside class="lost-apps-safety" aria-labelledby="lost-apps-safety-title">
+    <div>
+      <p class="lost-apps-kicker">Safety boundary</p>
+      <h2 id="lost-apps-safety-title">The archive is evidence, not trusted application code</h2>
+    </div>
+    <p>
+      Historical uploads open only as clearly labeled external provenance links.
+      They are never executed inside this site. The three original clean-room
+      restorations can be previewed on demand in a unique-origin iframe with
+      scripts and downloads only—no same-origin access, forms, popups, camera,
+      microphone, geolocation, or network credentials.
+    </p>
+    <details>
+      <summary>Read the preservation policy</summary>
+      <ul>
+        <li>{{ museum.policies.default | escape }}</li>
+        <li>{{ museum.policies.preferred_presentation | escape }}</li>
+        <li>{{ museum.policies.content_policy | escape }}</li>
+        <li>{{ museum.policies.sensitive_content | escape }}</li>
+      </ul>
+    </details>
+  </aside>
+
+  <section class="lost-apps-collection" aria-labelledby="lost-apps-collection-title">
+    <div class="lost-apps-section-heading">
+      <div>
+        <p class="lost-apps-kicker">The collection</p>
+        <h2 id="lost-apps-collection-title">Browse all {{ museum.apps.size }} app families</h2>
+      </div>
+      <p id="lost-apps-result-count" role="status" aria-live="polite" aria-atomic="true">
+        Showing all {{ museum.apps.size }} exhibits
+      </p>
+    </div>
+
+    <form class="lost-apps-controls" id="lost-apps-controls" role="search">
+      <label>
+        <span>Search the museum</span>
+        <input id="lost-apps-search" type="search" placeholder="Search titles, behavior, technology…" autocomplete="off">
+      </label>
+      <label>
+        <span>Collection</span>
+        <select id="lost-apps-category">
+          <option value="">All collections</option>
+          {% for category in museum.taxonomy %}
+          <option value="{{ category.id | escape }}">{{ category.title | escape }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>
+        <span>Restoration posture</span>
+        <select id="lost-apps-readiness">
+          <option value="">All postures</option>
+          <option value="Restoration candidate">Restoration candidate</option>
+          <option value="Needs hardening">Needs hardening</option>
+          <option value="Context only">Context only</option>
+        </select>
+      </label>
+      <button id="lost-apps-reset" type="reset">Reset</button>
+    </form>
+
+    <div class="lost-apps-grid" id="lost-apps-grid">
+      {% for app in museum.apps %}
+      <article
+        class="lost-app-card"
+        id="app-{{ app.id | escape }}"
+        data-lost-app-card
+        data-category="{{ app.category | escape }}"
+        data-readiness="{{ app.readiness_label | escape }}"
+        data-search="{{ app.search_text | escape }}">
+        <div class="lost-app-card-topline">
+          <span>{{ app.category_title | escape }}</span>
+          <span class="lost-app-risk lost-app-risk-{{ app.risk_level | escape }}">
+            {% if app.risk_level == "none" %}No recorded risk{% else %}{{ app.risk_level | escape }} risk{% endif %}
+          </span>
+        </div>
+        <h3>{{ app.title | escape }}</h3>
+        <p>{{ app.museum_blurb | escape }}</p>
+        <div class="lost-app-badges">
+          <span>{{ app.readiness_label | escape }}</span>
+          <span>{{ app.aliases.size }} archived filename{% if app.aliases.size != 1 %}s{% endif %}</span>
+          {% if app.lesson %}<span>Clean-room lesson available</span>{% endif %}
+        </div>
+
+        <div class="lost-app-card-actions">
+          <a href="{{ app.source_url | escape }}" target="_blank" rel="noopener noreferrer">Open historical artifact ↗</a>
+          {% if app.preview.kind == "clean-room" %}
+          <button
+            type="button"
+            data-lost-app-preview="{{ app.preview.url | escape }}"
+            data-lost-app-title="{{ app.lesson.title | escape }}"
+            aria-haspopup="dialog"
+            aria-controls="lost-app-preview-dialog">
+            Preview clean-room restoration
+          </button>
+          {% endif %}
+        </div>
+
+        <details class="lost-app-details">
+          <summary>Evidence, safety, and related work</summary>
+          <div class="lost-app-detail-grid">
+            <section>
+              <h4>Observed behavior</h4>
+              <p>{{ app.observed_summary | escape }}</p>
+              <ul>
+                {% for control in app.observed_controls %}
+                <li>{{ control | escape }}</li>
+                {% endfor %}
+              </ul>
+            </section>
+            <section>
+              <h4>Preservation posture</h4>
+              <p>{{ app.embed_notes | escape }}</p>
+              {% if app.risks.size > 0 %}
+              <ul>
+                {% for risk in app.risks %}
+                <li><strong>{{ risk.severity | capitalize | escape }}:</strong> {{ risk.evidence | escape }}</li>
+                {% endfor %}
+              </ul>
+              {% else %}
+              <p>No specific implementation risk was recorded beyond the collection-wide isolation policy.</p>
+              {% endif %}
+            </section>
+            <section>
+              <h4>Provenance</h4>
+              <p>
+                Representative:
+                <a href="{{ app.source_url | escape }}" target="_blank" rel="noopener noreferrer">{{ app.aliases.first | escape }}</a>
+              </p>
+              <p>WordPress media IDs: {{ app.media_ids | join: ", " | escape }}</p>
+              <ul class="lost-app-evidence-list">
+                {% for record in app.media_integrity %}
+                <li>
+                  <a href="{{ record.source_url | escape }}" target="_blank" rel="noopener noreferrer">Media {{ record.media_id }}</a>
+                  · {{ record.size_bytes }} bytes
+                  · <code>sha256:{{ record.sha256 | escape }}</code>
+                </li>
+                {% endfor %}
+              </ul>
+              <ul class="lost-app-evidence-list">
+                {% for evidence in app.evidence %}
+                <li><code>{{ evidence | escape }}</code></li>
+                {% endfor %}
+              </ul>
+            </section>
+            <section>
+              <h4>RAPP Vision angle</h4>
+              <p><strong>16:9:</strong> {{ app.rapp_vision.episode_16x9 | escape }}</p>
+              <p><strong>9:16:</strong> {{ app.rapp_vision.short_9x16 | escape }}</p>
+            </section>
+          </div>
+        </details>
+
+        <nav class="lost-app-related" aria-label="Related links for {{ app.title | escape }}">
+          {% for link in app.related %}
+          <a href="{{ link.url | escape }}">{{ link.title | escape }}</a>
+          {% endfor %}
+        </nav>
+      </article>
+      {% endfor %}
+    </div>
+    <p class="lost-apps-empty" id="lost-apps-empty" hidden>
+      No exhibits match those filters. Reset the museum search and try again.
+    </p>
+  </section>
+
+  <footer class="lost-apps-method">
+    <h2>Method and provenance</h2>
+    <p>
+      The source audit used the public, unauthenticated WordPress REST API and
+      passive HTTP retrieval only. Numbered filename variants were grouped,
+      SHA-256 compared, and then curated into product families. All
+      {{ museum.source.content_addressing.media_records }} audited media IDs are
+      bound to their public source URL, byte length, and SHA-256; those hashes
+      recompute to {{ museum.source.content_addressing.byte_distinct_html }}
+      content groups. The checked-in evidence snapshot has SHA-256
+      <code>{{ museum.source.audit_sha256 }}</code>.
+    </p>
+    <p>
+      The museum data, public API, and RAPP Vision brief feed are regenerated by
+      <code>scripts/build_lost_apps_museum.py</code>; <code>--check</code> proves
+      that the committed outputs still match the verified evidence.
+    </p>
+  </footer>
+</main>
+
+<dialog class="lost-app-preview-dialog" id="lost-app-preview-dialog" aria-labelledby="lost-app-preview-title">
+  <div class="lost-app-preview-head">
+    <div>
+      <p class="lost-apps-kicker">Isolated clean-room preview</p>
+      <h2 id="lost-app-preview-title">Clean-room restoration</h2>
+    </div>
+    <button type="button" id="lost-app-preview-close" aria-label="Close preview">Close</button>
+  </div>
+  <p>
+    This is original restoration code, not the historical upload. It runs in a
+    restricted iframe without same-origin privileges or device permissions.
+  </p>
+  <iframe
+    id="lost-app-preview-frame"
+    title="Clean-room restoration preview"
+    sandbox="allow-scripts allow-downloads"
+    allow="camera 'none'; microphone 'none'; geolocation 'none'; clipboard-read 'none'; clipboard-write 'none'; payment 'none'; usb 'none'"
+    referrerpolicy="no-referrer"></iframe>
+</dialog>
+
+<script src="/js/lost-apps-museum.js" defer></script>

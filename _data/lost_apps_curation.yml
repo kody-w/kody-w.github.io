@@ -1,0 +1,27 @@
+schema: kodyw-lost-apps-curation/1.0
+lesson_mappings:
+  agent-workflow-system: agent-workflow-lab
+  severance-refiner: pattern-quota
+  terminal-log-visualizer: incident-log-observatory
+related_by_category:
+  agent-workbenches:
+    title: "Explore agent-system builds"
+    url: "/learnwithkody/examples/"
+  copilot-prototypes:
+    title: "Browse Copilot and interface work"
+    url: "/work/"
+  business-systems:
+    title: "Explore business-system simulations"
+    url: "/simulated-dynamics365/"
+  local-first-utilities:
+    title: "Browse local-first examples"
+    url: "/learnwithkody/examples/"
+  playable-software:
+    title: "Explore browser-game builds"
+    url: "/learnwithkody/examples/"
+  media-laboratories:
+    title: "Browse RAPP Vision"
+    url: "https://kody-w.github.io/rapp-vision/"
+  sensitive-human-centered:
+    title: "Read the design constitution"
+    url: "/constitution/"

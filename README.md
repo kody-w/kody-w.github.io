@@ -153,9 +153,27 @@ bundle exec jekyll serve
 
 ```bash
 python3 -m unittest discover -s tests -p 'test_*.py'
+python3 scripts/build_lost_apps_museum.py --check
 python3 scripts/check_twin.py
 JEKYLL_ENV=production bundle exec jekyll build --destination _site
 ```
+
+The Lost Apps Museum is generated from the checked-in verified audit snapshot
+at `_data/lost_apps_audit.json`. Run `python3 scripts/build_lost_apps_museum.py`
+after changing that evidence, the curation overlay, or the lesson registry. The
+command validates all 96 source URL/SHA-256 bindings and the resulting 27
+content groups, then rewrites the Jekyll data, public museum API, and RAPP
+Vision brief feed.
+
+To compare that frozen evidence with the current public WordPress bytes, run
+`python3 scripts/verify_lost_apps_evidence.py`. This read-only verifier queries
+the canonical media collection through every declared page, requires the known
+193-reported/192-unique inventory, and independently selects records whose MIME
+type is `text/html`, date is `2025-03-24`, and HTTPS source path begins
+`/wp-content/uploads/2025/03/` and ends in `.html`. It then requires the exact
+96-ID frozen set, maps filenames and slugs through a fixed family table, queries
+each ID independently, and fails on metadata, size, hash, or 27-group drift.
+Normal generation remains offline.
 
 ### 6. Publish
 

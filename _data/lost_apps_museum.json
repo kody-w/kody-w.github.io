@@ -1,0 +1,3897 @@
+{
+  "apps": [
+    {
+      "acceptance_checks": [
+        "Users can add, reorder, edit, enable, disable and delete at least three steps.",
+        "Invalid JSON parameters produce a validation message without changing saved state.",
+        "Export followed by import reproduces workflow name, order and settings.",
+        "Running displays one deterministic result for each enabled step only.",
+        "No network request occurs during workflow execution."
+      ],
+      "aliases": [
+        "Agent-Workflow-System.html"
+      ],
+      "category": "agent-workbenches",
+      "category_title": "Agent Workbenches",
+      "clean_room_prompt": "Using the public Agent Workflow System only as a black-box behavioral reference, build an original local-first workflow designer with an agent palette, ordered configurable steps, agent and skill selection, prompt and JSON parameter editors, JSON import and export, persistence and deterministic simulated execution. Do not copy source, wording, styling or assets, and do not execute imported Python or JavaScript.",
+      "dependencies": [
+        {
+          "purpose": "Code and prompt editing",
+          "status": 200,
+          "url": "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs/loader.min.js"
+        },
+        {
+          "purpose": "Interface styling",
+          "status": 200,
+          "url": "https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+        }
+      ],
+      "embed_notes": "Use a separate sandboxed origin, sanitize imported metadata and self-host pinned editor assets.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/Agent-Workflow-System.html:29-106",
+        "kodyw.com:/wp-content/uploads/2025/03/Agent-Workflow-System.html:600-694",
+        "kodyw.com:/wp-content/uploads/2025/03/Agent-Workflow-System.html:730-819"
+      ],
+      "id": "agent-workflow-system",
+      "lesson": {
+        "demo_url": "/learnwithkody/demos/367-agent-workflow-lab.html",
+        "id": "agent-workflow-lab",
+        "lesson_url": "/learnwithkody/examples/agent-workflow-lab/",
+        "title": "Agent Workflow Lab — Compose Plans Without Executing Imported Code"
+      },
+      "media_ids": [
+        544,
+        588,
+        598,
+        625
+      ],
+      "media_integrity": [
+        {
+          "family_id": "agent-workflow-system",
+          "media_id": 544,
+          "sha256": "3593f9701403bec952020ee9907323050cdd8dbf534a1377541202a7e8df5e8f",
+          "size_bytes": 42579,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/Agent-Workflow-System.html"
+        },
+        {
+          "family_id": "agent-workflow-system",
+          "media_id": 588,
+          "sha256": "3593f9701403bec952020ee9907323050cdd8dbf534a1377541202a7e8df5e8f",
+          "size_bytes": 42579,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/Agent-Workflow-System-1.html"
+        },
+        {
+          "family_id": "agent-workflow-system",
+          "media_id": 598,
+          "sha256": "3593f9701403bec952020ee9907323050cdd8dbf534a1377541202a7e8df5e8f",
+          "size_bytes": 42579,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/Agent-Workflow-System-2.html"
+        },
+        {
+          "family_id": "agent-workflow-system",
+          "media_id": 625,
+          "sha256": "3593f9701403bec952020ee9907323050cdd8dbf534a1377541202a7e8df5e8f",
+          "size_bytes": 42579,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/Agent-Workflow-System-3.html"
+        }
+      ],
+      "museum_blurb": "A browser-based agent workflow workshop that could assemble and simulate multi-step agent plans without a live agent backend.",
+      "observed_controls": [
+        "Import Agent",
+        "Import Workflow",
+        "Workflow Name",
+        "Save Workflow",
+        "Export Workflow",
+        "Add Step",
+        "Run Workflow",
+        "Configure Step",
+        "Select Agent",
+        "Select Skills",
+        "System Prompt",
+        "Mock Parameters"
+      ],
+      "observed_summary": "Local workflow designer with an agent palette, configurable ordered steps, prompt and JSON editors, workflow and agent import, JSON export and deterministic mock execution.",
+      "position": 1,
+      "preview": {
+        "kind": "clean-room",
+        "reason": "An original local restoration is available in a strict sandbox.",
+        "url": "/learnwithkody/demos/367-agent-workflow-lab.html"
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "Representative URL still returns HTTP 200.",
+          "Numbered copies remain byte-identical.",
+          "Execution remains explicitly simulated.",
+          "Monaco and Tailwind dependencies still resolve.",
+          "The rebuild does not execute imported code."
+        ],
+        "episode_16x9": "How to design a visual agent workflow editor without accidentally building a remote-code execution engine.",
+        "hook": "This abandoned browser app could compose an entire agent workflow without running a single real agent.",
+        "proof_shots": [
+          "Full page with Available Agents, Workflow Builder and Execution Results.",
+          "Add Collect, Summarize and Review steps.",
+          "Open Configure Step and show agent, skills, prompt and parameters.",
+          "Enter malformed JSON and capture validation.",
+          "Export, re-import and run the synthetic workflow."
+        ],
+        "scene_beats": [
+          "Introduce the museum artifact and agent palette.",
+          "Build a synthetic three-step workflow.",
+          "Open the prompt and parameter editor.",
+          "Reveal that execution is deterministic mock output.",
+          "Show the clean-room rebuild rejecting invalid JSON."
+        ],
+        "short_9x16": "Three workflow nodes, zero agents, one surprisingly complete prototype."
+      },
+      "readiness": "medium-high-after-hardening",
+      "readiness_label": "Needs hardening",
+      "related": [
+        {
+          "kind": "lesson",
+          "title": "Agent Workflow Lab — Compose Plans Without Executing Imported Code",
+          "url": "/learnwithkody/examples/agent-workflow-lab/"
+        },
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#agent-workflow-system"
+        },
+        {
+          "kind": "content",
+          "title": "Explore agent-system builds",
+          "url": "/learnwithkody/examples/"
+        }
+      ],
+      "risk_level": "medium",
+      "risks": [
+        {
+          "evidence": "Imported names and configuration values are used in dynamically generated HTML.",
+          "severity": "medium"
+        },
+        {
+          "evidence": "Python files are parsed for metadata but not executed; execution results are explicitly mocked.",
+          "severity": "low"
+        }
+      ],
+      "search_text": "agent workflow system agent-workflow-system.html agent workbenches local workflow designer with an agent palette, configurable ordered steps, prompt and json editors, workflow and agent import, json export and deterministic mock execution. a browser-based agent workflow workshop that could assemble and simulate multi-step agent plans without a live agent backend. html css javascript filereader localstorage monaco editor tailwind css",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/Agent-Workflow-System.html",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "FileReader",
+        "localStorage",
+        "Monaco Editor",
+        "Tailwind CSS"
+      ],
+      "title": "Agent Workflow System"
+    },
+    {
+      "acceptance_checks": [
+        "Category filters deterministically show matching cards.",
+        "Editing an action changes only the local simulated command.",
+        "A two-step workflow shows ordered mock results and visible handoff state.",
+        "Export and import round-trip custom actions.",
+        "No action-related outbound request occurs."
+      ],
+      "aliases": [
+        "automated-actions-ui.html"
+      ],
+      "category": "copilot-prototypes",
+      "category_title": "Copilot Prototypes",
+      "clean_room_prompt": "Recreate the observable behavior of the public Automated Actions demo with original code: categorized enterprise action cards, editable natural-language commands, two-step action chaining, JSON import and export, loading states and clearly labeled simulated results. Do not send email, alter CRM data, call external services or copy source or visual assets.",
+      "dependencies": [
+        {
+          "purpose": "Dormant local backend branch",
+          "status": null,
+          "url": "http://localhost:7071/api/businessinsightbot_function"
+        }
+      ],
+      "embed_notes": "Embed only a clearly labeled simulation on an isolated origin; remove or disable the localhost backend branch.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/automated-actions-ui.html:718-839",
+        "kodyw.com:/wp-content/uploads/2025/03/automated-actions-ui.html:1069-1115",
+        "kodyw.com:/wp-content/uploads/2025/03/automated-actions-ui.html:1200-1303"
+      ],
+      "id": "automated-actions",
+      "lesson": null,
+      "media_ids": [
+        543,
+        545,
+        583,
+        599,
+        626
+      ],
+      "media_integrity": [
+        {
+          "family_id": "automated-actions",
+          "media_id": 543,
+          "sha256": "0156fb1d56d85e4365858a82d003e65063547e2383ddadf24cbe0f30ba44d3c1",
+          "size_bytes": 81303,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/automated-actions-ui.html"
+        },
+        {
+          "family_id": "automated-actions",
+          "media_id": 545,
+          "sha256": "0156fb1d56d85e4365858a82d003e65063547e2383ddadf24cbe0f30ba44d3c1",
+          "size_bytes": 81303,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/automated-actions-ui-1.html"
+        },
+        {
+          "family_id": "automated-actions",
+          "media_id": 583,
+          "sha256": "0156fb1d56d85e4365858a82d003e65063547e2383ddadf24cbe0f30ba44d3c1",
+          "size_bytes": 81303,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/automated-actions-ui-2.html"
+        },
+        {
+          "family_id": "automated-actions",
+          "media_id": 599,
+          "sha256": "0156fb1d56d85e4365858a82d003e65063547e2383ddadf24cbe0f30ba44d3c1",
+          "size_bytes": 81303,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/automated-actions-ui-3.html"
+        },
+        {
+          "family_id": "automated-actions",
+          "media_id": 626,
+          "sha256": "0156fb1d56d85e4365858a82d003e65063547e2383ddadf24cbe0f30ba44d3c1",
+          "size_bytes": 81303,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/automated-actions-ui-4.html"
+        }
+      ],
+      "museum_blurb": "A persuasive enterprise automation prototype whose safest feature is that its emails, CRM changes and memory operations are simulated.",
+      "observed_controls": [
+        "Import Conversation",
+        "Export Actions",
+        "Create Workflow",
+        "Category Filters",
+        "Edit Command",
+        "Run Action",
+        "Connect to another action",
+        "Run Workflow",
+        "Clear Imported Actions"
+      ],
+      "observed_summary": "Enterprise action-card prototype with Email, Dynamics 365 and Memory filters, editable commands, action chaining, workflow execution and JSON import or export. Results are generated by a hardcoded simulation branch.",
+      "position": 2,
+      "preview": {
+        "kind": "record-only",
+        "reason": "The verified audit does not approve the historical upload for embedding."
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "simulateAPI remains true.",
+          "No real email or Dynamics operation occurs.",
+          "The localhost branch remains dormant.",
+          "Imported actions round-trip.",
+          "The rebuild labels every result as simulated."
+        ],
+        "episode_16x9": "Prototype enterprise automation safely before connecting a single production system.",
+        "hook": "It looks like it sends emails and updates CRM, but the smartest design choice is that it actually does neither.",
+        "proof_shots": [
+          "Automated Actions overview and category tabs.",
+          "Select Email and Dynamics 365 filters.",
+          "Open Edit Command.",
+          "Connect two actions into a workflow.",
+          "Run the simulated workflow.",
+          "Show no action-related network request."
+        ],
+        "scene_beats": [
+          "Introduce the action-card interface.",
+          "Filter Email, Dynamics 365 and Memory actions.",
+          "Edit and connect two synthetic actions.",
+          "Reveal the hardcoded simulation mode.",
+          "Show a safe rebuild with explicit simulation badges."
+        ],
+        "short_9x16": "This CRM automation demo has a secret: every result is fake on purpose."
+      },
+      "readiness": "high-as-simulated-exhibit",
+      "readiness_label": "Restoration candidate",
+      "related": [
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#automated-actions"
+        },
+        {
+          "kind": "content",
+          "title": "Browse Copilot and interface work",
+          "url": "/work/"
+        }
+      ],
+      "risk_level": "medium",
+      "risks": [
+        {
+          "evidence": "The dormant live-response branch formats backend content into innerHTML without a dedicated sanitizer.",
+          "severity": "medium"
+        },
+        {
+          "evidence": "Action labels imply real email and CRM operations, but simulateAPI is set to true.",
+          "severity": "low"
+        }
+      ],
+      "search_text": "microsoft copilot — automated actions automated-actions-ui.html copilot prototypes enterprise action-card prototype with email, dynamics 365 and memory filters, editable commands, action chaining, workflow execution and json import or export. results are generated by a hardcoded simulation branch. a persuasive enterprise automation prototype whose safest feature is that its emails, crm changes and memory operations are simulated. html css javascript filereader json simulated asynchronous responses",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/automated-actions-ui.html",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "FileReader",
+        "JSON",
+        "simulated asynchronous responses"
+      ],
+      "title": "Microsoft Copilot — Automated Actions"
+    },
+    {
+      "acceptance_checks": [
+        "Two original built-in games respond to keyboard and touch controls.",
+        "Imported cartridges are accepted only when they match a documented JSON schema.",
+        "Executable fields and unknown JavaScript strings are rejected.",
+        "Export and import preserve data-only game settings.",
+        "The console remains playable offline after initial load."
+      ],
+      "aliases": [
+        "complete-retroplay-console-ios.html",
+        "complete-retroplay-console.html",
+        "gameboy-clone.html"
+      ],
+      "category": "playable-software",
+      "category_title": "Playable Software",
+      "clean_room_prompt": "Build an original retro handheld browser console based only on the public app's observable behavior. Include a library, two original Canvas games, keyboard and touch controls, fullscreen and import or export of a strictly validated data-only cartridge format. Never use eval or Function and never execute imported code.",
+      "dependencies": [
+        {
+          "purpose": "Console typography",
+          "status": 200,
+          "url": "https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Poppins:wght@400;600&display=swap"
+        },
+        {
+          "purpose": "Public game-cartridge discovery",
+          "status": 200,
+          "url": "https://api.github.com/repos/kody-w/localFirstTools/contents?ref=main"
+        },
+        {
+          "purpose": "Historical game cartridge",
+          "status": 404,
+          "url": "https://raw.githubusercontent.com/kody-w/localFirstTools/main/breakout-game.json"
+        },
+        {
+          "purpose": "Historical game cartridge",
+          "status": 404,
+          "url": "https://raw.githubusercontent.com/kody-w/localFirstTools/main/flappy-bird.json"
+        },
+        {
+          "purpose": "Historical game cartridge",
+          "status": 404,
+          "url": "https://raw.githubusercontent.com/kody-w/localFirstTools/main/snake-2.0-complete.json"
+        },
+        {
+          "purpose": "Historical game cartridge",
+          "status": 404,
+          "url": "https://raw.githubusercontent.com/kody-w/localFirstTools/main/space-invaders.json"
+        },
+        {
+          "purpose": "Historical game cartridge",
+          "status": 404,
+          "url": "https://raw.githubusercontent.com/kody-w/localFirstTools/main/tetris-game.json"
+        }
+      ],
+      "embed_notes": "Do not embed with cartridge import enabled. Replace executable cartridges with a strictly validated data-only format.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/complete-retroplay-console-ios.html:923-1015",
+        "kodyw.com:/wp-content/uploads/2025/03/complete-retroplay-console-ios.html:2294-2353",
+        "kodyw.com:/wp-content/uploads/2025/03/complete-retroplay-console.html:888-1000",
+        "kodyw.com:/wp-content/uploads/2025/03/gameboy-clone.html:2170-2287"
+      ],
+      "id": "retroplay-console",
+      "lesson": null,
+      "media_ids": [
+        534,
+        535,
+        536,
+        546,
+        547,
+        551,
+        574,
+        575,
+        576,
+        600,
+        601,
+        605,
+        627,
+        628
+      ],
+      "media_integrity": [
+        {
+          "family_id": "retroplay-console",
+          "media_id": 534,
+          "sha256": "decd9c2e42ca2df25056e0b40b15e3558543e35c92e4c168c081ab5588fc6850",
+          "size_bytes": 106564,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/complete-retroplay-console-ios.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 535,
+          "sha256": "8275bd57e7395111db713d9157f509be5f685cc1abcacc350fd0b25681f61d2e",
+          "size_bytes": 77739,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/complete-retroplay-console.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 536,
+          "sha256": "5b08a5f3576cb00397422ccfafc4731505654428a9463dc2af74233a31645968",
+          "size_bytes": 103424,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/gameboy-clone.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 546,
+          "sha256": "decd9c2e42ca2df25056e0b40b15e3558543e35c92e4c168c081ab5588fc6850",
+          "size_bytes": 106564,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/complete-retroplay-console-ios-1.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 547,
+          "sha256": "8275bd57e7395111db713d9157f509be5f685cc1abcacc350fd0b25681f61d2e",
+          "size_bytes": 77739,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/complete-retroplay-console-1.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 551,
+          "sha256": "5b08a5f3576cb00397422ccfafc4731505654428a9463dc2af74233a31645968",
+          "size_bytes": 103424,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/gameboy-clone-1.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 574,
+          "sha256": "decd9c2e42ca2df25056e0b40b15e3558543e35c92e4c168c081ab5588fc6850",
+          "size_bytes": 106564,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/complete-retroplay-console-ios-2.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 575,
+          "sha256": "8275bd57e7395111db713d9157f509be5f685cc1abcacc350fd0b25681f61d2e",
+          "size_bytes": 77739,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/complete-retroplay-console-2.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 576,
+          "sha256": "5b08a5f3576cb00397422ccfafc4731505654428a9463dc2af74233a31645968",
+          "size_bytes": 103424,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/gameboy-clone-2.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 600,
+          "sha256": "decd9c2e42ca2df25056e0b40b15e3558543e35c92e4c168c081ab5588fc6850",
+          "size_bytes": 106564,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/complete-retroplay-console-ios-3.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 601,
+          "sha256": "8275bd57e7395111db713d9157f509be5f685cc1abcacc350fd0b25681f61d2e",
+          "size_bytes": 77739,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/complete-retroplay-console-3.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 605,
+          "sha256": "5b08a5f3576cb00397422ccfafc4731505654428a9463dc2af74233a31645968",
+          "size_bytes": 103424,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/gameboy-clone-3.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 627,
+          "sha256": "decd9c2e42ca2df25056e0b40b15e3558543e35c92e4c168c081ab5588fc6850",
+          "size_bytes": 106564,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/complete-retroplay-console-ios-4.html"
+        },
+        {
+          "family_id": "retroplay-console",
+          "media_id": 628,
+          "sha256": "8275bd57e7395111db713d9157f509be5f685cc1abcacc350fd0b25681f61d2e",
+          "size_bytes": 77739,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/complete-retroplay-console-4.html"
+        }
+      ],
+      "museum_blurb": "A Game Boy-shaped browser app store that treated JSON files as downloadable game cartridges.",
+      "observed_controls": [
+        "D-pad",
+        "A",
+        "B",
+        "Start",
+        "Select",
+        "Fullscreen",
+        "RetroPlay Store",
+        "Upload Game",
+        "Browse GitHub",
+        "Export Game"
+      ],
+      "observed_summary": "Handheld browser-console family with D-pad, A/B, Start and Select controls, keyboard and touch input, Canvas games, a game library, JSON cartridge import and export, fullscreen handling and GitHub browsing.",
+      "position": 3,
+      "preview": {
+        "kind": "record-only",
+        "reason": "The verified audit does not approve the historical upload for embedding."
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "Historical game URLs still return 404 or the script is updated.",
+          "The iOS variant still includes fallback game data.",
+          "The original processor still uses new Function.",
+          "The rebuild has no evaluation primitive.",
+          "Demonstrated games and art are original."
+        ],
+        "episode_16x9": "Rebuilding a browser game console while replacing executable JSON with a safe cartridge specification.",
+        "hook": "A Game Boy-shaped browser console became an app store for JSON game cartridges.",
+        "proof_shots": [
+          "Hero shot of the iOS console.",
+          "Open RetroPlay Store.",
+          "Play a built-in fallback game.",
+          "Show Upload Game, Browse GitHub and Export Game.",
+          "Compare new Function with schema validation.",
+          "Import a harmless data-only cartridge into the rebuild."
+        ],
+        "scene_beats": [
+          "Reveal the handheld shell.",
+          "Open the built-in game library.",
+          "Demonstrate controls on an original game.",
+          "Explain the executable-cartridge risk.",
+          "Show the safe data-only cartridge rebuild."
+        ],
+        "short_9x16": "Would you install a JSON game cartridge if it could execute JavaScript?"
+      },
+      "readiness": "medium-rebuild-preferred",
+      "readiness_label": "Needs hardening",
+      "related": [
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#retroplay-console"
+        },
+        {
+          "kind": "content",
+          "title": "Explore browser-game builds",
+          "url": "/learnwithkody/examples/"
+        }
+      ],
+      "risk_level": "critical",
+      "risks": [
+        {
+          "evidence": "Desktop and iOS variants construct imported game methods with new Function, allowing cartridge-supplied JavaScript execution.",
+          "severity": "critical"
+        },
+        {
+          "evidence": "Several hardcoded GitHub game-cartridge URLs returned HTTP 404.",
+          "severity": "medium"
+        }
+      ],
+      "search_text": "retroplay console complete-retroplay-console-ios.html complete-retroplay-console.html gameboy-clone.html playable software handheld browser-console family with d-pad, a/b, start and select controls, keyboard and touch input, canvas games, a game library, json cartridge import and export, fullscreen handling and github browsing. a game boy-shaped browser app store that treated json files as downloadable game cartridges. html css javascript canvas 2d filereader blob urls github rest api keyboard input touch input new function",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/complete-retroplay-console-ios.html",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "Canvas 2D",
+        "FileReader",
+        "Blob URLs",
+        "GitHub REST API",
+        "keyboard input",
+        "touch input",
+        "new Function"
+      ],
+      "title": "RetroPlay Console"
+    },
+    {
+      "acceptance_checks": [
+        "A valid fixture produces correct answered and total percentages.",
+        "Search matches question, answer and requirement text.",
+        "Edited values immediately update metrics and exports.",
+        "Invalid JSON and invalid field types are rejected without data loss.",
+        "HTML-like input is displayed as inert text."
+      ],
+      "aliases": [
+        "crm-questionnaire-viewer.html"
+      ],
+      "category": "business-systems",
+      "category_title": "Business Systems",
+      "clean_room_prompt": "Using the public CRM Questionnaire Progress Viewer only as a behavioral reference, create an original offline JSON review tool with completion metrics, search, editable question and requirement records, confidence and citation fields, deletion confirmation and HTML or CSV export. Validate the schema and render all imported text safely.",
+      "dependencies": [],
+      "embed_notes": "Use a sandboxed restoration with schema validation and text-only rendering of imported values.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/crm-questionnaire-viewer.html:618-730",
+        "kodyw.com:/wp-content/uploads/2025/03/crm-questionnaire-viewer.html:1068-1076",
+        "kodyw.com:/wp-content/uploads/2025/03/crm-questionnaire-viewer.html:2037-2341"
+      ],
+      "id": "crm-questionnaire-viewer",
+      "lesson": null,
+      "media_ids": [
+        540,
+        548,
+        580,
+        602,
+        629
+      ],
+      "media_integrity": [
+        {
+          "family_id": "crm-questionnaire-viewer",
+          "media_id": 540,
+          "sha256": "e99d519ceda61dc39d2e6ad742ab25289d02a6d67b2ea33731567d6683621d15",
+          "size_bytes": 109780,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/crm-questionnaire-viewer.html"
+        },
+        {
+          "family_id": "crm-questionnaire-viewer",
+          "media_id": 548,
+          "sha256": "e99d519ceda61dc39d2e6ad742ab25289d02a6d67b2ea33731567d6683621d15",
+          "size_bytes": 109780,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/crm-questionnaire-viewer-1.html"
+        },
+        {
+          "family_id": "crm-questionnaire-viewer",
+          "media_id": 580,
+          "sha256": "e99d519ceda61dc39d2e6ad742ab25289d02a6d67b2ea33731567d6683621d15",
+          "size_bytes": 109780,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/crm-questionnaire-viewer-2.html"
+        },
+        {
+          "family_id": "crm-questionnaire-viewer",
+          "media_id": 602,
+          "sha256": "e99d519ceda61dc39d2e6ad742ab25289d02a6d67b2ea33731567d6683621d15",
+          "size_bytes": 109780,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/crm-questionnaire-viewer-3.html"
+        },
+        {
+          "family_id": "crm-questionnaire-viewer",
+          "media_id": 629,
+          "sha256": "e99d519ceda61dc39d2e6ad742ab25289d02a6d67b2ea33731567d6683621d15",
+          "size_bytes": 109780,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/crm-questionnaire-viewer-4.html"
+        }
+      ],
+      "museum_blurb": "A single-file CRM assessment workstation combining progress measurement, evidence tracking, editing and report export.",
+      "observed_controls": [
+        "Upload JSON File",
+        "Search",
+        "Export Report",
+        "Print Report",
+        "Save Changes",
+        "Edit Question",
+        "Edit Requirement",
+        "Delete Answer",
+        "Confidence",
+        "Source Citation",
+        "HTML Export",
+        "CSV Export"
+      ],
+      "observed_summary": "Offline questionnaire dashboard that imports JSON, calculates question and requirement completion, searches records, edits answers and metadata, records confidence and sources, deletes answers, prints and exports HTML or CSV.",
+      "position": 4,
+      "preview": {
+        "kind": "record-only",
+        "reason": "The verified audit does not approve the historical upload for embedding."
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "Published fixture calculations are correct.",
+          "HTML and CSV exports remain present.",
+          "The historical version still uses dynamic HTML.",
+          "The rebuild validates and escapes all fields.",
+          "No confidential CRM data appears."
+        ],
+        "episode_16x9": "How to build an offline assessment dashboard from nothing but a JSON contract.",
+        "hook": "A single HTML file turns a CRM questionnaire into progress metrics, evidence tracking and a printable report.",
+        "proof_shots": [
+          "Upload a three-question synthetic fixture.",
+          "Show question and requirement completion.",
+          "Search a fixture term.",
+          "Edit an answer, confidence and citation.",
+          "Open Export Report Options.",
+          "Demonstrate inert HTML-like input in the rebuild."
+        ],
+        "scene_beats": [
+          "Show the empty upload state.",
+          "Load a synthetic fixture.",
+          "Reveal completion metrics and evidence fields.",
+          "Edit an answer and update measurements.",
+          "Export a safe report from the rebuild."
+        ],
+        "short_9x16": "Change one CRM answer and watch three dashboard measurements update."
+      },
+      "readiness": "high-after-sanitization",
+      "readiness_label": "Restoration candidate",
+      "related": [
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#crm-questionnaire-viewer"
+        },
+        {
+          "kind": "content",
+          "title": "Explore business-system simulations",
+          "url": "/simulated-dynamics365/"
+        }
+      ],
+      "risk_level": "high",
+      "risks": [
+        {
+          "evidence": "Imported questionnaire strings are assembled into innerHTML without verified sanitization.",
+          "severity": "high"
+        }
+      ],
+      "search_text": "crm questionnaire progress viewer crm-questionnaire-viewer.html business systems offline questionnaire dashboard that imports json, calculates question and requirement completion, searches records, edits answers and metadata, records confidence and sources, deletes answers, prints and exports html or csv. a single-file crm assessment workstation combining progress measurement, evidence tracking, editing and report export. html css javascript filereader json blob urls print styles",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/crm-questionnaire-viewer.html",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "FileReader",
+        "JSON",
+        "Blob URLs",
+        "print styles"
+      ],
+      "title": "CRM Questionnaire Progress Viewer"
+    },
+    {
+      "acceptance_checks": [
+        "Every predefined action returns a labeled simulated result.",
+        "Imported valid actions appear in a separate section.",
+        "Malformed action JSON is rejected.",
+        "Theme preference survives reload.",
+        "No email, CRM, memory or external API request is made."
+      ],
+      "aliases": [
+        "custom-copilot-ui.html",
+        "MAC (Migration Assessment Copilot) - Automated Actions"
+      ],
+      "category": "copilot-prototypes",
+      "category_title": "Copilot Prototypes",
+      "clean_room_prompt": "Rebuild the visible MAC quick-actions experience with original code: action shortcuts, categorized cards, JSON-defined custom actions, theme selection, status messages and deterministic simulated responses. Label every outcome as simulated, perform no real business operation and sanitize formatted output.",
+      "dependencies": [
+        {
+          "purpose": "Interface icons",
+          "status": 200,
+          "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+        }
+      ],
+      "embed_notes": "Use only as an isolated, explicitly simulated restoration with safe response formatting.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/custom-copilot-ui.html:514-670",
+        "kodyw.com:/wp-content/uploads/2025/03/custom-copilot-ui.html:715-856"
+      ],
+      "id": "mac-automated-actions",
+      "lesson": null,
+      "media_ids": [
+        542,
+        549,
+        582,
+        603
+      ],
+      "media_integrity": [
+        {
+          "family_id": "mac-automated-actions",
+          "media_id": 542,
+          "sha256": "c830180c94b29e8288cf81c4c46f6ff1c666160bd588c0ffcbf48441145b39dd",
+          "size_bytes": 48441,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/custom-copilot-ui.html"
+        },
+        {
+          "family_id": "mac-automated-actions",
+          "media_id": 549,
+          "sha256": "c830180c94b29e8288cf81c4c46f6ff1c666160bd588c0ffcbf48441145b39dd",
+          "size_bytes": 48441,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/custom-copilot-ui-1.html"
+        },
+        {
+          "family_id": "mac-automated-actions",
+          "media_id": 582,
+          "sha256": "c830180c94b29e8288cf81c4c46f6ff1c666160bd588c0ffcbf48441145b39dd",
+          "size_bytes": 48441,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/custom-copilot-ui-2.html"
+        },
+        {
+          "family_id": "mac-automated-actions",
+          "media_id": 603,
+          "sha256": "c830180c94b29e8288cf81c4c46f6ff1c666160bd588c0ffcbf48441145b39dd",
+          "size_bytes": 48441,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/custom-copilot-ui-3.html"
+        }
+      ],
+      "museum_blurb": "A pocket-sized Copilot action launcher that convincingly demonstrated enterprise outcomes with canned local responses.",
+      "observed_controls": [
+        "Theme",
+        "Settings",
+        "Quick Actions",
+        "Run Action",
+        "Import Actions",
+        "Export Actions",
+        "Clear Imported Actions",
+        "Clear Response"
+      ],
+      "observed_summary": "Compact quick-action interface for email, meetings, opportunities, lead creation, memory, document processing and auto-answering, with theme selection, imported actions, export and simulated formatted responses.",
+      "position": 5,
+      "preview": {
+        "kind": "record-only",
+        "reason": "The verified audit does not approve the historical upload for embedding."
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "Simulation remains enabled.",
+          "The Settings control remains unwired or is updated.",
+          "Theme persistence still works.",
+          "Imported actions remain local.",
+          "The rebuild performs no external operation."
+        ],
+        "episode_16x9": "Designing believable Copilot prototypes with deterministic fixtures instead of risky integrations.",
+        "hook": "Eight enterprise actions, one browser page and no enterprise system required.",
+        "proof_shots": [
+          "Quick Actions overview.",
+          "Select Opportunities or Status Update.",
+          "Capture loading and canned result.",
+          "Import Prepare Demo Notes.",
+          "Show the imported action.",
+          "Toggle theme and reload."
+        ],
+        "scene_beats": [
+          "Introduce the quick-action grid.",
+          "Trigger a labeled simulated result.",
+          "Import a synthetic custom action.",
+          "Show theme persistence.",
+          "Rebuild with safe formatting."
+        ],
+        "short_9x16": "This Copilot action looks live. Here is why it safely is not."
+      },
+      "readiness": "high-as-simulation",
+      "readiness_label": "Restoration candidate",
+      "related": [
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#mac-automated-actions"
+        },
+        {
+          "kind": "content",
+          "title": "Browse Copilot and interface work",
+          "url": "/work/"
+        }
+      ],
+      "risk_level": "medium",
+      "risks": [
+        {
+          "evidence": "Formatted response text is inserted into innerHTML without a dedicated sanitizer.",
+          "severity": "medium"
+        },
+        {
+          "evidence": "The Settings button appeared unreferenced during static inspection.",
+          "severity": "low"
+        }
+      ],
+      "search_text": "mac automated actions custom-copilot-ui.html mac (migration assessment copilot) - automated actions copilot prototypes compact quick-action interface for email, meetings, opportunities, lead creation, memory, document processing and auto-answering, with theme selection, imported actions, export and simulated formatted responses. a pocket-sized copilot action launcher that convincingly demonstrated enterprise outcomes with canned local responses. html css javascript filereader localstorage simulated responses font awesome",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/custom-copilot-ui.html",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "FileReader",
+        "localStorage",
+        "simulated responses",
+        "Font Awesome"
+      ],
+      "title": "MAC Automated Actions"
+    },
+    {
+      "acceptance_checks": [
+        "A prominent non-clinical disclaimer appears before the activity.",
+        "Pause and Stop remain available throughout motion and breathing exercises.",
+        "Ratings from 0 through 10 update a local chart correctly.",
+        "No journal or rating data leaves the browser.",
+        "Imported text is sanitized and persistence is opt-in.",
+        "Professional-support and crisis guidance is visible."
+      ],
+      "aliases": [
+        "emdr-complete.html",
+        "EMDR Therapy Tool"
+      ],
+      "category": "sensitive-human-centered",
+      "category_title": "Sensitive Human-Centered Experiments",
+      "clean_room_prompt": "Create an original, explicitly non-clinical grounding and reflection demo inspired only by the public interface's observable sequence: optional journal text, a 0-10 self-rating, pausable bilateral visual motion, breathing cues, repeated check-ins, a progress chart and local export. Do not diagnose, prescribe, claim to provide EMDR treatment, use AI-therapist language or transmit data.",
+      "dependencies": [
+        {
+          "purpose": "Runtime styling",
+          "status": 200,
+          "url": "https://cdn.tailwindcss.com"
+        },
+        {
+          "purpose": "SUDS history chart",
+          "status": 200,
+          "url": "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"
+        }
+      ],
+      "embed_notes": "Present as a contextual historical exhibit only. A rebuild should be explicitly non-clinical, local-only, consent-based and easy to stop or delete.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/emdr-complete.html:437-780",
+        "kodyw.com:/wp-content/uploads/2025/03/emdr-complete.html:887-940",
+        "kodyw.com:/wp-content/uploads/2025/03/emdr-complete.html:1191-1229",
+        "kodyw.com:/wp-content/uploads/2025/03/emdr-complete.html:1811-1872",
+        "kodyw.com:/wp-content/uploads/2025/03/emdr-complete.html:2530-2562"
+      ],
+      "id": "emdr-therapy-assistant",
+      "lesson": null,
+      "media_ids": [
+        550,
+        597,
+        604
+      ],
+      "media_integrity": [
+        {
+          "family_id": "emdr-therapy-assistant",
+          "media_id": 550,
+          "sha256": "9a02b6e7ef3a512c98dffae434c544cf6571c3bb130e1b38e50e3fc8742f37ae",
+          "size_bytes": 95061,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/emdr-complete.html"
+        },
+        {
+          "family_id": "emdr-therapy-assistant",
+          "media_id": 597,
+          "sha256": "9a02b6e7ef3a512c98dffae434c544cf6571c3bb130e1b38e50e3fc8742f37ae",
+          "size_bytes": 95061,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/emdr-complete-1.html"
+        },
+        {
+          "family_id": "emdr-therapy-assistant",
+          "media_id": 604,
+          "sha256": "9a02b6e7ef3a512c98dffae434c544cf6571c3bb130e1b38e50e3fc8742f37ae",
+          "size_bytes": 95061,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/emdr-complete-2.html"
+        }
+      ],
+      "museum_blurb": "A technically ambitious but sensitive browser experiment combining guided motion, self-rating, reflection, charting and portable session files.",
+      "observed_controls": [
+        "Import Session",
+        "Save Session",
+        "Memory Entry",
+        "Distress Slider",
+        "Start Processing",
+        "Start Immersive Session",
+        "Pause",
+        "Stop Session",
+        "Speed",
+        "Current Distress",
+        "Observations",
+        "Continue to Next Set"
+      ],
+      "observed_summary": "Mental-health-adjacent prototype collecting a target-memory description and 0-10 distress rating, guiding timed eye-movement sets and breathing, recording observations, charting SUDS history and importing or exporting session JSON.",
+      "position": 6,
+      "preview": {
+        "kind": "record-only",
+        "reason": "The verified audit does not approve the historical upload for embedding."
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "The artifact still stores session backup data locally.",
+          "The historical professional-support disclaimer remains present.",
+          "The rebuild is never described as treatment.",
+          "No real health information is used.",
+          "The rebuild transmits nothing.",
+          "Support guidance is appropriate for the intended audience."
+        ],
+        "episode_16x9": "What a mental-health-adjacent app teaches about consent, privacy, language and product boundaries.",
+        "hook": "This artifact shows why rebuilding sensitive software is as much an ethics lesson as a coding lesson.",
+        "proof_shots": [
+          "Museum warning and metadata.",
+          "Static four-stage process and chart.",
+          "Neutral fictional demonstration entry.",
+          "Pause and Stop in the rebuild.",
+          "Synthetic rating updating the chart.",
+          "Local-data disclosure and delete control."
+        ],
+        "scene_beats": [
+          "Present the artifact behind a non-clinical context card.",
+          "Show only generic rating, breathing, motion and chart structure.",
+          "Identify privacy and authority risks.",
+          "Reframe it as a grounding and reflection lesson.",
+          "Demonstrate consent, pause, stop and local-only data."
+        ],
+        "short_9x16": "The most important feature in this rebuild is not animation. It is the Stop button."
+      },
+      "readiness": "hold-contextual-restoration",
+      "readiness_label": "Context only",
+      "related": [
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#emdr-therapy-assistant"
+        },
+        {
+          "kind": "content",
+          "title": "Read the design constitution",
+          "url": "/constitution/"
+        }
+      ],
+      "risk_level": "high",
+      "risks": [
+        {
+          "evidence": "Health-related journal text and ratings are stored unencrypted in localStorage and export files.",
+          "severity": "high"
+        },
+        {
+          "evidence": "Imported therapist insight content is inserted into HTML and may imply clinical authority.",
+          "severity": "high"
+        },
+        {
+          "evidence": "The interface uses terms such as AI Therapist Analysis despite being a browser prototype.",
+          "severity": "medium"
+        }
+      ],
+      "search_text": "emdr therapy assistant emdr-complete.html emdr therapy tool sensitive human-centered experiments mental-health-adjacent prototype collecting a target-memory description and 0-10 distress rating, guiding timed eye-movement sets and breathing, recording observations, charting suds history and importing or exporting session json. a technically ambitious but sensitive browser experiment combining guided motion, self-rating, reflection, charting and portable session files. html tailwind css javascript chart.js canvas filereader localstorage timed animation",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/emdr-complete.html",
+      "technologies": [
+        "HTML",
+        "Tailwind CSS",
+        "JavaScript",
+        "Chart.js",
+        "Canvas",
+        "FileReader",
+        "localStorage",
+        "timed animation"
+      ],
+      "title": "EMDR Therapy Assistant"
+    },
+    {
+      "acceptance_checks": [
+        "Filters update the opportunity table and KPI totals consistently.",
+        "Switching universes changes a clearly separated local dataset.",
+        "Agent runs use only allowlisted operations and deterministic fixture data.",
+        "Executable JavaScript imports are rejected.",
+        "State export and import round-trip without evaluating code."
+      ],
+      "aliases": [
+        "splitspace-1.html",
+        "splitspace-copy.html",
+        "improved-dashboard.html"
+      ],
+      "category": "business-systems",
+      "category_title": "Business Systems",
+      "clean_room_prompt": "Build an original fictional multi-universe sales dashboard using the public Slipspace app only as black-box inspiration. Include KPI cards, opportunity filters, simulated reports, configurable data-only agents, universe settings, execution history and JSON import or export. Replace executable agent code with an allowlisted operation schema.",
+      "dependencies": [
+        {
+          "purpose": "Interface typography",
+          "status": 200,
+          "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        }
+      ],
+      "embed_notes": "Use only the complete variant for documentation. Replace executable agent code with an allowlisted data model before interactive restoration.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/splitspace-1.html:1352-1607",
+        "kodyw.com:/wp-content/uploads/2025/03/splitspace-1.html:3312-3409",
+        "kodyw.com:/wp-content/uploads/2025/03/improved-dashboard.html:986-1005",
+        "kodyw.com:/wp-content/uploads/2025/03/splitspace-copy.html:4187-4221"
+      ],
+      "id": "slipspace-business-dashboard",
+      "lesson": null,
+      "media_ids": [
+        552,
+        562,
+        563,
+        571,
+        572,
+        573,
+        606,
+        616,
+        617
+      ],
+      "media_integrity": [
+        {
+          "family_id": "slipspace-business-dashboard",
+          "media_id": 552,
+          "sha256": "ec38b460ade7ef0e6e0d582b078ba0063075a7b859fbacbb18cc79633a2146c3",
+          "size_bytes": 28470,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/improved-dashboard.html"
+        },
+        {
+          "family_id": "slipspace-business-dashboard",
+          "media_id": 562,
+          "sha256": "e7fa0f3aaff274f91314854f5c79d5e4c30d681c2e39a0648710006a7c016bab",
+          "size_bytes": 190070,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/splitspace-copy.html"
+        },
+        {
+          "family_id": "slipspace-business-dashboard",
+          "media_id": 563,
+          "sha256": "7db069e6c3d4ccc4d6ea6052a2f3672c7c486eea08bae18ec3b649e12bfac66b",
+          "size_bytes": 230340,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/splitspace-1.html"
+        },
+        {
+          "family_id": "slipspace-business-dashboard",
+          "media_id": 571,
+          "sha256": "ec38b460ade7ef0e6e0d582b078ba0063075a7b859fbacbb18cc79633a2146c3",
+          "size_bytes": 28470,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/improved-dashboard-1.html"
+        },
+        {
+          "family_id": "slipspace-business-dashboard",
+          "media_id": 572,
+          "sha256": "e7fa0f3aaff274f91314854f5c79d5e4c30d681c2e39a0648710006a7c016bab",
+          "size_bytes": 190070,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/splitspace-copy-1.html"
+        },
+        {
+          "family_id": "slipspace-business-dashboard",
+          "media_id": 573,
+          "sha256": "7db069e6c3d4ccc4d6ea6052a2f3672c7c486eea08bae18ec3b649e12bfac66b",
+          "size_bytes": 230340,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/splitspace-2.html"
+        },
+        {
+          "family_id": "slipspace-business-dashboard",
+          "media_id": 606,
+          "sha256": "ec38b460ade7ef0e6e0d582b078ba0063075a7b859fbacbb18cc79633a2146c3",
+          "size_bytes": 28470,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/improved-dashboard-2.html"
+        },
+        {
+          "family_id": "slipspace-business-dashboard",
+          "media_id": 616,
+          "sha256": "e7fa0f3aaff274f91314854f5c79d5e4c30d681c2e39a0648710006a7c016bab",
+          "size_bytes": 190070,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/splitspace-copy-2.html"
+        },
+        {
+          "family_id": "slipspace-business-dashboard",
+          "media_id": 617,
+          "sha256": "7db069e6c3d4ccc4d6ea6052a2f3672c7c486eea08bae18ec3b649e12bfac66b",
+          "size_bytes": 230340,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/splitspace-3.html"
+        }
+      ],
+      "museum_blurb": "A sales dashboard imagined as a universe-switching agent platform, preserved alongside two visibly unfinished fragments.",
+      "observed_controls": [
+        "Dashboard",
+        "Opportunities",
+        "Agents",
+        "Universes",
+        "Settings",
+        "Generate Daily Report",
+        "Filters",
+        "Run Agent Analysis",
+        "New Agent",
+        "Configure",
+        "Run",
+        "Stop",
+        "Import Universe",
+        "Edit Universe"
+      ],
+      "observed_summary": "Fictional sales dashboard with opportunity metrics and filters, reports, agent insights, configurable agents, universe management, theme settings, JSON parameters and local persistence.",
+      "position": 7,
+      "preview": {
+        "kind": "record-only",
+        "reason": "The verified audit does not approve the historical upload for embedding."
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "splitspace-1 remains complete.",
+          "The two archival variants remain truncated.",
+          "The original still constructs dynamic functions.",
+          "All displayed sales data is fictional.",
+          "The rebuild supports only allowlisted operations."
+        ],
+        "episode_16x9": "Rebuilding an AI sales dashboard without letting configurable agents execute arbitrary code.",
+        "hook": "What if a sales dashboard could switch universes and every universe had its own AI agents?",
+        "proof_shots": [
+          "Full splitspace-1 dashboard.",
+          "KPI cards and Recent Opportunities.",
+          "Change a stage or priority filter.",
+          "Switch synthetic universes.",
+          "Open agent configuration without entering code.",
+          "Show incomplete archival variants.",
+          "Run a safe Summarize Pipeline operation in the rebuild."
+        ],
+        "scene_beats": [
+          "Introduce the fictional universe metaphor.",
+          "Tour KPIs, opportunities and agents.",
+          "Filter a synthetic pipeline and switch universes.",
+          "Expose the dynamic-code risk.",
+          "Rebuild agents as allowlisted transformations."
+        ],
+        "short_9x16": "This CRM has parallel universes and one dangerous JavaScript shortcut."
+      },
+      "readiness": "medium-after-code-removal",
+      "readiness_label": "Needs hardening",
+      "related": [
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#slipspace-business-dashboard"
+        },
+        {
+          "kind": "content",
+          "title": "Explore business-system simulations",
+          "url": "/simulated-dynamics365/"
+        }
+      ],
+      "risk_level": "critical",
+      "risks": [
+        {
+          "evidence": "Configured agent code is executed with new Function.",
+          "severity": "critical"
+        },
+        {
+          "evidence": "The improved-dashboard and splitspace-copy variants terminate in the middle of CSS or JavaScript.",
+          "severity": "high"
+        }
+      ],
+      "search_text": "slipspace business dashboard splitspace-1.html splitspace-copy.html improved-dashboard.html business systems fictional sales dashboard with opportunity metrics and filters, reports, agent insights, configurable agents, universe management, theme settings, json parameters and local persistence. a sales dashboard imagined as a universe-switching agent platform, preserved alongside two visibly unfinished fragments. html css javascript localstorage json new function google fonts",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/splitspace-1.html",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "localStorage",
+        "JSON",
+        "new Function",
+        "Google Fonts"
+      ],
+      "title": "Slipspace Business Dashboard"
+    },
+    {
+      "acceptance_checks": [
+        "Add, edit and delete operations persist after reload.",
+        "Export and import reproduce card order and metadata.",
+        "javascript and executable data URLs are rejected.",
+        "Imported labels render as text rather than HTML.",
+        "Test links open only after explicit user action."
+      ],
+      "aliases": [
+        "index.html"
+      ],
+      "category": "local-first-utilities",
+      "category_title": "Local-First Utilities",
+      "clean_room_prompt": "Create an original local-first mini-app catalog based only on the public hub's observed behavior. Support card creation, editing, deletion, tags, emoji icons, validated links, JSON configuration import and export and local persistence. Use safe DOM APIs and reject unsafe URL schemes.",
+      "dependencies": [],
+      "embed_notes": "Use safe DOM construction and reject javascript, executable data URLs and malformed destinations.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/index.html:297-314",
+        "kodyw.com:/wp-content/uploads/2025/03/index.html:323-450"
+      ],
+      "id": "utility-apps-hub",
+      "lesson": null,
+      "media_ids": [
+        554,
+        596,
+        608
+      ],
+      "media_integrity": [
+        {
+          "family_id": "utility-apps-hub",
+          "media_id": 554,
+          "sha256": "9578f513595dc391d1141dbcc38c51087d10a01271870b4219cb15af68323fde",
+          "size_bytes": 23193,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/index.html"
+        },
+        {
+          "family_id": "utility-apps-hub",
+          "media_id": 596,
+          "sha256": "9578f513595dc391d1141dbcc38c51087d10a01271870b4219cb15af68323fde",
+          "size_bytes": 23193,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/index-1.html"
+        },
+        {
+          "family_id": "utility-apps-hub",
+          "media_id": 608,
+          "sha256": "9578f513595dc391d1141dbcc38c51087d10a01271870b4219cb15af68323fde",
+          "size_bytes": 23193,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/index-2.html"
+        }
+      ],
+      "museum_blurb": "A tiny local app store for organizing standalone HTML utilities without a server or database.",
+      "observed_controls": [
+        "Settings",
+        "Import Apps Configuration",
+        "Export Current Configuration",
+        "Add New App",
+        "Edit App",
+        "Delete App",
+        "Title",
+        "Description",
+        "Path or URL",
+        "Tags",
+        "Icon"
+      ],
+      "observed_summary": "Editable local catalog of mini-application cards with titles, descriptions, tags, icons, paths, add, edit, delete, local persistence and JSON configuration import or export.",
+      "position": 8,
+      "preview": {
+        "kind": "record-only",
+        "reason": "The verified audit does not approve the historical upload for embedding."
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "The three default app URLs still resolve.",
+          "Export and import preserve metadata.",
+          "Historical values remain dynamically rendered.",
+          "The rebuild rejects unsafe schemes.",
+          "No external app opens without a deliberate click."
+        ],
+        "episode_16x9": "Build your own private app store with localStorage, JSON and strict link validation.",
+        "hook": "Before app stores became enormous, this tiny page made one out of local HTML files.",
+        "proof_shots": [
+          "Initial EMDR, Mermaid and Task Tracker cards.",
+          "Open Add New App.",
+          "Add a synthetic Color Notes card.",
+          "Edit icon and tags.",
+          "Export, remove and re-import it.",
+          "Show unsafe URL rejection in the rebuild."
+        ],
+        "scene_beats": [
+          "Show the original default cards.",
+          "Add a synthetic card.",
+          "Edit its metadata and destination.",
+          "Export and restore the catalog.",
+          "Explain safe URL handling."
+        ],
+        "short_9x16": "A complete app store in one HTML file, until someone pastes a dangerous URL."
+      },
+      "readiness": "high-after-url-validation",
+      "readiness_label": "Restoration candidate",
+      "related": [
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#utility-apps-hub"
+        },
+        {
+          "kind": "content",
+          "title": "Browse local-first examples",
+          "url": "/learnwithkody/examples/"
+        }
+      ],
+      "risk_level": "high",
+      "risks": [
+        {
+          "evidence": "Imported card data and user-provided URLs are placed into generated HTML without strict URL-scheme validation.",
+          "severity": "high"
+        }
+      ],
+      "search_text": "utility apps hub index.html local-first utilities editable local catalog of mini-application cards with titles, descriptions, tags, icons, paths, add, edit, delete, local persistence and json configuration import or export. a tiny local app store for organizing standalone html utilities without a server or database. html css javascript localstorage filereader json",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/index.html",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "localStorage",
+        "FileReader",
+        "JSON"
+      ],
+      "title": "Utility Apps Hub"
+    },
+    {
+      "acceptance_checks": [
+        "Creating and switching identities isolates their histories.",
+        "Playback moves previous and next without changing stored messages.",
+        "Branching creates a new history from the selected message.",
+        "Export and import preserve branches and metadata.",
+        "The default build makes no backend request and persists no secret."
+      ],
+      "aliases": [
+        "index_MAC.html",
+        "MAC"
+      ],
+      "category": "copilot-prototypes",
+      "category_title": "Copilot Prototypes",
+      "clean_room_prompt": "Reproduce the public MAC client's observable UX with original code: local chat history, named session identities, import and export, theme and optional sounds, timeline playback and branching from a prior message. Use a mock transport by default, keep credentials in memory only and sanitize responses.",
+      "dependencies": [
+        {
+          "purpose": "DOM and interface utilities",
+          "status": 200,
+          "url": "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        },
+        {
+          "purpose": "Code highlighting",
+          "status": 200,
+          "url": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"
+        },
+        {
+          "purpose": "Interface icons",
+          "status": 200,
+          "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+        },
+        {
+          "purpose": "Default local chat backend",
+          "status": null,
+          "url": "http://localhost:7071/api/businessinsightbot_function"
+        }
+      ],
+      "embed_notes": "Use a local mock transport and session-only credentials. Sanitize messages and isolate storage by exhibit.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/index_MAC.html:984-1095",
+        "kodyw.com:/wp-content/uploads/2025/03/index_MAC.html:1184-1197",
+        "kodyw.com:/wp-content/uploads/2025/03/index_MAC.html:2191-2204",
+        "kodyw.com:/wp-content/uploads/2025/03/index_MAC.html:2423-2496"
+      ],
+      "id": "migration-assessment-copilot",
+      "lesson": null,
+      "media_ids": [
+        553,
+        590,
+        607
+      ],
+      "media_integrity": [
+        {
+          "family_id": "migration-assessment-copilot",
+          "media_id": 553,
+          "sha256": "c277a263d88c914492d80c73bd7ea816c81abf48733217ba25934b12f6d1ad1d",
+          "size_bytes": 89721,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/index_MAC.html"
+        },
+        {
+          "family_id": "migration-assessment-copilot",
+          "media_id": 590,
+          "sha256": "c277a263d88c914492d80c73bd7ea816c81abf48733217ba25934b12f6d1ad1d",
+          "size_bytes": 89721,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/index_MAC-1.html"
+        },
+        {
+          "family_id": "migration-assessment-copilot",
+          "media_id": 607,
+          "sha256": "c277a263d88c914492d80c73bd7ea816c81abf48733217ba25934b12f6d1ad1d",
+          "size_bytes": 89721,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/index_MAC-2.html"
+        }
+      ],
+      "museum_blurb": "A migration chat prototype with multiple identities and a branching Time Machine for replaying alternate conversation paths.",
+      "observed_controls": [
+        "Manage User IDs",
+        "Create New GUID",
+        "Clear Chat",
+        "Theme",
+        "Sounds",
+        "Export Chat",
+        "Import Chat",
+        "Export GUIDs",
+        "Import GUIDs",
+        "Time Machine",
+        "Previous",
+        "Play or Pause",
+        "Next",
+        "Create Branch",
+        "Send Message"
+      ],
+      "observed_summary": "Chat client with multiple user GUIDs, import and export, theme and sound controls, conversation clearing, timeline playback and branching from earlier messages through a Time Machine interface.",
+      "position": 9,
+      "preview": {
+        "kind": "record-only",
+        "reason": "The verified audit does not approve the historical upload for embedding."
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "The default endpoint remains localhost.",
+          "The original function key remains stored locally.",
+          "Branch data survives export and import.",
+          "Synthetic footage contains no real customer data.",
+          "The lesson makes no default backend request."
+        ],
+        "episode_16x9": "How to model branching conversation history without a database or live AI service.",
+        "hook": "This Copilot prototype had a Time Machine for branching conversations before branching chat became ordinary.",
+        "proof_shots": [
+          "Header controls and Time Machine.",
+          "Import a synthetic transcript.",
+          "Step Previous and Next.",
+          "Create a branch from one message.",
+          "Switch identity and show separate history.",
+          "Annotate the localhost endpoint without calling it."
+        ],
+        "scene_beats": [
+          "Reveal the MAC chat interface.",
+          "Show identity management.",
+          "Import a synthetic conversation.",
+          "Navigate and branch its timeline.",
+          "Rebuild with a local mock transport."
+        ],
+        "short_9x16": "Chat history, but with Git-style branches."
+      },
+      "readiness": "medium-low-without-backend",
+      "readiness_label": "Needs hardening",
+      "related": [
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#migration-assessment-copilot"
+        },
+        {
+          "kind": "content",
+          "title": "Browse Copilot and interface work",
+          "url": "/work/"
+        }
+      ],
+      "risk_level": "high",
+      "risks": [
+        {
+          "evidence": "The function key is stored in localStorage.",
+          "severity": "high"
+        },
+        {
+          "evidence": "The default backend targets localhost and is not a generally available public service.",
+          "severity": "medium"
+        },
+        {
+          "evidence": "Formatted API content is inserted into dynamic HTML.",
+          "severity": "high"
+        }
+      ],
+      "search_text": "mac — migration assessment copilot index_mac.html mac copilot prototypes chat client with multiple user guids, import and export, theme and sound controls, conversation clearing, timeline playback and branching from earlier messages through a time machine interface. a migration chat prototype with multiple identities and a branching time machine for replaying alternate conversation paths. html css javascript jquery highlight.js font awesome web audio filereader localstorage fetch",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/index_MAC.html",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "jQuery",
+        "Highlight.js",
+        "Font Awesome",
+        "Web Audio",
+        "FileReader",
+        "localStorage",
+        "fetch"
+      ],
+      "title": "MAC — Migration Assessment Copilot"
+    },
+    {
+      "acceptance_checks": [
+        "A public repository tree populates file and app tabs.",
+        "Missing catalog JSON produces a clear fallback state.",
+        "API errors and rate limits are visibly reported.",
+        "Links use noopener and do not execute raw HTML in the host origin.",
+        "Repository-provided strings are rendered safely."
+      ],
+      "aliases": [
+        "local-browser.html"
+      ],
+      "category": "local-first-utilities",
+      "category_title": "Local-First Utilities",
+      "clean_room_prompt": "Build an original read-only public GitHub repository browser using the reference app only for behavior. Accept owner, repository and branch; list HTML files; optionally consume a validated catalog JSON; and link to GitHub blob pages or a separately sandboxed preview. Never request private repositories or tokens.",
+      "dependencies": [
+        {
+          "purpose": "Public repository tree",
+          "status": 200,
+          "url": "https://api.github.com/repos/kody-w/localFirstTools/git/trees/main?recursive=1"
+        },
+        {
+          "purpose": "Optional application catalog",
+          "status": 404,
+          "url": "https://raw.githubusercontent.com/kody-w/localFirstTools/main/utility_apps_config.json"
+        },
+        {
+          "purpose": "Fallback application link",
+          "status": 404,
+          "url": "https://raw.githubusercontent.com/kody-w/localFirstTools/main/todo-app.html"
+        },
+        {
+          "purpose": "Fallback application link",
+          "status": 404,
+          "url": "https://raw.githubusercontent.com/kody-w/localFirstTools/main/note-taker.html"
+        }
+      ],
+      "embed_notes": "Link to GitHub blob pages or use a separately sandboxed preview. Never execute repository HTML in the viewer's trusted origin.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/local-browser.html:228-299",
+        "kodyw.com:/wp-content/uploads/2025/03/local-browser.html:302-390"
+      ],
+      "id": "github-repository-viewer",
+      "lesson": null,
+      "media_ids": [
+        555,
+        589,
+        609
+      ],
+      "media_integrity": [
+        {
+          "family_id": "github-repository-viewer",
+          "media_id": 555,
+          "sha256": "48e2bc7fd8cd87adc5534a809d2eab919930371bac4497cf7ad77d8b9b6ce21f",
+          "size_bytes": 15400,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/local-browser.html"
+        },
+        {
+          "family_id": "github-repository-viewer",
+          "media_id": 589,
+          "sha256": "48e2bc7fd8cd87adc5534a809d2eab919930371bac4497cf7ad77d8b9b6ce21f",
+          "size_bytes": 15400,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/local-browser-1.html"
+        },
+        {
+          "family_id": "github-repository-viewer",
+          "media_id": 609,
+          "sha256": "48e2bc7fd8cd87adc5534a809d2eab919930371bac4497cf7ad77d8b9b6ce21f",
+          "size_bytes": 15400,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/local-browser-2.html"
+        }
+      ],
+      "museum_blurb": "A one-page attempt to turn a public GitHub repository into an instant application gallery.",
+      "observed_controls": [
+        "Apps Tab",
+        "Files Tab",
+        "Repository Link",
+        "Open App"
+      ],
+      "observed_summary": "Read-only viewer that fetches the public kody-w/localFirstTools Git tree, lists HTML files, attempts to load an optional utility-app catalog and builds Apps and Files tabs.",
+      "position": 10,
+      "preview": {
+        "kind": "record-only",
+        "reason": "The verified audit does not approve the historical upload for embedding."
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "The repository remains public.",
+          "The optional catalog is still absent or the claim is updated.",
+          "Fallback links still return 404 or the claim is updated.",
+          "Rate-limit behavior is accurately described.",
+          "The rebuild never executes repository HTML in its origin."
+        ],
+        "episode_16x9": "Turning any public GitHub repository into a safe, browsable museum catalog.",
+        "hook": "This one-page app tries to turn a GitHub repository into an instant application gallery.",
+        "proof_shots": [
+          "Loading state for kody-w/localFirstTools.",
+          "Files tab populated from the tree.",
+          "Apps fallback cards.",
+          "Annotate missing catalog and 404 links.",
+          "Use a small public test repository in the rebuild.",
+          "Open a GitHub blob page with noopener."
+        ],
+        "scene_beats": [
+          "Show repository loading.",
+          "Reveal Files and Apps tabs.",
+          "Explain the optional catalog convention.",
+          "Show the stale fallback problem.",
+          "Rebuild with safe preview boundaries."
+        ],
+        "short_9x16": "A GitHub repo becomes an app store, until its catalog file disappears."
+      },
+      "readiness": "medium",
+      "readiness_label": "Needs hardening",
+      "related": [
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#github-repository-viewer"
+        },
+        {
+          "kind": "content",
+          "title": "Browse local-first examples",
+          "url": "/learnwithkody/examples/"
+        }
+      ],
+      "risk_level": "medium",
+      "risks": [
+        {
+          "evidence": "Repository-provided metadata is inserted into generated HTML.",
+          "severity": "medium"
+        },
+        {
+          "evidence": "Fallback catalog links are stale, and raw GitHub URLs are unsuitable as trusted executable application destinations.",
+          "severity": "medium"
+        }
+      ],
+      "search_text": "github repository viewer local-browser.html local-first utilities read-only viewer that fetches the public kody-w/localfirsttools git tree, lists html files, attempts to load an optional utility-app catalog and builds apps and files tabs. a one-page attempt to turn a public github repository into an instant application gallery. html css javascript github rest api raw.githubusercontent.com fetch window.open",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/local-browser.html",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "GitHub REST API",
+        "raw.githubusercontent.com",
+        "fetch",
+        "window.open"
+      ],
+      "title": "GitHub Repository Viewer"
+    },
+    {
+      "acceptance_checks": [
+        "A workflow converts to an ordered queue and back without losing steps.",
+        "Queue items can be added, reordered and removed.",
+        "Mock execution reports per-step status without network access.",
+        "Imported workflow JSON is schema-validated.",
+        "Optional endpoint and credential values disappear on reload."
+      ],
+      "aliases": [
+        "magentic-copilot.html",
+        "magentic-agents-ui.html"
+      ],
+      "category": "agent-workbenches",
+      "category_title": "Agent Workbenches",
+      "clean_room_prompt": "Create an original agent-workflow gallery and queue simulator from the public Magentic Copilot's black-box behavior. Include workflow cards, agent connections, queue editing, workflow and queue conversion, local chat, import and export and theme controls. Use deterministic mock adapters by default and never persist credentials.",
+      "dependencies": [
+        {
+          "purpose": "Interface icons",
+          "status": 200,
+          "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        },
+        {
+          "purpose": "Code highlighting",
+          "status": 200,
+          "url": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"
+        },
+        {
+          "purpose": "DOM utilities",
+          "status": 200,
+          "url": "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        },
+        {
+          "purpose": "Default local agent backend",
+          "status": null,
+          "url": "http://localhost:7071/api/businessinsightbot_function"
+        }
+      ],
+      "embed_notes": "Use the complete variant only for reference. Provide a local simulator, schema validation and session-only optional credentials.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/magentic-copilot.html:973-1181",
+        "kodyw.com:/wp-content/uploads/2025/03/magentic-copilot.html:1486-1510",
+        "kodyw.com:/wp-content/uploads/2025/03/magentic-copilot.html:1826-1881",
+        "kodyw.com:/wp-content/uploads/2025/03/magentic-agents-ui.html:1686-1700"
+      ],
+      "id": "magentic-copilot",
+      "lesson": null,
+      "media_ids": [
+        537,
+        538,
+        556,
+        557,
+        577,
+        578,
+        610,
+        611
+      ],
+      "media_integrity": [
+        {
+          "family_id": "magentic-copilot",
+          "media_id": 537,
+          "sha256": "a061df78d7f0b5479675557714a253f1ea00e9690437c56454926201edbc1be6",
+          "size_bytes": 125221,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magentic-copilot.html"
+        },
+        {
+          "family_id": "magentic-copilot",
+          "media_id": 538,
+          "sha256": "8fe846a698753c11877d2f5a635036ea29b25a3180cced649923bbe311bc62c0",
+          "size_bytes": 62172,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magentic-agents-ui.html"
+        },
+        {
+          "family_id": "magentic-copilot",
+          "media_id": 556,
+          "sha256": "8fe846a698753c11877d2f5a635036ea29b25a3180cced649923bbe311bc62c0",
+          "size_bytes": 62172,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magentic-agents-ui-1.html"
+        },
+        {
+          "family_id": "magentic-copilot",
+          "media_id": 557,
+          "sha256": "a061df78d7f0b5479675557714a253f1ea00e9690437c56454926201edbc1be6",
+          "size_bytes": 125221,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magentic-copilot-1.html"
+        },
+        {
+          "family_id": "magentic-copilot",
+          "media_id": 577,
+          "sha256": "a061df78d7f0b5479675557714a253f1ea00e9690437c56454926201edbc1be6",
+          "size_bytes": 125221,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magentic-copilot-2.html"
+        },
+        {
+          "family_id": "magentic-copilot",
+          "media_id": 578,
+          "sha256": "8fe846a698753c11877d2f5a635036ea29b25a3180cced649923bbe311bc62c0",
+          "size_bytes": 62172,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magentic-agents-ui-2.html"
+        },
+        {
+          "family_id": "magentic-copilot",
+          "media_id": 610,
+          "sha256": "8fe846a698753c11877d2f5a635036ea29b25a3180cced649923bbe311bc62c0",
+          "size_bytes": 62172,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magentic-agents-ui-3.html"
+        },
+        {
+          "family_id": "magentic-copilot",
+          "media_id": 611,
+          "sha256": "a061df78d7f0b5479675557714a253f1ea00e9690437c56454926201edbc1be6",
+          "size_bytes": 125221,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magentic-copilot-3.html"
+        }
+      ],
+      "museum_blurb": "An agent marketplace and workflow editor that could transform a visual workflow into an editable command queue.",
+      "observed_controls": [
+        "App Store",
+        "Create Workflow",
+        "Edit Workflow",
+        "Export",
+        "Import",
+        "Convert to Queue",
+        "Run Workflow",
+        "Open Chat",
+        "Add Command",
+        "Run Queue",
+        "Convert to Workflow",
+        "API Key",
+        "API Endpoint"
+      ],
+      "observed_summary": "Workflow-gallery and queue prototype with agent lists, connections, natural-language commands, workflow-to-queue conversion, editing, chat, JSON import or export, themes and configurable API settings.",
+      "position": 11,
+      "preview": {
+        "kind": "record-only",
+        "reason": "The verified audit does not approve the historical upload for embedding."
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "The representative variant remains complete.",
+          "The Agents UI variant remains truncated.",
+          "The complete app still defaults to localhost.",
+          "Credentials remain a localStorage risk.",
+          "The rebuild preserves all data through conversion."
+        ],
+        "episode_16x9": "A reversible data model for switching between visual workflows and command queues.",
+        "hook": "This prototype treated an agent workflow like a playlist you could convert into a queue.",
+        "proof_shots": [
+          "App Store and Featured Workflows.",
+          "Open Opportunity Summary Email.",
+          "Show agent and connection panels.",
+          "Convert to Queue.",
+          "Open settings without entering a key.",
+          "Show the truncated renderCommandQueue ending.",
+          "Run the rebuild's local simulator."
+        ],
+        "scene_beats": [
+          "Browse workflow marketplace cards.",
+          "Open agents and connections.",
+          "Convert a workflow into a command queue.",
+          "Edit and convert it back.",
+          "Contrast the complete and truncated uploads."
+        ],
+        "short_9x16": "Turn a visual AI workflow into a queue in one click."
+      },
+      "readiness": "medium-low",
+      "readiness_label": "Needs hardening",
+      "related": [
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#magentic-copilot"
+        },
+        {
+          "kind": "content",
+          "title": "Explore agent-system builds",
+          "url": "/learnwithkody/examples/"
+        }
+      ],
+      "risk_level": "high",
+      "risks": [
+        {
+          "evidence": "API endpoint and key are stored in localStorage in the complete variant.",
+          "severity": "high"
+        },
+        {
+          "evidence": "magentic-agents-ui.html terminates in the middle of renderCommandQueue and fails JavaScript syntax checking.",
+          "severity": "high"
+        },
+        {
+          "evidence": "Imported and backend-provided data is dynamically rendered.",
+          "severity": "medium"
+        }
+      ],
+      "search_text": "magentic copilot magentic-copilot.html magentic-agents-ui.html agent workbenches workflow-gallery and queue prototype with agent lists, connections, natural-language commands, workflow-to-queue conversion, editing, chat, json import or export, themes and configurable api settings. an agent marketplace and workflow editor that could transform a visual workflow into an editable command queue. html css javascript jquery highlight.js font awesome web audio filereader localstorage fetch",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magentic-copilot.html",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "jQuery",
+        "Highlight.js",
+        "Font Awesome",
+        "Web Audio",
+        "FileReader",
+        "localStorage",
+        "fetch"
+      ],
+      "title": "Magentic Copilot"
+    },
+    {
+      "acceptance_checks": [
+        "Users can add, move, connect, duplicate and delete agents.",
+        "Connections redraw after node movement.",
+        "Run and Stop produce deterministic state transitions.",
+        "Export and import preserve node positions and connections.",
+        "Imported labels and responses cannot inject markup."
+      ],
+      "aliases": [
+        "magnetic-agents-ui.html"
+      ],
+      "category": "agent-workbenches",
+      "category_title": "Agent Workbenches",
+      "clean_room_prompt": "Build an original visual storytelling workflow editor based only on the public app's behavior: draggable agent cards, directional connections, editable prompts, multiple workflows, run and stop controls, response chat and JSON import or export. Use a local simulator and safe text rendering.",
+      "dependencies": [
+        {
+          "purpose": "Default local workflow backend",
+          "status": null,
+          "url": "http://localhost:7071/api/businessinsightbot_function"
+        }
+      ],
+      "embed_notes": "Use a local simulator and safe text rendering on an isolated origin.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/magnetic-agents-ui.html:1466-1870",
+        "kodyw.com:/wp-content/uploads/2025/03/magnetic-agents-ui.html:2044-2044",
+        "kodyw.com:/wp-content/uploads/2025/03/magnetic-agents-ui.html:2811-2811"
+      ],
+      "id": "storytelling-workflows",
+      "lesson": null,
+      "media_ids": [
+        541,
+        558,
+        581,
+        612
+      ],
+      "media_integrity": [
+        {
+          "family_id": "storytelling-workflows",
+          "media_id": 541,
+          "sha256": "96096271f362a2d82b603712266851e7c7ed9dd262befbdf435a9b44bcdf1bbf",
+          "size_bytes": 154436,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magnetic-agents-ui.html"
+        },
+        {
+          "family_id": "storytelling-workflows",
+          "media_id": 558,
+          "sha256": "96096271f362a2d82b603712266851e7c7ed9dd262befbdf435a9b44bcdf1bbf",
+          "size_bytes": 154436,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magnetic-agents-ui-1.html"
+        },
+        {
+          "family_id": "storytelling-workflows",
+          "media_id": 581,
+          "sha256": "96096271f362a2d82b603712266851e7c7ed9dd262befbdf435a9b44bcdf1bbf",
+          "size_bytes": 154436,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magnetic-agents-ui-2.html"
+        },
+        {
+          "family_id": "storytelling-workflows",
+          "media_id": 612,
+          "sha256": "96096271f362a2d82b603712266851e7c7ed9dd262befbdf435a9b44bcdf1bbf",
+          "size_bytes": 154436,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magnetic-agents-ui-3.html"
+        }
+      ],
+      "museum_blurb": "A visual storytelling metaphor for composing multi-agent work by dragging characters onto a stage and connecting their handoffs.",
+      "observed_controls": [
+        "Import",
+        "Export",
+        "Edit Workflow",
+        "Save",
+        "Run Workflow",
+        "Stop Workflow",
+        "Search Agents",
+        "Add Agent",
+        "Configure Agent",
+        "Configure Connection",
+        "Chat with Assistant",
+        "Create Workflow"
+      ],
+      "observed_summary": "Visual workflow canvas with a searchable agent catalog, draggable agents, directional connections, agent and handoff configuration, workflow tabs, run and stop controls, responses, chat and JSON import or export.",
+      "position": 12,
+      "preview": {
+        "kind": "record-only",
+        "reason": "The verified audit does not approve the historical upload for embedding."
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "The original still targets localhost.",
+          "Connector redraw remains functional.",
+          "Export includes positions and connections.",
+          "No production business action is demonstrated.",
+          "The rebuild escapes imported text."
+        ],
+        "episode_16x9": "How to build a persistent visual graph editor with draggable nodes and live connectors.",
+        "hook": "Instead of drawing a flowchart, this app lets you tell a story by connecting agents.",
+        "proof_shots": [
+          "Storytelling Workflows hero.",
+          "Search the agent catalog.",
+          "Drag two cards.",
+          "Connect source and destination.",
+          "Open agent and connection configuration.",
+          "Export and re-import positions and edges.",
+          "Execute only in the rebuild."
+        ],
+        "scene_beats": [
+          "Introduce the canvas and catalog.",
+          "Drag two synthetic agents onto the stage.",
+          "Connect and configure their handoff.",
+          "Show run and stop areas without calling the backend.",
+          "Rebuild graph persistence and local execution."
+        ],
+        "short_9x16": "Drag two agents. Draw one line. You have made a workflow."
+      },
+      "readiness": "medium",
+      "readiness_label": "Needs hardening",
+      "related": [
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#storytelling-workflows"
+        },
+        {
+          "kind": "content",
+          "title": "Explore agent-system builds",
+          "url": "/learnwithkody/examples/"
+        }
+      ],
+      "risk_level": "high",
+      "risks": [
+        {
+          "evidence": "Execution functions target a localhost backend unavailable as a general public service.",
+          "severity": "medium"
+        },
+        {
+          "evidence": "Imported workflow and response fields are inserted through dynamic HTML.",
+          "severity": "high"
+        }
+      ],
+      "search_text": "microsoft copilot — storytelling workflows magnetic-agents-ui.html agent workbenches visual workflow canvas with a searchable agent catalog, draggable agents, directional connections, agent and handoff configuration, workflow tabs, run and stop controls, responses, chat and json import or export. a visual storytelling metaphor for composing multi-agent work by dragging characters onto a stage and connecting their handoffs. html css javascript drag and drop dynamic connectors filereader fetch",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/magnetic-agents-ui.html",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "drag and drop",
+        "dynamic connectors",
+        "FileReader",
+        "fetch"
+      ],
+      "title": "Microsoft Copilot — Storytelling Workflows"
+    },
+    {
+      "acceptance_checks": [
+        "A valid flowchart renders.",
+        "Invalid syntax displays an inline error without destroying the last valid diagram.",
+        "Draft text survives reload.",
+        "SVG and source exports contain the current diagram.",
+        "Script-bearing Mermaid input cannot execute JavaScript."
+      ],
+      "aliases": [
+        "mermaid-viewer.html"
+      ],
+      "category": "local-first-utilities",
+      "category_title": "Local-First Utilities",
+      "clean_room_prompt": "Build an original Mermaid diagram playground using the public viewer only as behavioral reference. Provide an editor, Render button, inline error state, local draft restoration, SVG export and source export. Use a current pinned Mermaid release in strict security mode and sanitize SVG output.",
+      "dependencies": [
+        {
+          "purpose": "Diagram parsing and rendering",
+          "status": 200,
+          "url": "https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.0/mermaid.min.js"
+        }
+      ],
+      "embed_notes": "Upgrade to a pinned current Mermaid release, strict mode and sanitized SVG output before embedding.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/mermaid-viewer.html:85-145"
+      ],
+      "id": "mermaid-diagram-viewer",
+      "lesson": null,
+      "media_ids": [
+        559,
+        595,
+        613
+      ],
+      "media_integrity": [
+        {
+          "family_id": "mermaid-diagram-viewer",
+          "media_id": 559,
+          "sha256": "3d211262b42e3773fb32bb9b64e6e574da3924a961f2779d1963d017a270f993",
+          "size_bytes": 6412,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/mermaid-viewer.html"
+        },
+        {
+          "family_id": "mermaid-diagram-viewer",
+          "media_id": 595,
+          "sha256": "3d211262b42e3773fb32bb9b64e6e574da3924a961f2779d1963d017a270f993",
+          "size_bytes": 6412,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/mermaid-viewer-1.html"
+        },
+        {
+          "family_id": "mermaid-diagram-viewer",
+          "media_id": 613,
+          "sha256": "3d211262b42e3773fb32bb9b64e6e574da3924a961f2779d1963d017a270f993",
+          "size_bytes": 6412,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/mermaid-viewer-2.html"
+        }
+      ],
+      "museum_blurb": "A minimal diagram laboratory whose loose renderer configuration turns a simple utility into a clear security lesson.",
+      "observed_controls": [
+        "Mermaid Code",
+        "Render",
+        "Export Diagram SVG",
+        "Export Code TXT"
+      ],
+      "observed_summary": "Compact Mermaid editor that renders diagrams, caches source code locally and exports either rendered SVG or source text.",
+      "position": 13,
+      "preview": {
+        "kind": "record-only",
+        "reason": "The verified audit does not approve the historical upload for embedding."
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "Mermaid 10.6.0 still resolves.",
+          "Historical securityLevel remains loose.",
+          "Draft restoration and exports still work.",
+          "The rebuild uses a current pinned version and strict mode.",
+          "No malicious payload is executed."
+        ],
+        "episode_16x9": "Rebuild a Mermaid playground and learn where diagram syntax becomes a security boundary.",
+        "hook": "The easiest app in the museum to understand is also one of the clearest examples of why renderer security modes matter.",
+        "proof_shots": [
+          "Empty editor and controls.",
+          "Paste a five-node flowchart.",
+          "Render it.",
+          "Export SVG and TXT.",
+          "Reload and restore code.",
+          "Show invalid syntax handling.",
+          "Demonstrate non-execution of a benign security fixture."
+        ],
+        "scene_beats": [
+          "Paste a benign flowchart.",
+          "Render and export it.",
+          "Show draft restoration.",
+          "Reveal loose security mode.",
+          "Rebuild with strict rendering and safe errors."
+        ],
+        "short_9x16": "One Mermaid setting turns a diagram viewer into a security lesson."
+      },
+      "readiness": "high-after-security-fix",
+      "readiness_label": "Restoration candidate",
+      "related": [
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#mermaid-diagram-viewer"
+        },
+        {
+          "kind": "content",
+          "title": "Browse local-first examples",
+          "url": "/learnwithkody/examples/"
+        }
+      ],
+      "risk_level": "high",
+      "risks": [
+        {
+          "evidence": "Mermaid is initialized with securityLevel set to loose.",
+          "severity": "high"
+        },
+        {
+          "evidence": "User-provided diagram source is inserted into innerHTML.",
+          "severity": "high"
+        }
+      ],
+      "search_text": "mermaid diagram viewer mermaid-viewer.html local-first utilities compact mermaid editor that renders diagrams, caches source code locally and exports either rendered svg or source text. a minimal diagram laboratory whose loose renderer configuration turns a simple utility into a clear security lesson. html css javascript mermaid 10.6.0 localstorage blob urls",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/mermaid-viewer.html",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "Mermaid 10.6.0",
+        "localStorage",
+        "Blob URLs"
+      ],
+      "title": "Mermaid Diagram Viewer"
+    },
+    {
+      "acceptance_checks": [
+        "Each batch contains a deterministic number of selectable tiles.",
+        "Submit is disabled until at least one tile is selected.",
+        "Accuracy is computed from correct, incorrect and missed targets.",
+        "Successful rounds advance the quota and failed rounds do not.",
+        "Completing five rounds shows a restartable completion state."
+      ],
+      "aliases": [
+        "severance-refiner.html",
+        "LUMON INDUSTRIES - MDR DIVISION"
+      ],
+      "category": "playable-software",
+      "category_title": "Playable Software",
+      "clean_room_prompt": "Using only the public number-refinement game's observable mechanics, create an original retro-corporate pattern-selection game with generated number tiles, hidden target flags, selection feedback, accuracy scoring, batch animations, a five-round quota and restart. Invent entirely new branding, language, palette and assets.",
+      "dependencies": [],
+      "embed_notes": "The historical artifact may be shown contextually, but a clean-room playable restoration should use original branding, language and visuals.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/severance-refiner.html:285-375"
+      ],
+      "id": "severance-refiner",
+      "lesson": {
+        "demo_url": "/learnwithkody/demos/365-pattern-quota.html",
+        "id": "pattern-quota",
+        "lesson_url": "/learnwithkody/examples/pattern-quota/",
+        "title": "Pattern Quota — Rebuild a Mysterious Selection Game"
+      },
+      "media_ids": [
+        560,
+        585,
+        614
+      ],
+      "media_integrity": [
+        {
+          "family_id": "severance-refiner",
+          "media_id": 560,
+          "sha256": "5556d967b661d52b6a1a2308e37d9b22f0e592e8e5de72af14da09e75da9a707",
+          "size_bytes": 10814,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/severance-refiner.html"
+        },
+        {
+          "family_id": "severance-refiner",
+          "media_id": 585,
+          "sha256": "5556d967b661d52b6a1a2308e37d9b22f0e592e8e5de72af14da09e75da9a707",
+          "size_bytes": 10814,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/severance-refiner-1.html"
+        },
+        {
+          "family_id": "severance-refiner",
+          "media_id": 614,
+          "sha256": "5556d967b661d52b6a1a2308e37d9b22f0e592e8e5de72af14da09e75da9a707",
+          "size_bytes": 10814,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/severance-refiner-2.html"
+        }
+      ],
+      "museum_blurb": "A mysterious retro-corporate number game built around selecting values that simply feel wrong.",
+      "observed_controls": [
+        "Number Tiles",
+        "Refine Batch",
+        "Begin New Session"
+      ],
+      "observed_summary": "Fictional number-refinement game that generates number grids, tracks selected tiles, calculates accuracy, animates successful rounds, advances a five-batch quota and supports a new session.",
+      "position": 14,
+      "preview": {
+        "kind": "clean-room",
+        "reason": "An original local restoration is available in a strict sandbox.",
+        "url": "/learnwithkody/demos/365-pattern-quota.html"
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "The artifact still has no external runtime dependencies.",
+          "The quota remains five batches.",
+          "Scoring includes correct, incorrect and missed targets.",
+          "The artifact is identified as fan-inspired.",
+          "The rebuild uses entirely original branding."
+        ],
+        "episode_16x9": "Reverse-engineering a mysterious selection mechanic into a deterministic state-machine game.",
+        "hook": "The strangest lost app asks you to identify numbers that simply feel wrong.",
+        "proof_shots": [
+          "Terminal header and quota.",
+          "Generated number grid.",
+          "Select three or four tiles.",
+          "Capture enabled Refine Batch.",
+          "Submit one deterministic batch.",
+          "End on the rebuilt completion state."
+        ],
+        "scene_beats": [
+          "Reveal the retro-corporate terminal.",
+          "Select number tiles.",
+          "Submit and show accuracy.",
+          "Advance toward the quota.",
+          "Rebuild the mechanic under original branding."
+        ],
+        "short_9x16": "Which of these numbers looks scary?"
+      },
+      "readiness": "high-with-original-rebranding",
+      "readiness_label": "Restoration candidate",
+      "related": [
+        {
+          "kind": "lesson",
+          "title": "Pattern Quota — Rebuild a Mysterious Selection Game",
+          "url": "/learnwithkody/examples/pattern-quota/"
+        },
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#severance-refiner"
+        },
+        {
+          "kind": "content",
+          "title": "Explore browser-game builds",
+          "url": "/learnwithkody/examples/"
+        }
+      ],
+      "risk_level": "medium",
+      "risks": [
+        {
+          "evidence": "The title and presentation are recognizably inspired by an existing entertainment franchise.",
+          "severity": "medium"
+        }
+      ],
+      "search_text": "lumon mdr / severance refiner severance-refiner.html lumon industries - mdr division playable software fictional number-refinement game that generates number grids, tracks selected tiles, calculates accuracy, animates successful rounds, advances a five-batch quota and supports a new session. a mysterious retro-corporate number game built around selecting values that simply feel wrong. html css javascript generated grids css animation timers",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/severance-refiner.html",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "generated grids",
+        "CSS animation",
+        "timers"
+      ],
+      "title": "LUMON MDR / Severance Refiner"
+    },
+    {
+      "acceptance_checks": [
+        "The worm moves without directional player input.",
+        "Keyboard, pointer and touch reposition food within bounds.",
+        "Eating increases score and length.",
+        "Wall or self-collision ends the game.",
+        "High score updates only when exceeded."
+      ],
+      "aliases": [
+        "snake-2-game.html"
+      ],
+      "category": "playable-software",
+      "category_title": "Playable Software",
+      "clean_room_prompt": "Create an original grid arcade game inspired only by the public Worm Game's observable rule inversion: an autonomous creature pursues a food target that the player moves using keyboard, pointer or touch. Add score, length, elapsed time, high score, collision loss, start and restart screens and original visual design.",
+      "dependencies": [
+        {
+          "purpose": "Game typography",
+          "status": 200,
+          "url": "https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+        }
+      ],
+      "embed_notes": "Low functional risk, but preserve on an isolated sandboxed origin and self-host the font.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/snake-2-game.html:185-217",
+        "kodyw.com:/wp-content/uploads/2025/03/snake-2-game.html:345-348"
+      ],
+      "id": "worm-game-deluxe",
+      "lesson": null,
+      "media_ids": [
+        561,
+        593,
+        615
+      ],
+      "media_integrity": [
+        {
+          "family_id": "worm-game-deluxe",
+          "media_id": 561,
+          "sha256": "0e173ff705a0728907a3a279cb1f5249d0d4d1296cfc63c570d449ed9e9daf33",
+          "size_bytes": 12584,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/snake-2-game.html"
+        },
+        {
+          "family_id": "worm-game-deluxe",
+          "media_id": 593,
+          "sha256": "0e173ff705a0728907a3a279cb1f5249d0d4d1296cfc63c570d449ed9e9daf33",
+          "size_bytes": 12584,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/snake-2-game-1.html"
+        },
+        {
+          "family_id": "worm-game-deluxe",
+          "media_id": 615,
+          "sha256": "0e173ff705a0728907a3a279cb1f5249d0d4d1296cfc63c570d449ed9e9daf33",
+          "size_bytes": 12584,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/snake-2-game-2.html"
+        }
+      ],
+      "museum_blurb": "A playful inversion of Snake where the player controls lunch instead of the creature chasing it.",
+      "observed_controls": [
+        "Start Game",
+        "Arrow Keys",
+        "Mouse",
+        "Touch",
+        "Play Again"
+      ],
+      "observed_summary": "Inverse-snake game in which the worm moves autonomously while the player repositions food using keyboard, pointer or touch input. It tracks score, high score, length and survival time.",
+      "position": 15,
+      "preview": {
+        "kind": "record-only",
+        "reason": "The verified audit does not approve the historical upload for embedding."
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "The worm remains autonomous.",
+          "Keyboard, pointer and touch remain supported.",
+          "Score, length, time and high score update correctly.",
+          "Collision behavior matches the instructions.",
+          "The rebuild uses original graphics."
+        ],
+        "episode_16x9": "How changing one control assumption creates a completely different arcade game.",
+        "hook": "In this snake game, you do not control the snake. You control its food.",
+        "proof_shots": [
+          "Welcome overlay.",
+          "Click Start Game.",
+          "Move food with an arrow key.",
+          "Move it with pointer input.",
+          "Capture one food collection.",
+          "Capture game over and restart."
+        ],
+        "scene_beats": [
+          "Explain the rule inversion.",
+          "Start the autonomous worm.",
+          "Move food using multiple inputs.",
+          "Show growth and collision.",
+          "Rebuild the loop with deterministic tests."
+        ],
+        "short_9x16": "You are not the snake. You are lunch."
+      },
+      "readiness": "high",
+      "readiness_label": "Restoration candidate",
+      "related": [
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#worm-game-deluxe"
+        },
+        {
+          "kind": "content",
+          "title": "Explore browser-game builds",
+          "url": "/learnwithkody/examples/"
+        }
+      ],
+      "risk_level": "none",
+      "risks": [],
+      "search_text": "worm game deluxe snake-2-game.html playable software inverse-snake game in which the worm moves autonomously while the player repositions food using keyboard, pointer or touch input. it tracks score, high score, length and survival time. a playful inversion of snake where the player controls lunch instead of the creature chasing it. html css javascript dom grid keyboard events pointer events touch events interval game loop",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/snake-2-game.html",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "DOM grid",
+        "keyboard events",
+        "pointer events",
+        "touch events",
+        "interval game loop"
+      ],
+      "title": "Worm Game Deluxe"
+    },
+    {
+      "acceptance_checks": [
+        "Dragging a task changes its status and focus-list membership.",
+        "Start, pause and reset preserve correct timer state.",
+        "Completing a shortened test timer increments only the selected task.",
+        "Export and import preserve statuses and Pomodoro counts.",
+        "HTML in imported task text remains inert."
+      ],
+      "aliases": [
+        "task-flow.html"
+      ],
+      "category": "local-first-utilities",
+      "category_title": "Local-First Utilities",
+      "clean_room_prompt": "Build an original local Pomodoro Kanban lesson with neutral sample data, three draggable status columns, focus-task selection, start, pause and reset controls, completion counters and JSON import or export. Render imported text safely and add no cloud synchronization.",
+      "dependencies": [],
+      "embed_notes": "Use neutral fixtures and text-only rendering on an isolated origin.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/task-flow.html:69-105",
+        "kodyw.com:/wp-content/uploads/2025/03/task-flow.html:340-479"
+      ],
+      "id": "pomodoro-kanban-board",
+      "lesson": null,
+      "media_ids": [
+        564,
+        584,
+        618
+      ],
+      "media_integrity": [
+        {
+          "family_id": "pomodoro-kanban-board",
+          "media_id": 564,
+          "sha256": "eb3accd067a34255d7c759e8589dc5336c98ce20518a7070d65ba83759d58661",
+          "size_bytes": 14340,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/task-flow.html"
+        },
+        {
+          "family_id": "pomodoro-kanban-board",
+          "media_id": 584,
+          "sha256": "eb3accd067a34255d7c759e8589dc5336c98ce20518a7070d65ba83759d58661",
+          "size_bytes": 14340,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/task-flow-1.html"
+        },
+        {
+          "family_id": "pomodoro-kanban-board",
+          "media_id": 618,
+          "sha256": "eb3accd067a34255d7c759e8589dc5336c98ce20518a7070d65ba83759d58661",
+          "size_bytes": 14340,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/task-flow-2.html"
+        }
+      ],
+      "museum_blurb": "A focused productivity experiment linking Kanban status directly to completed Pomodoro sessions.",
+      "observed_controls": [
+        "Start",
+        "Pause",
+        "Reset",
+        "Focus Task",
+        "Import File",
+        "Export JSON",
+        "To Do",
+        "In Progress",
+        "Done",
+        "Drag and Drop"
+      ],
+      "observed_summary": "Three-column Kanban board with drag-and-drop status changes, a 25-minute timer, focus-task selection, Pomodoro counters and JSON import or export.",
+      "position": 16,
+      "preview": {
+        "kind": "record-only",
+        "reason": "The verified audit does not approve the historical upload for embedding."
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "The artifact still initializes at 25 minutes.",
+          "Only In Progress tasks appear in the focus selector.",
+          "Completion increments the selected task only.",
+          "Historical work items are absent from final footage.",
+          "The shortened lesson clock is labeled test mode."
+        ],
+        "episode_16x9": "Build a Kanban board where the timer updates the data model, not just the screen.",
+        "hook": "This app turns every finished focus session into a stat on the task you were actually working on.",
+        "proof_shots": [
+          "Board and 25:00 timer.",
+          "Drag a neutral task to In Progress.",
+          "Select it in Focus Task.",
+          "Start and pause.",
+          "Finish a labeled five-second test timer in the rebuild.",
+          "Show the Pomodoro count increase.",
+          "Export and re-import."
+        ],
+        "scene_beats": [
+          "Tour the Kanban board.",
+          "Move a synthetic task to In Progress.",
+          "Select it as the focus task.",
+          "Complete a shortened test timer.",
+          "Export and restore the board."
+        ],
+        "short_9x16": "Drag task. Start timer. Earn one Pomodoro."
+      },
+      "readiness": "high-after-sanitization",
+      "readiness_label": "Restoration candidate",
+      "related": [
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#pomodoro-kanban-board"
+        },
+        {
+          "kind": "content",
+          "title": "Browse local-first examples",
+          "url": "/learnwithkody/examples/"
+        }
+      ],
+      "risk_level": "high",
+      "risks": [
+        {
+          "evidence": "Imported task titles and descriptions are placed into innerHTML.",
+          "severity": "high"
+        },
+        {
+          "evidence": "The historical file includes specific sample work items that should not be reused as public lesson fixtures.",
+          "severity": "medium"
+        }
+      ],
+      "search_text": "pomodoro kanban board task-flow.html local-first utilities three-column kanban board with drag-and-drop status changes, a 25-minute timer, focus-task selection, pomodoro counters and json import or export. a focused productivity experiment linking kanban status directly to completed pomodoro sessions. html css javascript html drag and drop filereader data uri export setinterval",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/task-flow.html",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "HTML drag and drop",
+        "FileReader",
+        "data URI export",
+        "setInterval"
+      ],
+      "title": "Pomodoro Kanban Board"
+    },
+    {
+      "acceptance_checks": [
+        "Required title validation prevents blank tasks.",
+        "Priority and status filters work together.",
+        "Tasks persist across reload.",
+        "Export and import reproduce all records.",
+        "The app loads with zero third-party requests."
+      ],
+      "aliases": [
+        "task-tracker.html"
+      ],
+      "category": "local-first-utilities",
+      "category_title": "Local-First Utilities",
+      "clean_room_prompt": "Create an original offline task tracker based on the public app's observable features: add, update, delete, prioritize, filter, persist, import and export tasks. Use dependency-free JavaScript, validate imported JSON and render all user content with safe DOM APIs.",
+      "dependencies": [
+        {
+          "purpose": "Referenced utility library; no observed Lodash calls",
+          "status": 404,
+          "url": "https://cdnjs.cloudflare.com/ajax/libs/lodash/4.17.21/lodash.min.js"
+        }
+      ],
+      "embed_notes": "Remove the unused dependency and use safe DOM APIs for task content.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/task-tracker.html:178-256"
+      ],
+      "id": "task-tracker",
+      "lesson": null,
+      "media_ids": [
+        565,
+        594,
+        619
+      ],
+      "media_integrity": [
+        {
+          "family_id": "task-tracker",
+          "media_id": 565,
+          "sha256": "5077e521da999c4fa58fa8ad92f03c3d898c08ee059b2d609e7a5e165438d0dd",
+          "size_bytes": 14291,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/task-tracker.html"
+        },
+        {
+          "family_id": "task-tracker",
+          "media_id": 594,
+          "sha256": "5077e521da999c4fa58fa8ad92f03c3d898c08ee059b2d609e7a5e165438d0dd",
+          "size_bytes": 14291,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/task-tracker-1.html"
+        },
+        {
+          "family_id": "task-tracker",
+          "media_id": 619,
+          "sha256": "5077e521da999c4fa58fa8ad92f03c3d898c08ee059b2d609e7a5e165438d0dd",
+          "size_bytes": 14291,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/task-tracker-2.html"
+        }
+      ],
+      "museum_blurb": "A durable offline task manager that appears to work despite losing its only referenced third-party script.",
+      "observed_controls": [
+        "Import",
+        "Export",
+        "Add New Task",
+        "Title",
+        "Description",
+        "Priority",
+        "Status",
+        "Add Task",
+        "Priority Filter",
+        "Status Filter",
+        "Delete"
+      ],
+      "observed_summary": "Offline task CRUD utility supporting title, description, priority, status, filtering, status changes, deletion, local persistence and JSON import or export.",
+      "position": 17,
+      "preview": {
+        "kind": "record-only",
+        "reason": "The verified audit does not approve the historical upload for embedding."
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "The Lodash URL still returns 404 or the claim is updated.",
+          "No Lodash calls exist.",
+          "Persistence and import or export remain functional.",
+          "Combined filtering matches the fixture.",
+          "The rebuild makes zero third-party requests."
+        ],
+        "episode_16x9": "Rebuilding an offline CRUD app and proving that its broken dependency was never needed.",
+        "hook": "This tiny task manager still works even though its only third-party script disappeared.",
+        "proof_shots": [
+          "Open Add New Task.",
+          "Add three neutral tasks.",
+          "Change one status.",
+          "Apply High plus In Progress filters.",
+          "Reload to show persistence.",
+          "Export and import.",
+          "Compare the historical 404 with zero rebuild dependencies."
+        ],
+        "scene_beats": [
+          "Show creation and persistence.",
+          "Add tasks with different priorities.",
+          "Combine filters.",
+          "Export and restore data.",
+          "Remove the unused broken dependency."
+        ],
+        "short_9x16": "The CDN died. The app survived."
+      },
+      "readiness": "high",
+      "readiness_label": "Restoration candidate",
+      "related": [
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#task-tracker"
+        },
+        {
+          "kind": "content",
+          "title": "Browse local-first examples",
+          "url": "/learnwithkody/examples/"
+        }
+      ],
+      "risk_level": "high",
+      "risks": [
+        {
+          "evidence": "The Lodash dependency URL returned HTTP 404.",
+          "severity": "medium"
+        },
+        {
+          "evidence": "Task values are dynamically rendered and should be escaped in a rebuild.",
+          "severity": "high"
+        }
+      ],
+      "search_text": "task tracker task-tracker.html local-first utilities offline task crud utility supporting title, description, priority, status, filtering, status changes, deletion, local persistence and json import or export. a durable offline task manager that appears to work despite losing its only referenced third-party script. html css javascript localstorage filereader blob urls",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/task-tracker.html",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "localStorage",
+        "FileReader",
+        "Blob URLs"
+      ],
+      "title": "Task Tracker"
+    },
+    {
+      "acceptance_checks": [
+        "A valid transcript initializes the correct step count.",
+        "Next and auto-play advance exactly one turn at a time.",
+        "Differences are highlighted without treating content as HTML.",
+        "Reset returns to step zero.",
+        "Export contains replay state but no secret.",
+        "The default lesson works offline."
+      ],
+      "aliases": [
+        "teacher-learner-app.html"
+      ],
+      "category": "copilot-prototypes",
+      "category_title": "Copilot Prototypes",
+      "clean_room_prompt": "Build an original conversation-replay comparator from the public app's black-box behavior. Accept validated JSON, show teacher input beside baseline and regenerated responses, support manual and automatic stepping, highlight textual differences, reset and export. Use a deterministic local mock by default, sanitize content and never persist credentials.",
+      "dependencies": [
+        {
+          "purpose": "Response code highlighting",
+          "status": 200,
+          "url": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"
+        },
+        {
+          "purpose": "Interface icons",
+          "status": 200,
+          "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        },
+        {
+          "purpose": "Protected response-generation backend",
+          "status": 401,
+          "url": "https://azfbusinessbot.azurewebsites.net/api/businessinsightbot_function"
+        }
+      ],
+      "embed_notes": "Use a deterministic local mock by default, sanitize all content and never persist credentials.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/teacher-learner-app.html:896-1023",
+        "kodyw.com:/wp-content/uploads/2025/03/teacher-learner-app.html:1088-1252",
+        "kodyw.com:/wp-content/uploads/2025/03/teacher-learner-app.html:1397-1439"
+      ],
+      "id": "teacher-learner-replay",
+      "lesson": null,
+      "media_ids": [
+        566,
+        586,
+        620
+      ],
+      "media_integrity": [
+        {
+          "family_id": "teacher-learner-replay",
+          "media_id": 566,
+          "sha256": "4d25956b992802bf6eb1713d802d0e9c0d061b298b4bacec7da0cca8879626ba",
+          "size_bytes": 79739,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/teacher-learner-app.html"
+        },
+        {
+          "family_id": "teacher-learner-replay",
+          "media_id": 586,
+          "sha256": "4d25956b992802bf6eb1713d802d0e9c0d061b298b4bacec7da0cca8879626ba",
+          "size_bytes": 79739,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/teacher-learner-app-1.html"
+        },
+        {
+          "family_id": "teacher-learner-replay",
+          "media_id": 620,
+          "sha256": "4d25956b992802bf6eb1713d802d0e9c0d061b298b4bacec7da0cca8879626ba",
+          "size_bytes": 79739,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/teacher-learner-app-2.html"
+        }
+      ],
+      "museum_blurb": "A replay laboratory for comparing a teacher prompt, its original answer and a newly generated answer step by step.",
+      "observed_controls": [
+        "Configure API",
+        "Theme",
+        "Upload Conversation",
+        "Export Conversation",
+        "Start",
+        "Next Step",
+        "Reset",
+        "Auto Replay",
+        "Paste JSON",
+        "Test Connection",
+        "Difference Highlighting",
+        "Section Titles"
+      ],
+      "observed_summary": "Conversation replay comparator that imports or pastes JSON, shows teacher input beside original and regenerated responses, highlights differences, supports manual or automatic stepping, reset, export and configurable API settings.",
+      "position": 18,
+      "preview": {
+        "kind": "record-only",
+        "reason": "The verified audit does not approve the historical upload for embedding."
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "The protected endpoint's unauthenticated status is rechecked if mentioned.",
+          "The original still persists API settings.",
+          "Difference counts match the fixture.",
+          "No real transcript or key appears.",
+          "The lesson works offline."
+        ],
+        "episode_16x9": "Build a replay harness for comparing baseline and regenerated AI responses.",
+        "hook": "This app replays an AI conversation three ways: teacher input, original answer and live replacement.",
+        "proof_shots": [
+          "No Conversation Loaded state.",
+          "Import a two-turn fixture.",
+          "Click Start and Next Step.",
+          "Toggle difference highlighting.",
+          "Compare Original and Live Response.",
+          "Reset and enable Auto Replay.",
+          "Show API settings without entering credentials."
+        ],
+        "scene_beats": [
+          "Load a synthetic transcript.",
+          "Show the three-column comparison.",
+          "Advance manually and automatically.",
+          "Highlight response differences.",
+          "Rebuild with deterministic local regeneration."
+        ],
+        "short_9x16": "Original answer versus rebuilt answer. Spot the difference."
+      },
+      "readiness": "medium",
+      "readiness_label": "Needs hardening",
+      "related": [
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#teacher-learner-replay"
+        },
+        {
+          "kind": "content",
+          "title": "Browse Copilot and interface work",
+          "url": "/work/"
+        }
+      ],
+      "risk_level": "high",
+      "risks": [
+        {
+          "evidence": "The API key and endpoint are stored in localStorage.",
+          "severity": "high"
+        },
+        {
+          "evidence": "Imported and API-generated formatted content is inserted into dynamic HTML.",
+          "severity": "high"
+        }
+      ],
+      "search_text": "teacher-learner conversation replay teacher-learner-app.html copilot prototypes conversation replay comparator that imports or pastes json, shows teacher input beside original and regenerated responses, highlights differences, supports manual or automatic stepping, reset, export and configurable api settings. a replay laboratory for comparing a teacher prompt, its original answer and a newly generated answer step by step. html css javascript highlight.js font awesome filereader localstorage fetch",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/teacher-learner-app.html",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "Highlight.js",
+        "Font Awesome",
+        "FileReader",
+        "localStorage",
+        "fetch"
+      ],
+      "title": "Teacher-Learner Conversation Replay"
+    },
+    {
+      "acceptance_checks": [
+        "Teacher and student alternate for exactly the configured maximum.",
+        "Manual and automatic modes produce the same ordered transcript.",
+        "Verification adds a final measurable understanding result.",
+        "Reset clears generated turns but retains configuration.",
+        "Export contains configuration and transcript with no credentials."
+      ],
+      "aliases": [
+        "teacher-learner.html",
+        "Dynamic Knowledge Transfer Simulation"
+      ],
+      "category": "copilot-prototypes",
+      "category_title": "Copilot Prototypes",
+      "clean_room_prompt": "Recreate the observable teacher and student turn-taking experience with original code: editable personas, selectable lesson topic, initial teaching goal, iteration limit, optional understanding checks, manual or automatic stepping, transcript export and theme control. Use deterministic local response rules and never store or request an API key.",
+      "dependencies": [
+        {
+          "purpose": "Formatted response highlighting",
+          "status": 200,
+          "url": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"
+        },
+        {
+          "purpose": "Interface icons",
+          "status": 200,
+          "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+        },
+        {
+          "purpose": "Default local teaching backend",
+          "status": null,
+          "url": "http://localhost:7071/api/businessinsightbot_function"
+        }
+      ],
+      "embed_notes": "Replace networked turns with deterministic local rules and remove all credential handling.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/teacher-learner.html:375-479",
+        "kodyw.com:/wp-content/uploads/2025/03/teacher-learner.html:1288-1396"
+      ],
+      "id": "dynamic-teaching-simulation",
+      "lesson": null,
+      "media_ids": [
+        567,
+        591,
+        621
+      ],
+      "media_integrity": [
+        {
+          "family_id": "dynamic-teaching-simulation",
+          "media_id": 567,
+          "sha256": "ac71881152aff1cf152baf59cd29275af65443cd92f4e421f81f1cd698c35590",
+          "size_bytes": 69220,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/teacher-learner.html"
+        },
+        {
+          "family_id": "dynamic-teaching-simulation",
+          "media_id": 591,
+          "sha256": "ac71881152aff1cf152baf59cd29275af65443cd92f4e421f81f1cd698c35590",
+          "size_bytes": 69220,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/teacher-learner-1.html"
+        },
+        {
+          "family_id": "dynamic-teaching-simulation",
+          "media_id": 621,
+          "sha256": "ac71881152aff1cf152baf59cd29275af65443cd92f4e421f81f1cd698c35590",
+          "size_bytes": 69220,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/teacher-learner-2.html"
+        }
+      ],
+      "museum_blurb": "A configurable teacher-and-student loop modeling knowledge transfer as alternating conversational turns.",
+      "observed_controls": [
+        "Configure",
+        "Theme",
+        "Export Conversation",
+        "Start",
+        "Next Step",
+        "Reset",
+        "Auto",
+        "Teacher Name",
+        "Teacher Role",
+        "Topic",
+        "Initial Task",
+        "Student Name",
+        "Student Role",
+        "Maximum Iterations",
+        "Verify Learning"
+      ],
+      "observed_summary": "Two-role teaching simulation with configurable teacher and student personas, topic, initial teaching task, iteration limit, optional learning verification, manual or automatic progression, export and theme controls.",
+      "position": 19,
+      "preview": {
+        "kind": "record-only",
+        "reason": "The verified audit does not approve the historical upload for embedding."
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "The original endpoint remains localhost.",
+          "The key remains stored locally.",
+          "Iteration and verification controls remain present.",
+          "The rebuilt turn order is deterministic.",
+          "No claim presents local rules as genuine model reasoning."
+        ],
+        "episode_16x9": "Modeling a two-agent teaching loop as a predictable, testable state machine.",
+        "hook": "A teacher, a student and a five-turn lesson, all modeled inside one HTML file.",
+        "proof_shots": [
+          "Teacher and Student configuration.",
+          "Use Geometry Coach and Learner personas.",
+          "Set three iterations and verification.",
+          "Do not run the historical backend.",
+          "Capture deterministic rebuilt turns.",
+          "Export and reset."
+        ],
+        "scene_beats": [
+          "Configure teacher and student roles.",
+          "Choose a neutral topic and iteration count.",
+          "Start alternating turns in the rebuild.",
+          "Add an understanding check.",
+          "Export and reset the transcript."
+        ],
+        "short_9x16": "Can two fake agents teach each other without an AI model?"
+      },
+      "readiness": "medium-low-without-mock",
+      "readiness_label": "Needs hardening",
+      "related": [
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#dynamic-teaching-simulation"
+        },
+        {
+          "kind": "content",
+          "title": "Browse Copilot and interface work",
+          "url": "/work/"
+        }
+      ],
+      "risk_level": "high",
+      "risks": [
+        {
+          "evidence": "The function key is stored in localStorage.",
+          "severity": "high"
+        },
+        {
+          "evidence": "The default backend is localhost and is not publicly available.",
+          "severity": "medium"
+        }
+      ],
+      "search_text": "dynamic teaching simulation teacher-learner.html dynamic knowledge transfer simulation copilot prototypes two-role teaching simulation with configurable teacher and student personas, topic, initial teaching task, iteration limit, optional learning verification, manual or automatic progression, export and theme controls. a configurable teacher-and-student loop modeling knowledge transfer as alternating conversational turns. html css javascript highlight.js font awesome localstorage fetch blob urls",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/teacher-learner.html",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "Highlight.js",
+        "Font Awesome",
+        "localStorage",
+        "fetch",
+        "Blob URLs"
+      ],
+      "title": "Dynamic Teaching Simulation"
+    },
+    {
+      "acceptance_checks": [
+        "A fixed fixture produces predetermined category and service counts.",
+        "Grouped, timeline and raw views contain the same entries.",
+        "Search highlights only matching text.",
+        "Pasted HTML or event-handler strings remain inert.",
+        "Auto-fix marks uncertain repairs rather than silently altering logs."
+      ],
+      "aliases": [
+        "terminal-viewer.html"
+      ],
+      "category": "local-first-utilities",
+      "category_title": "Local-First Utilities",
+      "clean_room_prompt": "Build an original offline terminal-log visualizer from the public app's observed behavior. Parse common timestamp, HTTP, warning, error, success, JSON and service patterns; provide grouped, timeline and raw views, search highlighting, counts, copy, clearing and conservative truncated-line repair. Escape input before adding highlight markup.",
+      "dependencies": [
+        {
+          "purpose": "Interface icons",
+          "status": 200,
+          "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        }
+      ],
+      "embed_notes": "Escape content before highlighting and use a sandboxed, dependency-pinned restoration.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/terminal-viewer.html:697-828",
+        "kodyw.com:/wp-content/uploads/2025/03/terminal-viewer.html:1370-1543"
+      ],
+      "id": "terminal-log-visualizer",
+      "lesson": {
+        "demo_url": "/learnwithkody/demos/366-incident-log-observatory.html",
+        "id": "incident-log-observatory",
+        "lesson_url": "/learnwithkody/examples/incident-log-observatory/",
+        "title": "Incident Log Observatory — Parse Evidence Without Executing It"
+      },
+      "media_ids": [
+        539,
+        568,
+        579,
+        622
+      ],
+      "media_integrity": [
+        {
+          "family_id": "terminal-log-visualizer",
+          "media_id": 539,
+          "sha256": "a75cfe27ef65fed52e28bec18c8f4163ba6b8194eef9f278351439109ef1ceb1",
+          "size_bytes": 48856,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/terminal-viewer.html"
+        },
+        {
+          "family_id": "terminal-log-visualizer",
+          "media_id": 568,
+          "sha256": "a75cfe27ef65fed52e28bec18c8f4163ba6b8194eef9f278351439109ef1ceb1",
+          "size_bytes": 48856,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/terminal-viewer-1.html"
+        },
+        {
+          "family_id": "terminal-log-visualizer",
+          "media_id": 579,
+          "sha256": "a75cfe27ef65fed52e28bec18c8f4163ba6b8194eef9f278351439109ef1ceb1",
+          "size_bytes": 48856,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/terminal-viewer-2.html"
+        },
+        {
+          "family_id": "terminal-log-visualizer",
+          "media_id": 622,
+          "sha256": "a75cfe27ef65fed52e28bec18c8f4163ba6b8194eef9f278351439109ef1ceb1",
+          "size_bytes": 48856,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/terminal-viewer-3.html"
+        }
+      ],
+      "museum_blurb": "A dense terminal-output utility that reorganizes pasted logs into searchable incident views and service counts.",
+      "observed_controls": [
+        "Paste Logs",
+        "Parse Logs",
+        "Clear",
+        "Copy All",
+        "Auto-Fix",
+        "Hide Timestamps",
+        "Search",
+        "Grouped",
+        "Timeline",
+        "Raw",
+        "Expand All",
+        "Collapse All",
+        "Theme"
+      ],
+      "observed_summary": "Offline terminal-log parser with HTTP, success, warning, error and service classifications, counts, search, grouped, timeline and raw views, timestamp hiding, expand or collapse, copy and truncated-log repair.",
+      "position": 20,
+      "preview": {
+        "kind": "clean-room",
+        "reason": "An original local restoration is available in a strict sandbox.",
+        "url": "/learnwithkody/demos/366-incident-log-observatory.html"
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "Fixture counts are reproducible.",
+          "All views contain the same entries.",
+          "The historical version still uses innerHTML for details.",
+          "Injection testing occurs only in the safe rebuild.",
+          "Auto-fix marks uncertainty."
+        ],
+        "episode_16x9": "Build a log visualizer and learn why syntax highlighting must begin with escaping.",
+        "hook": "Paste a wall of terminal output and this app turns it into a searchable incident timeline.",
+        "proof_shots": [
+          "Empty zero-count interface.",
+          "Paste a fixture with HTTP, success, warning, error and JSON.",
+          "Click Parse Logs.",
+          "Switch Grouped, Timeline and Raw.",
+          "Search a correlation ID.",
+          "Hide timestamps and expand entries.",
+          "Show inert HTML-like log text in the rebuild."
+        ],
+        "scene_beats": [
+          "Paste a synthetic mixed log.",
+          "Parse categories and counts.",
+          "Switch between three views.",
+          "Search a request ID.",
+          "Fix the output-escaping problem."
+        ],
+        "short_9x16": "A pasted log line should never become executable HTML."
+      },
+      "readiness": "high-after-escaping-fix",
+      "readiness_label": "Restoration candidate",
+      "related": [
+        {
+          "kind": "lesson",
+          "title": "Incident Log Observatory — Parse Evidence Without Executing It",
+          "url": "/learnwithkody/examples/incident-log-observatory/"
+        },
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#terminal-log-visualizer"
+        },
+        {
+          "kind": "content",
+          "title": "Browse local-first examples",
+          "url": "/learnwithkody/examples/"
+        }
+      ],
+      "risk_level": "high",
+      "risks": [
+        {
+          "evidence": "Parsed log summaries and details are assigned through innerHTML.",
+          "severity": "high"
+        },
+        {
+          "evidence": "Search highlighting adds markup without first escaping original log text.",
+          "severity": "high"
+        }
+      ],
+      "search_text": "advanced terminal log visualizer terminal-viewer.html local-first utilities offline terminal-log parser with http, success, warning, error and service classifications, counts, search, grouped, timeline and raw views, timestamp hiding, expand or collapse, copy and truncated-log repair. a dense terminal-output utility that reorganizes pasted logs into searchable incident views and service counts. html css javascript regular expressions clipboard api font awesome",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/terminal-viewer.html",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "regular expressions",
+        "Clipboard API",
+        "Font Awesome"
+      ],
+      "title": "Advanced Terminal Log Visualizer"
+    },
+    {
+      "acceptance_checks": [
+        "Nodes can be added, moved, connected, edited and removed.",
+        "Export and import preserve positions, edges, prompts and parameters.",
+        "Simulation processes nodes in dependency order and records timing and status.",
+        "History can be searched and replayed.",
+        "Imported scripts or markup never execute.",
+        "No API key appears in localStorage or exported data."
+      ],
+      "aliases": [
+        "workflow-executor-app.html"
+      ],
+      "category": "agent-workbenches",
+      "category_title": "Agent Workbenches",
+      "clean_room_prompt": "Build an original node-based workflow executor using the public app only as black-box reference. Include draggable connected steps, node configuration, zoom and fit, templates, execution history, document input, JSON import or export, replay and deterministic simulated adapters. Use validated schemas, safe rendering and session-only optional credentials.",
+      "dependencies": [
+        {
+          "purpose": "Interface icons",
+          "status": 200,
+          "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        },
+        {
+          "purpose": "Default local workflow API",
+          "status": null,
+          "url": "http://localhost:7071/api/"
+        }
+      ],
+      "embed_notes": "Use schema validation, safe rendering, deterministic simulation and session-only credentials excluded from exports.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/workflow-executor-app.html:1414-1470",
+        "kodyw.com:/wp-content/uploads/2025/03/workflow-executor-app.html:1852-2009",
+        "kodyw.com:/wp-content/uploads/2025/03/workflow-executor-app.html:2676-2730",
+        "kodyw.com:/wp-content/uploads/2025/03/workflow-executor-app.html:3689-3795"
+      ],
+      "id": "agent-workflow-executor",
+      "lesson": null,
+      "media_ids": [
+        569,
+        592,
+        623
+      ],
+      "media_integrity": [
+        {
+          "family_id": "agent-workflow-executor",
+          "media_id": 569,
+          "sha256": "a117eba267b4f4515bdb59b8cad4c82f62d7930ce73518a10e91fa90a97aee76",
+          "size_bytes": 218662,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/workflow-executor-app.html"
+        },
+        {
+          "family_id": "agent-workflow-executor",
+          "media_id": 592,
+          "sha256": "a117eba267b4f4515bdb59b8cad4c82f62d7930ce73518a10e91fa90a97aee76",
+          "size_bytes": 218662,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/workflow-executor-app-1.html"
+        },
+        {
+          "family_id": "agent-workflow-executor",
+          "media_id": 623,
+          "sha256": "a117eba267b4f4515bdb59b8cad4c82f62d7930ce73518a10e91fa90a97aee76",
+          "size_bytes": 218662,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/workflow-executor-app-2.html"
+        }
+      ],
+      "museum_blurb": "The collection's most ambitious single-file workflow IDE, combining graph editing, templates, execution history and replay.",
+      "observed_controls": [
+        "Add Step",
+        "Import",
+        "Export",
+        "Execute",
+        "Zoom In",
+        "Zoom Out",
+        "Fit",
+        "Center",
+        "Filter",
+        "New Template",
+        "Test Connection",
+        "Export All Data",
+        "Import Data",
+        "Clear All Data",
+        "Load Sample Text",
+        "Edit Node",
+        "Replay Workflow"
+      ],
+      "observed_summary": "Large node-based workflow editor with draggable connected nodes, zoom and framing controls, prompt and parameter editing, templates, history, search, document input, sample data, import or export, settings, replay and simulated fallback execution.",
+      "position": 21,
+      "preview": {
+        "kind": "record-only",
+        "reason": "The verified audit does not approve the historical upload for embedding."
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "The default URL remains localhost.",
+          "Historical keys remain persisted.",
+          "Fallback simulation remains available.",
+          "Dependency-order results match the lesson graph.",
+          "The rebuild stores no key locally or in exports.",
+          "Imported fields cannot inject markup."
+        ],
+        "episode_16x9": "Building a miniature workflow IDE with graph editing, templates, execution history and replay.",
+        "hook": "This may be the most ambitious artifact in the collection: editor, templates, history, replay, settings and execution in one page.",
+        "proof_shots": [
+          "Full canvas and controls.",
+          "Load or create three synthetic nodes.",
+          "Open Edit Node.",
+          "Connect and fit the graph.",
+          "Execute only with the rebuild simulator.",
+          "Open Execution Details and History.",
+          "Export, clear and re-import.",
+          "Show credentials excluded from export."
+        ],
+        "scene_beats": [
+          "Tour the node canvas.",
+          "Edit a synthetic node.",
+          "Connect a three-step workflow.",
+          "Execute simulated adapters.",
+          "Inspect history, replay and export."
+        ],
+        "short_9x16": "This entire workflow IDE is one HTML file."
+      },
+      "readiness": "medium-after-credential-fix",
+      "readiness_label": "Needs hardening",
+      "related": [
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#agent-workflow-executor"
+        },
+        {
+          "kind": "content",
+          "title": "Explore agent-system builds",
+          "url": "/learnwithkody/examples/"
+        }
+      ],
+      "risk_level": "high",
+      "risks": [
+        {
+          "evidence": "API keys are included in localStorage-backed application state and settings.",
+          "severity": "high"
+        },
+        {
+          "evidence": "Imported workflow fields and execution results pass through numerous dynamic HTML assignments.",
+          "severity": "high"
+        },
+        {
+          "evidence": "The default endpoint is localhost and not a public service.",
+          "severity": "medium"
+        }
+      ],
+      "search_text": "agent workflow executor workflow-executor-app.html agent workbenches large node-based workflow editor with draggable connected nodes, zoom and framing controls, prompt and parameter editing, templates, history, search, document input, sample data, import or export, settings, replay and simulated fallback execution. the collection's most ambitious single-file workflow ide, combining graph editing, templates, execution history and replay. html css javascript dom workflow canvas localstorage filereader fetch blob urls google material symbols",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/workflow-executor-app.html",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "DOM workflow canvas",
+        "localStorage",
+        "FileReader",
+        "fetch",
+        "Blob URLs",
+        "Google Material Symbols"
+      ],
+      "title": "Agent Workflow Executor"
+    },
+    {
+      "acceptance_checks": [
+        "Camera access occurs only after a clearly labeled user action.",
+        "Denied permission produces a recoverable error.",
+        "A user-owned local video and webcam appear in the recorded split screen.",
+        "Stop ends all camera tracks and timers.",
+        "The downloaded WebM has nonzero duration and both permitted sources.",
+        "YouTube iframe content is never copied into the recording."
+      ],
+      "aliases": [
+        "youtube-webcam-sync-fixed.html"
+      ],
+      "category": "media-laboratories",
+      "category_title": "Media Laboratories",
+      "clean_room_prompt": "Build an original consent-first split-screen recording lesson inspired by the public app's visible flow. Allow a user-owned local video file and webcam preview, countdown, start and stop, Canvas composition and local WebM download. YouTube may be previewed separately, but do not capture iframe pixels, bypass platform restrictions or upload recordings.",
+      "dependencies": [
+        {
+          "purpose": "YouTube player embedding",
+          "status": 200,
+          "url": "https://www.youtube.com/iframe_api"
+        }
+      ],
+      "embed_notes": "Do not grant camera permission to the historical artifact. Redesign around user-owned local video, explicit consent and guaranteed media-track shutdown.",
+      "evidence": [
+        "kodyw.com:/wp-content/uploads/2025/03/youtube-webcam-sync-fixed.html:273-357",
+        "kodyw.com:/wp-content/uploads/2025/03/youtube-webcam-sync-fixed.html:397-550",
+        "kodyw.com:/wp-content/uploads/2025/03/youtube-webcam-sync-fixed.html:589-707"
+      ],
+      "id": "youtube-webcam-sync",
+      "lesson": null,
+      "media_ids": [
+        570,
+        587,
+        624
+      ],
+      "media_integrity": [
+        {
+          "family_id": "youtube-webcam-sync",
+          "media_id": 570,
+          "sha256": "b50bec9590ef241805258d0b0572f2a3fe9b65be8bb52a48b2c5353a890d6dc0",
+          "size_bytes": 20635,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/youtube-webcam-sync-fixed.html"
+        },
+        {
+          "family_id": "youtube-webcam-sync",
+          "media_id": 587,
+          "sha256": "b50bec9590ef241805258d0b0572f2a3fe9b65be8bb52a48b2c5353a890d6dc0",
+          "size_bytes": 20635,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/youtube-webcam-sync-fixed-1.html"
+        },
+        {
+          "family_id": "youtube-webcam-sync",
+          "media_id": 624,
+          "sha256": "b50bec9590ef241805258d0b0572f2a3fe9b65be8bb52a48b2c5353a890d6dc0",
+          "size_bytes": 20635,
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/youtube-webcam-sync-fixed-2.html"
+        }
+      ],
+      "museum_blurb": "A clever but technically blocked attempt to record a YouTube video and webcam together as a browser-generated split-screen file.",
+      "observed_controls": [
+        "YouTube URL",
+        "Load Video",
+        "Start Recording",
+        "Stop Recording",
+        "Reset",
+        "Download Combined Video",
+        "Record Again"
+      ],
+      "observed_summary": "Media experiment accepting a YouTube URL, loading an iframe player, requesting webcam video, presenting a countdown, attempting split-screen Canvas composition, recording the Canvas stream with MediaRecorder and offering WebM download.",
+      "position": 22,
+      "preview": {
+        "kind": "record-only",
+        "reason": "The verified audit does not approve the historical upload for embedding."
+      },
+      "rapp_vision": {
+        "claims_to_verify": [
+          "The historical code still passes an iframe to drawImage.",
+          "Current Canvas specifications still exclude iframe elements.",
+          "Cross-origin restrictions are described accurately.",
+          "The replacement video is owned or licensed.",
+          "Camera access is user-initiated.",
+          "Stop terminates every track and timer.",
+          "The rebuild uploads nothing."
+        ],
+        "episode_16x9": "Why you cannot record a YouTube iframe into Canvas and how to build the technically valid version.",
+        "hook": "The idea is brilliant: record YouTube beside your webcam, but the browser security model makes the original approach impossible.",
+        "proof_shots": [
+          "Static historical YouTube and Webcam panels.",
+          "Highlight Load, Start, Stop, Reset and Download.",
+          "Do not request historical webcam access.",
+          "Diagram the attempted drawImage iframe path.",
+          "Choose a licensed local video in the rebuild.",
+          "Explicitly enable the camera.",
+          "Record five seconds, stop, download and show the camera indicator off."
+        ],
+        "scene_beats": [
+          "Show the historical recording flow.",
+          "Explain the intended Canvas architecture.",
+          "Identify the iframe-to-Canvas failure.",
+          "Replace YouTube capture with user-owned local video.",
+          "Demonstrate consent, recording, download and shutdown."
+        ],
+        "short_9x16": "Why drawImage with a YouTube iframe does not work."
+      },
+      "readiness": "hold-redesign-required",
+      "readiness_label": "Context only",
+      "related": [
+        {
+          "kind": "rapp-vision",
+          "title": "Open the RAPP Vision production brief",
+          "url": "/lost-apps/rapp-vision/#youtube-webcam-sync"
+        },
+        {
+          "kind": "content",
+          "title": "Browse RAPP Vision",
+          "url": "https://kody-w.github.io/rapp-vision/"
+        }
+      ],
+      "risk_level": "high",
+      "risks": [
+        {
+          "evidence": "The code passes a YouTube iframe element to Canvas drawImage; iframe elements are not valid Canvas image sources.",
+          "severity": "high"
+        },
+        {
+          "evidence": "Cross-origin YouTube pixels cannot normally be copied into a Canvas recording.",
+          "severity": "high"
+        },
+        {
+          "evidence": "Camera capture and recording require explicit privacy consent.",
+          "severity": "high"
+        },
+        {
+          "evidence": "Recording or redistributing third-party video may create rights and platform-policy concerns.",
+          "severity": "medium"
+        }
+      ],
+      "search_text": "youtube webcam sync with combined export youtube-webcam-sync-fixed.html media laboratories media experiment accepting a youtube url, loading an iframe player, requesting webcam video, presenting a countdown, attempting split-screen canvas composition, recording the canvas stream with mediarecorder and offering webm download. a clever but technically blocked attempt to record a youtube video and webcam together as a browser-generated split-screen file. html css javascript youtube iframe api getusermedia canvas 2d capturestream mediarecorder blob urls",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/youtube-webcam-sync-fixed.html",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "YouTube IFrame API",
+        "getUserMedia",
+        "Canvas 2D",
+        "captureStream",
+        "MediaRecorder",
+        "Blob URLs"
+      ],
+      "title": "YouTube Webcam Sync with Combined Export"
+    }
+  ],
+  "generated_at": "2026-08-29",
+  "policies": {
+    "content_policy": "Validate imported schemas, escape untrusted text and prohibit imported executable code.",
+    "default": "Do not embed historical uploads directly in the museum origin.",
+    "device_permissions": "Require explicit, contextual user action before camera or microphone access.",
+    "interactive_origin": "Use a separate origin with no shared authentication or storage.",
+    "network_policy": "Use explicit per-exhibit host allowlists and no real API credentials.",
+    "preferred_presentation": "Screenshot, metadata, verified claims and a separately hosted clean-room restoration.",
+    "sandbox": "sandbox=\"allow-scripts allow-downloads\" without allow-same-origin, forms, popups, camera or microphone by default.",
+    "sensitive_content": "Present health-adjacent artifacts as historical software, not clinical tools."
+  },
+  "schema": "kodyw-lost-apps-museum/1.0",
+  "source": {
+    "audit_schema": "kodyw-lost-apps/1.0",
+    "audit_sha256": "6e6daec82e55977985df613e45f23a076ec53a8c7775b64c533408784a238884",
+    "content_addressing": {
+      "byte_distinct_html": 27,
+      "captured_at": "2026-08-30",
+      "content_groups": [
+        {
+          "family_ids": [
+            "automated-actions"
+          ],
+          "media_ids": [
+            543,
+            545,
+            583,
+            599,
+            626
+          ],
+          "sha256": "0156fb1d56d85e4365858a82d003e65063547e2383ddadf24cbe0f30ba44d3c1"
+        },
+        {
+          "family_ids": [
+            "worm-game-deluxe"
+          ],
+          "media_ids": [
+            561,
+            593,
+            615
+          ],
+          "sha256": "0e173ff705a0728907a3a279cb1f5249d0d4d1296cfc63c570d449ed9e9daf33"
+        },
+        {
+          "family_ids": [
+            "agent-workflow-system"
+          ],
+          "media_ids": [
+            544,
+            588,
+            598,
+            625
+          ],
+          "sha256": "3593f9701403bec952020ee9907323050cdd8dbf534a1377541202a7e8df5e8f"
+        },
+        {
+          "family_ids": [
+            "mermaid-diagram-viewer"
+          ],
+          "media_ids": [
+            559,
+            595,
+            613
+          ],
+          "sha256": "3d211262b42e3773fb32bb9b64e6e574da3924a961f2779d1963d017a270f993"
+        },
+        {
+          "family_ids": [
+            "github-repository-viewer"
+          ],
+          "media_ids": [
+            555,
+            589,
+            609
+          ],
+          "sha256": "48e2bc7fd8cd87adc5534a809d2eab919930371bac4497cf7ad77d8b9b6ce21f"
+        },
+        {
+          "family_ids": [
+            "teacher-learner-replay"
+          ],
+          "media_ids": [
+            566,
+            586,
+            620
+          ],
+          "sha256": "4d25956b992802bf6eb1713d802d0e9c0d061b298b4bacec7da0cca8879626ba"
+        },
+        {
+          "family_ids": [
+            "task-tracker"
+          ],
+          "media_ids": [
+            565,
+            594,
+            619
+          ],
+          "sha256": "5077e521da999c4fa58fa8ad92f03c3d898c08ee059b2d609e7a5e165438d0dd"
+        },
+        {
+          "family_ids": [
+            "severance-refiner"
+          ],
+          "media_ids": [
+            560,
+            585,
+            614
+          ],
+          "sha256": "5556d967b661d52b6a1a2308e37d9b22f0e592e8e5de72af14da09e75da9a707"
+        },
+        {
+          "family_ids": [
+            "retroplay-console"
+          ],
+          "media_ids": [
+            536,
+            551,
+            576,
+            605
+          ],
+          "sha256": "5b08a5f3576cb00397422ccfafc4731505654428a9463dc2af74233a31645968"
+        },
+        {
+          "family_ids": [
+            "slipspace-business-dashboard"
+          ],
+          "media_ids": [
+            563,
+            573,
+            617
+          ],
+          "sha256": "7db069e6c3d4ccc4d6ea6052a2f3672c7c486eea08bae18ec3b649e12bfac66b"
+        },
+        {
+          "family_ids": [
+            "retroplay-console"
+          ],
+          "media_ids": [
+            535,
+            547,
+            575,
+            601,
+            628
+          ],
+          "sha256": "8275bd57e7395111db713d9157f509be5f685cc1abcacc350fd0b25681f61d2e"
+        },
+        {
+          "family_ids": [
+            "magentic-copilot"
+          ],
+          "media_ids": [
+            538,
+            556,
+            578,
+            610
+          ],
+          "sha256": "8fe846a698753c11877d2f5a635036ea29b25a3180cced649923bbe311bc62c0"
+        },
+        {
+          "family_ids": [
+            "utility-apps-hub"
+          ],
+          "media_ids": [
+            554,
+            596,
+            608
+          ],
+          "sha256": "9578f513595dc391d1141dbcc38c51087d10a01271870b4219cb15af68323fde"
+        },
+        {
+          "family_ids": [
+            "storytelling-workflows"
+          ],
+          "media_ids": [
+            541,
+            558,
+            581,
+            612
+          ],
+          "sha256": "96096271f362a2d82b603712266851e7c7ed9dd262befbdf435a9b44bcdf1bbf"
+        },
+        {
+          "family_ids": [
+            "emdr-therapy-assistant"
+          ],
+          "media_ids": [
+            550,
+            597,
+            604
+          ],
+          "sha256": "9a02b6e7ef3a512c98dffae434c544cf6571c3bb130e1b38e50e3fc8742f37ae"
+        },
+        {
+          "family_ids": [
+            "magentic-copilot"
+          ],
+          "media_ids": [
+            537,
+            557,
+            577,
+            611
+          ],
+          "sha256": "a061df78d7f0b5479675557714a253f1ea00e9690437c56454926201edbc1be6"
+        },
+        {
+          "family_ids": [
+            "agent-workflow-executor"
+          ],
+          "media_ids": [
+            569,
+            592,
+            623
+          ],
+          "sha256": "a117eba267b4f4515bdb59b8cad4c82f62d7930ce73518a10e91fa90a97aee76"
+        },
+        {
+          "family_ids": [
+            "terminal-log-visualizer"
+          ],
+          "media_ids": [
+            539,
+            568,
+            579,
+            622
+          ],
+          "sha256": "a75cfe27ef65fed52e28bec18c8f4163ba6b8194eef9f278351439109ef1ceb1"
+        },
+        {
+          "family_ids": [
+            "dynamic-teaching-simulation"
+          ],
+          "media_ids": [
+            567,
+            591,
+            621
+          ],
+          "sha256": "ac71881152aff1cf152baf59cd29275af65443cd92f4e421f81f1cd698c35590"
+        },
+        {
+          "family_ids": [
+            "youtube-webcam-sync"
+          ],
+          "media_ids": [
+            570,
+            587,
+            624
+          ],
+          "sha256": "b50bec9590ef241805258d0b0572f2a3fe9b65be8bb52a48b2c5353a890d6dc0"
+        },
+        {
+          "family_ids": [
+            "migration-assessment-copilot"
+          ],
+          "media_ids": [
+            553,
+            590,
+            607
+          ],
+          "sha256": "c277a263d88c914492d80c73bd7ea816c81abf48733217ba25934b12f6d1ad1d"
+        },
+        {
+          "family_ids": [
+            "mac-automated-actions"
+          ],
+          "media_ids": [
+            542,
+            549,
+            582,
+            603
+          ],
+          "sha256": "c830180c94b29e8288cf81c4c46f6ff1c666160bd588c0ffcbf48441145b39dd"
+        },
+        {
+          "family_ids": [
+            "retroplay-console"
+          ],
+          "media_ids": [
+            534,
+            546,
+            574,
+            600,
+            627
+          ],
+          "sha256": "decd9c2e42ca2df25056e0b40b15e3558543e35c92e4c168c081ab5588fc6850"
+        },
+        {
+          "family_ids": [
+            "slipspace-business-dashboard"
+          ],
+          "media_ids": [
+            562,
+            572,
+            616
+          ],
+          "sha256": "e7fa0f3aaff274f91314854f5c79d5e4c30d681c2e39a0648710006a7c016bab"
+        },
+        {
+          "family_ids": [
+            "crm-questionnaire-viewer"
+          ],
+          "media_ids": [
+            540,
+            548,
+            580,
+            602,
+            629
+          ],
+          "sha256": "e99d519ceda61dc39d2e6ad742ab25289d02a6d67b2ea33731567d6683621d15"
+        },
+        {
+          "family_ids": [
+            "pomodoro-kanban-board"
+          ],
+          "media_ids": [
+            564,
+            584,
+            618
+          ],
+          "sha256": "eb3accd067a34255d7c759e8589dc5336c98ce20518a7070d65ba83759d58661"
+        },
+        {
+          "family_ids": [
+            "slipspace-business-dashboard"
+          ],
+          "media_ids": [
+            552,
+            571,
+            606
+          ],
+          "sha256": "ec38b460ade7ef0e6e0d582b078ba0063075a7b859fbacbb18cc79633a2146c3"
+        }
+      ],
+      "hash_algorithm": "sha256",
+      "media_records": 96,
+      "schema": "kodyw-lost-apps-content-addressing/1.0",
+      "wordpress_api_endpoint": "https://kodyw.com/wp-json/wp/v2/media"
+    },
+    "deduplication": "Numbered filename variants were grouped and SHA-256 compared; obvious product revisions were then curated into broader application families.",
+    "scope": "Public, unauthenticated WordPress REST API and passive HTTP retrieval only."
+  },
+  "stats": {
+    "byte_distinct_html": 27,
+    "curated_apps": 22,
+    "historical_embeds_approved": 0,
+    "html_attachments": 96,
+    "interactive_clean_room_restorations": 3,
+    "record_only_exhibits": 19,
+    "sensitive_context_only": 2,
+    "wordpress_media_reported": 193
+  },
+  "taxonomy": [
+    {
+      "description": "Workflow builders, queues, multi-agent simulations and execution consoles.",
+      "id": "agent-workbenches",
+      "title": "Agent Workbenches"
+    },
+    {
+      "description": "Chat clients, enterprise actions, conversation replay and teaching simulations.",
+      "id": "copilot-prototypes",
+      "title": "Copilot Prototypes"
+    },
+    {
+      "description": "CRM analysis, sales dashboards, reports and operational mockups.",
+      "id": "business-systems",
+      "title": "Business Systems"
+    },
+    {
+      "description": "Task tools, log analysis, diagrams, catalogs and repository viewers.",
+      "id": "local-first-utilities",
+      "title": "Local-First Utilities"
+    },
+    {
+      "description": "Browser consoles, arcade experiments and fictional interfaces.",
+      "id": "playable-software",
+      "title": "Playable Software"
+    },
+    {
+      "description": "Recording, compositing, export and browser-device experiments.",
+      "id": "media-laboratories",
+      "title": "Media Laboratories"
+    },
+    {
+      "description": "Wellness or mental-health-adjacent artifacts requiring contextual warnings.",
+      "id": "sensitive-human-centered",
+      "title": "Sensitive Human-Centered Experiments"
+    }
+  ]
+}

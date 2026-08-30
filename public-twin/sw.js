@@ -8,13 +8,15 @@ var BASELINE_SOURCE_MANIFEST_SHA256 =
 var BASELINE_CORPUS_SHA256 =
   'cd7445811d231f1741890bdb58535d8d04a8244e9932b3f71948cc5514ef0bab';
 var SHELL_RELEASE_SHA256 =
-  '4494d9e46d6f41501d9fdd182677224f7e1f1ed6648d0c5a289bb51a649d962d';
+  '1c15ff8978a428e9aa87ffe25de227145b3c557a97462d12bb38c0ae402659ff';
 var SHELL_CACHE = 'kody-twin-shell-' + SHELL_RELEASE_SHA256.slice(0, 16);
 var CORPUS_CACHE = 'kody-twin-corpus-' + BASELINE_CORPUS_SHA256.slice(0, 16);
 var SHELL_MANIFEST_PATH = '/public-twin/shell-manifest.json';
 var LEASE_PATH = '/public-twin/__release-lease__';
 var LEASE_CACHE = 'kody-twin-client-leases-v1';
 var LEASE_TTL_MS = 5 * 60 * 1000;
+var LEASE_GRACE_MS = 15 * 1000;
+var MAX_UNKNOWN_GENERATIONS = 2;
 var SHA256 = /^[0-9a-f]{64}$/;
 var DOCUMENT_MARKER_PREFIX = new TextEncoder().encode(
   'data-twin-document-sha256="'
@@ -556,6 +558,32 @@ function leaseRequest(clientId) {
   );
 }
 
+function activeReleaseRequest() {
+  return new Request(self.location.origin + LEASE_PATH + '?meta=active');
+}
+
+function recordActiveRelease() {
+  return caches.open(LEASE_CACHE).then(function (cache) {
+    return cache.put(
+      activeReleaseRequest(),
+      new Response(JSON.stringify(releaseLease()), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json; charset=utf-8' }
+      })
+    );
+  });
+}
+
+function activeRelease() {
+  return caches.open(LEASE_CACHE).then(function (cache) {
+    return cache.match(activeReleaseRequest());
+  }).then(function (response) {
+    return response ? response.json() : null;
+  }).catch(function () {
+    return null;
+  });
+}
+
 function recordClientLease(clientId, lease) {
   if (!isNonEmptyString(clientId) || !validLease(lease)) {
     return Promise.resolve(false);
@@ -583,6 +611,9 @@ function readClientLeases() {
           }
           return response.json().then(function (lease) {
             var url = new URL(request.url);
+            if (!url.searchParams.has('client')) {
+              return null;
+            }
             return {
               request: request,
               clientId: url.searchParams.get('client'),
@@ -603,15 +634,21 @@ function readClientLeases() {
   });
 }
 
-function pruneReleaseCaches() {
+function pruneReleaseCaches(enforceUnknownBound) {
   return Promise.all([
+    activeRelease(),
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }),
     readClientLeases(),
     caches.keys()
   ]).then(function (values) {
-    var clients = values[0];
-    var leaseBundle = values[1];
-    var names = values[2];
+    var active = values[0];
+    var clients = values[1];
+    var leaseBundle = values[2];
+    var names = values[3];
+    if (validLease(active) &&
+        active.releaseSha256 !== SHELL_RELEASE_SHA256) {
+      return { pruned: false, reason: 'newer-release-active' };
+    }
     var liveIds = Object.create(null);
     clients.forEach(function (client) {
       if (client && isNonEmptyString(client.id)) {
@@ -635,21 +672,38 @@ function pruneReleaseCaches() {
       return !leasesByClient[clientId];
     });
     if (missingLease) {
-      return Promise.all(cleanup).then(function () {
-        return { pruned: false, reason: 'unleased-live-client' };
-      });
+      if (!enforceUnknownBound) {
+        return Promise.all(cleanup).then(function () {
+          return { pruned: false, reason: 'unleased-live-client-grace' };
+        });
+      }
     }
     var retain = Object.create(null);
     retain[SHELL_CACHE] = true;
     retain[CORPUS_CACHE] = true;
     liveClientIds.forEach(function (clientId) {
-      retain[leasesByClient[clientId].shellCache] = true;
-      retain[leasesByClient[clientId].corpusCache] = true;
+      if (leasesByClient[clientId]) {
+        retain[leasesByClient[clientId].shellCache] = true;
+        retain[leasesByClient[clientId].corpusCache] = true;
+      }
     });
+    if (missingLease) {
+      [
+        'kody-twin-shell-',
+        'kody-twin-corpus-'
+      ].forEach(function (prefix) {
+        names.filter(function (name) {
+          return name.indexOf(prefix) === 0 &&
+            !retain[name];
+        }).slice(-MAX_UNKNOWN_GENERATIONS).forEach(function (name) {
+          retain[name] = true;
+        });
+      });
+    }
     var removals = names.filter(function (name) {
-      var releaseCache = name.indexOf('kody-twin-shell-') === 0 ||
-        name.indexOf('kody-twin-corpus-') === 0;
-      return releaseCache && !retain[name];
+      var shellCache = name.indexOf('kody-twin-shell-') === 0;
+      var corpusCache = name.indexOf('kody-twin-corpus-') === 0;
+      return (shellCache || corpusCache) && !retain[name];
     }).map(function (name) {
       return caches.delete(name);
     });
@@ -662,6 +716,8 @@ function pruneReleaseCaches() {
 function leaseResponse(event) {
   var lease = releaseLease();
   return recordClientLease(event.clientId, lease).then(function () {
+    return pruneReleaseCaches(true);
+  }).then(function () {
     return new Response(JSON.stringify(lease), {
       status: 200,
       headers: {
@@ -792,7 +848,17 @@ self.addEventListener('install', function (event) {
 });
 
 self.addEventListener('activate', function (event) {
-  event.waitUntil(requireActivationCaches().then(pruneReleaseCaches));
+  event.waitUntil(requireActivationCaches().then(function () {
+    return recordActiveRelease();
+  }).then(function () {
+    return pruneReleaseCaches(false);
+  }).then(function () {
+    setTimeout(function () {
+      return pruneReleaseCaches(true).catch(function () {
+        return null;
+      });
+    }, LEASE_GRACE_MS);
+  }));
 });
 
 self.addEventListener('fetch', function (event) {

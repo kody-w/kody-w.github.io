@@ -1,7 +1,7 @@
 {
   "schema": "kodyw-twin-shell/1.0",
-  "releaseSha256": "925b2c4af595e5426ddddf74d867c28ad67a0123fc769c4658ed9850ba4020ac",
-  "sourceSha256": "72f59ccf70c3b84a1adc01f61f1c57f73ca9457564d97f93d299ab4cea6826d4",
+  "releaseSha256": "a4a946f75022891488eda84a339fbe13864ce817653399e00f1cd1a689bd644e",
+  "sourceSha256": "cac60177662d6a583beccbc7ea4683982169035facec10c41a94b8f1f34199eb",
   "documents": [
     {
       "url": "/public-twin/",
@@ -9,9 +9,9 @@
         "text/html"
       ],
       "normalization": "twin-html-sha256/1",
-      "sha256": "0768617459a49ab2328474e40c5b496618652044c9d5d5ab72f9517bc1069b54",
+      "sha256": "2aecac01d968033fcbec19cca8b5f91074b89fa18216b8ca680aaf808da41531",
       "requiredText": [
-        "data-twin-document-sha256=\"0768617459a49ab2328474e40c5b496618652044c9d5d5ab72f9517bc1069b54\"",
+        "data-twin-document-sha256=\"2aecac01d968033fcbec19cca8b5f91074b89fa18216b8ca680aaf808da41531\"",
         "id=\"public-twin\"",
         "id=\"twin-question-form\"",
         "id=\"twin-question\"",
@@ -26,9 +26,9 @@
         "text/html"
       ],
       "normalization": "twin-html-sha256/1",
-      "sha256": "0768617459a49ab2328474e40c5b496618652044c9d5d5ab72f9517bc1069b54",
+      "sha256": "2aecac01d968033fcbec19cca8b5f91074b89fa18216b8ca680aaf808da41531",
       "requiredText": [
-        "data-twin-document-sha256=\"0768617459a49ab2328474e40c5b496618652044c9d5d5ab72f9517bc1069b54\"",
+        "data-twin-document-sha256=\"2aecac01d968033fcbec19cca8b5f91074b89fa18216b8ca680aaf808da41531\"",
         "id=\"public-twin\"",
         "id=\"twin-question-form\"",
         "id=\"twin-question\"",
@@ -43,9 +43,9 @@
         "text/html"
       ],
       "normalization": "twin-html-sha256/1",
-      "sha256": "d1e35182c7a2737cd94a1b600bb49aa227d000a04c041cd77dfb596272fc224b",
+      "sha256": "dcce30de2d269bfd7cd094ef4dcc6fa9beb3e6032f881cbe8064f416560346ee",
       "requiredText": [
-        "data-twin-document-sha256=\"d1e35182c7a2737cd94a1b600bb49aa227d000a04c041cd77dfb596272fc224b\"",
+        "data-twin-document-sha256=\"dcce30de2d269bfd7cd094ef4dcc6fa9beb3e6032f881cbe8064f416560346ee\"",
         "id=\"evidence-tribunal\"",
         "id=\"tribunal-form\"",
         "id=\"tribunal-result-status\"",
@@ -60,9 +60,9 @@
         "text/html"
       ],
       "normalization": "twin-html-sha256/1",
-      "sha256": "d1e35182c7a2737cd94a1b600bb49aa227d000a04c041cd77dfb596272fc224b",
+      "sha256": "dcce30de2d269bfd7cd094ef4dcc6fa9beb3e6032f881cbe8064f416560346ee",
       "requiredText": [
-        "data-twin-document-sha256=\"d1e35182c7a2737cd94a1b600bb49aa227d000a04c041cd77dfb596272fc224b\"",
+        "data-twin-document-sha256=\"dcce30de2d269bfd7cd094ef4dcc6fa9beb3e6032f881cbe8064f416560346ee\"",
         "id=\"evidence-tribunal\"",
         "id=\"tribunal-form\"",
         "id=\"tribunal-result-status\"",
@@ -104,14 +104,14 @@
     },
     {
       "url": "/api/frame-06-evidence-tribunal.json",
-      "sha256": "8df0e4fa087f80bc5a6266ed145afb95afef02169061d6c6a5f13b77644fbc9a",
+      "sha256": "cd5627103a280bbba76ec23aae6ae83e97533fe82f6b869634e35c685e7904d6",
       "contentTypes": [
         "application/json"
       ]
     },
     {
       "url": "/css/main.css",
-      "sha256": "182683cc381049a28f9993999c9460aae01d295f22b58b37fb980f12328ad32e",
+      "sha256": "92ec60f9b500d87e26e1a9ea0d92ce87f47afe0a9a82e05186496bd33109723a",
       "contentTypes": [
         "text/css"
       ]

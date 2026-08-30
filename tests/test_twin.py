@@ -2,6 +2,7 @@ import hashlib
 import importlib.util
 import json
 import re
+import shutil
 import struct
 import subprocess
 import sys
@@ -15,6 +16,7 @@ sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[1]
 BUILDER = ROOT / "scripts" / "build_twin.py"
 RELEASE_BUILDER = ROOT / "scripts" / "build_twin_release.py"
+REFRESH_STAGER = ROOT / "scripts" / "stage_refresh_release.py"
 CORPUS = ROOT / "api" / "twin-corpus.json"
 PAGE = ROOT / "public-twin" / "index.html"
 TRIBUNAL_PAGE = ROOT / "public-twin" / "tribunal" / "index.html"
@@ -139,6 +141,17 @@ def load_release_builder():
     return module
 
 
+def load_refresh_stager():
+    spec = importlib.util.spec_from_file_location(
+        "stage_refresh_release_test",
+        REFRESH_STAGER,
+    )
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 class TwinAcceptanceTest(unittest.TestCase):
     def test_baseline_inputs_are_unchanged(self):
         counts = source_counts()
@@ -159,6 +172,7 @@ class TwinAcceptanceTest(unittest.TestCase):
         for path in (
             BUILDER,
             RELEASE_BUILDER,
+            REFRESH_STAGER,
             CORPUS,
             PAGE,
             TRIBUNAL_PAGE,
@@ -316,12 +330,77 @@ class TwinAcceptanceTest(unittest.TestCase):
         self.assertEqual(tuple(result.stdout.splitlines()), expected)
         workflow = REFRESH_WORKFLOW.read_text()
         self.assertIn(
-            "python3 scripts/build_twin_release.py --list-outputs",
+            "python3 scripts/stage_refresh_release.py",
             workflow,
         )
-        self.assertIn('"${twin_release_paths[@]}"', workflow)
+        self.assertIn("git diff --cached --quiet", workflow)
         for path in expected:
             self.assertNotIn(f"\n            {path}\n", workflow)
+
+    def test_refresh_stager_detects_and_commits_untracked_output(self):
+        scratch = ROOT / ".stage-refresh-test"
+        shutil.rmtree(scratch, ignore_errors=True)
+        scratch.mkdir()
+        try:
+            subprocess.run(["git", "init", "-q"], cwd=scratch, check=True)
+            subprocess.run(
+                ["git", "config", "user.name", "Test"],
+                cwd=scratch,
+                check=True,
+            )
+            subprocess.run(
+                ["git", "config", "user.email", "test@example.invalid"],
+                cwd=scratch,
+                check=True,
+            )
+            works = scratch / "api" / "works.json"
+            works.parent.mkdir(parents=True)
+            works.write_text("{}\n")
+            subprocess.run(
+                ["git", "add", "api/works.json"],
+                cwd=scratch,
+                check=True,
+            )
+            subprocess.run(
+                ["git", "commit", "-qm", "baseline"],
+                cwd=scratch,
+                check=True,
+            )
+            untracked = scratch / "api" / "new-generated-output.json"
+            untracked.write_text('{"generated":true}\n')
+            module = load_refresh_stager()
+            changed, paths = module.stage_release(
+                scratch,
+                (
+                    "api/works.json",
+                    "api/new-generated-output.json",
+                ),
+            )
+            self.assertTrue(changed)
+            self.assertIn("api/new-generated-output.json", paths)
+            staged = subprocess.run(
+                ["git", "diff", "--cached", "--name-only"],
+                cwd=scratch,
+                text=True,
+                capture_output=True,
+                check=True,
+            ).stdout.splitlines()
+            self.assertIn("api/new-generated-output.json", staged)
+            subprocess.run(
+                ["git", "commit", "-qm", "generated"],
+                cwd=scratch,
+                check=True,
+            )
+            tracked = subprocess.run(
+                ["git", "ls-files", "api/new-generated-output.json"],
+                cwd=scratch,
+                text=True,
+                capture_output=True,
+                check=True,
+            ).stdout.strip()
+            self.assertEqual(tracked, "api/new-generated-output.json")
+        finally:
+            shutil.rmtree(scratch, ignore_errors=True)
 
     def test_workflows_use_locked_jekyll_before_release_checks(self):
         self.assertIn('gem "jekyll", "= 4.2.2"', GEMFILE.read_text())
@@ -587,9 +666,9 @@ class TwinAcceptanceTest(unittest.TestCase):
         refresh = REFRESH_WORKFLOW.read_text()
         self.assertIn("python3 scripts/build_twin_release.py", refresh)
         self.assertIn("python3 scripts/check_twin.py", refresh)
-        self.assertIn("api/works.json", refresh)
-        self.assertIn("--list-outputs", refresh)
-        self.assertIn('"${twin_release_paths[@]}"', refresh)
+        self.assertIn("scripts/stage_refresh_release.py", refresh)
+        self.assertIn("git diff --cached --quiet", refresh)
+        self.assertIn("api/works.json", REFRESH_STAGER.read_text())
 
     @staticmethod
     def png_dimensions(path):

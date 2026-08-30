@@ -227,7 +227,8 @@ function loadWorker(corpusResponse, options = {}) {
   const generation = options.generation || currentGeneration;
   const state = {
     skipWaiting: 0,
-    clientsClaim: 0
+    clientsClaim: 0,
+    timers: []
   };
   const self = {
     location: { origin: ORIGIN },
@@ -278,7 +279,11 @@ function loadWorker(corpusResponse, options = {}) {
     crypto: webcrypto,
     Uint8Array,
     TextEncoder,
-    TextDecoder
+    TextDecoder,
+    setTimeout(callback, delay) {
+      state.timers.push({ callback, delay });
+      return state.timers.length;
+    }
   };
   vm.runInNewContext(generation.workerSource, context, {
     filename: 'public-twin/sw.js'
@@ -290,6 +295,13 @@ function loadWorker(corpusResponse, options = {}) {
     shellCache: context.SHELL_CACHE,
     corpusCache: context.CORPUS_CACHE
   };
+}
+
+async function runTimers(runtime) {
+  const timers = runtime.state.timers.splice(0);
+  for (const timer of timers) {
+    await timer.callback();
+  }
 }
 
 async function runInstall(runtime) {
@@ -837,4 +849,101 @@ test('an unleased live client makes cache pruning fail safe', async () => {
   await runActivate(runtime);
   assert.equal(caches.stores.has(oldShell), true);
   assert.equal(caches.stores.has(oldCorpus), true);
+});
+
+test('repeated releases bound unknown generations, then leases and disappearance converge', async () => {
+  const caches = createCacheStorage();
+  const entries = [];
+  const corpusResponse = () => new Response(JSON.stringify(corpus), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' }
+  });
+
+  for (let index = 0; index < 6; index += 1) {
+    const options = {
+      caches,
+      clients: [{ id: 'delayed-client' }],
+      generation: createGeneration(`bounded-${index}`)
+    };
+    const runtime = loadWorker(corpusResponse(), options);
+    await runInstall(runtime);
+    await runActivate(runtime);
+    await runTimers(runtime);
+    entries.push({ options, runtime });
+    const shells = (await caches.keys()).filter((name) =>
+      name.startsWith('kody-twin-shell-')
+    );
+    assert.ok(shells.length <= 3, shells.join(','));
+  }
+
+  const leased = entries[4];
+  const latest = entries[5];
+  assert.equal(caches.stores.has(leased.runtime.shellCache), true);
+  await runFetch(leased.runtime, {
+    method: 'GET',
+    mode: 'same-origin',
+    url: `${ORIGIN}/public-twin/__release-lease__`
+  }, 'delayed-client');
+
+  await runActivate(latest.runtime);
+  let shells = (await caches.keys()).filter((name) =>
+    name.startsWith('kody-twin-shell-')
+  );
+  assert.deepEqual(
+    shells.sort(),
+    [leased.runtime.shellCache, latest.runtime.shellCache].sort()
+  );
+
+  latest.options.clients = [];
+  await runActivate(latest.runtime);
+  shells = (await caches.keys()).filter((name) =>
+    name.startsWith('kody-twin-shell-')
+  );
+  assert.deepEqual(shells, [latest.runtime.shellCache]);
+});
+
+test('expired client lease enters grace then bounded orphan cleanup', async () => {
+  const caches = createCacheStorage();
+  const generation = createGeneration('expired-lease');
+  const options = {
+    caches,
+    clients: [{ id: 'expired-client' }],
+    generation
+  };
+  for (let index = 0; index < 5; index += 1) {
+    await caches.open(`kody-twin-shell-deadbeefdeadbee${index}`);
+  }
+  const runtime = loadWorker(
+    new Response(JSON.stringify(corpus), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    }),
+    options
+  );
+  await runInstall(runtime);
+  const leaseCache = await caches.open('kody-twin-client-leases-v1');
+  await leaseCache.put(
+    `${ORIGIN}/public-twin/__release-lease__?client=expired-client`,
+    new Response(JSON.stringify({
+      schema: 'kody-twin-client-lease/1',
+      releaseSha256: generation.manifest.releaseSha256,
+      shellCache: runtime.shellCache,
+      corpusCache: runtime.corpusCache,
+      touchedAt: 0
+    }), {
+    headers: { 'Content-Type': 'application/json' }
+    })
+  );
+  await runActivate(runtime);
+  assert.ok(
+    (await caches.keys()).filter((name) =>
+      name.startsWith('kody-twin-shell-')
+    ).length > 3
+  );
+  await runTimers(runtime);
+  assert.ok(
+    (await caches.keys()).filter((name) =>
+      name.startsWith('kody-twin-shell-')
+    ).length <= 3
+  );
 });
