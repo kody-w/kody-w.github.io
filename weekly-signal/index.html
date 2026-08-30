@@ -24,7 +24,7 @@ permalink: /weekly-signal/
         <h2>{{ section.title | default: section.hook }}</h2>
         {% if section.summary %}<p>{{ section.summary }}</p>{% endif %}
 
-        {% if section.items %}
+        {% if section.items and section.items != empty %}
         <ul>
           {% for item in section.items %}
           <li>
@@ -58,7 +58,8 @@ permalink: /weekly-signal/
   <section class="weekly-signal-archive" aria-labelledby="weekly-signal-archive-title">
     <p class="work-eyebrow">Archive</p>
     <h2 id="weekly-signal-archive-title">Previous signals</h2>
-    {% for issue in archive.issues %}
+    {% assign prior_issues = archive.issues | where_exp: "issue", "issue.slug != signal.slug" %}
+    {% for issue in prior_issues %}
       <details {% if forloop.first %}open{% endif %}>
         <summary>
           <span>{{ issue.title }}</span>
@@ -70,6 +71,8 @@ permalink: /weekly-signal/
           {% endfor %}
         </ul>
       </details>
+    {% else %}
+      <p>Earlier issues will appear here after the next weekly release.</p>
     {% endfor %}
   </section>
 </main>

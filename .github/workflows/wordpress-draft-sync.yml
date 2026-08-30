@@ -1,8 +1,13 @@
 name: WordPress Draft Sync
 
 on:
-  schedule:
-    - cron: "0 16 * * 1"
+  workflow_run:
+    workflows:
+      - Refresh Weekly Signal
+    types:
+      - completed
+    branches:
+      - master
   workflow_dispatch:
     inputs:
       surface:
@@ -29,11 +34,14 @@ concurrency:
 jobs:
   sync:
     if: >-
-      github.ref == 'refs/heads/master' &&
-      (github.event_name != 'schedule' ||
+      (github.event_name == 'workflow_dispatch' &&
+       github.ref == 'refs/heads/master') ||
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.event == 'schedule' &&
+       github.event.workflow_run.conclusion == 'success' &&
        vars.WORDPRESS_WEEKLY_SYNC_ENABLED == 'true')
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     environment: wordpress-production
     steps:
       - uses: actions/checkout@v4
@@ -55,11 +63,16 @@ jobs:
           WP_URL: ${{ secrets.WP_URL }}
           WP_USER: ${{ secrets.WP_USER }}
           WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
-          INPUT_SURFACE: ${{ github.event_name == 'schedule' && 'weekly' || inputs.surface }}
+          INPUT_SURFACE: ${{ github.event_name == 'workflow_run' && 'weekly' || inputs.surface }}
           INPUT_SINCE: ${{ inputs.since }}
+          REFRESH_CREATED_AT: ${{ github.event.workflow_run.created_at }}
         run: |
           surface="${INPUT_SURFACE:-weekly}"
           args=(--apply --surface "$surface")
+          if [ "$GITHUB_EVENT_NAME" = "workflow_run" ]; then
+            expected_as_of="$(python3 -c 'import os; from datetime import datetime, timedelta; triggered = datetime.fromisoformat(os.environ[\"REFRESH_CREATED_AT\"].replace(\"Z\", \"+00:00\")).date(); print(triggered - timedelta(days=triggered.weekday() + 1))')"
+            args+=(--expected-as-of "$expected_as_of" --wait-seconds 1200)
+          fi
           if [ -n "$INPUT_SINCE" ]; then
             args+=(--since "$INPUT_SINCE")
           fi

@@ -12,6 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "sync_wordpress.py"
 SURFACES = ROOT / "wordpress" / "surfaces.json"
+PLUGIN = ROOT / "wordpress" / "kodyw-draft-sync.php"
 
 
 def load_module():
@@ -40,14 +41,13 @@ class WordPressSyncTests(unittest.TestCase):
             "<pre><code>x = 1</code></pre>",
         )
 
-    def test_iframe_page_is_sandboxed_and_escaped(self):
-        content = self.module.iframe_content(
+    def test_page_projection_is_static_and_escaped(self):
+        content = self.module.linked_page_content(
             "Start <Here>",
             "Guided & safe",
             "https://example.com/start/?a=1&b=2",
         )
-        self.assertIn("allow-scripts allow-same-origin", content)
-        self.assertIn('referrerpolicy="no-referrer"', content)
+        self.assertNotIn("<iframe", content)
         self.assertIn("Start &lt;Here&gt;", content)
         self.assertIn("a=1&amp;b=2", content)
 
@@ -98,52 +98,131 @@ class WordPressSyncTests(unittest.TestCase):
         workflow = (
             ROOT / ".github" / "workflows" / "wordpress-draft-sync.yml"
         ).read_text(encoding="utf-8")
+        self.assertIn("workflow_run:", workflow)
+        self.assertIn("github.event.workflow_run.event == 'schedule'", workflow)
         self.assertIn(
-            "INPUT_SURFACE: ${{ github.event_name == 'schedule' && 'weekly' || inputs.surface }}",
+            "INPUT_SURFACE: ${{ github.event_name == 'workflow_run' && 'weekly' || inputs.surface }}",
             workflow,
         )
         self.assertIn('args=(--apply --surface "$surface")', workflow)
         self.assertIn("github.ref == 'refs/heads/master'", workflow)
         self.assertNotIn("update_published", workflow)
-        self.assertIn('cron: "0 16 * * 1"', workflow)
+        self.assertNotIn("cron:", workflow)
         self.assertIn("WORDPRESS_WEEKLY_SYNC_ENABLED", workflow)
+        self.assertIn("--expected-as-of", workflow)
+        self.assertIn("--wait-seconds 1200", workflow)
+        self.assertIn("github.event.workflow_run.created_at", workflow)
         self.assertIn("'weekly' || inputs.surface", workflow)
 
-    def test_slug_save_updates_only_drafts(self):
+    def test_slug_save_uses_atomic_draft_endpoint(self):
         client = self.module.WordPressClient("https://example.com", "user", "pw")
         calls = []
-        client.request = lambda method, path, payload=None: (
-            calls.append((method, path, payload))
-            or {"id": 7, "status": payload["status"]}
+        responses = iter(
+            (
+                {
+                    "schema": "kodyw-draft-sync/1.0",
+                    "created": False,
+                    "id": 3,
+                    "status": "publish",
+                    "slug": "same-slug",
+                },
+                {
+                    "schema": "kodyw-draft-sync/1.0",
+                    "created": False,
+                    "id": 7,
+                    "status": "draft",
+                    "slug": "same-slug",
+                },
+                {
+                    "schema": "kodyw-draft-sync/1.0",
+                    "created": True,
+                    "id": 9,
+                    "status": "draft",
+                    "slug": "new-slug",
+                },
+            )
         )
 
-        client.find = lambda kind, slug: [{"id": 3, "status": "publish"}]
-        skipped = client.save("posts", "same-slug", {"status": "draft"})
+        def request(method, path, payload=None):
+            calls.append((method, path, payload))
+            return next(responses)
+
+        client.request = request
+        skipped = client.save(
+            "posts",
+            "same-slug",
+            {"slug": "same-slug", "status": "draft"},
+        )
         self.assertIn("skipped existing publish item 3", skipped)
-        self.assertEqual(calls, [])
 
-        client.find = lambda kind, slug: [{"id": 7, "status": "draft"}]
-        updated = client.save("posts", "same-slug", {"status": "draft"})
-        self.assertIn("updated draft item 7", updated)
-        self.assertEqual(calls[-1][1], "posts/7")
+        skipped = client.save(
+            "posts",
+            "same-slug",
+            {"slug": "same-slug", "status": "draft"},
+        )
+        self.assertIn("skipped existing draft item 7", skipped)
 
-        client.find = lambda kind, slug: []
-        created = client.save("posts", "new-slug", {"status": "draft"})
-        self.assertIn("created draft item 7", created)
-        self.assertEqual(calls[-1][1], "posts")
+        created = client.save(
+            "posts",
+            "new-slug",
+            {"slug": "new-slug", "status": "draft"},
+        )
+        self.assertIn("created draft item 9", created)
+        self.assertTrue(
+            all(path == "kodyw/v1/drafts" for _, path, _ in calls)
+        )
+        self.assertTrue(all(payload["kind"] == "post" for _, _, payload in calls))
 
-        for status in ("future", "pending", "private"):
-            calls.clear()
-            client.find = lambda kind, slug, status=status: [
-                {"id": 9, "status": status}
-            ]
-            skipped = client.save("posts", "same-slug", {"status": "draft"})
-            self.assertIn(f"skipped existing {status} item 9", skipped)
-            self.assertEqual(calls, [])
+    def test_created_slug_must_match_requested_slug(self):
+        client = self.module.WordPressClient("https://example.com", "user", "pw")
+        client.request = lambda method, path, payload=None: {
+            "schema": "kodyw-draft-sync/1.0",
+            "created": True,
+            "id": 7,
+            "status": "draft",
+            "slug": payload["slug"] + "-2",
+        }
+        with self.assertRaisesRegex(self.module.SyncError, "colliding slug"):
+            client.save(
+                "posts",
+                "weekly-signal-2026-w34",
+                {"slug": "weekly-signal-2026-w34", "status": "draft"},
+            )
 
     def test_wordpress_client_requires_https(self):
         with self.assertRaisesRegex(self.module.SyncError, "absolute HTTPS"):
             self.module.WordPressClient("http://example.com", "user", "pw")
+
+    def test_wordpress_plugin_attests_draft_only_role(self):
+        client = self.module.WordPressClient("https://example.com", "user", "pw")
+        client.request = lambda method, path, payload=None: {
+            "schema": "kodyw-draft-sync/1.0",
+            "id": 7,
+            "name": "Draft Sync",
+            "role": "kodyw_draft_sync",
+            "safe": True,
+        }
+        self.assertEqual(client.whoami()["id"], 7)
+
+        client.request = lambda method, path, payload=None: {
+            "schema": "kodyw-draft-sync/1.0",
+            "id": 8,
+            "role": "administrator",
+            "safe": False,
+        }
+        with self.assertRaisesRegex(self.module.SyncError, "kodyw_draft_sync"):
+            client.whoami()
+
+    def test_companion_plugin_is_atomic_and_draft_only(self):
+        source = PLUGIN.read_text(encoding="utf-8")
+        self.assertIn("SELECT GET_LOCK", source)
+        self.assertIn("SELECT RELEASE_LOCK", source)
+        self.assertIn("'post_status' => 'draft'", source)
+        self.assertIn("wp_kses_post($content)", source)
+        self.assertIn("kodyw_draft_sync_account_is_safe", source)
+        self.assertIn("_wp_desired_post_slug", source)
+        self.assertNotIn("'publish_posts' => true", source)
+        self.assertNotIn("post_status IN", source)
 
     def test_authenticated_redirects_are_refused(self):
         handler = self.module.NoRedirectHandler()
@@ -161,7 +240,7 @@ class WordPressSyncTests(unittest.TestCase):
         client = self.module.WordPressClient("https://example.com", "user", "pw")
 
         redirect_error = urllib.error.HTTPError(
-            "https://example.com/wp-json/wp/v2/users/me?context=edit",
+            "https://example.com/wp-json/kodyw/v1/status",
             302,
             "Found",
             {"Location": "https://other.example/posts"},
@@ -175,36 +254,77 @@ class WordPressSyncTests(unittest.TestCase):
         client.opener = RedirectingOpener()
         try:
             with self.assertRaisesRegex(self.module.SyncError, "redirect refused"):
-                client.request("GET", "users/me?context=edit")
+                client.request("GET", "kodyw/v1/status")
         finally:
             redirect_error.close()
 
     def test_weekly_payload_requires_deployed_schema(self):
         weekly = {
             "schema": "kodyw-weekly-signal/1.0",
+            "as_of": "2026-08-23",
+            "issue_id": "2026-W34",
+            "week_start": "2026-08-17",
             "title": "Weekly Signal",
-            "slug": "weekly-signal-2026-w35",
+            "slug": "weekly-signal-2026-w34",
             "content_html": "<p>Issue</p>",
             "excerpt": "Issue",
-            "date": "2026-08-29T00:00:00",
-            "date_gmt": "2026-08-29T00:00:00",
+            "date": "2026-08-23T00:00:00",
+            "date_gmt": "2026-08-23T00:00:00",
         }
-        payload = self.module.parse_weekly_payload(weekly)
+        payload = self.module.parse_weekly_payload(
+            weekly,
+            today=self.module.date(2026, 8, 29),
+        )
         self.assertEqual(payload["status"], "draft")
         with self.assertRaisesRegex(self.module.SyncError, "weekly signal schema"):
             self.module.parse_weekly_payload({"schema": "wrong"})
         with self.assertRaisesRegex(self.module.SyncError, "slug is invalid"):
-            self.module.parse_weekly_payload({**weekly, "slug": "Bad Slug"})
+            self.module.parse_weekly_payload(
+                {**weekly, "slug": "Bad Slug"},
+                today=self.module.date(2026, 8, 29),
+            )
+        with self.assertRaisesRegex(self.module.SyncError, "must be a Sunday"):
+            self.module.parse_weekly_payload(
+                {
+                    **weekly,
+                    "as_of": "2026-08-22",
+                    "date": "2026-08-22T00:00:00",
+                    "date_gmt": "2026-08-22T00:00:00",
+                },
+                today=self.module.date(2026, 8, 29),
+            )
+        with self.assertRaisesRegex(self.module.SyncError, "is stale"):
+            self.module.parse_weekly_payload(
+                weekly,
+                "2026-08-16",
+                today=self.module.date(2026, 8, 29),
+            )
+        with self.assertRaisesRegex(self.module.SyncError, "is stale"):
+            self.module.parse_weekly_payload(
+                {
+                    **weekly,
+                    "as_of": "2026-08-16",
+                    "issue_id": "2026-W33",
+                    "week_start": "2026-08-10",
+                    "slug": "weekly-signal-2026-w33",
+                    "date": "2026-08-16T00:00:00",
+                    "date_gmt": "2026-08-16T00:00:00",
+                },
+                today=self.module.date(2026, 8, 29),
+            )
 
     def test_weekly_payload_is_fetched_from_deployed_canary(self):
         weekly = {
             "schema": "kodyw-weekly-signal/1.0",
+            "as_of": "2026-08-23",
+            "issue_id": "2026-W34",
+            "week_start": "2026-08-17",
             "title": "Weekly Signal",
-            "slug": "weekly-signal-2026-w35",
+            "slug": "weekly-signal-2026-w34",
             "content_html": "<p>Issue</p>",
             "excerpt": "Issue",
-            "date": "2026-08-29T00:00:00",
-            "date_gmt": "2026-08-29T00:00:00",
+            "date": "2026-08-23T00:00:00",
+            "date_gmt": "2026-08-23T00:00:00",
         }
         calls = []
         original = self.module.fetch_text
@@ -215,6 +335,7 @@ class WordPressSyncTests(unittest.TestCase):
             payload = self.module.deployed_weekly_payload(
                 {"weekly_manifest": "api/weekly-signal.json"},
                 "https://kody-w.github.io",
+                today=self.module.date(2026, 8, 29),
             )
         finally:
             self.module.fetch_text = original
@@ -223,6 +344,50 @@ class WordPressSyncTests(unittest.TestCase):
             ["https://kody-w.github.io/api/weekly-signal.json"],
         )
         self.assertEqual(payload["slug"], weekly["slug"])
+
+    def test_deployed_weekly_waits_for_expected_issue(self):
+        current = {
+            "schema": "kodyw-weekly-signal/1.0",
+            "as_of": "2026-08-23",
+            "issue_id": "2026-W34",
+            "week_start": "2026-08-17",
+            "title": "Weekly Signal",
+            "slug": "weekly-signal-2026-w34",
+            "content_html": "<p>Issue</p>",
+            "excerpt": "Issue",
+            "date": "2026-08-23T00:00:00",
+            "date_gmt": "2026-08-23T00:00:00",
+        }
+        stale = {
+            **current,
+            "as_of": "2026-08-16",
+            "issue_id": "2026-W33",
+            "week_start": "2026-08-10",
+            "slug": "weekly-signal-2026-w33",
+            "date": "2026-08-16T00:00:00",
+            "date_gmt": "2026-08-16T00:00:00",
+        }
+        responses = iter((stale, current))
+        original_fetch = self.module.fetch_text
+        original_monotonic = self.module.time.monotonic
+        original_sleep = self.module.time.sleep
+        self.module.fetch_text = lambda url: json.dumps(next(responses))
+        moments = iter((0.0, 0.1))
+        self.module.time.monotonic = lambda: next(moments)
+        self.module.time.sleep = lambda seconds: None
+        try:
+            payload = self.module.deployed_weekly_payload(
+                {"weekly_manifest": "api/weekly-signal.json"},
+                "https://kody-w.github.io",
+                "2026-08-23",
+                wait_seconds=1,
+                today=self.module.date(2026, 8, 29),
+            )
+        finally:
+            self.module.fetch_text = original_fetch
+            self.module.time.monotonic = original_monotonic
+            self.module.time.sleep = original_sleep
+        self.assertEqual(payload["slug"], current["slug"])
 
 
 if __name__ == "__main__":

@@ -50,6 +50,20 @@ def normalize_date(value: object) -> date:
     raise BuildError(f"unsupported date value: {value!r}")
 
 
+def plain_text_summary(value: object) -> str:
+    text = str(value or "")
+    text = text.replace("```", "")
+    text = re.sub(r"!\[([^\]]*)\]\([^)]+\)", r"\1", text)
+    text = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)
+    text = re.sub(r"`([^`]+)`", r"\1", text)
+    text = re.sub(r"\*\*([^*]+)\*\*", r"\1", text)
+    text = re.sub(r"__([^_]+)__", r"\1", text)
+    text = re.sub(r"(?<!\w)\*([^*\n]+)\*(?!\w)", r"\1", text)
+    text = re.sub(r"(?<!\w)_([^_\n]+)_(?!\w)", r"\1", text)
+    text = re.sub(r"<[^>]+>", " ", text)
+    return " ".join(html.unescape(text).split())
+
+
 def parse_post(path: Path) -> dict:
     source = path.read_text(encoding="utf-8")
     match = re.match(r"^---\n(.*?)\n---\n(.*)$", source, re.S)
@@ -71,6 +85,7 @@ def parse_post(path: Path) -> dict:
             and not block.lstrip().startswith(("#", ">", "```", "|", "- "))
         ]
         description = paragraphs[0] if paragraphs else title
+    description = plain_text_summary(description)
     return {
         "title": title,
         "date": published.isoformat(),
@@ -120,7 +135,7 @@ def absolute_url(value: str) -> str:
 
 
 def default_as_of(today: date) -> date:
-    return today - timedelta(days=1) if today.weekday() == 0 else today
+    return today - timedelta(days=today.weekday() + 1)
 
 
 def date_range_label(start: date, end: date) -> str:
@@ -149,11 +164,10 @@ def latest_edition(posts: list[dict], week_start: date, as_of: date) -> list[dic
         for post in posts
         if week_start <= date.fromisoformat(post["date"]) <= as_of
     ]
-    candidates = in_week or posts
-    if not candidates:
-        raise BuildError("no public posts are available")
-    edition_date = candidates[0]["date"]
-    return [post for post in candidates if post["date"] == edition_date]
+    if not in_week:
+        return []
+    edition_date = in_week[0]["date"]
+    return [post for post in in_week if post["date"] == edition_date]
 
 
 def render_link(url: str, label: str) -> str:
@@ -172,11 +186,13 @@ def render_content(issue: dict) -> str:
     lesson = by_kind["lost-app"]
     vision = by_kind["rapp-vision"]
 
-    article_items = "".join(
-        f"<li>{render_link(item['url'], item['title'])}"
-        f"<br><small>{html.escape(item['summary'])}</small></li>"
-        for item in edition["items"]
-    )
+    article_items = ""
+    if edition["items"]:
+        article_items = "<ul>" + "".join(
+            f"<li>{render_link(item['url'], item['title'])}"
+            f"<br><small>{html.escape(item['summary'])}</small></li>"
+            for item in edition["items"]
+        ) + "</ul>"
     work_items = "".join(
         f"<li>{render_link(item['url'], item['name'])}"
         f" — {html.escape(item['summary'])}</li>"
@@ -187,7 +203,7 @@ def render_content(issue: dict) -> str:
             f"<h1>{html.escape(issue['title'])}</h1>",
             f"<p>{html.escape(issue['excerpt'])}</p>",
             "<h2>New in the archive</h2>",
-            f"<p>{html.escape(edition['summary'])}</p><ul>{article_items}</ul>",
+            f"<p>{html.escape(edition['summary'])}</p>{article_items}",
             "<h2>Active builds</h2>",
             f"<ul>{work_items}</ul>",
             "<h2>Rediscovered</h2>",
@@ -210,6 +226,8 @@ def render_content(issue: dict) -> str:
 
 def build(root: Path, as_of: date) -> dict:
     del root
+    if as_of.weekday() != 6:
+        raise BuildError("Weekly Signal as_of must be a Sunday")
     iso_year, iso_week, _ = as_of.isocalendar()
     issue_key = f"{iso_year}-W{iso_week:02d}"
     week_start = as_of - timedelta(days=as_of.weekday())
@@ -218,7 +236,11 @@ def build(root: Path, as_of: date) -> dict:
     lessons = load_lessons()
     lesson = lessons[(iso_year * 53 + iso_week) % len(lessons)]
     edition_items = latest_edition(posts, week_start, as_of)
-    edition_date = date.fromisoformat(edition_items[0]["date"])
+    edition_date = (
+        date.fromisoformat(edition_items[0]["date"])
+        if edition_items
+        else None
+    )
     rediscovered = rediscovered_post(posts, week_start, issue_key)
     active_works = works[:3]
     if len(active_works) < 3:
@@ -250,13 +272,25 @@ def build(root: Path, as_of: date) -> dict:
         "sections": [
             {
                 "kind": "date-edition",
-                "title": f"{edition_date:%B %-d, %Y}",
-                "summary": (
-                    f"The latest publication date gathers "
-                    f"{len(edition_items)} article"
-                    f"{'' if len(edition_items) == 1 else 's'}."
+                "title": (
+                    f"{edition_date:%B} {edition_date.day}, {edition_date.year}"
+                    if edition_date
+                    else "No new articles this week"
                 ),
-                "url": f"{SITE_URL}/newsletter/#edition-{edition_date.isoformat()}",
+                "summary": (
+                    (
+                        f"The latest publication date gathers "
+                        f"{len(edition_items)} article"
+                        f"{'' if len(edition_items) == 1 else 's'}."
+                    )
+                    if edition_items
+                    else "No articles were published during this completed week."
+                ),
+                "url": (
+                    f"{SITE_URL}/newsletter/#edition-{edition_date.isoformat()}"
+                    if edition_date
+                    else f"{SITE_URL}/newsletter/"
+                ),
                 "items": edition_items,
             },
             {
@@ -268,7 +302,10 @@ def build(root: Path, as_of: date) -> dict:
                     {
                         "name": work["name"],
                         "url": work["url"],
-                        "summary": work.get("description") or "Public source repository.",
+                        "summary": plain_text_summary(
+                            work.get("description")
+                            or "Public source repository."
+                        ),
                         "pushed_at": work["pushed_at"],
                     }
                     for work in active_works
@@ -324,6 +361,27 @@ def update_archive(archive: dict, issue: dict) -> dict:
     return {"schema": ARCHIVE_SCHEMA, "issues": issues[:52]}
 
 
+def reject_backdated_current(as_of: date, path: Path = CURRENT_DATA) -> None:
+    if not path.exists():
+        return
+    current = json.loads(path.read_text(encoding="utf-8"))
+    current_as_of = date.fromisoformat(current["as_of"])
+    if as_of < current_as_of:
+        raise BuildError(
+            f"refusing to move Weekly Signal backward from "
+            f"{current_as_of.isoformat()} to {as_of.isoformat()}"
+        )
+
+
+def reject_incomplete_week(as_of: date, today: date) -> None:
+    latest_completed = default_as_of(today)
+    if as_of > latest_completed:
+        raise BuildError(
+            f"refusing incomplete Weekly Signal date {as_of.isoformat()}; "
+            f"latest completed Sunday is {latest_completed.isoformat()}"
+        )
+
+
 def expected_outputs(as_of: date) -> dict[Path, bytes]:
     issue = build(ROOT, as_of)
     archive = update_archive(load_archive(), issue)
@@ -340,9 +398,19 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--as-of")
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
-    today = datetime.now(timezone.utc).date()
-    as_of = date.fromisoformat(args.as_of) if args.as_of else default_as_of(today)
-    outputs = expected_outputs(as_of)
+    try:
+        today = datetime.now(timezone.utc).date()
+        as_of = (
+            date.fromisoformat(args.as_of)
+            if args.as_of
+            else default_as_of(today)
+        )
+        reject_incomplete_week(as_of, today)
+        reject_backdated_current(as_of)
+        outputs = expected_outputs(as_of)
+    except (BuildError, ValueError) as error:
+        print(error, file=sys.stderr)
+        return 1
     stale = [
         path
         for path, expected in outputs.items()

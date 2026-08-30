@@ -15,10 +15,12 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
+from datetime import date, datetime, timedelta, timezone
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -27,6 +29,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SURFACES_FILE = ROOT / "wordpress" / "surfaces.json"
 POSTS_DIR = ROOT / "_posts"
 DEFAULT_WP_URL = "https://kodyw.com"
+EXPECTED_ROLE = "kodyw_draft_sync"
 
 
 class SyncError(RuntimeError):
@@ -234,18 +237,15 @@ def local_post(path: Path) -> LocalPost:
     )
 
 
-def iframe_content(title: str, summary: str, source_url: str) -> str:
+def linked_page_content(title: str, summary: str, source_url: str) -> str:
     safe_title = html.escape(title)
     safe_summary = html.escape(summary)
     safe_url = html.escape(source_url, quote=True)
     return (
-        f"<section><p>{safe_summary}</p>"
-        f'<p><a href="{safe_url}">Open {safe_title} directly</a></p></section>'
-        f'<iframe src="{safe_url}" title="{safe_title}" loading="lazy" '
-        'sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads" '
-        'referrerpolicy="no-referrer" '
-        'style="display:block;width:100%;height:82vh;min-height:900px;'
-        'border:1px solid #e5e7eb;border-radius:12px;background:#fff"></iframe>'
+        f"<section><h2>{safe_title}</h2><p>{safe_summary}</p>"
+        f'<p><a href="{safe_url}">Open the canonical live page</a></p>'
+        "<p><small>This draft intentionally links to the tested GitHub Pages "
+        "surface instead of embedding executable content.</small></p></section>"
     )
 
 
@@ -294,7 +294,7 @@ class WordPressClient:
         path: str,
         payload: dict | None = None,
     ) -> object:
-        endpoint = f"{self.url}/wp-json/wp/v2/{path.lstrip('/')}"
+        endpoint = f"{self.url}/wp-json/{path.lstrip('/')}"
         data = json.dumps(payload).encode() if payload is not None else None
         request = urllib.request.Request(endpoint, data=data, method=method)
         token = base64.b64encode(f"{self.user}:{self.password}".encode()).decode()
@@ -315,26 +315,15 @@ class WordPressClient:
             raise SyncError(f"could not reach WordPress: {error.reason}") from error
 
     def whoami(self) -> dict:
-        result = self.request("GET", "users/me?context=edit")
+        result = self.request("GET", "kodyw/v1/status")
         if not isinstance(result, dict):
-            raise SyncError("unexpected users/me response")
-        capabilities = result.get("capabilities") or {}
-        if not capabilities.get("edit_posts"):
-            raise SyncError("authenticated user cannot edit posts")
-        return result
-
-    def find(self, kind: str, slug: str) -> list[dict]:
-        query = urllib.parse.urlencode(
-            {
-                "slug": slug,
-                "context": "edit",
-                "status": "publish,draft,pending,future,private",
-                "per_page": 5,
-            }
-        )
-        result = self.request("GET", f"{kind}?{query}")
-        if not isinstance(result, list):
-            raise SyncError(f"unexpected {kind} lookup response")
+            raise SyncError("unexpected draft-sync status response")
+        if result.get("schema") != "kodyw-draft-sync/1.0":
+            raise SyncError("unsupported WordPress draft-sync plugin schema")
+        if result.get("role") != EXPECTED_ROLE or result.get("safe") is not True:
+            raise SyncError(
+                f"WordPress account must use only the {EXPECTED_ROLE} role"
+            )
         return result
 
     def save(
@@ -343,22 +332,31 @@ class WordPressClient:
         slug: str,
         payload: dict,
     ) -> str:
-        existing = self.find(kind, slug)
-        draft = next(
-            (item for item in existing if item.get("status") == "draft"),
-            None,
+        if payload.get("slug") != slug:
+            raise SyncError(f"{kind}:{slug}: payload slug does not match")
+        post_type = {"posts": "post", "pages": "page"}.get(kind)
+        if not post_type:
+            raise SyncError(f"unsupported WordPress kind: {kind}")
+        result = self.request(
+            "POST",
+            "kodyw/v1/drafts",
+            {"kind": post_type, **payload},
         )
-        if draft:
-            saved = self.request("POST", f"{kind}/{draft['id']}", payload)
-            return f"{kind}:{slug}: updated {saved['status']} item {saved['id']}"
-        if existing:
-            item = existing[0]
+        if not isinstance(result, dict) or result.get("schema") != "kodyw-draft-sync/1.0":
+            raise SyncError(f"{kind}:{slug}: unexpected draft-sync response")
+        if result.get("created") is False:
             return (
-                f"{kind}:{slug}: skipped existing {item.get('status')} "
-                f"item {item.get('id')}"
+                f"{kind}:{slug}: skipped existing {result.get('status')} "
+                f"item {result.get('id')}"
             )
-        saved = self.request("POST", kind, payload)
-        return f"{kind}:{slug}: created {saved['status']} item {saved['id']}"
+        if result.get("created") is not True or result.get("status") != "draft":
+            raise SyncError(f"{kind}:{slug}: create did not remain a draft")
+        if result.get("slug") != slug:
+            raise SyncError(
+                f"{kind}:{slug}: WordPress returned colliding slug "
+                f"{result.get('slug')!r}"
+            )
+        return f"{kind}:{slug}: created draft item {result['id']}"
 
 
 def load_surfaces(path: Path = SURFACES_FILE) -> dict:
@@ -396,10 +394,17 @@ def plan_pages(surfaces: dict, source_base: str) -> list[dict]:
     ]
 
 
-def parse_weekly_payload(weekly: dict) -> dict:
+def parse_weekly_payload(
+    weekly: dict,
+    expected_as_of: str | None = None,
+    today: date | None = None,
+) -> dict:
     if weekly.get("schema") != "kodyw-weekly-signal/1.0":
         raise SyncError("unsupported weekly signal schema")
     required = (
+        "as_of",
+        "issue_id",
+        "week_start",
         "title",
         "slug",
         "content_html",
@@ -412,9 +417,35 @@ def parse_weekly_payload(weekly: dict) -> dict:
             raise SyncError(f"weekly signal field {field} must be a non-empty string")
     if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", weekly["slug"]):
         raise SyncError("weekly signal slug is invalid")
+    try:
+        issue_date = date.fromisoformat(weekly["as_of"])
+        week_start = date.fromisoformat(weekly["week_start"])
+    except ValueError as error:
+        raise SyncError("weekly signal issue dates must use YYYY-MM-DD") from error
+    if issue_date.weekday() != 6:
+        raise SyncError("weekly signal as_of must be a Sunday")
+    iso_year, iso_week, _ = issue_date.isocalendar()
+    expected_issue_id = f"{iso_year}-W{iso_week:02d}"
+    expected_slug = f"weekly-signal-{iso_year}-w{iso_week:02d}"
+    expected_week_start = issue_date - timedelta(days=issue_date.weekday())
+    if weekly["issue_id"] != expected_issue_id or weekly["slug"] != expected_slug:
+        raise SyncError("weekly signal issue identity does not match as_of")
+    if week_start != expected_week_start:
+        raise SyncError("weekly signal week_start does not match as_of")
+    current_date = today or datetime.now(timezone.utc).date()
+    required_as_of = expected_as_of or (
+        current_date - timedelta(days=current_date.weekday() + 1)
+    ).isoformat()
+    if weekly["as_of"] != required_as_of:
+        raise SyncError(
+            "deployed weekly signal is stale: "
+            f"expected {required_as_of}, received {weekly['as_of']}"
+        )
     for field in ("date", "date_gmt"):
         if not re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}", weekly[field]):
             raise SyncError(f"weekly signal field {field} must be an ISO local timestamp")
+        if weekly[field][:10] != weekly["as_of"]:
+            raise SyncError(f"weekly signal field {field} does not match as_of")
     return {
         "title": weekly["title"],
         "slug": weekly["slug"],
@@ -429,16 +460,34 @@ def parse_weekly_payload(weekly: dict) -> dict:
 def deployed_weekly_payload(
     surfaces: dict,
     source_base: str,
+    expected_as_of: str | None = None,
+    wait_seconds: int = 0,
+    today: date | None = None,
 ) -> dict:
     source_url = urllib.parse.urljoin(
         source_base.rstrip("/") + "/",
         surfaces["weekly_manifest"],
     )
-    try:
-        weekly = json.loads(fetch_text(source_url))
-    except json.JSONDecodeError as error:
-        raise SyncError(f"deployed weekly manifest is not JSON: {source_url}") from error
-    return parse_weekly_payload(weekly)
+    deadline = time.monotonic() + max(0, wait_seconds)
+    while True:
+        try:
+            weekly = json.loads(fetch_text(source_url))
+            return parse_weekly_payload(weekly, expected_as_of, today)
+        except json.JSONDecodeError as error:
+            failure = SyncError(
+                f"deployed weekly manifest is not JSON: {source_url}"
+            )
+            failure.__cause__ = error
+        except SyncError as error:
+            failure = error
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise failure
+        print(
+            f"waiting for deployed Weekly Signal: {failure}",
+            file=sys.stderr,
+        )
+        time.sleep(min(15, remaining))
 
 
 def main() -> int:
@@ -451,6 +500,8 @@ def main() -> int:
     parser.add_argument("--post", action="append", default=[], dest="posts")
     parser.add_argument("--since")
     parser.add_argument("--source-base")
+    parser.add_argument("--expected-as-of")
+    parser.add_argument("--wait-seconds", type=int, default=0)
     parser.add_argument("--apply", action="store_true")
     args = parser.parse_args()
 
@@ -489,7 +540,7 @@ def main() -> int:
                         {
                             "title": page["title"],
                             "slug": page["slug"],
-                            "content": iframe_content(
+                            "content": linked_page_content(
                                 page["title"],
                                 page["summary"],
                                 page["source_url"],
@@ -522,7 +573,12 @@ def main() -> int:
             )
 
         weekly = (
-            deployed_weekly_payload(surfaces, source_base)
+            deployed_weekly_payload(
+                surfaces,
+                source_base,
+                args.expected_as_of,
+                args.wait_seconds,
+            )
             if args.surface in {"weekly", "all"}
             else None
         )

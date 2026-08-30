@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       as_of:
-        description: Optional issue date (YYYY-MM-DD)
+        description: Optional issue date (YYYY-MM-DD, latest completed Sunday by default)
         required: false
         type: string
 
