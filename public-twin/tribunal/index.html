@@ -1,0 +1,119 @@
+---
+layout: default
+title: Public Evidence Twin Tribunal
+permalink: /public-twin/tribunal/
+offline_shell: true
+manifest: /public-twin/manifest.webmanifest
+content_security_policy: "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-src 'none'"
+---
+
+<link rel="stylesheet" href="/css/frame-06-evidence-tribunal.css">
+
+<main class="evidence-tribunal" id="evidence-tribunal">
+  <header class="tribunal-hero">
+    <p class="tribunal-kicker">Frame 06 · Public Evidence Twin</p>
+    <div class="tribunal-hero-grid">
+      <div>
+        <h1>One question.<br>Three chambers.<br>No invented certainty.</h1>
+        <p class="tribunal-lede">The tribunal runs Answer, Evolution, and the strongest explicit Challenge together over the existing public-twin corpus and engine. Facts remain exact evidence. Inferences are separately labeled. Unsupported claims become abstentions.</p>
+      </div>
+      <aside class="tribunal-contract" aria-label="Tribunal evidence contract">
+        <strong>Evidence contract</strong>
+        <ul>
+          <li>One identical question enters all chambers.</li>
+          <li>Every fact carries an exact quote or catalog value.</li>
+          <li>Every citation includes source, hash, date, and locator.</li>
+          <li>No supported evidence means no claim.</li>
+        </ul>
+        <a href="/public-twin/">Open the full Public Evidence Twin →</a>
+      </aside>
+    </div>
+  </header>
+
+  <section class="tribunal-runner" aria-labelledby="tribunal-question-heading">
+    <div class="tribunal-section-heading">
+      <div>
+        <p class="tribunal-kicker">Single-question hearing</p>
+        <h2 id="tribunal-question-heading">Interrogate the public record</h2>
+      </div>
+      <p id="tribunal-runtime-status" class="tribunal-status" aria-live="polite">Validating the corpus and committed receipt…</p>
+    </div>
+
+    <form id="tribunal-form" class="tribunal-form" data-semantic-action="tribunal.run">
+      <label for="tribunal-question">Question</label>
+      <div>
+        <textarea id="tribunal-question" name="question" rows="3" maxlength="500" required>What is the source of truth?</textarea>
+        <button id="tribunal-submit" type="submit" disabled>Convene tribunal</button>
+      </div>
+      <p>The committed hearing tests a central local-first product question. You can replace it with another question; unsupported chambers will abstain.</p>
+    </form>
+  </section>
+
+  <section class="tribunal-verdict" aria-labelledby="tribunal-verdict-heading">
+    <div>
+      <p class="tribunal-kicker">Verdict</p>
+      <h2 id="tribunal-verdict-heading">Waiting for evidence</h2>
+    </div>
+    <p id="tribunal-verdict-summary">No conclusion has been rendered.</p>
+  </section>
+
+  <section class="tribunal-chambers" aria-label="Tribunal chambers">
+    <article class="tribunal-chamber" id="tribunal-answer">
+      <header>
+        <span>01</span>
+        <div>
+          <p class="tribunal-kicker">Answer</p>
+          <h2>Direct support</h2>
+        </div>
+      </header>
+      <div class="tribunal-chamber-body" data-chamber-body="answer"></div>
+    </article>
+
+    <article class="tribunal-chamber" id="tribunal-evolution">
+      <header>
+        <span>02</span>
+        <div>
+          <p class="tribunal-kicker">Evolution</p>
+          <h2>Evidence through time</h2>
+        </div>
+      </header>
+      <div class="tribunal-chamber-body" data-chamber-body="evolution"></div>
+    </article>
+
+    <article class="tribunal-chamber" id="tribunal-challenge">
+      <header>
+        <span>03</span>
+        <div>
+          <p class="tribunal-kicker">Challenge</p>
+          <h2>Strongest qualification</h2>
+        </div>
+      </header>
+      <div class="tribunal-chamber-body" data-chamber-body="challenge"></div>
+    </article>
+  </section>
+
+  <section class="tribunal-citations" aria-labelledby="tribunal-citations-heading">
+    <div class="tribunal-section-heading">
+      <div>
+        <p class="tribunal-kicker">Exact provenance</p>
+        <h2 id="tribunal-citations-heading">Citation register</h2>
+      </div>
+      <p id="tribunal-citation-count">0 validated citations</p>
+    </div>
+    <div id="tribunal-citation-list"></div>
+  </section>
+
+  <section class="tribunal-api" aria-labelledby="tribunal-api-heading">
+    <p class="tribunal-kicker">Semantic API</p>
+    <h2 id="tribunal-api-heading">The hearing is callable, not coordinate-bound.</h2>
+    <pre><code>await window.KodyEvidenceTribunal.dispatch(
+  "tribunal.run",
+  { "question": "What is the source of truth?" }
+)</code></pre>
+    <p>The committed JSON receipt is published at <a href="/api/frame-06-evidence-tribunal.json"><code>/api/frame-06-evidence-tribunal.json</code></a>.</p>
+  </section>
+</main>
+
+<script src="/js/twin-engine.js" defer></script>
+<script src="/js/frame-06-evidence-tribunal.js" defer></script>
+<script src="/js/frame-06-evidence-tribunal-app.js" defer></script>

@@ -66,6 +66,8 @@ graph TD
 - **`index.html`** — Homepage. A Liquid `{% for post in site.posts %}` loop that lists every post by date.
 - **`digital-twin/index.html`** — Separate index for the digital twin blog, powered by the `twin_posts` collection.
 - **`public-twin/index.html`** — Citation-first public evidence application with exact-source answers, evolution and challenge modes, local state, offline operation, and a semantic browser API.
+- **`public-twin/tribunal/index.html`** — Frame 06 tribunal that runs Answer, Evolution, and the strongest explicit Challenge together while separating exact facts from bounded inference.
+- **`api/frame-06-evidence-tribunal.json`** — Deterministic replay receipt for the tribunal's local-first source-of-truth hearing.
 - **`papers/index.html`** — Append-only publication ledger for long-form technical preprints.
 - **`verified-frame-worlds/paper.html`** — Self-contained paper on deterministic local applications whose visible state is projected from verified frame chains.
 - **`verified-frame-worlds/demo.html`** — Newcomer-first guided evidence path explaining what each demo means, what to do, what to observe, and which claim it tests.
