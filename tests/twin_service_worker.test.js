@@ -315,7 +315,7 @@ async function runInstall(runtime) {
   return pending;
 }
 
-async function runActivate(runtime) {
+function startActivate(runtime) {
   let pending;
   runtime.handlers.activate({
     waitUntil(value) {
@@ -323,6 +323,30 @@ async function runActivate(runtime) {
     }
   });
   assert.ok(pending, 'activate handler did not register work');
+  return pending;
+}
+
+async function waitForActivationTimer(runtime, pending) {
+  let settled = false;
+  pending.then(
+    () => { settled = true; },
+    () => { settled = true; }
+  );
+  for (let attempt = 0; attempt < 100; attempt += 1) {
+    if (runtime.state.timers.length > 0 || settled) {
+      return settled;
+    }
+    await new Promise((resolve) => setImmediate(resolve));
+  }
+  throw new Error('activation neither settled nor scheduled its grace timer');
+}
+
+async function runActivate(runtime) {
+  const pending = startActivate(runtime);
+  const settledBeforeTimer = await waitForActivationTimer(runtime, pending);
+  if (!settledBeforeTimer) {
+    await runTimers(runtime);
+  }
   return pending;
 }
 
@@ -902,7 +926,7 @@ test('repeated releases bound unknown generations, then leases and disappearance
   assert.deepEqual(shells, [latest.runtime.shellCache]);
 });
 
-test('expired client lease enters grace then bounded orphan cleanup', async () => {
+test('activation waitUntil covers grace cleanup before later callbacks can be discarded', async () => {
   const caches = createCacheStorage();
   const generation = createGeneration('expired-lease');
   const options = {
@@ -934,13 +958,20 @@ test('expired client lease enters grace then bounded orphan cleanup', async () =
     headers: { 'Content-Type': 'application/json' }
     })
   );
-  await runActivate(runtime);
+  const activation = startActivate(runtime);
+  const settledBeforeTimer = await waitForActivationTimer(
+    runtime,
+    activation
+  );
+  assert.equal(settledBeforeTimer, false);
   assert.ok(
     (await caches.keys()).filter((name) =>
       name.startsWith('kody-twin-shell-')
     ).length > 3
   );
   await runTimers(runtime);
+  await activation;
+  runtime.state.timers.length = 0;
   assert.ok(
     (await caches.keys()).filter((name) =>
       name.startsWith('kody-twin-shell-')

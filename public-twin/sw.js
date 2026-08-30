@@ -728,6 +728,14 @@ function leaseResponse(event) {
   });
 }
 
+function enforcedPruneAfterGrace() {
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () {
+      pruneReleaseCaches(true).then(resolve, reject);
+    }, LEASE_GRACE_MS);
+  });
+}
+
 function precacheShell() {
   return fetchShellManifest().then(function (bundle) {
     var specifications = shellSpecifications(bundle.manifest);
@@ -853,11 +861,7 @@ self.addEventListener('activate', function (event) {
   }).then(function () {
     return pruneReleaseCaches(false);
   }).then(function () {
-    setTimeout(function () {
-      return pruneReleaseCaches(true).catch(function () {
-        return null;
-      });
-    }, LEASE_GRACE_MS);
+    return enforcedPruneAfterGrace();
   }));
 });
 
