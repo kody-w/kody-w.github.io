@@ -1,0 +1,79 @@
+---
+title: "Incident Log Observatory — Parse Evidence Without Executing It"
+slug: "incident-log-observatory"
+order: 360
+tagline: "Turn pasted incident logs into searchable evidence without turning hostile text into executable markup."
+category: "tool"
+difficulty: "advanced"
+status: "live"
+tags:
+  - "incident-response"
+  - "log-analysis"
+  - "secure-rendering"
+  - "observability"
+  - "local-first"
+stack:
+  - "Inline HTML, CSS, and JavaScript"
+  - "Text-node-only rendering"
+  - "Deterministic parser and fixture"
+  - "JSON-only semantic API"
+demo: "/learnwithkody/demos/366-incident-log-observatory.html"
+repo: "https://github.com/kody-w/kody-w.github.io/blob/master/learnwithkody/demos/366-incident-log-observatory.html"
+highlights:
+  - "LOGS ARE EVIDENCE, NOT MARKUP. Every imported character is rendered with text nodes; search creates only text nodes and mark elements, so pasted tags and event handlers stay inert."
+  - "THREE VIEWS, ONE RECORD SET. Grouped, timeline, and raw modes project the same stable entry IDs instead of reparsing or dropping inconvenient lines."
+  - "REPAIR MUST LEAVE A RECEIPT. Truncated JSON and quotes receive explicit uncertain proposals while the original source remains unchanged."
+  - "THE FIXTURE IS A CONTRACT. Ten deterministic entries prove HTTP, success, warning, error, JSON, and five-service counts through a visible self-test and the semantic API."
+prompt: |
+  Using the public terminal-log visualizer only as a black-box behavioral reference, build an original offline utility. Parse common timestamp, HTTP, warning, error, success, JSON and service patterns; provide grouped, timeline and raw views, search highlighting, counts, copy, clearing and conservative truncated-line repair. Escape input before adding highlight markup.
+lessons:
+  - "Untrusted logs must cross a text-only rendering boundary before highlighting; escaping a string and then rebuilding HTML is weaker than never parsing it as HTML at all."
+  - "Stable entry IDs make view equivalence testable: presentation can change while the evidence set remains identical."
+  - "A conservative repair system preserves the source, labels uncertainty, and exposes its proposed change instead of rewriting incident history."
+---
+
+<section class="lwk-section">
+  <h2>What this is</h2>
+  <p><strong>Incident Log Observatory</strong> is an original, offline incident-log workbench inspired only by the observable behavior of the historical <a href="https://kodyw.com/wp-content/uploads/2025/03/terminal-viewer.html" target="_blank" rel="noopener">Advanced Terminal Log Visualizer</a>. Paste plain text, parse common operational signals, compare grouped, timeline, and raw projections, search safely, and inspect every classification without sending evidence anywhere.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>Clean-room boundary</h2>
+  <p>The historical artifact was treated strictly as a black box: only its publicly visible purpose and controls informed this lesson. No source, wording, visual design, assets, or implementation details were copied. The observatory uses an independently designed parser, interface, deterministic fixture, state format, and verification API.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>The exact clean-room prompt</h2>
+  <blockquote>
+    <p>Using the public terminal-log visualizer only as a black-box behavioral reference, build an original offline utility. Parse common timestamp, HTTP, warning, error, success, JSON and service patterns; provide grouped, timeline and raw views, search highlighting, counts, copy, clearing and conservative truncated-line repair. Escape input before adding highlight markup.</p>
+  </blockquote>
+</section>
+
+<section class="lwk-section">
+  <h2>Why the original pattern needs a security boundary</h2>
+  <p>The original interaction model—paste arbitrary logs, then add visual highlights—creates two injection boundaries even though a black-box review cannot make claims about its private implementation. Log viewers routinely ingest attacker-controlled request paths, user agents, JSON values, exception messages, and terminal output. If a viewer inserts that material with <code>innerHTML</code>, an apparent log line such as an image tag with an error handler can become executable DOM. Building highlighted matches by concatenating markup creates the same risk after a search.</p>
+  <p>This rebuild never interprets log content as HTML. It assigns ordinary text through text nodes, and its highlighter splits matched ranges into text nodes plus program-created <code>&lt;mark&gt;</code> elements. A restrictive Content Security Policy blocks network access and inline event attributes, while import validation rejects malformed or oversized state. Auto-fix also keeps the original line intact and labels every proposed completion as uncertain.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>Acceptance checks</h2>
+  <ul>
+    <li>A fixed fixture produces predetermined category and service counts.</li>
+    <li>Grouped, timeline and raw views contain the same entries.</li>
+    <li>Search highlights only matching text.</li>
+    <li>Pasted HTML or event-handler strings remain inert.</li>
+    <li>Auto-fix marks uncertain repairs rather than silently altering logs.</li>
+  </ul>
+</section>
+
+<aside class="lwk-try-embed">
+  <div class="lwk-try-embed-head">
+    <span class="lwk-try-embed-label">Live demo</span>
+    <a href="/learnwithkody/demos/366-incident-log-observatory.html" target="_blank" rel="noopener" class="lwk-try-embed-open">Open in new tab ↗</a>
+  </div>
+  <iframe
+    src="/learnwithkody/demos/366-incident-log-observatory.html"
+    title="Incident Log Observatory — live demo"
+    loading="lazy"
+    sandbox="allow-scripts allow-same-origin allow-downloads"></iframe>
+</aside>

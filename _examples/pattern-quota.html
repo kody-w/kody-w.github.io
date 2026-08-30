@@ -1,0 +1,81 @@
+---
+title: "Pattern Quota — Rebuild a Mysterious Selection Game"
+slug: "pattern-quota"
+order: 359
+tagline: "Study a public interaction, preserve the mechanic, and rebuild it as an original deterministic pattern-reading game with a testable state machine."
+category: "game"
+difficulty: "advanced"
+status: "live"
+tags:
+  - "clean-room"
+  - "deterministic-systems"
+  - "state-machines"
+  - "accessibility"
+  - "semantic-api"
+stack:
+  - "HTML"
+  - "CSS"
+  - "Vanilla JavaScript"
+  - "Seeded PRNG"
+demo: "/learnwithkody/demos/365-pattern-quota.html"
+repo: "https://github.com/kody-w/kody-w.github.io/blob/master/learnwithkody/demos/365-pattern-quota.html"
+highlights:
+  - "The visible experience is a tactile selection loop, but the implementation is a deterministic state machine: every batch is recreated from a seed and batch serial, every score is derived, and successful submissions alone move the five-step quota."
+  - "The target flag stays outside the tile DOM until review. Players read the displayed pattern, select with pointer, touch, Tab, Space, Enter, or grid arrow keys, and receive separate correct, incorrect, missed, and accuracy feedback."
+  - "Export/import is intentionally strict and transactional. The importer regenerates every historical batch, recomputes every score, verifies quota progression and phase invariants, and changes nothing if any field is inconsistent."
+  - "A named semantic API exposes actions such as toggleTile, submit, continue, and restart—never coordinates or selectors—so automation tests the same domain rules as the interface."
+prompt: |
+  Using the public number-refinement game only as a black-box behavioral reference, create an original retro-corporate pattern-selection game with generated number tiles, hidden target flags, selection feedback, accuracy scoring, batch animations, a five-round quota and restart. Invent entirely new branding, language, palette and assets.
+lessons:
+  - "A clean-room rebuild preserves an observable interaction loop without copying identity: mechanics can inspire, while names, language, visual system, assets, and implementation remain original."
+  - "A deterministic generator turns an atmospheric game into a reproducible system. Seeds and batch serials are enough to reconstruct every tile and validate imported history."
+  - "Strict import is domain validation, not merely JSON parsing. Recomputed scores and quota transitions prevent plausible-looking state from bypassing the game rules."
+---
+
+<section class="lwk-section">
+  <h2>Historical reference and clean-room boundary</h2>
+  <p>The black-box reference for this lesson is the historical <strong>LUMON MDR / Severance Refiner</strong>, available at <a href="https://kodyw.com/wp-content/uploads/2025/03/severance-refiner.html" target="_blank" rel="noopener">the archived public artifact</a>. I studied only its observable interaction: a field of numbers, a mysterious selection task, immediate selection feedback, scoring, and a quota-shaped progression loop.</p>
+  <p><strong>Clean-room boundary:</strong> Pattern Quota does not copy source code, text, names, artwork, layout, palette, sound, or other expressive material from the reference. The new work uses original Parallax Registry branding, an ocean-and-coral visual system, mirrored-code rules, fresh copy, a seeded generator, and an independently designed state model. The historical title and source link live here for provenance; they do not appear inside the clean demo.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>The exact build prompt</h2>
+  <blockquote>
+    <p>Using the public number-refinement game only as a black-box behavioral reference, create an original retro-corporate pattern-selection game with generated number tiles, hidden target flags, selection feedback, accuracy scoring, batch animations, a five-round quota and restart. Invent entirely new branding, language, palette and assets.</p>
+  </blockquote>
+</section>
+
+<section class="lwk-section">
+  <h2>What was rebuilt</h2>
+  <p>The shared mechanic is intentionally narrow: inspect a fixed batch, choose tiles that appear to satisfy a hidden classification, submit, study the result, and work toward a finite quota. Pattern Quota turns that loop into a transparent learning system. Its briefing defines an original “echo code” rule, each 24-tile batch contains exactly six generated targets, and review separates correct selections, incorrect selections, and missed targets before calculating accuracy.</p>
+  <p>Under the surface, a seeded generator makes every batch reproducible. Passing a batch advances one of five quota segments; failing creates a retry without incrementing progress. The completion panel can restart the full run. A semantic <code>window.PatternQuota</code> API, strict state capsules, and a visible self-test make the behavior inspectable without coupling automation to screen coordinates or CSS selectors.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>Why the safety and branding boundary matters</h2>
+  <p>Clean-room work is not a cosmetic rename. It distinguishes an abstract behavior worth learning from the protected expression that made the original memorable. By documenting provenance while replacing identity, copy, visuals, assets, rules, and code, the lesson can teach deterministic UI architecture and state validation without presenting someone else’s creative work as reusable material.</p>
+  <p>The same boundary improves engineering quality. With no external assets, services, or hidden dependencies, the demo is auditable as one file. Its restrictive Content Security Policy disables network connections, its renderer uses safe DOM APIs and <code>textContent</code>, and imported JSON is treated as untrusted data that must prove every score and transition before it can replace live state.</p>
+</section>
+
+<section class="lwk-section">
+  <h2>Acceptance checks</h2>
+  <ul>
+    <li>Each batch contains a deterministic number of selectable tiles.</li>
+    <li>Submit is disabled until at least one tile is selected.</li>
+    <li>Accuracy is computed from correct, incorrect and missed targets.</li>
+    <li>Successful rounds advance the quota and failed rounds do not.</li>
+    <li>Completing five rounds shows a restartable completion state.</li>
+  </ul>
+</section>
+
+<aside class="lwk-try-embed">
+  <div class="lwk-try-embed-head">
+    <span class="lwk-try-embed-label">Live demo</span>
+    <a href="/learnwithkody/demos/365-pattern-quota.html" target="_blank" rel="noopener" class="lwk-try-embed-open">Open in new tab ↗</a>
+  </div>
+  <iframe
+    src="/learnwithkody/demos/365-pattern-quota.html"
+    title="Pattern Quota — live clean-room demo"
+    loading="lazy"
+    sandbox="allow-scripts allow-same-origin"></iframe>
+</aside>

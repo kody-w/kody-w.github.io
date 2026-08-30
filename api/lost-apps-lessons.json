@@ -1,0 +1,5 @@
+---
+layout: null
+permalink: /api/lost-apps-lessons.json
+---
+{{ site.data.lost_apps_lessons | jsonify }}
