@@ -61,6 +61,7 @@ VERIFIED_FRAME_WORLDS_PAPER = ROOT / "verified-frame-worlds" / "paper.html"
 VERIFIED_FRAME_WORLDS_DEMO = ROOT / "verified-frame-worlds" / "demo.html"
 VERIFIED_FRAME_WORLDS_EXERCISE = ROOT / "verified-frame-worlds" / "exercise.html"
 AAA_FPS_PAGE = ROOT / "aaa-fps" / "index.html"
+AAA_FPS_BUILD = ROOT / "aaa-fps" / "build.json"
 LOCALFIRSTTOOLS_BASE_URL = "https://kody-w.github.io/localFirstTools"
 LOCALFIRSTTOOLS_REPO_URL = "https://github.com/kody-w/localFirstTools"
 D365_FRAME_MACHINE_URL = f"{LOCALFIRSTTOOLS_BASE_URL}/dynamics365-frame-machine.html"
@@ -2886,6 +2887,7 @@ class SiteContentTests(unittest.TestCase):
 
     def test_aaa_fps_playable_build_is_published(self):
         page = AAA_FPS_PAGE.read_text(encoding="utf-8")
+        build = json.loads(AAA_FPS_BUILD.read_text(encoding="utf-8"))
         self.assertIn("<title>NOMAD</title>", page)
         self.assertIn('src="/aaa-fps/assets/', page)
         self.assertIn('href="/aaa-fps/assets/', page)
@@ -2893,6 +2895,10 @@ class SiteContentTests(unittest.TestCase):
         self.assertGreaterEqual(len(assets), 2)
         for asset in assets:
             self.assertTrue((ROOT / asset.lstrip("/")).exists(), asset)
+        self.assertEqual(build["sourceCommit"], "37d33fa")
+        self.assertEqual(build["browserChecks"], "26/26")
+        self.assertEqual(build["mutationGate"], "16/16")
+        self.assertEqual(build["publicUrl"], "https://kody-w.github.io/aaa-fps/")
 
     def test_full_catalog_is_the_only_examples_loop(self):
         hub = LEARN_HUB_PAGE.read_text(encoding="utf-8")
