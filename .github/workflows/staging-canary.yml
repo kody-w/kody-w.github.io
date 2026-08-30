@@ -39,25 +39,28 @@ jobs:
         with:
           python-version: '3.9'
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup locked Ruby and Jekyll
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler: '2.4.22'
+          bundler-cache: true
+
       - name: Install test dependencies
         run: python3 -m pip install --requirement tests/requirements.txt
 
       - name: Run content quality gates
         run: python3 -m unittest discover -s tests -p 'test_*.py'
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.2'
-          bundler-cache: true
-
-      - name: Install Jekyll
-        run: gem install jekyll
-
       - name: Build Jekyll site
-        run: jekyll build --strict_front_matter
+        run: bundle exec jekyll build --strict_front_matter
         env:
-          JEKYLL_ENV: staging
+          JEKYLL_ENV: production
 
       - name: Validate HTML (non-blocking)
         run: |

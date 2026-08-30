@@ -2,7 +2,7 @@
 
 ## Architecture
 
-This is a Jekyll blog hosted on GitHub Pages. There is no build step beyond what GitHub Pages runs automatically — no Gemfile, no local bundler config, no CI pipeline.
+This is a Jekyll blog hosted on GitHub Pages. `Gemfile.lock` pins Jekyll 4.2.2 and Bundler 2.4.22 because the public-twin release hashes final rendered HTML. Use `bundle exec jekyll` for every build.
 
 - **`_config.yml`** — Site metadata. Uses kramdown for Markdown and rouge for syntax highlighting. Permalink pattern: `/:year/:month/:day/:title/`.
 - **`_layouts/default.html`** — Base HTML shell (header, nav, footer). All pages inherit from this.

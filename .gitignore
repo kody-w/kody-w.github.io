@@ -5,9 +5,11 @@
 # Versioned builds (local only — never committed)
 builds/
 _data/production/
-
-# Local validation output
 _site/
 .jekyll-cache/
+.twin-release-render/
+.twin-release-clock.yml
+.stage-refresh-test/
+.bundle/
 __pycache__/
 *.py[cod]

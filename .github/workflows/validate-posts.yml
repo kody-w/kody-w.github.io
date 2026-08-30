@@ -9,12 +9,15 @@ on:
       - '_examples/**'
       - '_layouts/**'
       - '_includes/**'
+      - 'Gemfile'
+      - 'Gemfile.lock'
       - 'about.md'
       - 'constitution/**'
       - 'js/**'
       - 'css/**'
       - 'public-twin/**'
       - 'api/twin-corpus.json'
+      - 'api/frame-06-evidence-tribunal.json'
       - 'api/works.json'
       - 'api/design-constitution.json'
       - 'api/weekly-signal*.json'
@@ -28,11 +31,17 @@ on:
       - 'scripts/build_twin_release.py'
       - 'scripts/benchmark_twin.js'
       - 'scripts/check_twin.py'
+      - 'scripts/build_frame_06_evidence_tribunal.js'
+      - 'scripts/stage_refresh_release.py'
+      - 'scripts/local-build.sh'
+      - 'scripts/versioned-build.sh'
       - 'scripts/build_weekly_signal.py'
       - 'scripts/build_lost_apps_museum.py'
       - 'scripts/verify_lost_apps_evidence.py'
       - 'scripts/sync_wordpress.py'
       - '.github/workflows/refresh-weekly-signal.yml'
+      - '.github/workflows/refresh-works.yml'
+      - '.github/workflows/staging-canary.yml'
       - '.github/workflows/wordpress-draft-sync.yml'
       - 'wordpress/**'
       - 'tests/**'
@@ -47,12 +56,15 @@ on:
       - '_examples/**'
       - '_layouts/**'
       - '_includes/**'
+      - 'Gemfile'
+      - 'Gemfile.lock'
       - 'about.md'
       - 'constitution/**'
       - 'js/**'
       - 'css/**'
       - 'public-twin/**'
       - 'api/twin-corpus.json'
+      - 'api/frame-06-evidence-tribunal.json'
       - 'api/works.json'
       - 'api/design-constitution.json'
       - 'api/weekly-signal*.json'
@@ -66,11 +78,17 @@ on:
       - 'scripts/build_twin_release.py'
       - 'scripts/benchmark_twin.js'
       - 'scripts/check_twin.py'
+      - 'scripts/build_frame_06_evidence_tribunal.js'
+      - 'scripts/stage_refresh_release.py'
+      - 'scripts/local-build.sh'
+      - 'scripts/versioned-build.sh'
       - 'scripts/build_weekly_signal.py'
       - 'scripts/build_lost_apps_museum.py'
       - 'scripts/verify_lost_apps_evidence.py'
       - 'scripts/sync_wordpress.py'
       - '.github/workflows/refresh-weekly-signal.yml'
+      - '.github/workflows/refresh-works.yml'
+      - '.github/workflows/staging-canary.yml'
       - '.github/workflows/wordpress-draft-sync.yml'
       - 'wordpress/**'
       - 'tests/**'
@@ -95,6 +113,8 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
+          bundler: '2.4.22'
+          bundler-cache: true
 
       - name: Validate front matter
         run: |
@@ -149,5 +169,6 @@ jobs:
 
       - name: Build Jekyll site
         run: |
-          gem install jekyll --no-document
-          jekyll build --destination _site
+          bundle exec jekyll build --destination _site
+        env:
+          JEKYLL_ENV: production

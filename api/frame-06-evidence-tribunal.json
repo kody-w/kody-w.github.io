@@ -1,0 +1,481 @@
+{
+  "schema": "kodyw-frame-06-receipt/1.0",
+  "frame": "06",
+  "surface": "/public-twin/tribunal/",
+  "topic": "Kody's local-first product philosophy",
+  "question": "What is the source of truth?",
+  "generator": "scripts/build_frame_06_evidence_tribunal.js",
+  "twinRelease": {
+    "schema": "kodyw-twin-release-binding/1.0",
+    "releaseSha256": "a4a946f75022891488eda84a339fbe13864ce817653399e00f1cd1a689bd644e",
+    "sourceManifestSha256": "21f5d074536a7ad5b4db4e3d7445aa3daf97a54e72a091ff543b6fa20cacd5d3",
+    "corpusSha256": "cd7445811d231f1741890bdb58535d8d04a8244e9932b3f71948cc5514ef0bab"
+  },
+  "result": {
+    "schema": "kodyw-public-evidence-tribunal/1.0",
+    "version": "1.0.0",
+    "question": "What is the source of truth?",
+    "status": "supported-with-challenge",
+    "boundary": "Facts are exact corpus evidence. Inferences are labeled and may not add uncited claims.",
+    "corpus": {
+      "schema": "kodyw-public-twin/1.0",
+      "normalizationVersion": "plain-text/1",
+      "corpusSha256": "cd7445811d231f1741890bdb58535d8d04a8244e9932b3f71948cc5514ef0bab",
+      "records": 842,
+      "relations": 1,
+      "post": 313,
+      "field_note": 116,
+      "work": 413
+    },
+    "chambers": {
+      "answer": {
+        "status": "supported",
+        "facts": [
+          {
+            "kind": "fact",
+            "role": "answer-support",
+            "evidence": "The digital twin is the source of truth.",
+            "citation": {
+              "sourceId": "post:the-digital-twin-deployment-pattern",
+              "sourceSha256": "b0e9d58f74504a63f5b7678b4649bc05ca7568fa9860014ccf9caff64d87dfd2",
+              "sourceType": "post",
+              "title": "The Digital Twin Deployment Pattern",
+              "author": null,
+              "date": "2026-03-28",
+              "timeBasis": "published",
+              "sourceUrl": "/2026/03/28/the-digital-twin-deployment-pattern/",
+              "locator": {
+                "kind": "text",
+                "start": 3183,
+                "end": 3223
+              },
+              "quote": "The digital twin is the source of truth."
+            }
+          },
+          {
+            "kind": "fact",
+            "role": "answer-support",
+            "evidence": "The original is the source of truth, always.",
+            "citation": {
+              "sourceId": "post:the-ai-you-keep",
+              "sourceSha256": "221ae8a3204baf19d71ba20d984baf150592f619c99cb3487897630a1121afc2",
+              "sourceType": "post",
+              "title": "The AI You Keep",
+              "author": null,
+              "date": "2026-07-05",
+              "timeBasis": "published",
+              "sourceUrl": "/2026/07/05/the-ai-you-keep/",
+              "locator": {
+                "kind": "text",
+                "start": 4622,
+                "end": 4666
+              },
+              "quote": "The original is the source of truth, always."
+            }
+          },
+          {
+            "kind": "fact",
+            "role": "answer-support",
+            "evidence": "The byline is the source of truth for \"who said this.\" The frontend reads the byline and displays the agent's name and avatar, not the service account's.",
+            "citation": {
+              "sourceId": "post:service-account-swarms-not-impostors",
+              "sourceSha256": "5815fa022b8e25c4eba17cc1de1dd6684bc145736693c75cc16ff159fd0a2b54",
+              "sourceType": "post",
+              "title": "Service-Account Swarms Are Not Impostors",
+              "author": null,
+              "date": "2026-04-18",
+              "timeBasis": "published",
+              "sourceUrl": "/2026/04/18/service-account-swarms-not-impostors/",
+              "locator": {
+                "kind": "text",
+                "start": 2405,
+                "end": 2558
+              },
+              "quote": "The byline is the source of truth for \"who said this.\" The frontend reads the byline and displays the agent's name and avatar, not the service account's."
+            }
+          },
+          {
+            "kind": "fact",
+            "role": "answer-support",
+            "evidence": "The digital twin pattern — where your local device is the source of truth and the network is just a sync layer — isn't a nice-to-have on Mars.",
+            "citation": {
+              "sourceId": "post:own-land-on-mars-with-autonomous-agents",
+              "sourceSha256": "abfac66223b8c3e8728c07960d3e7053ecd17613b468e2d5cc44cbfe8256112d",
+              "sourceType": "post",
+              "title": "Own Land on Mars With Autonomous Agents",
+              "author": null,
+              "date": "2026-03-28",
+              "timeBasis": "published",
+              "sourceUrl": "/2026/03/28/own-land-on-mars-with-autonomous-agents/",
+              "locator": {
+                "kind": "text",
+                "start": 1658,
+                "end": 1800
+              },
+              "quote": "The digital twin pattern — where your local device is the source of truth and the network is just a sync layer — isn't a nice-to-have on Mars."
+            }
+          },
+          {
+            "kind": "fact",
+            "role": "answer-support",
+            "evidence": "The user's device is the source of truth.",
+            "citation": {
+              "sourceId": "post:local-first-manifesto",
+              "sourceSha256": "d551a85daa2ebefae4fc646d9c60abb8541863d9f575f0aa9cd0a31567af352f",
+              "sourceType": "post",
+              "title": "The Local-First Manifesto: No Server, No Permission, No Excuses",
+              "author": null,
+              "date": "2026-03-01",
+              "timeBasis": "published",
+              "sourceUrl": "/2026/03/01/local-first-manifesto/",
+              "locator": {
+                "kind": "text",
+                "start": 243,
+                "end": 284
+              },
+              "quote": "The user's device is the source of truth."
+            }
+          }
+        ],
+        "inference": {
+          "kind": "inference",
+          "statement": "These exact passages meet the twin engine answer threshold; no private intent is inferred.",
+          "supportedBy": [
+            "post:the-digital-twin-deployment-pattern|3183:3223",
+            "post:the-ai-you-keep|4622:4666",
+            "post:service-account-swarms-not-impostors|2405:2558",
+            "post:own-land-on-mars-with-autonomous-agents|1658:1800",
+            "post:local-first-manifesto|243:284"
+          ]
+        }
+      },
+      "evolution": {
+        "status": "supported",
+        "facts": [
+          {
+            "kind": "fact",
+            "role": "dated-evidence",
+            "evidence": "The canonical state still gets mutated for convenience, but the journal is the source of truth.",
+            "citation": {
+              "sourceId": "post:delta-journals-beat-state-mutations",
+              "sourceSha256": "79eecfdee4aace190195133445c5988abcb17234d2e3e32a68cc771feccca4ec",
+              "sourceType": "post",
+              "title": "Delta journals beat state mutations",
+              "author": null,
+              "date": "2025-10-22",
+              "timeBasis": "published",
+              "sourceUrl": "/2025/10/22/delta-journals-beat-state-mutations/",
+              "locator": {
+                "kind": "text",
+                "start": 463,
+                "end": 558
+              },
+              "quote": "The canonical state still gets mutated for convenience, but the journal is the source of truth."
+            },
+            "at": "2025-10-22",
+            "timeBasis": "published"
+          },
+          {
+            "kind": "fact",
+            "role": "dated-evidence",
+            "evidence": "The user's device is the source of truth.",
+            "citation": {
+              "sourceId": "post:local-first-manifesto",
+              "sourceSha256": "d551a85daa2ebefae4fc646d9c60abb8541863d9f575f0aa9cd0a31567af352f",
+              "sourceType": "post",
+              "title": "The Local-First Manifesto: No Server, No Permission, No Excuses",
+              "author": null,
+              "date": "2026-03-01",
+              "timeBasis": "published",
+              "sourceUrl": "/2026/03/01/local-first-manifesto/",
+              "locator": {
+                "kind": "text",
+                "start": 243,
+                "end": 284
+              },
+              "quote": "The user's device is the source of truth."
+            },
+            "at": "2026-03-01",
+            "timeBasis": "published"
+          },
+          {
+            "kind": "fact",
+            "role": "dated-evidence",
+            "evidence": "The digital twin pattern — where your local device is the source of truth and the network is just a sync layer — isn't a nice-to-have on Mars.",
+            "citation": {
+              "sourceId": "post:own-land-on-mars-with-autonomous-agents",
+              "sourceSha256": "abfac66223b8c3e8728c07960d3e7053ecd17613b468e2d5cc44cbfe8256112d",
+              "sourceType": "post",
+              "title": "Own Land on Mars With Autonomous Agents",
+              "author": null,
+              "date": "2026-03-28",
+              "timeBasis": "published",
+              "sourceUrl": "/2026/03/28/own-land-on-mars-with-autonomous-agents/",
+              "locator": {
+                "kind": "text",
+                "start": 1658,
+                "end": 1800
+              },
+              "quote": "The digital twin pattern — where your local device is the source of truth and the network is just a sync layer — isn't a nice-to-have on Mars."
+            },
+            "at": "2026-03-28",
+            "timeBasis": "published"
+          },
+          {
+            "kind": "fact",
+            "role": "dated-evidence",
+            "evidence": "The digital twin is the source of truth.",
+            "citation": {
+              "sourceId": "post:the-digital-twin-deployment-pattern",
+              "sourceSha256": "b0e9d58f74504a63f5b7678b4649bc05ca7568fa9860014ccf9caff64d87dfd2",
+              "sourceType": "post",
+              "title": "The Digital Twin Deployment Pattern",
+              "author": null,
+              "date": "2026-03-28",
+              "timeBasis": "published",
+              "sourceUrl": "/2026/03/28/the-digital-twin-deployment-pattern/",
+              "locator": {
+                "kind": "text",
+                "start": 3183,
+                "end": 3223
+              },
+              "quote": "The digital twin is the source of truth."
+            },
+            "at": "2026-03-28",
+            "timeBasis": "published"
+          },
+          {
+            "kind": "fact",
+            "role": "dated-evidence",
+            "evidence": "The byline is the source of truth for \"who said this.\" The frontend reads the byline and displays the agent's name and avatar, not the service account's.",
+            "citation": {
+              "sourceId": "post:service-account-swarms-not-impostors",
+              "sourceSha256": "5815fa022b8e25c4eba17cc1de1dd6684bc145736693c75cc16ff159fd0a2b54",
+              "sourceType": "post",
+              "title": "Service-Account Swarms Are Not Impostors",
+              "author": null,
+              "date": "2026-04-18",
+              "timeBasis": "published",
+              "sourceUrl": "/2026/04/18/service-account-swarms-not-impostors/",
+              "locator": {
+                "kind": "text",
+                "start": 2405,
+                "end": 2558
+              },
+              "quote": "The byline is the source of truth for \"who said this.\" The frontend reads the byline and displays the agent's name and avatar, not the service account's."
+            },
+            "at": "2026-04-18",
+            "timeBasis": "published"
+          },
+          {
+            "kind": "fact",
+            "role": "dated-evidence",
+            "evidence": "The original is the source of truth, always.",
+            "citation": {
+              "sourceId": "post:the-ai-you-keep",
+              "sourceSha256": "221ae8a3204baf19d71ba20d984baf150592f619c99cb3487897630a1121afc2",
+              "sourceType": "post",
+              "title": "The AI You Keep",
+              "author": null,
+              "date": "2026-07-05",
+              "timeBasis": "published",
+              "sourceUrl": "/2026/07/05/the-ai-you-keep/",
+              "locator": {
+                "kind": "text",
+                "start": 4622,
+                "end": 4666
+              },
+              "quote": "The original is the source of truth, always."
+            },
+            "at": "2026-07-05",
+            "timeBasis": "published"
+          }
+        ],
+        "inference": {
+          "kind": "inference",
+          "statement": "The dated record establishes recurrence across time, not a change in belief.",
+          "supportedBy": [
+            "post:delta-journals-beat-state-mutations|463:558",
+            "post:local-first-manifesto|243:284",
+            "post:own-land-on-mars-with-autonomous-agents|1658:1800",
+            "post:the-digital-twin-deployment-pattern|3183:3223",
+            "post:service-account-swarms-not-impostors|2405:2558",
+            "post:the-ai-you-keep|4622:4666"
+          ]
+        }
+      },
+      "challenge": {
+        "status": "supported",
+        "thesisFacts": [
+          {
+            "kind": "fact",
+            "role": "challenge-thesis",
+            "evidence": "The digital twin is the source of truth.",
+            "citation": {
+              "sourceId": "post:the-digital-twin-deployment-pattern",
+              "sourceSha256": "b0e9d58f74504a63f5b7678b4649bc05ca7568fa9860014ccf9caff64d87dfd2",
+              "sourceType": "post",
+              "title": "The Digital Twin Deployment Pattern",
+              "author": null,
+              "date": "2026-03-28",
+              "timeBasis": "published",
+              "sourceUrl": "/2026/03/28/the-digital-twin-deployment-pattern/",
+              "locator": {
+                "kind": "text",
+                "start": 3183,
+                "end": 3223
+              },
+              "quote": "The digital twin is the source of truth."
+            }
+          }
+        ],
+        "strongestFact": {
+          "kind": "fact",
+          "role": "strongest-challenge",
+          "evidence": "The markdown stays the source of truth.",
+          "citation": {
+            "sourceId": "post:markdown-is-the-spec",
+            "sourceSha256": "4fabd9a2c77be3ccf883502c630dc4ddb4870be6379abfcd655d962ee6607c0f",
+            "sourceType": "post",
+            "title": "Markdown Is the Spec; HTML Is the Rendering",
+            "author": null,
+            "date": "2026-04-24",
+            "timeBasis": "published",
+            "sourceUrl": "/2026/04/24/markdown-is-the-spec/",
+            "locator": {
+              "kind": "text",
+              "start": 730,
+              "end": 769
+            },
+            "quote": "The markdown stays the source of truth."
+          },
+          "relation": "qualifies"
+        },
+        "inference": {
+          "kind": "inference",
+          "statement": "The corpus declares this evidence as a qualification of the thesis, not as an inferred contradiction.",
+          "supportedBy": [
+            "post:the-digital-twin-deployment-pattern|3183:3223",
+            "post:markdown-is-the-spec|730:769"
+          ]
+        }
+      }
+    },
+    "abstentions": [],
+    "citations": [
+      {
+        "sourceId": "post:the-digital-twin-deployment-pattern",
+        "sourceSha256": "b0e9d58f74504a63f5b7678b4649bc05ca7568fa9860014ccf9caff64d87dfd2",
+        "sourceType": "post",
+        "title": "The Digital Twin Deployment Pattern",
+        "author": null,
+        "date": "2026-03-28",
+        "timeBasis": "published",
+        "sourceUrl": "/2026/03/28/the-digital-twin-deployment-pattern/",
+        "locator": {
+          "kind": "text",
+          "start": 3183,
+          "end": 3223
+        },
+        "quote": "The digital twin is the source of truth."
+      },
+      {
+        "sourceId": "post:the-ai-you-keep",
+        "sourceSha256": "221ae8a3204baf19d71ba20d984baf150592f619c99cb3487897630a1121afc2",
+        "sourceType": "post",
+        "title": "The AI You Keep",
+        "author": null,
+        "date": "2026-07-05",
+        "timeBasis": "published",
+        "sourceUrl": "/2026/07/05/the-ai-you-keep/",
+        "locator": {
+          "kind": "text",
+          "start": 4622,
+          "end": 4666
+        },
+        "quote": "The original is the source of truth, always."
+      },
+      {
+        "sourceId": "post:service-account-swarms-not-impostors",
+        "sourceSha256": "5815fa022b8e25c4eba17cc1de1dd6684bc145736693c75cc16ff159fd0a2b54",
+        "sourceType": "post",
+        "title": "Service-Account Swarms Are Not Impostors",
+        "author": null,
+        "date": "2026-04-18",
+        "timeBasis": "published",
+        "sourceUrl": "/2026/04/18/service-account-swarms-not-impostors/",
+        "locator": {
+          "kind": "text",
+          "start": 2405,
+          "end": 2558
+        },
+        "quote": "The byline is the source of truth for \"who said this.\" The frontend reads the byline and displays the agent's name and avatar, not the service account's."
+      },
+      {
+        "sourceId": "post:own-land-on-mars-with-autonomous-agents",
+        "sourceSha256": "abfac66223b8c3e8728c07960d3e7053ecd17613b468e2d5cc44cbfe8256112d",
+        "sourceType": "post",
+        "title": "Own Land on Mars With Autonomous Agents",
+        "author": null,
+        "date": "2026-03-28",
+        "timeBasis": "published",
+        "sourceUrl": "/2026/03/28/own-land-on-mars-with-autonomous-agents/",
+        "locator": {
+          "kind": "text",
+          "start": 1658,
+          "end": 1800
+        },
+        "quote": "The digital twin pattern — where your local device is the source of truth and the network is just a sync layer — isn't a nice-to-have on Mars."
+      },
+      {
+        "sourceId": "post:local-first-manifesto",
+        "sourceSha256": "d551a85daa2ebefae4fc646d9c60abb8541863d9f575f0aa9cd0a31567af352f",
+        "sourceType": "post",
+        "title": "The Local-First Manifesto: No Server, No Permission, No Excuses",
+        "author": null,
+        "date": "2026-03-01",
+        "timeBasis": "published",
+        "sourceUrl": "/2026/03/01/local-first-manifesto/",
+        "locator": {
+          "kind": "text",
+          "start": 243,
+          "end": 284
+        },
+        "quote": "The user's device is the source of truth."
+      },
+      {
+        "sourceId": "post:delta-journals-beat-state-mutations",
+        "sourceSha256": "79eecfdee4aace190195133445c5988abcb17234d2e3e32a68cc771feccca4ec",
+        "sourceType": "post",
+        "title": "Delta journals beat state mutations",
+        "author": null,
+        "date": "2025-10-22",
+        "timeBasis": "published",
+        "sourceUrl": "/2025/10/22/delta-journals-beat-state-mutations/",
+        "locator": {
+          "kind": "text",
+          "start": 463,
+          "end": 558
+        },
+        "quote": "The canonical state still gets mutated for convenience, but the journal is the source of truth."
+      },
+      {
+        "sourceId": "post:markdown-is-the-spec",
+        "sourceSha256": "4fabd9a2c77be3ccf883502c630dc4ddb4870be6379abfcd655d962ee6607c0f",
+        "sourceType": "post",
+        "title": "Markdown Is the Spec; HTML Is the Rendering",
+        "author": null,
+        "date": "2026-04-24",
+        "timeBasis": "published",
+        "sourceUrl": "/2026/04/24/markdown-is-the-spec/",
+        "locator": {
+          "kind": "text",
+          "start": 730,
+          "end": 769
+        },
+        "quote": "The markdown stays the source of truth."
+      }
+    ]
+  },
+  "receiptSha256": "2edd8e03dd78adf1fc5d5123d8c7b38f6c0923134e1a284f79246f7246db8842"
+}

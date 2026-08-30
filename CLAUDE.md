@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-A Jekyll blog hosted on GitHub Pages (`kody-w.github.io`). No Gemfile, no bundler config, no build step beyond what GitHub Pages runs. Pushes to `master` auto-deploy.
+A Jekyll blog hosted on GitHub Pages (`kody-w.github.io`). `Gemfile.lock` pins Jekyll 4.2.2 and Bundler 2.4.22 so release-document hashes match CI and Pages builds. Pushes to `master` auto-deploy.
 
 ## Common commands
 
@@ -15,8 +15,9 @@ python3 -m unittest discover -s tests -p 'test_*.py'
 # Run a single test method
 python3 -m unittest tests.test_site.SiteTestCase.test_expected_posts_exist
 
-# Local Jekyll preview (requires gem install jekyll bundler)
-jekyll serve              # → http://localhost:4000
+# Install locked Ruby dependencies, then preview
+bundle install
+bundle exec jekyll serve  # → http://localhost:4000
 
 # Local near-prod build (pulls live data from sibling repos via curl)
 ./scripts/local-build.sh                  # build + serve

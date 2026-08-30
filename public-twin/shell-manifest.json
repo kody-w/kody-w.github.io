@@ -1,14 +1,17 @@
 {
   "schema": "kodyw-twin-shell/1.0",
-  "sourceSha256": "1c8f2ab8e4823e3a8b6e8fa7d42328dc83060d57ace6b216c9be235f2bffad25",
+  "releaseSha256": "a4a946f75022891488eda84a339fbe13864ce817653399e00f1cd1a689bd644e",
+  "sourceSha256": "cac60177662d6a583beccbc7ea4683982169035facec10c41a94b8f1f34199eb",
   "documents": [
     {
       "url": "/public-twin/",
       "contentTypes": [
         "text/html"
       ],
+      "normalization": "twin-html-sha256/1",
+      "sha256": "2aecac01d968033fcbec19cca8b5f91074b89fa18216b8ca680aaf808da41531",
       "requiredText": [
-        "data-twin-document-sha256=\"88f065459f4f35e38a32b6557ced02212bc54b94a319ae1aee7e52a35928f356\"",
+        "data-twin-document-sha256=\"2aecac01d968033fcbec19cca8b5f91074b89fa18216b8ca680aaf808da41531\"",
         "id=\"public-twin\"",
         "id=\"twin-question-form\"",
         "id=\"twin-question\"",
@@ -22,14 +25,50 @@
       "contentTypes": [
         "text/html"
       ],
+      "normalization": "twin-html-sha256/1",
+      "sha256": "2aecac01d968033fcbec19cca8b5f91074b89fa18216b8ca680aaf808da41531",
       "requiredText": [
-        "data-twin-document-sha256=\"88f065459f4f35e38a32b6557ced02212bc54b94a319ae1aee7e52a35928f356\"",
+        "data-twin-document-sha256=\"2aecac01d968033fcbec19cca8b5f91074b89fa18216b8ca680aaf808da41531\"",
         "id=\"public-twin\"",
         "id=\"twin-question-form\"",
         "id=\"twin-question\"",
         "id=\"twin-results\"",
         "http-equiv=\"Content-Security-Policy\"",
         "/js/twin-app.js"
+      ]
+    },
+    {
+      "url": "/public-twin/tribunal/",
+      "contentTypes": [
+        "text/html"
+      ],
+      "normalization": "twin-html-sha256/1",
+      "sha256": "dcce30de2d269bfd7cd094ef4dcc6fa9beb3e6032f881cbe8064f416560346ee",
+      "requiredText": [
+        "data-twin-document-sha256=\"dcce30de2d269bfd7cd094ef4dcc6fa9beb3e6032f881cbe8064f416560346ee\"",
+        "id=\"evidence-tribunal\"",
+        "id=\"tribunal-form\"",
+        "id=\"tribunal-result-status\"",
+        "http-equiv=\"Content-Security-Policy\"",
+        "/js/frame-06-evidence-tribunal.js",
+        "/js/frame-06-evidence-tribunal-app.js"
+      ]
+    },
+    {
+      "url": "/public-twin/tribunal/index.html",
+      "contentTypes": [
+        "text/html"
+      ],
+      "normalization": "twin-html-sha256/1",
+      "sha256": "dcce30de2d269bfd7cd094ef4dcc6fa9beb3e6032f881cbe8064f416560346ee",
+      "requiredText": [
+        "data-twin-document-sha256=\"dcce30de2d269bfd7cd094ef4dcc6fa9beb3e6032f881cbe8064f416560346ee\"",
+        "id=\"evidence-tribunal\"",
+        "id=\"tribunal-form\"",
+        "id=\"tribunal-result-status\"",
+        "http-equiv=\"Content-Security-Policy\"",
+        "/js/frame-06-evidence-tribunal.js",
+        "/js/frame-06-evidence-tribunal-app.js"
       ]
     }
   ],
@@ -64,8 +103,22 @@
       ]
     },
     {
+      "url": "/api/frame-06-evidence-tribunal.json",
+      "sha256": "cd5627103a280bbba76ec23aae6ae83e97533fe82f6b869634e35c685e7904d6",
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    {
       "url": "/css/main.css",
       "sha256": "92ec60f9b500d87e26e1a9ea0d92ce87f47afe0a9a82e05186496bd33109723a",
+      "contentTypes": [
+        "text/css"
+      ]
+    },
+    {
+      "url": "/css/frame-06-evidence-tribunal.css",
+      "sha256": "41a80c3e05b598216f90bf9af0d1074f8ca0bc865d5f62a31ea925cba5b3cf57",
       "contentTypes": [
         "text/css"
       ]
@@ -104,7 +157,23 @@
     },
     {
       "url": "/js/twin-app.js",
-      "sha256": "27d83bd57d7557cca07ebafcb94507348e9d367d34157e570dada1f8c7ee5a19",
+      "sha256": "0f1a54b3998a18a537e4298cf7959a2ab8ef2dafe031853eed15bf9cd113dbaf",
+      "contentTypes": [
+        "text/javascript",
+        "application/javascript"
+      ]
+    },
+    {
+      "url": "/js/frame-06-evidence-tribunal.js",
+      "sha256": "216b2c854306d77f0378b31e7a6606c974a292f504b7093da96786667363b6b5",
+      "contentTypes": [
+        "text/javascript",
+        "application/javascript"
+      ]
+    },
+    {
+      "url": "/js/frame-06-evidence-tribunal-app.js",
+      "sha256": "6773e7335c9d2a52ea52c652166c0feb8aa723241bb009296e339f770dd7aa07",
       "contentTypes": [
         "text/javascript",
         "application/javascript"

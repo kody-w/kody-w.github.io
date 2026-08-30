@@ -1,0 +1,382 @@
+.evidence-tribunal {
+  --tribunal-ink: #17212b;
+  --tribunal-muted: #59636e;
+  --tribunal-paper: #ffffff;
+  --tribunal-wash: #f5f7f8;
+  --tribunal-line: #d0d7de;
+  --tribunal-accent: #0b6b57;
+  --tribunal-accent-soft: #e8f5f1;
+  --tribunal-challenge: #9a4b12;
+  color: var(--tribunal-ink);
+}
+
+.evidence-tribunal button,
+.evidence-tribunal textarea {
+  font: inherit;
+}
+
+.tribunal-hero {
+  padding: 20px 0 34px;
+  border-bottom: 1px solid var(--tribunal-line);
+}
+
+.tribunal-kicker,
+.tribunal-label {
+  margin: 0 0 7px;
+  color: var(--tribunal-accent);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.tribunal-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(270px, 0.7fr);
+  gap: 34px;
+  align-items: end;
+}
+
+.tribunal-hero h1 {
+  margin: 0 0 18px;
+  font-size: clamp(42px, 7vw, 74px);
+  font-weight: 520;
+  letter-spacing: -0.055em;
+  line-height: 0.98;
+}
+
+.tribunal-lede {
+  max-width: 690px;
+  color: var(--tribunal-muted);
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.tribunal-contract {
+  padding: 21px;
+  border: 1px solid var(--tribunal-line);
+  border-top: 4px solid var(--tribunal-accent);
+  border-radius: 8px;
+  background: var(--tribunal-wash);
+}
+
+.tribunal-contract ul {
+  padding-left: 19px;
+  color: var(--tribunal-muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.tribunal-contract a,
+.tribunal-api a,
+.tribunal-source,
+.tribunal-citation a {
+  color: var(--tribunal-accent);
+  font-weight: 700;
+}
+
+.tribunal-runner,
+.tribunal-citations,
+.tribunal-api {
+  padding: 30px 0;
+  border-bottom: 1px solid var(--tribunal-line);
+}
+
+.tribunal-section-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: end;
+  margin-bottom: 15px;
+}
+
+.tribunal-section-heading h2,
+.tribunal-api h2 {
+  margin: 0;
+  font-size: clamp(25px, 4vw, 36px);
+  font-weight: 560;
+  letter-spacing: -0.035em;
+}
+
+.tribunal-status,
+.tribunal-section-heading > p {
+  max-width: 410px;
+  color: var(--tribunal-muted);
+  font-size: 13px;
+  text-align: right;
+}
+
+.tribunal-form > label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--tribunal-muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tribunal-form > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.tribunal-form textarea {
+  width: 100%;
+  min-height: 104px;
+  padding: 14px;
+  border: 1px solid var(--tribunal-line);
+  border-radius: 8px;
+  color: var(--tribunal-ink);
+  background: var(--tribunal-paper);
+  resize: vertical;
+}
+
+.tribunal-form button {
+  min-width: 170px;
+  padding: 12px 17px;
+  border: 1px solid var(--tribunal-accent);
+  border-radius: 8px;
+  color: #ffffff;
+  background: var(--tribunal-accent);
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.tribunal-form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.tribunal-form > p {
+  margin: 9px 0 0;
+  color: var(--tribunal-muted);
+  font-size: 12px;
+}
+
+.tribunal-verdict {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1.3fr);
+  gap: 26px;
+  margin: 30px 0 16px;
+  padding: 22px;
+  border: 1px solid var(--tribunal-accent);
+  border-radius: 10px;
+  background: var(--tribunal-accent-soft);
+}
+
+.tribunal-verdict h2 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.tribunal-verdict > p {
+  align-self: center;
+  margin: 0;
+  line-height: 1.55;
+}
+
+.tribunal-result-status {
+  min-height: 1.5em;
+  margin: 0 0 16px;
+  color: var(--tribunal-muted);
+  font-size: 13px;
+}
+
+.tribunal-chambers {
+  display: grid;
+  gap: 16px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid var(--tribunal-line);
+}
+
+.tribunal-chamber {
+  overflow: hidden;
+  border: 1px solid var(--tribunal-line);
+  border-radius: 10px;
+  background: var(--tribunal-paper);
+}
+
+.tribunal-chamber > header {
+  display: flex;
+  gap: 13px;
+  align-items: center;
+  padding: 15px 18px;
+  border-bottom: 1px solid var(--tribunal-line);
+  background: var(--tribunal-wash);
+}
+
+.tribunal-chamber > header > span {
+  display: grid;
+  place-items: center;
+  width: 35px;
+  height: 35px;
+  border: 1px solid var(--tribunal-accent);
+  border-radius: 50%;
+  color: var(--tribunal-accent);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.tribunal-chamber h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.tribunal-chamber-body {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+}
+
+.tribunal-fact {
+  padding: 15px;
+  border: 1px solid var(--tribunal-line);
+  border-radius: 8px;
+}
+
+.tribunal-fact blockquote {
+  margin: 8px 0 12px;
+  padding-left: 14px;
+  border-left: 3px solid var(--tribunal-accent);
+  color: var(--tribunal-ink);
+  font-size: 15px;
+  font-style: normal;
+  line-height: 1.6;
+}
+
+.tribunal-source,
+.tribunal-provenance,
+.tribunal-inference code,
+.tribunal-citation code {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.tribunal-provenance,
+.tribunal-inference code,
+.tribunal-citation code {
+  margin-top: 7px;
+  color: var(--tribunal-muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.tribunal-inference,
+.tribunal-abstention {
+  padding: 15px;
+  border-radius: 8px;
+  background: var(--tribunal-accent-soft);
+}
+
+.tribunal-inference > p:last-of-type,
+.tribunal-abstention > p:last-child {
+  margin-bottom: 0;
+}
+
+.tribunal-abstention {
+  border: 1px dashed var(--tribunal-line);
+  background: var(--tribunal-wash);
+}
+
+.tribunal-timeline-item {
+  display: grid;
+  grid-template-columns: 105px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.tribunal-timeline-item time {
+  padding-top: 16px;
+  color: var(--tribunal-muted);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+}
+
+.tribunal-side {
+  padding: 13px;
+  border-left: 3px solid var(--tribunal-accent);
+  background: var(--tribunal-wash);
+}
+
+.tribunal-side-challenge {
+  border-left-color: var(--tribunal-challenge);
+}
+
+.tribunal-side-challenge > .tribunal-label {
+  color: var(--tribunal-challenge);
+}
+
+#tribunal-citation-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.tribunal-citation {
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid var(--tribunal-line);
+  border-radius: 8px;
+  background: var(--tribunal-wash);
+}
+
+.tribunal-citation h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+
+.tribunal-citation p {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.tribunal-api pre {
+  overflow-x: auto;
+  margin: 15px 0;
+  padding: 16px;
+  border: 1px solid var(--tribunal-line);
+  border-radius: 8px;
+  background: var(--tribunal-wash);
+}
+
+[data-theme="dark"] .evidence-tribunal {
+  --tribunal-ink: #f0f3f6;
+  --tribunal-muted: #aab4bf;
+  --tribunal-paper: #161b22;
+  --tribunal-wash: #20272f;
+  --tribunal-line: #3d4752;
+  --tribunal-accent: #63c9ae;
+  --tribunal-accent-soft: #173b34;
+  --tribunal-challenge: #f2a35f;
+}
+
+@media (max-width: 720px) {
+  .tribunal-hero-grid,
+  .tribunal-verdict {
+    grid-template-columns: 1fr;
+  }
+
+  .tribunal-section-heading {
+    display: block;
+  }
+
+  .tribunal-status,
+  .tribunal-section-heading > p {
+    margin-top: 8px;
+    text-align: left;
+  }
+
+  .tribunal-form > div,
+  #tribunal-citation-list {
+    grid-template-columns: 1fr;
+  }
+
+  .tribunal-timeline-item {
+    grid-template-columns: 1fr;
+  }
+
+  .tribunal-timeline-item time {
+    padding-top: 0;
+  }
+}

@@ -4,6 +4,7 @@ url: "https://kody-w.github.io"
 newsletter_url: "/newsletter/#newsletter-signup"
 newsletter_action: "https://subscribe.wordpress.com/"
 newsletter_blog_id: "102271194"
+release_year: 2026
 markdown: kramdown
 highlighter: rouge
 permalink: /:year/:month/:day/:title/

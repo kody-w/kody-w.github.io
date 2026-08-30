@@ -3422,7 +3422,10 @@ class SiteContentTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("pages: write", workflow)
-        self.assertIn('pages/builds"', workflow)
+        self.assertIn("bundle exec jekyll build", workflow)
+        self.assertIn("actions/upload-pages-artifact@v3", workflow)
+        self.assertIn("actions/deploy-pages@v4", workflow)
+        self.assertNotIn('pages/builds"', workflow)
 
     def test_lost_apps_museum_is_a_public_discovery_surface(self):
         front_matter, body = parse_front_matter(LOST_APPS_PAGE)
