@@ -1,6 +1,6 @@
 {
   "schema": "kodyw-twin-shell/1.0",
-  "sourceSha256": "fde0daa089e97154178cb0be8099f8f054ae6ed83745969c785ac1777dff0dc5",
+  "sourceSha256": "1c8f2ab8e4823e3a8b6e8fa7d42328dc83060d57ace6b216c9be235f2bffad25",
   "documents": [
     {
       "url": "/public-twin/",
@@ -8,7 +8,7 @@
         "text/html"
       ],
       "requiredText": [
-        "data-twin-document-sha256=\"26329d5810391c03e266654e3d7eb30348e911f4659871efd6d321867a675ec2\"",
+        "data-twin-document-sha256=\"88f065459f4f35e38a32b6557ced02212bc54b94a319ae1aee7e52a35928f356\"",
         "id=\"public-twin\"",
         "id=\"twin-question-form\"",
         "id=\"twin-question\"",
@@ -23,7 +23,7 @@
         "text/html"
       ],
       "requiredText": [
-        "data-twin-document-sha256=\"26329d5810391c03e266654e3d7eb30348e911f4659871efd6d321867a675ec2\"",
+        "data-twin-document-sha256=\"88f065459f4f35e38a32b6557ced02212bc54b94a319ae1aee7e52a35928f356\"",
         "id=\"public-twin\"",
         "id=\"twin-question-form\"",
         "id=\"twin-question\"",
@@ -65,7 +65,7 @@
     },
     {
       "url": "/css/main.css",
-      "sha256": "182683cc381049a28f9993999c9460aae01d295f22b58b37fb980f12328ad32e",
+      "sha256": "92ec60f9b500d87e26e1a9ea0d92ce87f47afe0a9a82e05186496bd33109723a",
       "contentTypes": [
         "text/css"
       ]

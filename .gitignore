@@ -5,3 +5,9 @@
 # Versioned builds (local only — never committed)
 builds/
 _data/production/
+
+# Local validation output
+_site/
+.jekyll-cache/
+__pycache__/
+*.py[cod]
