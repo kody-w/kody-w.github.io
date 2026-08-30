@@ -8,7 +8,7 @@ var BASELINE_SOURCE_MANIFEST_SHA256 =
 var BASELINE_CORPUS_SHA256 =
   'cd7445811d231f1741890bdb58535d8d04a8244e9932b3f71948cc5514ef0bab';
 var SHELL_RELEASE_SHA256 =
-  'd4c42cffb0d8eafdb3ddb411f62f4a6fd3664cb44ae380c393e6901f04581d31';
+  'e3c37b432e00fdb0c84cfbfe64be9b62dd6f84a259b482b3ae6f2d4b9468fb34';
 var SHELL_CACHE = 'kody-twin-shell-' + SHELL_RELEASE_SHA256.slice(0, 16);
 var CORPUS_CACHE = 'kody-twin-corpus-' + BASELINE_CORPUS_SHA256.slice(0, 16);
 var SHELL_MANIFEST_PATH = '/public-twin/shell-manifest.json';
@@ -156,6 +156,7 @@ function validShellUrl(value) {
 function validShellManifest(manifest) {
   if (!isObject(manifest) ||
       manifest.schema !== 'kodyw-twin-shell/1.0' ||
+      !SHA256.test(manifest.releaseSha256) ||
       !SHA256.test(manifest.sourceSha256) ||
       !Array.isArray(manifest.documents) ||
       manifest.documents.length === 0 ||
@@ -494,9 +495,16 @@ function shellResponse(request) {
 
 function navigationResponse(request) {
   var pathname = new URL(request.url).pathname;
-  var isAppPath = pathname === '/public-twin' ||
-    pathname === '/public-twin/';
-  if (!isAppPath) {
+  var canonicalPath = pathname === '/public-twin'
+    ? '/public-twin/'
+    : (pathname === '/public-twin/tribunal'
+      ? '/public-twin/tribunal/'
+      : pathname);
+  var isDeclaredDocument = canonicalPath === '/public-twin/' ||
+    canonicalPath === '/public-twin/index.html' ||
+    canonicalPath === '/public-twin/tribunal/' ||
+    canonicalPath === '/public-twin/tribunal/index.html';
+  if (!isDeclaredDocument) {
     return shellResponse(request).catch(function () {
       return new Response('Twin resource is unavailable offline.', {
         status: 503,
@@ -510,16 +518,16 @@ function navigationResponse(request) {
         throw new Error('Verified shell manifest is unavailable');
       }
       var specification = bundle.manifest.documents.find(function (item) {
-        return item.url === '/public-twin/';
+        return item.url === canonicalPath;
       });
       if (!specification) {
-        throw new Error('Canonical twin document is not declared');
+        throw new Error('Twin document is not declared');
       }
       return verifyShellResponse(specification, response);
     });
   }).catch(function () {
     return caches.open(SHELL_CACHE).then(function (cache) {
-      return cache.match('/public-twin/');
+      return cache.match(canonicalPath);
     }).then(function (response) {
       return response || new Response('Twin is unavailable offline.', {
         status: 503,

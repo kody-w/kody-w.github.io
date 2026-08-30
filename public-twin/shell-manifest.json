@@ -1,6 +1,7 @@
 {
   "schema": "kodyw-twin-shell/1.0",
-  "sourceSha256": "fde0daa089e97154178cb0be8099f8f054ae6ed83745969c785ac1777dff0dc5",
+  "releaseSha256": "c11a14d182a9e9caf2436e633874f5a482d66810190f007f14dcd00901914768",
+  "sourceSha256": "eb4879a940b94d0a59d638800f3916da909bd17e3fc857522a040a2ddc6992f6",
   "documents": [
     {
       "url": "/public-twin/",
@@ -30,6 +31,36 @@
         "id=\"twin-results\"",
         "http-equiv=\"Content-Security-Policy\"",
         "/js/twin-app.js"
+      ]
+    },
+    {
+      "url": "/public-twin/tribunal/",
+      "contentTypes": [
+        "text/html"
+      ],
+      "requiredText": [
+        "data-twin-document-sha256=\"f1360501a1213aa4a62e96444802e5c1fc5a4db77ce3520f2685445b94ca203f\"",
+        "id=\"evidence-tribunal\"",
+        "id=\"tribunal-form\"",
+        "id=\"tribunal-result-status\"",
+        "http-equiv=\"Content-Security-Policy\"",
+        "/js/frame-06-evidence-tribunal.js",
+        "/js/frame-06-evidence-tribunal-app.js"
+      ]
+    },
+    {
+      "url": "/public-twin/tribunal/index.html",
+      "contentTypes": [
+        "text/html"
+      ],
+      "requiredText": [
+        "data-twin-document-sha256=\"f1360501a1213aa4a62e96444802e5c1fc5a4db77ce3520f2685445b94ca203f\"",
+        "id=\"evidence-tribunal\"",
+        "id=\"tribunal-form\"",
+        "id=\"tribunal-result-status\"",
+        "http-equiv=\"Content-Security-Policy\"",
+        "/js/frame-06-evidence-tribunal.js",
+        "/js/frame-06-evidence-tribunal-app.js"
       ]
     }
   ],
@@ -64,8 +95,22 @@
       ]
     },
     {
+      "url": "/api/frame-06-evidence-tribunal.json",
+      "sha256": "f5691951921b64336961887eab373504ea2131d8acf8ce308de84db6ebd7395e",
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    {
       "url": "/css/main.css",
       "sha256": "182683cc381049a28f9993999c9460aae01d295f22b58b37fb980f12328ad32e",
+      "contentTypes": [
+        "text/css"
+      ]
+    },
+    {
+      "url": "/css/frame-06-evidence-tribunal.css",
+      "sha256": "41a80c3e05b598216f90bf9af0d1074f8ca0bc865d5f62a31ea925cba5b3cf57",
       "contentTypes": [
         "text/css"
       ]
@@ -105,6 +150,22 @@
     {
       "url": "/js/twin-app.js",
       "sha256": "27d83bd57d7557cca07ebafcb94507348e9d367d34157e570dada1f8c7ee5a19",
+      "contentTypes": [
+        "text/javascript",
+        "application/javascript"
+      ]
+    },
+    {
+      "url": "/js/frame-06-evidence-tribunal.js",
+      "sha256": "216b2c854306d77f0378b31e7a6606c974a292f504b7093da96786667363b6b5",
+      "contentTypes": [
+        "text/javascript",
+        "application/javascript"
+      ]
+    },
+    {
+      "url": "/js/frame-06-evidence-tribunal-app.js",
+      "sha256": "970febaed9f275b06e7b64503d9282db5589c2f34408e5a7204a64a1b3ef5aa2",
       "contentTypes": [
         "text/javascript",
         "application/javascript"

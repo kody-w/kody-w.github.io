@@ -175,6 +175,13 @@
   line-height: 1.55;
 }
 
+.tribunal-result-status {
+  min-height: 1.5em;
+  margin: 0 0 16px;
+  color: var(--tribunal-muted);
+  font-size: 13px;
+}
+
 .tribunal-chambers {
   display: grid;
   gap: 16px;

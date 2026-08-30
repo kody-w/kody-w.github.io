@@ -3,6 +3,8 @@
 
   const CORPUS_URL = '/api/twin-corpus.json';
   const RECEIPT_URL = '/api/frame-06-evidence-tribunal.json';
+  const SHELL_MANIFEST_URL = '/public-twin/shell-manifest.json';
+  const SHA256 = /^[0-9a-f]{64}$/;
   const elements = {
     form: document.getElementById('tribunal-form'),
     question: document.getElementById('tribunal-question'),
@@ -10,6 +12,7 @@
     status: document.getElementById('tribunal-runtime-status'),
     verdict: document.getElementById('tribunal-verdict-heading'),
     verdictSummary: document.getElementById('tribunal-verdict-summary'),
+    resultStatus: document.getElementById('tribunal-result-status'),
     citationList: document.getElementById('tribunal-citation-list'),
     citationCount: document.getElementById('tribunal-citation-count'),
     chambers: {
@@ -20,6 +23,7 @@
   };
   let tribunal = null;
   let receiptVerified = false;
+  let hearingCount = 0;
 
   function create(tag, className, content) {
     const node = document.createElement(tag);
@@ -34,6 +38,65 @@
 
   function clear(node) {
     node.textContent = '';
+  }
+
+  function responseType(response) {
+    return (response.headers.get('Content-Type') || '')
+      .split(';', 1)[0]
+      .trim()
+      .toLowerCase();
+  }
+
+  function requireJsonResponse(response, label) {
+    if (!response.ok || responseType(response) !== 'application/json') {
+      throw new Error(`${label} did not return validated JSON.`);
+    }
+  }
+
+  async function sha256Bytes(value) {
+    const digest = await crypto.subtle.digest('SHA-256', value);
+    return Array.from(new Uint8Array(digest))
+      .map((byte) => byte.toString(16).padStart(2, '0'))
+      .join('');
+  }
+
+  function sha256Text(value) {
+    return sha256Bytes(new TextEncoder().encode(value));
+  }
+
+  function validShellManifest(manifest) {
+    return manifest &&
+      manifest.schema === 'kodyw-twin-shell/1.0' &&
+      typeof manifest.releaseSha256 === 'string' &&
+      SHA256.test(manifest.releaseSha256) &&
+      typeof manifest.sourceSha256 === 'string' &&
+      SHA256.test(manifest.sourceSha256) &&
+      Array.isArray(manifest.assets);
+  }
+
+  function receiptAsset(manifest) {
+    const matches = manifest.assets.filter((asset) =>
+      asset.url === RECEIPT_URL &&
+      typeof asset.sha256 === 'string' &&
+      SHA256.test(asset.sha256) &&
+      Array.isArray(asset.contentTypes) &&
+      asset.contentTypes.includes('application/json')
+    );
+    return matches.length === 1 ? matches[0] : null;
+  }
+
+  async function registerServiceWorker() {
+    if (!('serviceWorker' in navigator)) {
+      return 'offline shell unavailable';
+    }
+    const registration = await navigator.serviceWorker.register(
+      '/public-twin/sw.js',
+      {
+        scope: '/public-twin/',
+        updateViaCache: 'none'
+      }
+    );
+    return registration.scope ? 'offline shell registered' : 'offline shell pending';
   }
 
   function locatorText(citation) {
@@ -153,7 +216,7 @@
     });
   }
 
-  function render(result) {
+  function render(result, announce) {
     const supported = result.status !== 'abstained';
     elements.verdict.textContent = supported
       ? 'Supported, with boundaries'
@@ -165,6 +228,12 @@
     renderEvolution(result.chambers.evolution);
     renderChallenge(result.chambers.challenge);
     renderCitations(result.citations);
+    if (announce) {
+      hearingCount += 1;
+      elements.resultStatus.textContent = supported
+        ? `Hearing ${hearingCount} complete. ${result.citations.length} validated citations. Answer, Evolution, and Challenge results are ready below.`
+        : `Hearing ${hearingCount} complete. The tribunal abstained because the corpus could not support the answer.`;
+    }
   }
 
   function dispatch(action, input) {
@@ -179,35 +248,58 @@
       ? input.question
       : '';
     const result = tribunal.run(question, { limit: 6 });
-    render(result);
+    render(result, true);
     return Promise.resolve({ ok: true, action, data: result });
   }
 
   async function boot() {
     try {
-      const [corpusResponse, receiptResponse] = await Promise.all([
+      const workerRegistration = registerServiceWorker().catch(() =>
+        'offline shell registration failed'
+      );
+      const [corpusResponse, receiptResponse, manifestResponse] = await Promise.all([
         fetch(CORPUS_URL, { cache: 'no-store', credentials: 'same-origin' }),
-        fetch(RECEIPT_URL, { cache: 'no-store', credentials: 'same-origin' })
+        fetch(RECEIPT_URL, { cache: 'no-store', credentials: 'same-origin' }),
+        fetch(SHELL_MANIFEST_URL, {
+          cache: 'no-store',
+          credentials: 'same-origin'
+        })
       ]);
-      if (!corpusResponse.ok || !receiptResponse.ok) {
-        throw new Error('The corpus or committed receipt could not be loaded.');
-      }
+      requireJsonResponse(corpusResponse, 'The corpus');
+      requireJsonResponse(receiptResponse, 'The committed receipt');
+      requireJsonResponse(manifestResponse, 'The Twin shell manifest');
       const corpus = await corpusResponse.json();
-      const receipt = await receiptResponse.json();
+      const receiptBytes = await receiptResponse.arrayBuffer();
+      const receiptText = new TextDecoder().decode(receiptBytes);
+      const receipt = JSON.parse(receiptText);
+      const shellManifest = await manifestResponse.json();
       const validation = window.KodyTwinEngine.validateCorpus(corpus);
-      if (!validation.ok || receipt.corpusSha256 !== corpus.corpusSha256) {
-        throw new Error('The receipt does not match the validated corpus.');
+      const declaredReceipt = validShellManifest(shellManifest)
+        ? receiptAsset(shellManifest)
+        : null;
+      if (!validation.ok || !declaredReceipt ||
+          await sha256Bytes(receiptBytes) !== declaredReceipt.sha256) {
+        throw new Error('The receipt is not part of the validated Twin release.');
       }
       const engine = window.KodyTwinEngine.createEngine(corpus);
       tribunal = window.KodyEvidenceTribunalCore.createTribunal(engine);
-      const replay = tribunal.run(receipt.question, { limit: 6 });
-      if (JSON.stringify(replay) !== JSON.stringify(receipt.result)) {
-        throw new Error('The committed hearing did not replay byte-for-byte.');
+      const receiptValidation = await tribunal.verifyReceipt(
+        receipt,
+        {
+          releaseSha256: shellManifest.releaseSha256,
+          sourceManifestSha256: corpus.sourceManifestSha256,
+          corpusSha256: corpus.corpusSha256
+        },
+        sha256Text
+      );
+      if (!receiptValidation.ok) {
+        throw new Error(`Receipt verification failed: ${receiptValidation.code}.`);
       }
       receiptVerified = true;
-      render(replay);
+      render(receipt.result, false);
+      const workerState = await workerRegistration;
       elements.status.textContent =
-        `Receipt verified · ${corpus.stats.total.toLocaleString()} public records · ${receipt.receiptSha256.slice(0, 12)}…`;
+        `Receipt verified · ${corpus.stats.total.toLocaleString()} public records · ${workerState} · ${receipt.receiptSha256.slice(0, 12)}…`;
       elements.submit.disabled = false;
       window.KodyEvidenceTribunal = Object.freeze({
         capabilities: Object.freeze({

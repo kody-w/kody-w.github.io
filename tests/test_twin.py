@@ -17,6 +17,11 @@ BUILDER = ROOT / "scripts" / "build_twin.py"
 RELEASE_BUILDER = ROOT / "scripts" / "build_twin_release.py"
 CORPUS = ROOT / "api" / "twin-corpus.json"
 PAGE = ROOT / "public-twin" / "index.html"
+TRIBUNAL_PAGE = ROOT / "public-twin" / "tribunal" / "index.html"
+TRIBUNAL_RECEIPT = ROOT / "api" / "frame-06-evidence-tribunal.json"
+TRIBUNAL_STYLE = ROOT / "css" / "frame-06-evidence-tribunal.css"
+TRIBUNAL_CORE = ROOT / "js" / "frame-06-evidence-tribunal.js"
+TRIBUNAL_APP = ROOT / "js" / "frame-06-evidence-tribunal-app.js"
 WORKER = ROOT / "public-twin" / "sw.js"
 MANIFEST = ROOT / "public-twin" / "manifest.webmanifest"
 SHELL_MANIFEST = ROOT / "public-twin" / "shell-manifest.json"
@@ -41,16 +46,21 @@ TWIN_SHELL_SOURCES = (
     "_data/design_constitution.yml",
     "_layouts/default.html",
     "public-twin/index.html",
+    "public-twin/tribunal/index.html",
     "public-twin/manifest.webmanifest",
     "public-twin/icon-192.png",
     "public-twin/icon-512.png",
     "public-twin/one-sentence-prompt.txt",
     "css/main.css",
+    "css/frame-06-evidence-tribunal.css",
     "js/theme.js",
     "js/twin-state.js",
     "js/twin-engine.js",
     "js/twin-controller.js",
     "js/twin-app.js",
+    "js/frame-06-evidence-tribunal.js",
+    "js/frame-06-evidence-tribunal-app.js",
+    "api/frame-06-evidence-tribunal.json",
     "favicon.ico",
     "apple-touch-icon.png",
 )
@@ -146,6 +156,11 @@ class TwinAcceptanceTest(unittest.TestCase):
             RELEASE_BUILDER,
             CORPUS,
             PAGE,
+            TRIBUNAL_PAGE,
+            TRIBUNAL_RECEIPT,
+            TRIBUNAL_STYLE,
+            TRIBUNAL_CORE,
+            TRIBUNAL_APP,
             WORKER,
             MANIFEST,
             SHELL_MANIFEST,
@@ -232,7 +247,26 @@ class TwinAcceptanceTest(unittest.TestCase):
 
         module = load_release_builder()
         manifest = json.loads(SHELL_MANIFEST.read_text())
+        receipt = json.loads(TRIBUNAL_RECEIPT.read_text())
+        corpus = json.loads(CORPUS.read_text())
+        self.assertEqual(
+            manifest["releaseSha256"],
+            module.release_binding_sha256({}, corpus),
+        )
+        self.assertEqual(
+            receipt["twinRelease"]["releaseSha256"],
+            manifest["releaseSha256"],
+        )
+        self.assertEqual(
+            receipt["twinRelease"]["sourceManifestSha256"],
+            corpus["sourceManifestSha256"],
+        )
+        self.assertEqual(
+            receipt["twinRelease"]["corpusSha256"],
+            corpus["corpusSha256"],
+        )
         entries = {asset["url"]: asset for asset in manifest["assets"]}
+        self.assertRegex(manifest["releaseSha256"], r"^[0-9a-f]{64}$")
         for url, relative, content_types in module.STATIC_ASSETS:
             self.assertIn(url, entries)
             self.assertEqual(
@@ -321,6 +355,35 @@ class TwinAcceptanceTest(unittest.TestCase):
             "/js/twin-app.js",
         ):
             self.assertIn(marker, required_document_text)
+        tribunal_document_release = re.search(
+            r'data-twin-document-sha256="([0-9a-f]{64})"',
+            TRIBUNAL_PAGE.read_text(),
+        )
+        self.assertIsNotNone(tribunal_document_release)
+        tribunal_document = next(
+            document
+            for document in shell_manifest["documents"]
+            if document["url"] == "/public-twin/tribunal/"
+        )
+        tribunal_required = set(tribunal_document["requiredText"])
+        for marker in (
+            f'data-twin-document-sha256="{tribunal_document_release.group(1)}"',
+            'id="evidence-tribunal"',
+            'id="tribunal-form"',
+            'id="tribunal-result-status"',
+            "/js/frame-06-evidence-tribunal.js",
+            "/js/frame-06-evidence-tribunal-app.js",
+        ):
+            self.assertIn(marker, tribunal_required)
+        assets = {asset["url"]: asset for asset in shell_manifest["assets"]}
+        for url, content_type in (
+            ("/api/frame-06-evidence-tribunal.json", "application/json"),
+            ("/css/frame-06-evidence-tribunal.css", "text/css"),
+            ("/js/frame-06-evidence-tribunal.js", "text/javascript"),
+            ("/js/frame-06-evidence-tribunal-app.js", "text/javascript"),
+        ):
+            self.assertIn(url, assets)
+            self.assertIn(content_type, assets[url]["contentTypes"])
         self.assertIn(hashlib.sha256(shell_manifest_bytes).hexdigest(), worker)
         self.assertIn("/public-twin/shell-manifest.json", worker)
         self.assertIn(

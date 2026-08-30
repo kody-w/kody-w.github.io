@@ -38,6 +38,14 @@ class Frame06EvidenceTribunalTest(unittest.TestCase):
             "What is the source of truth?",
         )
         self.assertEqual(
+            receipt["twinRelease"]["schema"],
+            "kodyw-twin-release-binding/1.0",
+        )
+        self.assertRegex(
+            receipt["twinRelease"]["releaseSha256"],
+            r"^[0-9a-f]{64}$",
+        )
+        self.assertEqual(
             receipt["result"]["status"],
             "supported-with-challenge",
         )

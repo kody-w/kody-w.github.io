@@ -13,6 +13,30 @@ const corpus = JSON.parse(
 const engine = Engine.createEngine(corpus);
 const tribunal = Tribunal.createTribunal(engine);
 
+function sha256(value) {
+  return Promise.resolve(
+    crypto.createHash('sha256').update(value).digest('hex')
+  );
+}
+
+function bindingFor(receipt) {
+  return {
+    releaseSha256: receipt.twinRelease.releaseSha256,
+    sourceManifestSha256: corpus.sourceManifestSha256,
+    corpusSha256: corpus.corpusSha256
+  };
+}
+
+function receiptWithFreshDigest(receipt) {
+  const updated = structuredClone(receipt);
+  delete updated.receiptSha256;
+  updated.receiptSha256 = crypto
+    .createHash('sha256')
+    .update(Tribunal.canonicalStringify(updated))
+    .digest('hex');
+  return updated;
+}
+
 function everyFact(result) {
   return result.chambers.answer.facts
     .concat(result.chambers.evolution.facts)
@@ -66,7 +90,7 @@ test('abstains without publishing claims when evidence is insufficient', () => {
   assert.ok(result.abstentions.length > 0);
 });
 
-test('committed receipt replays exactly and carries a valid digest', () => {
+test('committed receipt replays exactly and carries a canonical digest', async () => {
   const receipt = JSON.parse(
     fs.readFileSync(
       path.join(root, 'api', 'frame-06-evidence-tribunal.json'),
@@ -75,7 +99,11 @@ test('committed receipt replays exactly and carries a valid digest', () => {
   );
   assert.equal(receipt.topic, "Kody's local-first product philosophy");
   assert.equal(receipt.question, 'What is the source of truth?');
-  assert.equal(receipt.corpusSha256, corpus.corpusSha256);
+  assert.equal(receipt.twinRelease.corpusSha256, corpus.corpusSha256);
+  assert.equal(
+    receipt.twinRelease.sourceManifestSha256,
+    corpus.sourceManifestSha256
+  );
   assert.deepEqual(
     receipt.result,
     tribunal.run(receipt.question, { limit: 6 })
@@ -84,9 +112,55 @@ test('committed receipt replays exactly and carries a valid digest', () => {
   delete digestPayload.receiptSha256;
   const expected = crypto
     .createHash('sha256')
-    .update(`${JSON.stringify(digestPayload, null, 2)}\n`)
+    .update(Tribunal.canonicalStringify(digestPayload))
     .digest('hex');
   assert.equal(receipt.receiptSha256, expected);
+  assert.deepEqual(
+    await tribunal.verifyReceipt(receipt, bindingFor(receipt), sha256),
+    {
+      ok: true,
+      code: 'VERIFIED',
+      receiptSha256: receipt.receiptSha256,
+      releaseSha256: receipt.twinRelease.releaseSha256,
+      corpusSha256: corpus.corpusSha256
+    }
+  );
+});
+
+test('receipt verification rejects schema, identity, release, corpus, digest, and replay mutations', async () => {
+  const receipt = JSON.parse(
+    fs.readFileSync(
+      path.join(root, 'api', 'frame-06-evidence-tribunal.json'),
+      'utf8'
+    )
+  );
+  const binding = bindingFor(receipt);
+  const mutations = [
+    ['schema', (value) => { value.schema = 'forged/1'; }],
+    ['identity', (value) => { value.surface = '/public-twin/forged/'; }],
+    ['release', (value) => { value.twinRelease.releaseSha256 = '0'.repeat(64); }],
+    ['corpus', (value) => { value.twinRelease.corpusSha256 = '0'.repeat(64); }],
+    ['digest', (value) => { value.receiptSha256 = '0'.repeat(64); }]
+  ];
+  for (const [name, mutate] of mutations) {
+    const forged = structuredClone(receipt);
+    mutate(forged);
+    const verification = await tribunal.verifyReceipt(forged, binding, sha256);
+    assert.equal(verification.ok, false, name);
+  }
+
+  const forgedReplay = structuredClone(receipt);
+  forgedReplay.result.status = 'supported';
+  const resignedReplay = receiptWithFreshDigest(forgedReplay);
+  const replayVerification = await tribunal.verifyReceipt(
+    resignedReplay,
+    binding,
+    sha256
+  );
+  assert.deepEqual(replayVerification, {
+    ok: false,
+    code: 'REPLAY_MISMATCH'
+  });
 });
 
 test('page and browser API use the shared corpus and engine', () => {
@@ -107,5 +181,12 @@ test('page and browser API use the shared corpus and engine', () => {
   assert.match(app, /\/api\/twin-corpus\.json/);
   assert.match(app, /KodyTwinEngine\.createEngine/);
   assert.match(app, /KodyEvidenceTribunalCore\.createTribunal/);
+  assert.match(app, /serviceWorker\.register/);
+  assert.match(app, /updateViaCache: 'none'/);
+  assert.match(app, /verifyReceipt/);
+  assert.match(page, /id="tribunal-result-status"[^>]*aria-live="polite"/);
+  assert.match(page, /id="tribunal-result-status"[^>]*><\/p>/);
+  assert.match(app, /render\(receipt\.result, false\)/);
+  assert.match(app, /render\(result, true\)/);
   assert.doesNotMatch(page + app, /\.innerHTML\s*=/);
 });

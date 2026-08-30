@@ -8,6 +8,7 @@ import hashlib
 import importlib.util
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -18,6 +19,9 @@ ROOT = Path(__file__).resolve().parents[1]
 CORPUS_PATH = ROOT / "api" / "twin-corpus.json"
 APP_PATH = ROOT / "js" / "twin-app.js"
 PAGE_PATH = ROOT / "public-twin" / "index.html"
+TRIBUNAL_PAGE_PATH = ROOT / "public-twin" / "tribunal" / "index.html"
+TRIBUNAL_RECEIPT_PATH = ROOT / "api" / "frame-06-evidence-tribunal.json"
+TRIBUNAL_BUILDER_PATH = ROOT / "scripts" / "build_frame_06_evidence_tribunal.js"
 WORKER_PATH = ROOT / "public-twin" / "sw.js"
 SHELL_MANIFEST_PATH = ROOT / "public-twin" / "shell-manifest.json"
 DOCUMENT_MARKER = re.compile(
@@ -29,16 +33,21 @@ SHELL_SOURCES = (
     "_data/design_constitution.yml",
     "_layouts/default.html",
     "public-twin/index.html",
+    "public-twin/tribunal/index.html",
     "public-twin/manifest.webmanifest",
     "public-twin/icon-192.png",
     "public-twin/icon-512.png",
     "public-twin/one-sentence-prompt.txt",
     "css/main.css",
+    "css/frame-06-evidence-tribunal.css",
     "js/theme.js",
     "js/twin-state.js",
     "js/twin-engine.js",
     "js/twin-controller.js",
     "js/twin-app.js",
+    "js/frame-06-evidence-tribunal.js",
+    "js/frame-06-evidence-tribunal-app.js",
+    "api/frame-06-evidence-tribunal.json",
     "favicon.ico",
     "apple-touch-icon.png",
 )
@@ -64,7 +73,17 @@ STATIC_ASSETS = (
         "public-twin/one-sentence-prompt.txt",
         ("text/plain",),
     ),
+    (
+        "/api/frame-06-evidence-tribunal.json",
+        "api/frame-06-evidence-tribunal.json",
+        ("application/json",),
+    ),
     ("/css/main.css", "css/main.css", ("text/css",)),
+    (
+        "/css/frame-06-evidence-tribunal.css",
+        "css/frame-06-evidence-tribunal.css",
+        ("text/css",),
+    ),
     (
         "/js/theme.js",
         "js/theme.js",
@@ -88,6 +107,16 @@ STATIC_ASSETS = (
     (
         "/js/twin-app.js",
         "js/twin-app.js",
+        ("text/javascript", "application/javascript"),
+    ),
+    (
+        "/js/frame-06-evidence-tribunal.js",
+        "js/frame-06-evidence-tribunal.js",
+        ("text/javascript", "application/javascript"),
+    ),
+    (
+        "/js/frame-06-evidence-tribunal-app.js",
+        "js/frame-06-evidence-tribunal-app.js",
         ("text/javascript", "application/javascript"),
     ),
     (
@@ -139,7 +168,7 @@ def shell_source_hash(overrides: dict[str, bytes]) -> str:
     return digest.hexdigest()
 
 
-def document_contract(page_source: str) -> tuple[str, bytes]:
+def document_contract(relative: str, page_source: str) -> tuple[str, bytes]:
     normalized, count = DOCUMENT_MARKER.subn(
         r"\g<1>" + ("0" * 64) + r"\g<2>",
         page_source,
@@ -147,16 +176,16 @@ def document_contract(page_source: str) -> tuple[str, bytes]:
     if count != 1:
         raise RuntimeError(f"expected one document release marker, found {count}")
     digest = hashlib.sha256()
-    for relative, data in (
+    for source_relative, data in (
         ("_config.yml", (ROOT / "_config.yml").read_bytes()),
         (
             "_data/design_constitution.yml",
             (ROOT / "_data" / "design_constitution.yml").read_bytes(),
         ),
         ("_layouts/default.html", (ROOT / "_layouts/default.html").read_bytes()),
-        ("public-twin/index.html", normalized.encode("utf-8")),
+        (relative, normalized.encode("utf-8")),
     ):
-        digest.update(relative.encode("utf-8"))
+        digest.update(source_relative.encode("utf-8"))
         digest.update(b"\0")
         digest.update(data)
         digest.update(b"\0")
@@ -168,8 +197,11 @@ def document_contract(page_source: str) -> tuple[str, bytes]:
     return value, updated
 
 
-def document_specs(document_sha256: str) -> list[dict]:
-    required = [
+def document_specs(
+    document_sha256: str,
+    tribunal_document_sha256: str,
+) -> list[dict]:
+    public_twin_required = [
         f'data-twin-document-sha256="{document_sha256}"',
         'id="public-twin"',
         'id="twin-question-form"',
@@ -178,19 +210,96 @@ def document_specs(document_sha256: str) -> list[dict]:
         'http-equiv="Content-Security-Policy"',
         "/js/twin-app.js",
     ]
-    return [
+    tribunal_required = [
+        f'data-twin-document-sha256="{tribunal_document_sha256}"',
+        'id="evidence-tribunal"',
+        'id="tribunal-form"',
+        'id="tribunal-result-status"',
+        'http-equiv="Content-Security-Policy"',
+        "/js/frame-06-evidence-tribunal.js",
+        "/js/frame-06-evidence-tribunal-app.js",
+    ]
+    documents = [
         {
             "url": url,
             "contentTypes": ["text/html"],
-            "requiredText": required,
+            "requiredText": public_twin_required,
         }
         for url in ("/public-twin/", "/public-twin/index.html")
     ]
+    documents.extend(
+        {
+            "url": url,
+            "contentTypes": ["text/html"],
+            "requiredText": tribunal_required,
+        }
+        for url in (
+            "/public-twin/tribunal/",
+            "/public-twin/tribunal/index.html",
+        )
+    )
+    return documents
+
+
+def release_binding_sha256(
+    overrides: dict[str, bytes],
+    corpus: dict,
+) -> str:
+    sources = []
+    for relative in sorted(SHELL_SOURCES):
+        if relative == "api/frame-06-evidence-tribunal.json":
+            continue
+        data = overrides.get(relative, (ROOT / relative).read_bytes())
+        sources.append({"path": relative, "sha256": sha256(data)})
+    payload = {
+        "schema": "kodyw-twin-release-binding/1.0",
+        "sourceManifestSha256": corpus["sourceManifestSha256"],
+        "corpusSha256": corpus["corpusSha256"],
+        "sources": sources,
+    }
+    canonical = json.dumps(
+        payload,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return sha256(canonical)
+
+
+def tribunal_receipt_bytes(corpus: dict, release_sha256: str) -> bytes:
+    envelope = json.dumps(
+        {
+            "corpus": corpus,
+            "releaseSha256": release_sha256,
+        },
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
+    result = subprocess.run(
+        [
+            "node",
+            str(TRIBUNAL_BUILDER_PATH),
+            "--stdin",
+            "--stdout",
+        ],
+        cwd=ROOT,
+        input=envelope,
+        text=True,
+        capture_output=True,
+    )
+    if result.returncode:
+        raise RuntimeError(
+            "failed to build Frame 06 receipt: "
+            + (result.stderr or result.stdout)
+        )
+    return result.stdout.encode("utf-8")
 
 
 def shell_manifest_bytes(
     overrides: dict[str, bytes],
     document_sha256: str,
+    tribunal_document_sha256: str,
+    release_sha256: str,
 ) -> bytes:
     assets = []
     for url, relative, content_types in STATIC_ASSETS:
@@ -204,8 +313,12 @@ def shell_manifest_bytes(
         )
     payload = {
         "schema": "kodyw-twin-shell/1.0",
+        "releaseSha256": release_sha256,
         "sourceSha256": shell_source_hash(overrides),
-        "documents": document_specs(document_sha256),
+        "documents": document_specs(
+            document_sha256,
+            tribunal_document_sha256,
+        ),
         "assets": assets,
     }
     return (
@@ -233,13 +346,27 @@ def build_outputs() -> tuple[dict[Path, bytes], dict[str, str]]:
     expected_app = app.encode("utf-8")
 
     document_sha256, expected_page = document_contract(
+        "public-twin/index.html",
         PAGE_PATH.read_text(encoding="utf-8")
+    )
+    tribunal_document_sha256, expected_tribunal_page = document_contract(
+        "public-twin/tribunal/index.html",
+        TRIBUNAL_PAGE_PATH.read_text(encoding="utf-8"),
     )
     overrides = {
         "js/twin-app.js": expected_app,
         "public-twin/index.html": expected_page,
+        "public-twin/tribunal/index.html": expected_tribunal_page,
     }
-    expected_manifest = shell_manifest_bytes(overrides, document_sha256)
+    release_sha256 = release_binding_sha256(overrides, corpus)
+    expected_receipt = tribunal_receipt_bytes(corpus, release_sha256)
+    overrides["api/frame-06-evidence-tribunal.json"] = expected_receipt
+    expected_manifest = shell_manifest_bytes(
+        overrides,
+        document_sha256,
+        tribunal_document_sha256,
+        release_sha256,
+    )
     shell_release = sha256(expected_manifest)
 
     worker = WORKER_PATH.read_text(encoding="utf-8")
@@ -265,6 +392,8 @@ def build_outputs() -> tuple[dict[Path, bytes], dict[str, str]]:
             CORPUS_PATH: expected_corpus,
             APP_PATH: expected_app,
             PAGE_PATH: expected_page,
+            TRIBUNAL_PAGE_PATH: expected_tribunal_page,
+            TRIBUNAL_RECEIPT_PATH: expected_receipt,
             SHELL_MANIFEST_PATH: expected_manifest,
             WORKER_PATH: expected_worker,
         },
@@ -273,7 +402,9 @@ def build_outputs() -> tuple[dict[Path, bytes], dict[str, str]]:
             "corpusSha256": corpus["corpusSha256"],
             "shellSourceSha256": shell_source_hash(overrides),
             "shellReleaseSha256": shell_release,
+            "releaseSha256": release_sha256,
             "documentSha256": document_sha256,
+            "tribunalDocumentSha256": tribunal_document_sha256,
         },
     )
 

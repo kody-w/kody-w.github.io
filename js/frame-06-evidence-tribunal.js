@@ -13,10 +13,54 @@
 
   var VERSION = '1.0.0';
   var SCHEMA = 'kodyw-public-evidence-tribunal/1.0';
+  var RECEIPT_SCHEMA = 'kodyw-frame-06-receipt/1.0';
+  var RELEASE_SCHEMA = 'kodyw-twin-release-binding/1.0';
   var MAX_QUESTION_LENGTH = 500;
+  var SHA256 = /^[0-9a-f]{64}$/;
+  var RECEIPT_IDENTITY = Object.freeze({
+    frame: '06',
+    surface: '/public-twin/tribunal/',
+    topic: "Kody's local-first product philosophy",
+    question: 'What is the source of truth?',
+    generator: 'scripts/build_frame_06_evidence_tribunal.js'
+  });
 
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
+  }
+
+  function canonicalStringify(value) {
+    if (value === null || typeof value === 'string' ||
+        typeof value === 'boolean') {
+      return JSON.stringify(value);
+    }
+    if (typeof value === 'number') {
+      if (!Number.isFinite(value)) {
+        throw new TypeError('Canonical JSON requires finite numbers.');
+      }
+      return JSON.stringify(value);
+    }
+    if (Array.isArray(value)) {
+      return '[' + value.map(canonicalStringify).join(',') + ']';
+    }
+    if (!value || Object.prototype.toString.call(value) !== '[object Object]') {
+      throw new TypeError('Canonical JSON accepts JSON values only.');
+    }
+    return '{' + Object.keys(value).sort().map(function (key) {
+      return JSON.stringify(key) + ':' + canonicalStringify(value[key]);
+    }).join(',') + '}';
+  }
+
+  function hasExactKeys(value, expected) {
+    if (!value || Object.prototype.toString.call(value) !== '[object Object]') {
+      return false;
+    }
+    var actual = Object.keys(value).sort();
+    var sortedExpected = expected.slice().sort();
+    return actual.length === sortedExpected.length &&
+      actual.every(function (key, index) {
+        return key === sortedExpected[index];
+      });
   }
 
   function requireMethod(target, name) {
@@ -65,6 +109,94 @@
         supportedBy: facts.map(function (fact) {
           return citationKey(fact.citation);
         })
+      };
+    }
+
+    async function verifyReceipt(receipt, binding, sha256) {
+      var topLevelKeys = [
+        'schema',
+        'frame',
+        'surface',
+        'topic',
+        'question',
+        'generator',
+        'twinRelease',
+        'result',
+        'receiptSha256'
+      ];
+      if (!hasExactKeys(receipt, topLevelKeys) ||
+          receipt.schema !== RECEIPT_SCHEMA) {
+        return { ok: false, code: 'INVALID_RECEIPT_SCHEMA' };
+      }
+      var identityKeys = Object.keys(RECEIPT_IDENTITY);
+      for (var identityIndex = 0;
+           identityIndex < identityKeys.length;
+           identityIndex += 1) {
+        var identityKey = identityKeys[identityIndex];
+        if (receipt[identityKey] !== RECEIPT_IDENTITY[identityKey]) {
+          return { ok: false, code: 'INVALID_RECEIPT_IDENTITY' };
+        }
+      }
+      var bindingKeys = [
+        'releaseSha256',
+        'sourceManifestSha256',
+        'corpusSha256'
+      ];
+      if (!binding || !hasExactKeys(binding, bindingKeys)) {
+        return { ok: false, code: 'INVALID_RELEASE_BINDING' };
+      }
+      for (var bindingIndex = 0;
+           bindingIndex < bindingKeys.length;
+           bindingIndex += 1) {
+        if (typeof binding[bindingKeys[bindingIndex]] !== 'string' ||
+            !SHA256.test(binding[bindingKeys[bindingIndex]])) {
+          return { ok: false, code: 'INVALID_RELEASE_BINDING' };
+        }
+      }
+      if (!hasExactKeys(receipt.twinRelease, [
+        'schema',
+        'releaseSha256',
+        'sourceManifestSha256',
+        'corpusSha256'
+      ]) || receipt.twinRelease.schema !== RELEASE_SCHEMA ||
+          receipt.twinRelease.releaseSha256 !== binding.releaseSha256 ||
+          receipt.twinRelease.sourceManifestSha256 !==
+            binding.sourceManifestSha256 ||
+          receipt.twinRelease.corpusSha256 !== binding.corpusSha256) {
+        return { ok: false, code: 'RELEASE_BINDING_MISMATCH' };
+      }
+      if (!receipt.result || receipt.result.schema !== SCHEMA ||
+          receipt.result.question !== RECEIPT_IDENTITY.question ||
+          !receipt.result.corpus ||
+          receipt.result.corpus.corpusSha256 !== binding.corpusSha256) {
+        return { ok: false, code: 'RESULT_IDENTITY_MISMATCH' };
+      }
+      var replay = run(RECEIPT_IDENTITY.question, { limit: 6 });
+      if (canonicalStringify(replay) !== canonicalStringify(receipt.result)) {
+        return { ok: false, code: 'REPLAY_MISMATCH' };
+      }
+      if (typeof receipt.receiptSha256 !== 'string' ||
+          !SHA256.test(receipt.receiptSha256) ||
+          typeof sha256 !== 'function') {
+        return { ok: false, code: 'INVALID_RECEIPT_DIGEST' };
+      }
+      var digestPayload = clone(receipt);
+      delete digestPayload.receiptSha256;
+      var computed;
+      try {
+        computed = await sha256(canonicalStringify(digestPayload));
+      } catch (_error) {
+        return { ok: false, code: 'RECEIPT_DIGEST_FAILED' };
+      }
+      if (computed !== receipt.receiptSha256) {
+        return { ok: false, code: 'RECEIPT_DIGEST_MISMATCH' };
+      }
+      return {
+        ok: true,
+        code: 'VERIFIED',
+        receiptSha256: receipt.receiptSha256,
+        releaseSha256: binding.releaseSha256,
+        corpusSha256: binding.corpusSha256
       };
     }
 
@@ -214,6 +346,7 @@
 
     return Object.freeze({
       run: run,
+      verifyReceipt: verifyReceipt,
       inspect: function () {
         return {
           schema: SCHEMA,
@@ -228,6 +361,10 @@
   return Object.freeze({
     version: VERSION,
     schema: SCHEMA,
+    receiptSchema: RECEIPT_SCHEMA,
+    releaseSchema: RELEASE_SCHEMA,
+    receiptIdentity: RECEIPT_IDENTITY,
+    canonicalStringify: canonicalStringify,
     createTribunal: createTribunal
   });
 }));

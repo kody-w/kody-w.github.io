@@ -1,5 +1,5 @@
 const assert = require('node:assert/strict');
-const { webcrypto } = require('node:crypto');
+const { createHash, webcrypto } = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const test = require('node:test');
@@ -27,20 +27,47 @@ const assetFiles = {
   '/public-twin/icon-512.png': 'public-twin/icon-512.png',
   '/public-twin/one-sentence-prompt.txt':
     'public-twin/one-sentence-prompt.txt',
+  '/api/frame-06-evidence-tribunal.json':
+    'api/frame-06-evidence-tribunal.json',
   '/css/main.css': 'css/main.css',
+  '/css/frame-06-evidence-tribunal.css':
+    'css/frame-06-evidence-tribunal.css',
   '/js/theme.js': 'js/theme.js',
   '/js/twin-state.js': 'js/twin-state.js',
   '/js/twin-engine.js': 'js/twin-engine.js',
   '/js/twin-controller.js': 'js/twin-controller.js',
   '/js/twin-app.js': 'js/twin-app.js',
+  '/js/frame-06-evidence-tribunal.js':
+    'js/frame-06-evidence-tribunal.js',
+  '/js/frame-06-evidence-tribunal-app.js':
+    'js/frame-06-evidence-tribunal-app.js',
   '/favicon.ico': 'favicon.ico',
   '/apple-touch-icon.png': 'apple-touch-icon.png'
 };
 
-function validDocumentResponse(content = '') {
-  const marker = shellManifest.documents[0].requiredText.find((value) =>
+function validDocumentResponse(url = '/public-twin/', content = '') {
+  const specification = shellManifest.documents.find((item) => item.url === url);
+  assert.ok(specification, url);
+  const marker = specification.requiredText.find((value) =>
     value.startsWith('data-twin-document-sha256=')
   );
+  if (url.startsWith('/public-twin/tribunal')) {
+    return new Response(
+      '<!doctype html>' +
+        '<meta http-equiv="Content-Security-Policy">' +
+        `<main id="evidence-tribunal" ${marker}>` +
+        '<form id="tribunal-form"></form>' +
+        '<p id="tribunal-result-status"></p>' +
+        content +
+        '</main>' +
+        '<script src="/js/frame-06-evidence-tribunal.js"></script>' +
+        '<script src="/js/frame-06-evidence-tribunal-app.js"></script>',
+      {
+        status: 200,
+        headers: { 'Content-Type': 'text/html' }
+      }
+    );
+  }
   return new Response(
     '<!doctype html>' +
       '<meta http-equiv="Content-Security-Policy">' +
@@ -73,7 +100,11 @@ function defaultShellResponse(pathname) {
   }
   if (pathname === '/public-twin/' ||
       pathname === '/public-twin/index.html') {
-    return validDocumentResponse();
+    return validDocumentResponse(pathname);
+  }
+  if (pathname === '/public-twin/tribunal/' ||
+      pathname === '/public-twin/tribunal/index.html') {
+    return validDocumentResponse(pathname);
   }
   const relative = assetFiles[pathname];
   if (!relative) {
@@ -265,6 +296,29 @@ test('cache names are content-addressed release identifiers', () => {
   assert.notEqual(runtime.corpusCache, 'kody-twin-corpus-v1');
 });
 
+test('tribunal assets are declared with exact hashes and MIME types', () => {
+  const required = {
+    '/api/frame-06-evidence-tribunal.json': 'application/json',
+    '/css/frame-06-evidence-tribunal.css': 'text/css',
+    '/js/frame-06-evidence-tribunal.js': 'text/javascript',
+    '/js/frame-06-evidence-tribunal-app.js': 'text/javascript'
+  };
+  for (const [url, mime] of Object.entries(required)) {
+    const specification = shellManifest.assets.find((asset) => asset.url === url);
+    assert.ok(specification, url);
+    assert.ok(specification.contentTypes.includes(mime), url);
+    const digest = createHash('sha256')
+      .update(fs.readFileSync(path.join(__dirname, '..', assetFiles[url])))
+      .digest('hex');
+    assert.equal(specification.sha256, digest, url);
+  }
+  assert.ok(
+    shellManifest.documents.some(
+      (document) => document.url === '/public-twin/tribunal/'
+    )
+  );
+});
+
 test('interrupted upgrade leaves the active shell cache untouched', async () => {
   const runtime = loadWorker(
     new Response(JSON.stringify(corpus), {
@@ -347,6 +401,38 @@ test('HTML fallbacks and tampered bytes cannot install as shell assets', async (
   }
 });
 
+test('wrong MIME or tampered tribunal receipt cannot install', async () => {
+  for (const response of [
+    new Response('{"schema":"forged"}', {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    }),
+    new Response(
+      fs.readFileSync(
+        path.join(__dirname, '..', 'api', 'frame-06-evidence-tribunal.json')
+      ),
+      {
+        status: 200,
+        headers: { 'Content-Type': 'text/html' }
+      }
+    )
+  ]) {
+    const runtime = loadWorker(
+      new Response(JSON.stringify(corpus), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      }),
+      {
+        responses: {
+          '/api/frame-06-evidence-tribunal.json': response
+        }
+      }
+    );
+    await assert.rejects(runInstall(runtime));
+    assert.equal(runtime.state.skipWaiting, 0);
+  }
+});
+
 test('generic HTML without the release document contract cannot install', async () => {
   const generic = new Response(
     '<!doctype html><meta http-equiv="Content-Security-Policy"><main id="public-twin"></main>',
@@ -371,6 +457,27 @@ test('generic HTML without the release document contract cannot install', async 
   assert.equal(runtime.state.skipWaiting, 0);
 });
 
+test('tribunal navigation uses its verified scoped offline document', async () => {
+  const options = {};
+  const runtime = loadWorker(
+    new Response(JSON.stringify(corpus), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    }),
+    options
+  );
+  await runInstall(runtime);
+  options.failPaths = ['/public-twin/tribunal/'];
+  const response = await runFetch(runtime, {
+    method: 'GET',
+    mode: 'navigate',
+    url: `${ORIGIN}/public-twin/tribunal/`
+  });
+  const body = await response.text();
+  assert.match(body, /id="evidence-tribunal"/);
+  assert.match(body, /frame-06-evidence-tribunal-app\.js/);
+});
+
 test('successful root navigation cannot mutate the installed release cache', async () => {
   const runtime = loadWorker(
     new Response(JSON.stringify(corpus), {
@@ -379,7 +486,10 @@ test('successful root navigation cannot mutate the installed release cache', asy
     }),
     {
       responses: {
-        '/public-twin/': validDocumentResponse('new network body')
+        '/public-twin/': validDocumentResponse(
+          '/public-twin/',
+          'new network body'
+        )
       }
     }
   );
