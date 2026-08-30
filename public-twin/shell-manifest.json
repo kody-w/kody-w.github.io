@@ -1,6 +1,6 @@
 {
   "schema": "kodyw-twin-shell/1.0",
-  "sourceSha256": "2f00d9ad13abeeeca9e6172dc366cd3226de0cb9a0145c84780e48da77b7ef79",
+  "sourceSha256": "44107309fb230cc0bb76b4bf88a6fd1261cca596c3426e5a9417c845ac767a3f",
   "documents": [
     {
       "url": "/public-twin/",
@@ -65,7 +65,7 @@
     },
     {
       "url": "/css/main.css",
-      "sha256": "37a2c3768eb9c023b1299e0ecc49c216e6a185083ccb858a8e2bc9f4960cc5ac",
+      "sha256": "182683cc381049a28f9993999c9460aae01d295f22b58b37fb980f12328ad32e",
       "contentTypes": [
         "text/css"
       ]

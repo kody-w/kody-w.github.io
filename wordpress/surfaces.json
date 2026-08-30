@@ -1,0 +1,31 @@
+{
+  "schema": "kodyw-wordpress-surfaces/1.0",
+  "source_base": "https://kody-w.github.io",
+  "pages": [
+    {
+      "slug": "start",
+      "title": "Start Here",
+      "source_path": "/start/",
+      "summary": "Six guided reading paths through the public archive."
+    },
+    {
+      "slug": "work",
+      "title": "Everything I've Built",
+      "source_path": "/work/",
+      "summary": "The searchable public catalog of repositories, apps, writing, agents, and media."
+    },
+    {
+      "slug": "newsletter",
+      "title": "Newsletter",
+      "source_path": "/newsletter/",
+      "summary": "Date-consolidated editions and the KodyW email signup."
+    },
+    {
+      "slug": "weekly-signal",
+      "title": "Weekly Signal",
+      "source_path": "/weekly-signal/",
+      "summary": "A weekly connected signal across writing, active builds, Lost Apps, rebuild lessons, and RAPP Vision."
+    }
+  ],
+  "weekly_manifest": "api/weekly-signal.json"
+}

@@ -1,0 +1,76 @@
+name: Refresh Weekly Signal
+
+on:
+  schedule:
+    - cron: "5 15 * * 1"
+  workflow_dispatch:
+    inputs:
+      as_of:
+        description: Optional issue date (YYYY-MM-DD, latest completed Sunday by default)
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: refresh-weekly-signal
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install existing test dependencies
+        run: python3 -m pip install -r tests/requirements.txt
+
+      - name: Build Weekly Signal
+        env:
+          INPUT_AS_OF: ${{ inputs.as_of }}
+        run: |
+          args=()
+          if [ -n "$INPUT_AS_OF" ]; then
+            args+=(--as-of "$INPUT_AS_OF")
+          fi
+          python3 scripts/build_weekly_signal.py "${args[@]}"
+          python3 -m unittest tests.test_weekly_signal
+
+      - name: Commit changed issue
+        id: commit
+        run: |
+          paths=(
+            _data/weekly_signal.json
+            _data/weekly_signal_archive.json
+            api/weekly-signal.json
+            api/weekly-signal-archive.json
+          )
+          if git diff --quiet -- "${paths[@]}"; then
+            echo "Weekly Signal is unchanged."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "${paths[@]}"
+          git commit \
+            -m "Refresh Weekly Signal" \
+            -m "Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
+          git push
+
+      - name: Request legacy Pages rebuild
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds"

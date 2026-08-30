@@ -17,6 +17,8 @@ on:
       - 'api/twin-corpus.json'
       - 'api/works.json'
       - 'api/design-constitution.json'
+      - 'api/weekly-signal*.json'
+      - 'weekly-signal/**'
       - 'api/lost-apps-lessons.json'
       - 'learnwithkody/**'
       - 'docs/twin-contract.md'
@@ -24,6 +26,11 @@ on:
       - 'scripts/build_twin_release.py'
       - 'scripts/benchmark_twin.js'
       - 'scripts/check_twin.py'
+      - 'scripts/build_weekly_signal.py'
+      - 'scripts/sync_wordpress.py'
+      - '.github/workflows/refresh-weekly-signal.yml'
+      - '.github/workflows/wordpress-draft-sync.yml'
+      - 'wordpress/**'
       - 'tests/**'
       - 'README.md'
       - '_config.yml'
@@ -44,6 +51,8 @@ on:
       - 'api/twin-corpus.json'
       - 'api/works.json'
       - 'api/design-constitution.json'
+      - 'api/weekly-signal*.json'
+      - 'weekly-signal/**'
       - 'api/lost-apps-lessons.json'
       - 'learnwithkody/**'
       - 'docs/twin-contract.md'
@@ -51,6 +60,11 @@ on:
       - 'scripts/build_twin_release.py'
       - 'scripts/benchmark_twin.js'
       - 'scripts/check_twin.py'
+      - 'scripts/build_weekly_signal.py'
+      - 'scripts/sync_wordpress.py'
+      - '.github/workflows/refresh-weekly-signal.yml'
+      - '.github/workflows/wordpress-draft-sync.yml'
+      - 'wordpress/**'
       - 'tests/**'
       - 'README.md'
       - '_config.yml'
@@ -115,6 +129,9 @@ jobs:
         run: |
           python -m pip install -r tests/requirements.txt
           python -m unittest discover -s tests -p 'test_*.py'
+          python3 scripts/build_weekly_signal.py \
+            --as-of "$(python3 -c 'import json; print(json.load(open("api/weekly-signal.json"))["as_of"])')" \
+            --check
           node --test tests/copy_accessibility.test.js
           python3 scripts/check_twin.py
 
