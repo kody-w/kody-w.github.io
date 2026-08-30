@@ -60,6 +60,7 @@ PAPERS_INDEX_PAGE = ROOT / "papers" / "index.html"
 VERIFIED_FRAME_WORLDS_PAPER = ROOT / "verified-frame-worlds" / "paper.html"
 VERIFIED_FRAME_WORLDS_DEMO = ROOT / "verified-frame-worlds" / "demo.html"
 VERIFIED_FRAME_WORLDS_EXERCISE = ROOT / "verified-frame-worlds" / "exercise.html"
+AAA_FPS_PAGE = ROOT / "aaa-fps" / "index.html"
 LOCALFIRSTTOOLS_BASE_URL = "https://kody-w.github.io/localFirstTools"
 LOCALFIRSTTOOLS_REPO_URL = "https://github.com/kody-w/localFirstTools"
 D365_FRAME_MACHINE_URL = f"{LOCALFIRSTTOOLS_BASE_URL}/dynamics365-frame-machine.html"
@@ -2882,6 +2883,16 @@ class SiteContentTests(unittest.TestCase):
             self.assertIn('get("scoutTheme")', artifact)
             self.assertIn("--cp-bg:", artifact)
             self.assertIn('"Segoe UI", Aptos, Calibri', artifact)
+
+    def test_aaa_fps_playable_build_is_published(self):
+        page = AAA_FPS_PAGE.read_text(encoding="utf-8")
+        self.assertIn("<title>NOMAD</title>", page)
+        self.assertIn('src="/aaa-fps/assets/', page)
+        self.assertIn('href="/aaa-fps/assets/', page)
+        assets = re.findall(r'(?:src|href)="(/aaa-fps/assets/[^"]+)"', page)
+        self.assertGreaterEqual(len(assets), 2)
+        for asset in assets:
+            self.assertTrue((ROOT / asset.lstrip("/")).exists(), asset)
 
     def test_full_catalog_is_the_only_examples_loop(self):
         hub = LEARN_HUB_PAGE.read_text(encoding="utf-8")
