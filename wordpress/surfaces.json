@@ -19,6 +19,12 @@
       "title": "Newsletter",
       "source_path": "/newsletter/",
       "summary": "Date-consolidated editions and the KodyW email signup."
+    },
+    {
+      "slug": "weekly-signal",
+      "title": "Weekly Signal",
+      "source_path": "/weekly-signal/",
+      "summary": "A weekly connected signal across writing, active builds, Lost Apps, rebuild lessons, and RAPP Vision."
     }
   ],
   "weekly_manifest": "api/weekly-signal.json"

@@ -40,8 +40,9 @@ Create a protected `wordpress-production` environment restricted to the
 `WP_APP_PASSWORD` there and configure a required reviewer. Run **WordPress
 Draft Sync** manually from `master`.
 
-The workflow also has a Monday schedule for the Weekly Signal only. It remains
-disabled until the protected environment variable
+The workflow also has a Monday 16:00 UTC schedule for the Weekly Signal only,
+after the GitHub Pages issue refresh and canary deployment. It remains disabled
+until the protected environment variable
 `WORDPRESS_WEEKLY_SYNC_ENABLED` is explicitly set to `true`. Scheduled runs
 still enter the protected environment and create or update a draft only; they
 never publish or email subscribers.

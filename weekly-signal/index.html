@@ -1,0 +1,75 @@
+---
+layout: default
+title: Weekly Signal
+permalink: /weekly-signal/
+---
+
+{% assign signal = site.data.weekly_signal %}
+{% assign archive = site.data.weekly_signal_archive %}
+<main class="weekly-signal-page">
+  <header class="weekly-signal-hero">
+    <p class="work-eyebrow">One issue · the strongest connected signal</p>
+    <h1>{{ signal.title }}</h1>
+    <p>{{ signal.excerpt }}</p>
+    <div class="weekly-signal-actions">
+      <a class="btn" href="/newsletter/#newsletter-signup">Subscribe by email</a>
+      <a class="btn btn-secondary" href="/newsletter/">Browse date editions</a>
+    </div>
+  </header>
+
+  <section class="weekly-signal-grid" aria-label="Current Weekly Signal">
+    {% for section in signal.sections %}
+      <article class="weekly-signal-card weekly-signal-{{ section.kind }}">
+        <p class="weekly-signal-kind">{{ section.kind | replace: "-", " " }}</p>
+        <h2>{{ section.title | default: section.hook }}</h2>
+        {% if section.summary %}<p>{{ section.summary }}</p>{% endif %}
+
+        {% if section.items %}
+        <ul>
+          {% for item in section.items %}
+          <li>
+            <a href="{{ item.url }}">{{ item.title | default: item.name }}</a>
+            {% if item.summary %}<span>{{ item.summary }}</span>{% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if section.lesson_url %}
+        <p class="weekly-signal-links">
+          <a href="{{ section.lesson_url }}">Open the rebuild lesson</a>
+          <a href="{{ section.demo_url }}">Run the demo</a>
+          <a href="{{ section.source_url }}">View the historical artifact</a>
+        </p>
+        {% endif %}
+
+        {% if section.episode_16x9 %}
+        <p><strong>Episode:</strong> {{ section.episode_16x9 }}</p>
+        <p><strong>Short:</strong> {{ section.short_9x16 }}</p>
+        {% endif %}
+
+        {% if section.url and section.kind == "rediscovered" %}
+        <p><a href="{{ section.url }}">Read the rediscovered article →</a></p>
+        {% endif %}
+      </article>
+    {% endfor %}
+  </section>
+
+  <section class="weekly-signal-archive" aria-labelledby="weekly-signal-archive-title">
+    <p class="work-eyebrow">Archive</p>
+    <h2 id="weekly-signal-archive-title">Previous signals</h2>
+    {% for issue in archive.issues %}
+      <details {% if forloop.first %}open{% endif %}>
+        <summary>
+          <span>{{ issue.title }}</span>
+          <small>{{ issue.excerpt }}</small>
+        </summary>
+        <ul>
+          {% for section in issue.sections %}
+          <li><strong>{{ section.kind | replace: "-", " " }}</strong> — {{ section.title | default: section.hook }}</li>
+          {% endfor %}
+        </ul>
+      </details>
+    {% endfor %}
+  </section>
+</main>

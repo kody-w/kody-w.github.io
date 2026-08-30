@@ -1,0 +1,90 @@
+{
+  "as_of": "2026-08-29",
+  "content_html": "<h1>Weekly Signal — August 24–29, 2026</h1><p>1 new archive item, 3 active builds, and a clean-room rebuild of Advanced Terminal Log Visualizer.</p><h2>New in the archive</h2><p>The latest publication date gathers 1 article.</p><ul><li><a href=\"https://kody-w.github.io/2026/08/29/the-interface-should-meet-you-halfway/\">The Interface Should Meet You Halfway</a><br><small>A placeholder is a promise that disappears at the first sign of intent.</small></li></ul><h2>Active builds</h2><ul><li><a href=\"https://github.com/kody-w/RAPP\">RAPP</a> — Portable, shareable, vibe swarm building tool. Single-file agents, local-first, GitHub Copilot powered. Live at kody-w.github.io/RAPP/</li><li><a href=\"https://github.com/kody-w/rapp-installer-dev\">rapp-installer-dev</a> — RAPP Brainstem — development repo. PRs and active development land here.</li><li><a href=\"https://github.com/kody-w/dogg\">dogg</a> — Public source repository.</li></ul><h2>Rediscovered</h2><p><a href=\"https://kody-w.github.io/2026/03/07/sovereign-branches/\">Sovereign Branches: When Every Fork Becomes a Nation</a> — We usually talk about branches as technical artifacts.</p><h2>Lost App → clean-room lesson</h2><p><strong>Advanced Terminal Log Visualizer</strong>: A dense terminal-output utility rebuilt to turn pasted logs into safe, searchable incident evidence.</p><p><a href=\"https://kody-w.github.io/learnwithkody/examples/incident-log-observatory/\">Open the rebuild lesson</a> · <a href=\"https://kody-w.github.io/learnwithkody/demos/366-incident-log-observatory.html\">Run the local demo</a></p><h2>RAPP Vision brief</h2><p><strong>Paste a wall of terminal output and this app turns it into a searchable incident timeline.</strong></p><p>Build a log visualizer and learn why syntax highlighting must begin with escaping.</p><p><em>Short:</em> A pasted log line should never become executable HTML.</p><hr><p><a href=\"https://kody-w.github.io/newsletter/#newsletter-signup\">Subscribe to the next Weekly Signal</a></p>",
+  "date": "2026-08-29T00:00:00",
+  "date_gmt": "2026-08-29T00:00:00",
+  "excerpt": "1 new archive item, 3 active builds, and a clean-room rebuild of Advanced Terminal Log Visualizer.",
+  "issue_id": "2026-W35",
+  "issue_number": 35,
+  "schema": "kodyw-weekly-signal/1.0",
+  "sections": [
+    {
+      "items": [
+        {
+          "date": "2026-08-29",
+          "summary": "A placeholder is a promise that disappears at the first sign of intent.",
+          "tags": [
+            "design",
+            "ux",
+            "local-first",
+            "agents"
+          ],
+          "title": "The Interface Should Meet You Halfway",
+          "url": "https://kody-w.github.io/2026/08/29/the-interface-should-meet-you-halfway/"
+        }
+      ],
+      "kind": "date-edition",
+      "summary": "The latest publication date gathers 1 article.",
+      "title": "August 29, 2026",
+      "url": "https://kody-w.github.io/newsletter/#edition-2026-08-29"
+    },
+    {
+      "items": [
+        {
+          "name": "RAPP",
+          "pushed_at": "2026-08-29T17:44:55Z",
+          "summary": "Portable, shareable, vibe swarm building tool. Single-file agents, local-first, GitHub Copilot powered. Live at kody-w.github.io/RAPP/",
+          "url": "https://github.com/kody-w/RAPP"
+        },
+        {
+          "name": "rapp-installer-dev",
+          "pushed_at": "2026-08-29T17:44:37Z",
+          "summary": "RAPP Brainstem — development repo. PRs and active development land here.",
+          "url": "https://github.com/kody-w/rapp-installer-dev"
+        },
+        {
+          "name": "dogg",
+          "pushed_at": "2026-08-29T17:44:25Z",
+          "summary": "Public source repository.",
+          "url": "https://github.com/kody-w/dogg"
+        }
+      ],
+      "kind": "active-work",
+      "summary": "The public repositories moving most recently.",
+      "title": "Active builds",
+      "url": "https://kody-w.github.io/work/"
+    },
+    {
+      "kind": "rediscovered",
+      "published": "2026-03-07",
+      "summary": "We usually talk about branches as technical artifacts.",
+      "title": "Sovereign Branches: When Every Fork Becomes a Nation",
+      "url": "https://kody-w.github.io/2026/03/07/sovereign-branches/"
+    },
+    {
+      "demo_url": "https://kody-w.github.io/learnwithkody/demos/366-incident-log-observatory.html",
+      "historical_title": "Advanced Terminal Log Visualizer",
+      "kind": "lost-app",
+      "lesson_id": "incident-log-observatory",
+      "lesson_url": "https://kody-w.github.io/learnwithkody/examples/incident-log-observatory/",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/terminal-viewer.html",
+      "summary": "A dense terminal-output utility rebuilt to turn pasted logs into safe, searchable incident evidence.",
+      "title": "Incident Log Observatory — Parse Evidence Without Executing It"
+    },
+    {
+      "episode_16x9": "Build a log visualizer and learn why syntax highlighting must begin with escaping.",
+      "hook": "Paste a wall of terminal output and this app turns it into a searchable incident timeline.",
+      "kind": "rapp-vision",
+      "lesson_id": "incident-log-observatory",
+      "short_9x16": "A pasted log line should never become executable HTML."
+    }
+  ],
+  "slug": "weekly-signal-2026-w35",
+  "stats": {
+    "active_builds": 3,
+    "lesson_id": "incident-log-observatory",
+    "new_articles": 1
+  },
+  "title": "Weekly Signal — August 24–29, 2026",
+  "week_start": "2026-08-24"
+}

@@ -77,7 +77,7 @@ class WordPressSyncTests(unittest.TestCase):
         self.assertEqual(payload["source_base"], "https://kody-w.github.io")
         self.assertEqual(
             {page["slug"] for page in payload["pages"]},
-            {"start", "work", "newsletter"},
+            {"start", "work", "newsletter", "weekly-signal"},
         )
 
     def test_plan_needs_no_credentials_and_defaults_to_drafts(self):
@@ -105,7 +105,7 @@ class WordPressSyncTests(unittest.TestCase):
         self.assertIn('args=(--apply --surface "$surface")', workflow)
         self.assertIn("github.ref == 'refs/heads/master'", workflow)
         self.assertNotIn("update_published", workflow)
-        self.assertIn('cron: "20 15 * * 1"', workflow)
+        self.assertIn('cron: "0 16 * * 1"', workflow)
         self.assertIn("WORDPRESS_WEEKLY_SYNC_ENABLED", workflow)
         self.assertIn("'weekly' || inputs.surface", workflow)
 

@@ -1,0 +1,62 @@
+schema: kodyw-lost-apps-lessons/1.0
+lessons:
+  - id: pattern-quota
+    order: 359
+    demo_number: 365
+    title: "Pattern Quota — Rebuild a Mysterious Selection Game"
+    historical_title: "LUMON MDR / Severance Refiner"
+    source_url: "https://kodyw.com/wp-content/uploads/2025/03/severance-refiner.html"
+    lesson_url: "/learnwithkody/examples/pattern-quota/"
+    demo_url: "/learnwithkody/demos/365-pattern-quota.html"
+    museum_blurb: "A mysterious retro-corporate number game rebuilt as an original deterministic state-machine challenge."
+    rapp_vision:
+      hook: "The strangest lost app asks you to identify numbers that simply feel wrong."
+      episode_16x9: "Reverse-engineering a mysterious selection mechanic into a deterministic state-machine game."
+      short_9x16: "Which of these numbers looks wrong?"
+    clean_room_prompt: "Using the public number-refinement game only as a black-box behavioral reference, create an original retro-corporate pattern-selection game with generated number tiles, hidden target flags, selection feedback, accuracy scoring, batch animations, a five-round quota and restart. Invent entirely new branding, language, palette and assets."
+    acceptance_checks:
+      - "Each batch contains a deterministic number of selectable tiles."
+      - "Submit is disabled until at least one tile is selected."
+      - "Accuracy is computed from correct, incorrect and missed targets."
+      - "Successful rounds advance the quota and failed rounds do not."
+      - "Completing five rounds shows a restartable completion state."
+  - id: incident-log-observatory
+    order: 360
+    demo_number: 366
+    title: "Incident Log Observatory — Parse Evidence Without Executing It"
+    historical_title: "Advanced Terminal Log Visualizer"
+    source_url: "https://kodyw.com/wp-content/uploads/2025/03/terminal-viewer.html"
+    lesson_url: "/learnwithkody/examples/incident-log-observatory/"
+    demo_url: "/learnwithkody/demos/366-incident-log-observatory.html"
+    museum_blurb: "A dense terminal-output utility rebuilt to turn pasted logs into safe, searchable incident evidence."
+    rapp_vision:
+      hook: "Paste a wall of terminal output and this app turns it into a searchable incident timeline."
+      episode_16x9: "Build a log visualizer and learn why syntax highlighting must begin with escaping."
+      short_9x16: "A pasted log line should never become executable HTML."
+    clean_room_prompt: "Using the public terminal-log visualizer only as a black-box behavioral reference, build an original offline utility. Parse common timestamp, HTTP, warning, error, success, JSON and service patterns; provide grouped, timeline and raw views, search highlighting, counts, copy, clearing and conservative truncated-line repair. Escape input before adding highlight markup."
+    acceptance_checks:
+      - "A fixed fixture produces predetermined category and service counts."
+      - "Grouped, timeline and raw views contain the same entries."
+      - "Search highlights only matching text."
+      - "Pasted HTML or event-handler strings remain inert."
+      - "Auto-fix marks uncertain repairs rather than silently altering logs."
+  - id: agent-workflow-lab
+    order: 361
+    demo_number: 367
+    title: "Agent Workflow Lab — Compose Plans Without Executing Imported Code"
+    historical_title: "Agent Workflow System"
+    source_url: "https://kodyw.com/wp-content/uploads/2025/03/Agent-Workflow-System.html"
+    lesson_url: "/learnwithkody/examples/agent-workflow-lab/"
+    demo_url: "/learnwithkody/demos/367-agent-workflow-lab.html"
+    museum_blurb: "A browser-based agent workflow workshop rebuilt as a safe local simulator that treats imported code only as data."
+    rapp_vision:
+      hook: "This abandoned browser app could compose an entire agent workflow without running a single real agent."
+      episode_16x9: "How to design a visual agent workflow editor without accidentally building a remote-code execution engine."
+      short_9x16: "Three workflow nodes, zero live agents, one complete local simulation."
+    clean_room_prompt: "Using the public Agent Workflow System only as a black-box behavioral reference, build an original local-first workflow designer with an agent palette, ordered configurable steps, agent and skill selection, prompt and JSON parameter editors, JSON import and export, persistence and deterministic simulated execution. Do not copy source, wording, styling or assets, and do not execute imported Python or JavaScript."
+    acceptance_checks:
+      - "Users can add, reorder, edit, enable, disable and delete at least three steps."
+      - "Invalid JSON parameters produce a validation message without changing saved state."
+      - "Export followed by import reproduces workflow name, order and settings."
+      - "Running displays one deterministic result for each enabled step only."
+      - "No network request occurs during workflow execution."

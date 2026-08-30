@@ -2,7 +2,7 @@ name: WordPress Draft Sync
 
 on:
   schedule:
-    - cron: "20 15 * * 1"
+    - cron: "0 16 * * 1"
   workflow_dispatch:
     inputs:
       surface:
