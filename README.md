@@ -73,7 +73,7 @@ graph TD
 - **`verified-frame-worlds/demo.html`** — Newcomer-first guided evidence path explaining what each demo means, what to do, what to observe, and which claim it tests.
 - **`verified-frame-worlds/exercise.html`** — Five small keyboard-accessible concept puzzles embedded through the paper and linked from the guide.
 - **`api/twin-corpus.json`** — Deterministic public corpus generated from posts, field notes, and `api/works.json`.
-- **`scripts/build_twin_release.py`** — Rebuilds the corpus, trusted app digests, signed shell manifest, and service-worker release as one atomic unit.
+- **`scripts/build_twin_release.py`** — Rebuilds the corpus, canonical rendered-document digests, trusted app assets, signed shell manifest, and service-worker release as one atomic unit. Release checks use pinned Jekyll 4.2.2 plus Node.
 - **`public-twin/shell-manifest.json`** — Pinned MIME and SHA-256 contract for every offline shell asset.
 - **`idea4blog.md`** — Public changelog and writing ledger page. Doubles as continuity context for the next publishing session.
 - **`_twin_posts/`** — Digital twin-only posts that stay separate from the main homepage feed.

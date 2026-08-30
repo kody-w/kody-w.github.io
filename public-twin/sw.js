@@ -8,14 +8,36 @@ var BASELINE_SOURCE_MANIFEST_SHA256 =
 var BASELINE_CORPUS_SHA256 =
   'cd7445811d231f1741890bdb58535d8d04a8244e9932b3f71948cc5514ef0bab';
 var SHELL_RELEASE_SHA256 =
-  'e3c37b432e00fdb0c84cfbfe64be9b62dd6f84a259b482b3ae6f2d4b9468fb34';
+  'df82782bebe795e55db18777a14b3186650df3db8bb1cee5913f9dc33a8faec9';
 var SHELL_CACHE = 'kody-twin-shell-' + SHELL_RELEASE_SHA256.slice(0, 16);
 var CORPUS_CACHE = 'kody-twin-corpus-' + BASELINE_CORPUS_SHA256.slice(0, 16);
 var SHELL_MANIFEST_PATH = '/public-twin/shell-manifest.json';
 var SHA256 = /^[0-9a-f]{64}$/;
+var DOCUMENT_MARKER =
+  /(data-twin-document-sha256=")[0-9a-f]{64}(")/g;
+var ZERO_SHA256 = new Array(65).join('0');
 
 function isObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function canonicalDocumentSha256(body) {
+  var replacements = 0;
+  var canonical = body.replace(DOCUMENT_MARKER, function (
+    _match,
+    prefix,
+    suffix
+  ) {
+    replacements += 1;
+    return prefix + ZERO_SHA256 + suffix;
+  });
+  if (replacements !== 1) {
+    return Promise.reject(new Error('Invalid Twin document digest marker'));
+  }
+  return crypto.subtle.digest(
+    'SHA-256',
+    new TextEncoder().encode(canonical)
+  ).then(bytesHex);
 }
 
 function isNonEmptyString(value) {
@@ -169,6 +191,8 @@ function validShellManifest(manifest) {
     if (!isObject(document) ||
         !validShellUrl(document.url) ||
         seen[document.url] ||
+        document.normalization !== 'twin-html-sha256/1' ||
+        !SHA256.test(document.sha256) ||
         !Array.isArray(document.contentTypes) ||
         document.contentTypes.length === 0 ||
         !document.contentTypes.every(isNonEmptyString) ||
@@ -244,6 +268,26 @@ function verifyShellResponse(specification, response) {
     return Promise.reject(new Error(
       'Invalid shell response for ' + specification.url
     ));
+  }
+  if (specification.normalization === 'twin-html-sha256/1') {
+    return response.clone().text().then(function (body) {
+      var valid = specification.requiredText.every(function (required) {
+        return body.indexOf(required) !== -1;
+      });
+      if (!valid) {
+        throw new Error(
+          'Shell document markers missing for ' + specification.url
+        );
+      }
+      return canonicalDocumentSha256(body);
+    }).then(function (digest) {
+      if (digest !== specification.sha256) {
+        throw new Error(
+          'Shell document digest mismatch for ' + specification.url
+        );
+      }
+      return response;
+    });
   }
   if (specification.sha256) {
     return responseSha256(response).then(function (digest) {
@@ -434,21 +478,6 @@ function requireActivationCaches() {
   });
 }
 
-function deleteOldCaches() {
-  return caches.keys().then(function (names) {
-    return Promise.all(names.map(function (name) {
-      var oldShell = name.indexOf('kody-twin-shell-') === 0 &&
-        name !== SHELL_CACHE;
-      var oldCorpus = name.indexOf('kody-twin-corpus-') === 0 &&
-        name !== CORPUS_CACHE;
-      if (oldShell || oldCorpus) {
-        return caches.delete(name);
-      }
-      return Promise.resolve(false);
-    }));
-  });
-}
-
 function precacheShell() {
   return fetchShellManifest().then(function (bundle) {
     var specifications = shellSpecifications(bundle.manifest);
@@ -488,7 +517,29 @@ function shellResponse(request) {
       if (cached) {
         return cached;
       }
-      return fetch(request);
+      return new Response('Verified Twin resource is unavailable.', {
+        status: 503,
+        headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+      });
+    });
+  });
+}
+
+function resourceResponse(request) {
+  var pathname = new URL(request.url).pathname;
+  return cachedShellManifest().then(function (bundle) {
+    if (!bundle) {
+      throw new Error('Verified shell manifest is unavailable');
+    }
+    var declared = pathname === SHELL_MANIFEST_PATH ||
+      bundle.manifest.assets.some(function (asset) {
+        return asset.url === pathname;
+      });
+    return declared ? shellResponse(request) : fetch(request);
+  }).catch(function () {
+    return new Response('Twin resource verification is unavailable.', {
+      status: 503,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' }
     });
   });
 }
@@ -547,11 +598,7 @@ self.addEventListener('install', function (event) {
 });
 
 self.addEventListener('activate', function (event) {
-  event.waitUntil(requireActivationCaches().then(function () {
-    return deleteOldCaches();
-  }).then(function () {
-    return self.clients.claim();
-  }));
+  event.waitUntil(requireActivationCaches());
 });
 
 self.addEventListener('fetch', function (event) {
@@ -574,5 +621,5 @@ self.addEventListener('fetch', function (event) {
     event.respondWith(navigationResponse(request));
     return;
   }
-  event.respondWith(shellResponse(request));
+  event.respondWith(resourceResponse(request));
 });

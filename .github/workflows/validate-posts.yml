@@ -92,6 +92,9 @@ jobs:
         with:
           ruby-version: '3.3'
 
+      - name: Install pinned Jekyll
+        run: gem install jekyll -v 4.2.2 --no-document
+
       - name: Validate front matter
         run: |
           exit_code=0
@@ -141,5 +144,4 @@ jobs:
 
       - name: Build Jekyll site
         run: |
-          gem install jekyll --no-document
           jekyll build --destination _site

@@ -274,6 +274,13 @@ class TwinAcceptanceTest(unittest.TestCase):
                 hashlib.sha256((ROOT / relative).read_bytes()).hexdigest(),
             )
             self.assertEqual(entries[url]["contentTypes"], list(content_types))
+        self.assertEqual(len(manifest["documents"]), 4)
+        for document in manifest["documents"]:
+            self.assertEqual(
+                document["normalization"],
+                "twin-html-sha256/1",
+            )
+            self.assertRegex(document["sha256"], r"^[0-9a-f]{64}$")
 
     def test_corpus_builder_has_no_network_dependency(self):
         source = BUILDER.read_text()

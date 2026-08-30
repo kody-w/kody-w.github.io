@@ -7,7 +7,9 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import os
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -24,6 +26,7 @@ TRIBUNAL_RECEIPT_PATH = ROOT / "api" / "frame-06-evidence-tribunal.json"
 TRIBUNAL_BUILDER_PATH = ROOT / "scripts" / "build_frame_06_evidence_tribunal.js"
 WORKER_PATH = ROOT / "public-twin" / "sw.js"
 SHELL_MANIFEST_PATH = ROOT / "public-twin" / "shell-manifest.json"
+RENDER_PATH = ROOT / ".twin-release-render"
 DOCUMENT_MARKER = re.compile(
     r'(data-twin-document-sha256=")[0-9a-f]{64}(")'
 )
@@ -168,28 +171,56 @@ def shell_source_hash(overrides: dict[str, bytes]) -> str:
     return digest.hexdigest()
 
 
-def document_contract(relative: str, page_source: str) -> tuple[str, bytes]:
+def canonical_document_bytes(rendered: bytes) -> bytes:
     normalized, count = DOCUMENT_MARKER.subn(
         r"\g<1>" + ("0" * 64) + r"\g<2>",
-        page_source,
+        rendered.decode("utf-8"),
     )
     if count != 1:
-        raise RuntimeError(f"expected one document release marker, found {count}")
-    digest = hashlib.sha256()
-    for source_relative, data in (
-        ("_config.yml", (ROOT / "_config.yml").read_bytes()),
-        (
-            "_data/design_constitution.yml",
-            (ROOT / "_data" / "design_constitution.yml").read_bytes(),
-        ),
-        ("_layouts/default.html", (ROOT / "_layouts/default.html").read_bytes()),
-        (relative, normalized.encode("utf-8")),
-    ):
-        digest.update(source_relative.encode("utf-8"))
-        digest.update(b"\0")
-        digest.update(data)
-        digest.update(b"\0")
-    value = digest.hexdigest()
+        raise RuntimeError(
+            f"expected one rendered document release marker, found {count}"
+        )
+    return normalized.encode("utf-8")
+
+
+def render_twin_documents() -> dict[str, bytes]:
+    shutil.rmtree(RENDER_PATH, ignore_errors=True)
+    try:
+        result = subprocess.run(
+            [
+                "jekyll",
+                "build",
+                "--destination",
+                str(RENDER_PATH),
+                "--disable-disk-cache",
+                "--quiet",
+            ],
+            cwd=ROOT,
+            env={**os.environ, "JEKYLL_ENV": "production"},
+            text=True,
+            capture_output=True,
+        )
+        if result.returncode:
+            raise RuntimeError(
+                "failed to render Twin documents with Jekyll: "
+                + (result.stderr or result.stdout)
+            )
+        return {
+            "public-twin/index.html":
+                (RENDER_PATH / "public-twin" / "index.html").read_bytes(),
+            "public-twin/tribunal/index.html":
+                (RENDER_PATH / "public-twin" / "tribunal" / "index.html")
+                .read_bytes(),
+        }
+    finally:
+        shutil.rmtree(RENDER_PATH, ignore_errors=True)
+
+
+def document_contract(
+    page_source: str,
+    rendered: bytes,
+) -> tuple[str, bytes]:
+    value = sha256(canonical_document_bytes(rendered))
     updated = DOCUMENT_MARKER.sub(
         r"\g<1>" + value + r"\g<2>",
         page_source,
@@ -223,6 +254,8 @@ def document_specs(
         {
             "url": url,
             "contentTypes": ["text/html"],
+            "normalization": "twin-html-sha256/1",
+            "sha256": document_sha256,
             "requiredText": public_twin_required,
         }
         for url in ("/public-twin/", "/public-twin/index.html")
@@ -231,6 +264,8 @@ def document_specs(
         {
             "url": url,
             "contentTypes": ["text/html"],
+            "normalization": "twin-html-sha256/1",
+            "sha256": tribunal_document_sha256,
             "requiredText": tribunal_required,
         }
         for url in (
@@ -345,13 +380,14 @@ def build_outputs() -> tuple[dict[Path, bytes], dict[str, str]]:
     )
     expected_app = app.encode("utf-8")
 
+    rendered_documents = render_twin_documents()
     document_sha256, expected_page = document_contract(
-        "public-twin/index.html",
-        PAGE_PATH.read_text(encoding="utf-8")
+        PAGE_PATH.read_text(encoding="utf-8"),
+        rendered_documents["public-twin/index.html"],
     )
     tribunal_document_sha256, expected_tribunal_page = document_contract(
-        "public-twin/tribunal/index.html",
         TRIBUNAL_PAGE_PATH.read_text(encoding="utf-8"),
+        rendered_documents["public-twin/tribunal/index.html"],
     )
     overrides = {
         "js/twin-app.js": expected_app,

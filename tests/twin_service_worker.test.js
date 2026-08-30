@@ -6,7 +6,7 @@ const test = require('node:test');
 const vm = require('node:vm');
 
 const Engine = require('../js/twin-engine.js');
-const workerSource = fs.readFileSync(
+const committedWorkerSource = fs.readFileSync(
   path.join(__dirname, '..', 'public-twin', 'sw.js'),
   'utf8'
 );
@@ -15,7 +15,7 @@ const corpus = JSON.parse(
 );
 const ORIGIN = 'https://kody-w.github.io';
 const CORPUS_PATH = '/api/twin-corpus.json';
-const shellManifest = JSON.parse(
+const committedShellManifest = JSON.parse(
   fs.readFileSync(
     path.join(__dirname, '..', 'public-twin', 'shell-manifest.json'),
     'utf8'
@@ -45,40 +45,92 @@ const assetFiles = {
   '/apple-touch-icon.png': 'apple-touch-icon.png'
 };
 
+function sha256(value) {
+  return createHash('sha256').update(value).digest('hex');
+}
+
+function canonicalDocument(body) {
+  let replacements = 0;
+  const canonical = body.replace(
+    /(data-twin-document-sha256=")[0-9a-f]{64}(")/g,
+    (_match, prefix, suffix) => {
+      replacements += 1;
+      return `${prefix}${'0'.repeat(64)}${suffix}`;
+    }
+  );
+  assert.equal(replacements, 1);
+  return canonical;
+}
+
+function documentBody(url, marker, content = '') {
+  if (url.startsWith('/public-twin/tribunal')) {
+    return '<!doctype html>' +
+      '<meta http-equiv="Content-Security-Policy">' +
+      `<main id="evidence-tribunal" ${marker}>` +
+      '<form id="tribunal-form"></form>' +
+      '<p id="tribunal-result-status"></p>' +
+      content +
+      '</main>' +
+      '<script src="/js/frame-06-evidence-tribunal.js"></script>' +
+      '<script src="/js/frame-06-evidence-tribunal-app.js"></script>';
+  }
+  return '<!doctype html>' +
+    '<meta http-equiv="Content-Security-Policy">' +
+    `<main id="public-twin" ${marker}>` +
+    '<form id="twin-question-form">' +
+    '<textarea id="twin-question"></textarea>' +
+    '<div id="twin-results"></div>' +
+    '</form>' +
+    content +
+    '</main>' +
+    '<script src="/js/twin-app.js"></script>';
+}
+
+function createGeneration(label) {
+  const manifest = structuredClone(committedShellManifest);
+  manifest.releaseSha256 = sha256(`release:${label}`);
+  const documents = {};
+  manifest.documents.forEach((specification) => {
+    const zeroMarker = `data-twin-document-sha256="${'0'.repeat(64)}"`;
+    const provisional = documentBody(
+      specification.url,
+      zeroMarker,
+      `<p data-generation="${label}">${label}</p>`
+    );
+    const digest = sha256(canonicalDocument(provisional));
+    const marker = `data-twin-document-sha256="${digest}"`;
+    specification.sha256 = digest;
+    specification.normalization = 'twin-html-sha256/1';
+    specification.requiredText = specification.requiredText.map((value) =>
+      value.startsWith('data-twin-document-sha256=') ? marker : value
+    );
+    documents[specification.url] = documentBody(
+      specification.url,
+      marker,
+      `<p data-generation="${label}">${label}</p>`
+    );
+  });
+  const manifestBytes = Buffer.from(`${JSON.stringify(manifest, null, 2)}\n`);
+  const manifestDigest = sha256(manifestBytes);
+  const workerSource = committedWorkerSource.replace(
+    /(var SHELL_RELEASE_SHA256\s*=\s*\n\s*')[0-9a-f]{64}(';)/,
+    `$1${manifestDigest}$2`
+  );
+  return { manifest, manifestBytes, documents, workerSource };
+}
+
+const currentGeneration = createGeneration('current');
+const shellManifest = currentGeneration.manifest;
+const workerSource = currentGeneration.workerSource;
+
 function validDocumentResponse(url = '/public-twin/', content = '') {
   const specification = shellManifest.documents.find((item) => item.url === url);
   assert.ok(specification, url);
   const marker = specification.requiredText.find((value) =>
     value.startsWith('data-twin-document-sha256=')
   );
-  if (url.startsWith('/public-twin/tribunal')) {
-    return new Response(
-      '<!doctype html>' +
-        '<meta http-equiv="Content-Security-Policy">' +
-        `<main id="evidence-tribunal" ${marker}>` +
-        '<form id="tribunal-form"></form>' +
-        '<p id="tribunal-result-status"></p>' +
-        content +
-        '</main>' +
-        '<script src="/js/frame-06-evidence-tribunal.js"></script>' +
-        '<script src="/js/frame-06-evidence-tribunal-app.js"></script>',
-      {
-        status: 200,
-        headers: { 'Content-Type': 'text/html' }
-      }
-    );
-  }
   return new Response(
-    '<!doctype html>' +
-      '<meta http-equiv="Content-Security-Policy">' +
-      `<main id="public-twin" ${marker}>` +
-      '<form id="twin-question-form">' +
-      '<textarea id="twin-question"></textarea>' +
-      '<div id="twin-results"></div>' +
-      '</form>' +
-      content +
-      '</main>' +
-      '<script src="/js/twin-app.js"></script>',
+    documentBody(url, marker, content),
     {
       status: 200,
       headers: { 'Content-Type': 'text/html' }
@@ -86,31 +138,29 @@ function validDocumentResponse(url = '/public-twin/', content = '') {
   );
 }
 
-function defaultShellResponse(pathname) {
+function defaultShellResponse(pathname, generation = currentGeneration) {
   if (pathname === '/public-twin/shell-manifest.json') {
     return new Response(
-      fs.readFileSync(
-        path.join(__dirname, '..', 'public-twin', 'shell-manifest.json')
-      ),
+      generation.manifestBytes,
       {
         status: 200,
         headers: { 'Content-Type': 'application/json' }
       }
     );
   }
-  if (pathname === '/public-twin/' ||
-      pathname === '/public-twin/index.html') {
-    return validDocumentResponse(pathname);
-  }
-  if (pathname === '/public-twin/tribunal/' ||
-      pathname === '/public-twin/tribunal/index.html') {
-    return validDocumentResponse(pathname);
+  if (generation.documents[pathname]) {
+    return new Response(generation.documents[pathname], {
+      status: 200,
+      headers: { 'Content-Type': 'text/html' }
+    });
   }
   const relative = assetFiles[pathname];
   if (!relative) {
     return new Response('not found', { status: 404 });
   }
-  const specification = shellManifest.assets.find((asset) => asset.url === pathname);
+  const specification = generation.manifest.assets.find(
+    (asset) => asset.url === pathname
+  );
   assert.ok(specification, pathname);
   return new Response(fs.readFileSync(path.join(__dirname, '..', relative)), {
     status: 200,
@@ -154,7 +204,8 @@ function createCacheStorage() {
 
 function loadWorker(corpusResponse, options = {}) {
   const handlers = {};
-  const caches = createCacheStorage();
+  const caches = options.caches || createCacheStorage();
+  const generation = options.generation || currentGeneration;
   const state = {
     skipWaiting: 0,
     clientsClaim: 0
@@ -190,7 +241,7 @@ function loadWorker(corpusResponse, options = {}) {
       if (pathname === CORPUS_PATH) {
         return corpusResponse.clone();
       }
-      return defaultShellResponse(pathname);
+      return defaultShellResponse(pathname, generation);
     },
     Response,
     Request,
@@ -203,9 +254,10 @@ function loadWorker(corpusResponse, options = {}) {
     String,
     Error,
     crypto: webcrypto,
-    Uint8Array
+    Uint8Array,
+    TextEncoder
   };
-  vm.runInNewContext(workerSource, context, {
+  vm.runInNewContext(generation.workerSource, context, {
     filename: 'public-twin/sw.js'
   });
   return {
@@ -225,6 +277,17 @@ async function runInstall(runtime) {
     }
   });
   assert.ok(pending, 'install handler did not register work');
+  return pending;
+}
+
+async function runActivate(runtime) {
+  let pending;
+  runtime.handlers.activate({
+    waitUntil(value) {
+      pending = Promise.resolve(value);
+    }
+  });
+  assert.ok(pending, 'activate handler did not register work');
   return pending;
 }
 
@@ -342,7 +405,7 @@ test('interrupted upgrade leaves the active shell cache untouched', async () => 
   assert.equal(await preserved.text(), 'old-shell');
 });
 
-test('asset navigation cannot replace the canonical cached app shell', async () => {
+test('uncached asset navigation fails closed without replacing app shell', async () => {
   const runtime = loadWorker(
     new Response(JSON.stringify(corpus), {
       status: 200,
@@ -373,7 +436,8 @@ test('asset navigation cannot replace the canonical cached app shell', async () 
     mode: 'navigate',
     url: `${ORIGIN}/public-twin/manifest.webmanifest`
   });
-  assert.equal(await response.text(), '{"name":"manifest"}');
+  assert.equal(response.status, 503);
+  assert.match(await response.text(), /Verified Twin resource is unavailable/);
   const preserved = await cache.match('/public-twin/');
   assert.match(await preserved.text(), /app shell/);
 });
@@ -457,6 +521,27 @@ test('generic HTML without the release document contract cannot install', async 
   assert.equal(runtime.state.skipWaiting, 0);
 });
 
+test('document body mutations fail even when every required marker remains', async () => {
+  for (const document of shellManifest.documents) {
+    const runtime = loadWorker(
+      new Response(JSON.stringify(corpus), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      }),
+      {
+        responses: {
+          [document.url]: validDocumentResponse(
+            document.url,
+            '<aside data-injected="true">altered claim</aside>'
+          )
+        }
+      }
+    );
+    await assert.rejects(runInstall(runtime), document.url);
+    assert.equal(runtime.state.skipWaiting, 0, document.url);
+  }
+});
+
 test('tribunal navigation uses its verified scoped offline document', async () => {
   const options = {};
   const runtime = loadWorker(
@@ -478,22 +563,22 @@ test('tribunal navigation uses its verified scoped offline document', async () =
   assert.match(body, /frame-06-evidence-tribunal-app\.js/);
 });
 
-test('successful root navigation cannot mutate the installed release cache', async () => {
+test('altered root navigation falls back to the verified cached document', async () => {
+  const options = {};
   const runtime = loadWorker(
     new Response(JSON.stringify(corpus), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     }),
-    {
-      responses: {
-        '/public-twin/': validDocumentResponse(
-          '/public-twin/',
-          'new network body'
-        )
-      }
-    }
+    options
   );
   await runInstall(runtime);
+  options.responses = {
+    '/public-twin/': validDocumentResponse(
+      '/public-twin/',
+      'new network body'
+    )
+  };
   const cache = await runtime.caches.open(runtime.shellCache);
   const installed = await cache.match('/public-twin/');
   const before = await installed.text();
@@ -502,7 +587,117 @@ test('successful root navigation cannot mutate the installed release cache', asy
     mode: 'navigate',
     url: `${ORIGIN}/public-twin/`
   });
-  assert.match(await response.text(), /new network body/);
+  assert.doesNotMatch(await response.text(), /new network body/);
   const after = await (await cache.match('/public-twin/')).text();
   assert.equal(after, before);
+});
+
+test('cache misses fail closed instead of falling through to network', async () => {
+  const options = {};
+  const runtime = loadWorker(
+    new Response(JSON.stringify(corpus), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    }),
+    options
+  );
+  await runInstall(runtime);
+  options.responses = {
+      '/js/twin-app.js': new Response('console.log("unverified")', {
+        status: 200,
+        headers: { 'Content-Type': 'text/javascript' }
+      }),
+      '/public-twin/': validDocumentResponse(
+        '/public-twin/',
+        '<p>unverified network shell</p>'
+      )
+  };
+  const store = runtime.caches.stores.get(runtime.shellCache);
+  store.delete('/js/twin-app.js');
+  store.delete('/public-twin/');
+
+  const asset = await runFetch(runtime, {
+    method: 'GET',
+    mode: 'same-origin',
+    url: `${ORIGIN}/js/twin-app.js`
+  });
+  assert.equal(asset.status, 503);
+  assert.doesNotMatch(await asset.text(), /unverified/);
+
+  const document = await runFetch(runtime, {
+    method: 'GET',
+    mode: 'navigate',
+    url: `${ORIGIN}/public-twin/`
+  });
+  assert.equal(document.status, 503);
+  assert.doesNotMatch(await document.text(), /unverified network shell/);
+});
+
+test('non-release requests remain ordinary network traffic', async () => {
+  const options = {};
+  const runtime = loadWorker(
+    new Response(JSON.stringify(corpus), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    }),
+    options
+  );
+  await runInstall(runtime);
+  options.responses = {
+    '/2026/03/28/the-digital-twin-deployment-pattern/': new Response(
+      '<!doctype html><title>Public article</title>',
+      {
+        status: 200,
+        headers: { 'Content-Type': 'text/html' }
+      }
+    )
+  };
+  const response = await runFetch(runtime, {
+    method: 'GET',
+    mode: 'navigate',
+    url: `${ORIGIN}/2026/03/28/the-digital-twin-deployment-pattern/`
+  });
+  assert.equal(response.status, 200);
+  assert.match(await response.text(), /Public article/);
+});
+
+test('release generations stay isolated until each client transitions', async () => {
+  const caches = createCacheStorage();
+  const oldGeneration = createGeneration('old-release');
+  const newGeneration = createGeneration('new-release');
+  const oldOptions = { caches, generation: oldGeneration };
+  const newOptions = { caches, generation: newGeneration };
+  const corpusResponse = () => new Response(JSON.stringify(corpus), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' }
+  });
+
+  const oldRuntime = loadWorker(corpusResponse(), oldOptions);
+  await runInstall(oldRuntime);
+  await runActivate(oldRuntime);
+  oldOptions.failPaths = ['/public-twin/'];
+
+  const newRuntime = loadWorker(corpusResponse(), newOptions);
+  await runInstall(newRuntime);
+  await runActivate(newRuntime);
+
+  assert.notEqual(oldRuntime.shellCache, newRuntime.shellCache);
+  assert.equal(caches.stores.has(oldRuntime.shellCache), true);
+  assert.equal(caches.stores.has(newRuntime.shellCache), true);
+  assert.equal(newRuntime.state.skipWaiting, 1);
+  assert.equal(newRuntime.state.clientsClaim, 0);
+
+  const oldClientResponse = await runFetch(oldRuntime, {
+    method: 'GET',
+    mode: 'navigate',
+    url: `${ORIGIN}/public-twin/`
+  });
+  assert.match(await oldClientResponse.text(), /old-release/);
+
+  const newNavigation = await runFetch(newRuntime, {
+    method: 'GET',
+    mode: 'navigate',
+    url: `${ORIGIN}/public-twin/`
+  });
+  assert.match(await newNavigation.text(), /new-release/);
 });
