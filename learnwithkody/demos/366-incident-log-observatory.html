@@ -1,0 +1,1510 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src 'none'; script-src 'unsafe-inline'; script-src-attr 'none'; style-src 'unsafe-inline'; style-src-attr 'none'; img-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Incident Log Observatory</title>
+<style>
+:root{
+  --ink:#e7f0ed;
+  --muted:#90a59f;
+  --bg:#07100f;
+  --deep:#030706;
+  --panel:#0c1715;
+  --panel2:#101f1b;
+  --line:#284139;
+  --line2:#3d6156;
+  --mint:#64f4bd;
+  --cyan:#65dff2;
+  --amber:#ffd166;
+  --orange:#ff985f;
+  --red:#ff6b76;
+  --violet:#c5a3ff;
+  --shadow:0 24px 70px #0009;
+}
+*{box-sizing:border-box}
+html{background:var(--deep);scroll-behavior:smooth}
+body{
+  min-width:0;
+  min-height:100vh;
+  margin:0;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 88% -10%,#174a3c 0,transparent 34rem),
+    radial-gradient(circle at -8% 48%,#17394a 0,transparent 30rem),
+    linear-gradient(180deg,var(--bg),var(--deep));
+  font:500 15px/1.48 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+button,input,textarea{font:inherit}
+button,input[type="file"]{touch-action:manipulation}
+button,.file-button{
+  min-height:44px;
+  padding:9px 13px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  color:var(--ink);
+  background:#10201c;
+  font-weight:800;
+  letter-spacing:.01em;
+  cursor:pointer;
+}
+button:hover,.file-button:hover{border-color:var(--mint);background:#163029}
+button:active,.file-button:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible,.file-button:focus-within{
+  outline:3px solid #fff38b;
+  outline-offset:3px;
+}
+button[aria-pressed="true"],button.active{
+  border-color:var(--mint);
+  color:#03110d;
+  background:var(--mint);
+}
+button.danger:hover{border-color:var(--red);color:#fff;background:#40191d}
+.skip{
+  position:fixed;
+  z-index:50;
+  top:8px;
+  left:8px;
+  transform:translateY(-160%);
+  padding:10px 14px;
+  border-radius:8px;
+  color:#04100d;
+  background:#fff;
+  font-weight:900;
+}
+.skip:focus{transform:none}
+.shell{width:min(1480px,calc(100% - 32px));margin:auto;padding:26px 0 48px}
+.hero{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:28px;
+  align-items:end;
+  padding:8px 4px 24px;
+}
+.eyebrow,.micro{
+  color:var(--mint);
+  font:850 11px/1.3 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.eyebrow{margin:0 0 10px}
+h1{
+  max-width:950px;
+  margin:0;
+  font-size:clamp(42px,7vw,90px);
+  line-height:.88;
+  letter-spacing:-.065em;
+}
+h1 span{display:block;color:var(--amber)}
+.lede{max-width:850px;margin:18px 0 0;color:var(--muted);font-size:clamp(14px,1.8vw,18px)}
+.trust-stack{display:grid;gap:8px;min-width:258px}
+.trust{
+  display:flex;
+  gap:9px;
+  align-items:center;
+  min-height:42px;
+  padding:9px 11px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#091411e8;
+  box-shadow:0 12px 32px #0005;
+  font:800 10px/1.25 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.trust::before{content:"";width:9px;height:9px;flex:0 0 auto;border-radius:50%;background:var(--mint);box-shadow:0 0 14px var(--mint)}
+.trust.warn::before{background:var(--amber);box-shadow:0 0 14px var(--amber)}
+.workspace{display:grid;grid-template-columns:minmax(310px,380px) minmax(0,1fr);gap:14px;align-items:start}
+.panel{
+  min-width:0;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:linear-gradient(180deg,#0e1d19f2,#09120ff7);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.source-panel{position:sticky;top:10px}
+.panel-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  padding:16px 17px 13px;
+  border-bottom:1px solid var(--line);
+}
+.panel-head h2,.panel-head h3{margin:0;font-size:16px;letter-spacing:-.02em}
+.panel-head p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.local-badge{
+  flex:0 0 auto;
+  padding:5px 8px;
+  border:1px solid #2f7863;
+  border-radius:999px;
+  color:var(--mint);
+  background:#0b2a21;
+  font:800 9px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.source-body{display:grid;gap:12px;padding:14px}
+textarea{
+  width:100%;
+  min-height:320px;
+  resize:vertical;
+  padding:13px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  color:#dff9ef;
+  background:#050b09;
+  caret-color:var(--mint);
+  font:500 12px/1.58 ui-monospace,SFMono-Regular,Consolas,monospace;
+  tab-size:2;
+}
+.action-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.action-grid button{padding-inline:7px;font-size:12px}
+.action-grid .primary{border-color:var(--mint);color:var(--mint)}
+.io-row{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.file-button{position:relative;display:grid;place-items:center;font-size:12px;text-align:center;overflow:hidden}
+.file-button input{position:absolute;width:1px;height:1px;opacity:0}
+.source-note{
+  margin:0;
+  padding:10px 11px;
+  border-left:3px solid var(--cyan);
+  color:var(--muted);
+  background:#0b1918;
+  font-size:11px;
+}
+.kbd{
+  display:inline-grid;
+  place-items:center;
+  min-width:22px;
+  min-height:22px;
+  padding:0 5px;
+  border:1px solid var(--line2);
+  border-bottom-width:3px;
+  border-radius:5px;
+  color:#d8ebe5;
+  background:#0c1916;
+  font:800 10px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+.dashboard{display:grid;gap:14px;min-width:0}
+.metrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.metric{
+  min-width:0;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:linear-gradient(180deg,#11241f,#0b1714);
+  box-shadow:0 12px 30px #0003;
+}
+.metric span{
+  display:block;
+  overflow:hidden;
+  color:var(--muted);
+  font:800 9px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.1em;
+  text-overflow:ellipsis;
+  text-transform:uppercase;
+}
+.metric strong{display:block;margin-top:5px;font-size:25px;line-height:1}
+.metric.http strong{color:var(--cyan)}
+.metric.success strong{color:var(--mint)}
+.metric.warning strong{color:var(--amber)}
+.metric.error strong{color:var(--red)}
+.metric.json strong{color:var(--violet)}
+.metric.service strong{color:var(--orange)}
+.view-head{display:grid;gap:12px;padding:14px 15px;border-bottom:1px solid var(--line)}
+.view-top{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{min-width:88px;padding-inline:10px;font-size:12px}
+.search-row{display:grid;grid-template-columns:minmax(150px,1fr) auto auto;gap:8px;align-items:center}
+.search-wrap{position:relative}
+.search-wrap label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.search-wrap input{
+  width:100%;
+  min-height:44px;
+  padding:10px 12px 10px 38px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  color:var(--ink);
+  background:#07100e;
+}
+.search-wrap::before{content:"⌕";position:absolute;z-index:1;left:13px;top:8px;color:var(--cyan);font-size:23px;line-height:1}
+.compact-button{padding-inline:10px;font-size:11px}
+.results-meta{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 15px;
+  border-bottom:1px solid var(--line);
+  color:var(--muted);
+  background:#0a1512;
+  font:750 10px/1.3 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.results{min-height:410px;padding:13px}
+.empty{
+  display:grid;
+  place-items:center;
+  min-height:360px;
+  padding:28px;
+  color:var(--muted);
+  text-align:center;
+}
+.group{display:grid;gap:8px;margin-bottom:15px}
+.group:last-child{margin-bottom:0}
+.group-title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:0;
+  color:#cfe0da;
+  font:850 10px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+}
+.group-title::after{content:"";height:1px;flex:1;background:var(--line)}
+.entry{
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:#0b1613;
+  overflow:hidden;
+}
+.entry[open]{border-color:var(--line2);background:#0e1d19}
+.entry.error{border-left:4px solid var(--red)}
+.entry.warning{border-left:4px solid var(--amber)}
+.entry.success{border-left:4px solid var(--mint)}
+.entry.info{border-left:4px solid var(--cyan)}
+.entry summary{
+  display:grid;
+  grid-template-columns:auto auto minmax(0,1fr) auto;
+  gap:10px;
+  align-items:start;
+  min-height:52px;
+  padding:11px 12px;
+  cursor:pointer;
+  list-style:none;
+}
+.entry summary::-webkit-details-marker{display:none}
+.entry summary::before{
+  content:"＋";
+  margin-top:1px;
+  color:var(--muted);
+  font:800 13px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+.entry[open] summary::before{content:"−";color:var(--mint)}
+.entry-id,.time{
+  padding-top:2px;
+  color:var(--muted);
+  font:750 10px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;
+  white-space:nowrap;
+}
+.entry-id{color:var(--cyan)}
+.line{
+  min-width:0;
+  overflow-wrap:anywhere;
+  color:#dceae5;
+  font:500 12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+mark{padding:1px 2px;border-radius:3px;color:#101008;background:#ffe66d;box-shadow:0 0 0 1px #ffe66d}
+.chips{display:flex;gap:5px;justify-content:flex-end;flex-wrap:wrap}
+.chip{
+  padding:3px 6px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  color:var(--muted);
+  font:800 8px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.chip.error{border-color:#743841;color:#ff9da5}
+.chip.warning{border-color:#756031;color:#ffe19a}
+.chip.success{border-color:#33745f;color:#8ff7d1}
+.chip.http{border-color:#2f6670;color:#8aeafa}
+.chip.json{border-color:#604b7e;color:#d6bcff}
+.entry-body{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  padding:0 12px 12px 43px;
+  border-top:1px solid #1d302a;
+}
+.datum{min-width:0;padding-top:10px}
+.datum b{
+  display:block;
+  margin-bottom:4px;
+  color:var(--muted);
+  font:800 9px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.datum span,.datum code{overflow-wrap:anywhere;color:#d7e4df;font-size:11px}
+.datum code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.repair{
+  grid-column:1/-1;
+  padding:10px;
+  border:1px solid #765c29;
+  border-radius:8px;
+  color:#ffe4a3;
+  background:#2a210d;
+  font:600 11px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+.repair strong{display:block;margin-bottom:3px;color:var(--amber);text-transform:uppercase}
+.diagnostics{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;padding:15px 16px}
+.test-copy{min-width:0}
+.test-copy h3{margin:0 0 5px;font-size:15px}
+.test-copy p{margin:0;color:var(--muted);font-size:12px}
+.test-output{margin-top:8px;color:var(--mint);font:800 11px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace}
+.test-output.fail{color:var(--red)}
+.fixture-contract{
+  margin:0;
+  padding:11px 14px;
+  border-top:1px solid var(--line);
+  color:var(--muted);
+  background:#07100e;
+  font:700 10px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+.fixture-contract b{color:var(--ink)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+#status{
+  position:fixed;
+  z-index:40;
+  right:16px;
+  bottom:16px;
+  max-width:min(420px,calc(100% - 32px));
+  padding:11px 14px;
+  border:1px solid var(--line2);
+  border-radius:10px;
+  color:#eafff7;
+  background:#10231ddd;
+  box-shadow:0 14px 35px #0009;
+  opacity:0;
+  transform:translateY(12px);
+  pointer-events:none;
+  transition:opacity .18s ease,transform .18s ease;
+  font-size:12px;
+}
+#status.show{opacity:1;transform:none}
+#status.error{border-color:var(--red);background:#301619dd}
+@media (max-width: 1050px){
+  .workspace{grid-template-columns:320px minmax(0,1fr)}
+  .metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .entry summary{grid-template-columns:auto auto minmax(0,1fr)}
+  .chips{grid-column:3}
+}
+@media (max-width: 760px){
+  .shell{width:min(100% - 22px,680px);padding-top:18px}
+  .hero{grid-template-columns:1fr}
+  .trust-stack{grid-template-columns:repeat(3,minmax(0,1fr));min-width:0}
+  .workspace{grid-template-columns:1fr}
+  .source-panel{position:static}
+  textarea{min-height:230px}
+}
+@media (max-width: 520px){
+  .shell{width:calc(100% - 16px);padding-bottom:28px}
+  h1{font-size:clamp(38px,13vw,58px)}
+  .hero{gap:18px}
+  .trust-stack{grid-template-columns:1fr}
+  .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .view-top{align-items:stretch;flex-direction:column}
+  .tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .tabs button{min-width:0}
+  .search-row{grid-template-columns:1fr 1fr}
+  .search-wrap{grid-column:1/-1}
+  .entry summary{grid-template-columns:auto minmax(0,1fr);gap:7px}
+  .entry-id{grid-column:2}
+  .time{grid-column:2}
+  .line{grid-column:2}
+  .chips{grid-column:2;justify-content:flex-start}
+  .entry-body{grid-template-columns:1fr 1fr;padding-left:37px}
+  .diagnostics{grid-template-columns:1fr}
+}
+@media (max-width: 390px){
+  body{font-size:14px}
+  .shell{width:calc(100% - 12px)}
+  .panel{border-radius:12px}
+  .panel-head,.view-head{padding-inline:12px}
+  .source-body,.results{padding:10px}
+  .action-grid{grid-template-columns:1fr 1fr}
+  .action-grid .primary{grid-column:1/-1}
+  .metric{padding:10px}
+  .metric strong{font-size:22px}
+  .entry-body{grid-template-columns:1fr}
+  .io-row{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;transition-duration:.001ms!important;animation-duration:.001ms!important;animation-iteration-count:1!important}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#results">Skip to parsed evidence</a>
+<main class="shell">
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Offline incident evidence lab · clean-room build</p>
+      <h1>Incident Log <span>Observatory</span></h1>
+      <p class="lede">Parse operational evidence without executing it. Every line stays local, every view keeps the same stable IDs, and every uncertain repair leaves the original untouched.</p>
+    </div>
+    <div class="trust-stack" aria-label="Safety properties">
+      <div class="trust">Text nodes only</div>
+      <div class="trust">Network denied by CSP</div>
+      <div class="trust warn">Repairs marked uncertain</div>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <section class="panel source-panel" aria-labelledby="source-title">
+      <div class="panel-head">
+        <div>
+          <h2 id="source-title">Evidence source</h2>
+          <p>Plain text only · 100,000 characters · 2,000 non-empty lines</p>
+        </div>
+        <span class="local-badge">Local only</span>
+      </div>
+      <div class="source-body">
+        <label class="micro" for="source">Paste logs</label>
+        <textarea id="source" maxlength="100000" spellcheck="false" aria-describedby="source-note"></textarea>
+        <div class="action-grid">
+          <button id="paste" type="button">Paste</button>
+          <button id="parse" class="primary" type="button">Parse logs</button>
+          <button id="autofix" type="button">Auto-fix</button>
+          <button id="copy" type="button">Copy all</button>
+          <button id="fixture" type="button">Load fixture</button>
+          <button id="clear" class="danger" type="button">Clear</button>
+        </div>
+        <div class="io-row">
+          <button id="export" type="button">Export JSON</button>
+          <label class="file-button">Import JSON<input id="import" type="file" accept="application/json,.json"></label>
+        </div>
+        <p class="source-note" id="source-note">Parse with <span class="kbd">⌘/Ctrl</span> + <span class="kbd">Enter</span>. Auto-fix creates marked proposals; it never edits this source.</p>
+      </div>
+    </section>
+
+    <section class="dashboard" aria-label="Parsed incident evidence">
+      <div class="metrics" aria-label="Current counts">
+        <div class="metric http"><span>HTTP</span><strong id="count-http">0</strong></div>
+        <div class="metric success"><span>Success</span><strong id="count-success">0</strong></div>
+        <div class="metric warning"><span>Warning</span><strong id="count-warning">0</strong></div>
+        <div class="metric error"><span>Error</span><strong id="count-error">0</strong></div>
+        <div class="metric json"><span>JSON</span><strong id="count-json">0</strong></div>
+        <div class="metric service"><span>Services</span><strong id="count-services">0</strong></div>
+      </div>
+
+      <section class="panel" aria-labelledby="view-title">
+        <div class="view-head">
+          <div class="view-top">
+            <div>
+              <h2 id="view-title" class="sr-only">Evidence views</h2>
+              <div class="tabs" role="tablist" aria-label="Evidence view">
+                <button id="tab-grouped" type="button" role="tab" aria-controls="results" data-view="grouped">Grouped</button>
+                <button id="tab-timeline" type="button" role="tab" aria-controls="results" data-view="timeline">Timeline</button>
+                <button id="tab-raw" type="button" role="tab" aria-controls="results" data-view="raw">Raw</button>
+              </div>
+            </div>
+            <span class="micro" id="view-proof">0 stable IDs</span>
+          </div>
+          <div class="search-row">
+            <div class="search-wrap">
+              <label for="search">Search logs</label>
+              <input id="search" type="search" maxlength="200" placeholder="Search evidence…">
+            </div>
+            <button id="timestamps" class="compact-button" type="button" aria-pressed="true">Timestamps on</button>
+            <button id="expand" class="compact-button" type="button">Expand all</button>
+          </div>
+        </div>
+        <div class="results-meta">
+          <span id="match-summary">0 entries</span>
+          <span id="repair-summary">0 repair proposals</span>
+        </div>
+        <div id="results" class="results" role="tabpanel" aria-live="polite" aria-labelledby="tab-grouped"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="test-title">
+        <div class="diagnostics">
+          <div class="test-copy">
+            <h3 id="test-title">Live safety contract</h3>
+            <p>Runs parser, view-equivalence, highlighter, inert-payload, repair, and state round-trip checks against real functions.</p>
+            <div id="test-output" class="test-output" aria-live="polite">Not run</div>
+          </div>
+          <button id="self-test" type="button">Run self-test</button>
+        </div>
+        <p class="fixture-contract"><b>Fixture contract:</b> 10 entries · HTTP 4 · success 4 · warning 2 · error 3 · JSON 3 · services 5 (gateway 2, billing 2, worker 2, auth 2, catalog 2).</p>
+      </section>
+    </section>
+  </div>
+</main>
+<div id="status" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  const SCHEMA = "incident-log-observatory/state-v1";
+  const MAX_INPUT = 100000;
+  const MAX_ENTRIES = 2000;
+  const MAX_EXPANDED = 2000;
+  const MAX_STATE_FILE_BYTES = 1000000;
+  const FIXTURE = [
+    "2026-08-29T14:03:10.120Z service=gateway HTTP GET /api/orders 200 42ms request=req-001",
+    "2026-08-29T14:03:11.004Z service=gateway ERROR HTTP POST /api/orders 503 2100ms request=req-002",
+    "2026-08-29T14:03:12.880Z service=billing WARN retry budget at 20% request=req-002",
+    "2026-08-29T14:03:13.020Z service=billing {\"event\":\"charge.deferred\",\"request\":\"req-002\",\"attempt\":2}",
+    "2026-08-29T14:03:14.441Z service=worker SUCCESS replay completed request=req-002",
+    "2026-08-29T14:03:15.900Z service=worker ERROR queue lease expired job=job-77",
+    "2026-08-29T14:03:16.280Z service=auth WARN HTTP GET /session 401 18ms request=req-003",
+    "2026-08-29T14:03:17.510Z service=auth SUCCESS {\"event\":\"session.refreshed\",\"subject\":\"<img src=x onerror=alert(1)>\"}",
+    "2026-08-29T14:03:18.330Z service=catalog SUCCESS HTTP GET /items 304 9ms request=req-004",
+    "2026-08-29T14:03:19.700Z service=catalog ERROR snapshot truncated payload={\"cursor\":\"abc\""
+  ].join("\n");
+  const FIXTURE_COUNTS = {
+    entries: 10,
+    http: 4,
+    success: 4,
+    warning: 2,
+    error: 3,
+    json: 3,
+    services: 5,
+    byService: {gateway: 2, billing: 2, worker: 2, auth: 2, catalog: 2}
+  };
+  const VIEWS = ["grouped", "timeline", "raw"];
+  const CATEGORY_ORDER = ["error", "warning", "success", "info"];
+  const els = {
+    source: document.getElementById("source"),
+    paste: document.getElementById("paste"),
+    parse: document.getElementById("parse"),
+    autofix: document.getElementById("autofix"),
+    copy: document.getElementById("copy"),
+    fixture: document.getElementById("fixture"),
+    clear: document.getElementById("clear"),
+    exportButton: document.getElementById("export"),
+    importInput: document.getElementById("import"),
+    search: document.getElementById("search"),
+    timestamps: document.getElementById("timestamps"),
+    expand: document.getElementById("expand"),
+    results: document.getElementById("results"),
+    matchSummary: document.getElementById("match-summary"),
+    repairSummary: document.getElementById("repair-summary"),
+    viewProof: document.getElementById("view-proof"),
+    testOutput: document.getElementById("test-output"),
+    selfTest: document.getElementById("self-test"),
+    status: document.getElementById("status"),
+    counts: {
+      http: document.getElementById("count-http"),
+      success: document.getElementById("count-success"),
+      warning: document.getElementById("count-warning"),
+      error: document.getElementById("count-error"),
+      json: document.getElementById("count-json"),
+      services: document.getElementById("count-services")
+    }
+  };
+  const state = {
+    input: FIXTURE,
+    entries: [],
+    view: "grouped",
+    query: "",
+    hideTimestamps: false,
+    expanded: new Set(),
+    repairs: [],
+    lastSelfTest: null
+  };
+  let statusTimer = 0;
+
+  function pad(value) {
+    return String(value).padStart(3, "0");
+  }
+
+  function unique(values) {
+    return Array.from(new Set(values));
+  }
+
+  function normalizeInput(value) {
+    return String(value).replace(/\r\n?/g, "\n");
+  }
+
+  function validatedInput(value) {
+    const normalized = normalizeInput(value);
+    if (normalized.length > MAX_INPUT) {
+      throw new Error("Evidence exceeds the 100,000-character limit.");
+    }
+    const entries = normalized.split("\n").filter(line => line.trim()).length;
+    if (entries > MAX_ENTRIES) {
+      throw new Error("Evidence exceeds the 2,000-entry rendering limit.");
+    }
+    return normalized;
+  }
+
+  function extractTimestamp(line) {
+    const iso = line.match(/^\s*(\d{4}-\d{2}-\d{2}[T ][0-9:.+-]+Z?)/);
+    if (iso) return iso[1];
+    const bracket = line.match(/^\s*\[([^\]]{4,40})\]/);
+    return bracket ? bracket[1] : "";
+  }
+
+  function extractService(line) {
+    const explicit = line.match(/\bservice\s*[=:]\s*([a-z0-9_.-]+)/i);
+    if (explicit) return explicit[1].toLowerCase();
+    const bracket = line.match(/^\s*(?:\[[^\]]+\]\s*)?\[([a-z][a-z0-9_.-]{1,40})\]/i);
+    return bracket ? bracket[1].toLowerCase() : "unassigned";
+  }
+
+  function hasHttp(line) {
+    return /\bHTTP(?:\/[0-9.]+)?\b/i.test(line) ||
+      /\b(?:GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\s+\/\S*/i.test(line);
+  }
+
+  function statusCode(line) {
+    const explicit = line.match(/\b(?:http[_-]?status|status)\s*[=:]\s*([1-5][0-9]{2})\b/i);
+    if (explicit) return Number(explicit[1]);
+    const response = line.match(/\bHTTP\/[0-9.]+\s+([1-5][0-9]{2})\b/i);
+    if (response) return Number(response[1]);
+    const request = line.match(
+      /\b(?:HTTP(?:\/[0-9.]+)?\s+)?(?:GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\s+\S+\s+([1-5][0-9]{2})\b/i
+    );
+    return request ? Number(request[1]) : null;
+  }
+
+  function parseLogs(input) {
+    const lines = validatedInput(input).split("\n");
+    const entries = [];
+    lines.forEach((raw, sourceIndex) => {
+      if (!raw.trim()) return;
+      const code = statusCode(raw);
+      const isError = /\b(?:error|fatal|exception|failed|failure|panic)\b/i.test(raw);
+      const isWarning = /\b(?:warn(?:ing)?|degraded|retry)\b/i.test(raw);
+      const isSuccess = /\b(?:success|succeeded|completed|healthy|ok)\b/i.test(raw) ||
+        (code !== null && code >= 200 && code < 400);
+      const isJson = /[\[{]\s*"[^"]+"\s*:/.test(raw);
+      const tags = [];
+      if (hasHttp(raw)) tags.push("http");
+      if (isSuccess) tags.push("success");
+      if (isWarning) tags.push("warning");
+      if (isError) tags.push("error");
+      if (isJson) tags.push("json");
+      const severity = isError ? "error" : isWarning ? "warning" : isSuccess ? "success" : "info";
+      entries.push({
+        id: "inc-" + pad(entries.length + 1),
+        sourceIndex,
+        raw,
+        timestamp: extractTimestamp(raw),
+        service: extractService(raw),
+        status: code,
+        severity,
+        tags: unique(tags)
+      });
+    });
+    return entries;
+  }
+
+  function countEntries(entries) {
+    const byService = Object.create(null);
+    const counts = {entries: entries.length, http: 0, success: 0, warning: 0, error: 0, json: 0, services: 0, byService};
+    entries.forEach(entry => {
+      ["http", "success", "warning", "error", "json"].forEach(tag => {
+        if (entry.tags.includes(tag)) counts[tag] += 1;
+      });
+      byService[entry.service] = (byService[entry.service] || 0) + 1;
+    });
+    counts.services = Object.keys(byService).length;
+    return counts;
+  }
+
+  function orderedEntries(view, entries) {
+    if (view === "grouped") {
+      const output = [];
+      CATEGORY_ORDER.forEach(category => {
+        entries.filter(entry => entry.severity === category).forEach(entry => output.push(entry));
+      });
+      return output;
+    }
+    if (view === "timeline") {
+      return entries.slice().sort((a, b) => {
+        const left = timestampMillis(a.timestamp);
+        const right = timestampMillis(b.timestamp);
+        const leftTimed = Number.isFinite(left);
+        const rightTimed = Number.isFinite(right);
+        if (leftTimed && rightTimed && left !== right) return left - right;
+        if (leftTimed !== rightTimed) return leftTimed ? -1 : 1;
+        return a.sourceIndex - b.sourceIndex;
+      });
+    }
+    return entries.slice().sort((a, b) => a.sourceIndex - b.sourceIndex);
+  }
+
+  function timestampMillis(value) {
+    const timestamp = String(value);
+    const zoned = /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})$/;
+    const unzoned = /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:\.\d+)?$/;
+    if (zoned.test(timestamp)) return Date.parse(timestamp.replace(" ", "T"));
+    if (unzoned.test(timestamp)) return Date.parse(timestamp.replace(" ", "T") + "Z");
+    return NaN;
+  }
+
+  function literalPattern(value, flags) {
+    const escaped = String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return new RegExp(escaped, flags);
+  }
+
+  function filterEntries(entries, query) {
+    const needle = query.trim();
+    if (!needle) return entries.slice();
+    const pattern = literalPattern(needle, "iu");
+    return entries.filter(entry =>
+      pattern.test(entry.raw) ||
+      pattern.test(entry.id) ||
+      pattern.test(entry.service)
+    );
+  }
+
+  function appendHighlighted(target, text, query) {
+    const source = String(text);
+    const needle = String(query).trim();
+    if (!needle) {
+      target.appendChild(document.createTextNode(source));
+      return 0;
+    }
+    const pattern = literalPattern(needle, "giu");
+    let cursor = 0;
+    let count = 0;
+    let match = pattern.exec(source);
+    while (match) {
+      const found = match.index;
+      if (found > cursor) target.appendChild(document.createTextNode(source.slice(cursor, found)));
+      const mark = document.createElement("mark");
+      mark.appendChild(document.createTextNode(match[0]));
+      target.appendChild(mark);
+      count += 1;
+      cursor = found + match[0].length;
+      match = pattern.exec(source);
+    }
+    if (cursor < source.length) target.appendChild(document.createTextNode(source.slice(cursor)));
+    return count;
+  }
+
+  function appendTextElement(parent, tag, className, text) {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    element.appendChild(document.createTextNode(String(text)));
+    parent.appendChild(element);
+    return element;
+  }
+
+  function unmatchedClosers(text) {
+    const stack = [];
+    let quoted = false;
+    let escaped = false;
+    for (const char of text) {
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+      if (char === "\\" && quoted) {
+        escaped = true;
+        continue;
+      }
+      if (char === "\"") {
+        quoted = !quoted;
+        continue;
+      }
+      if (quoted) continue;
+      if (char === "{" || char === "[") stack.push(char);
+      if (char === "}" && stack[stack.length - 1] === "{") stack.pop();
+      if (char === "]" && stack[stack.length - 1] === "[") stack.pop();
+    }
+    const closers = stack.reverse().map(char => char === "{" ? "}" : "]").join("");
+    return {closers, quoted};
+  }
+
+  function analyzeRepairs(entries) {
+    const repairs = [];
+    entries.forEach(entry => {
+      const balance = unmatchedClosers(entry.raw);
+      let suffix = "";
+      const reasons = [];
+      if (balance.quoted) {
+        suffix += "\"";
+        reasons.push("unterminated quote");
+      }
+      if (balance.closers) {
+        suffix += balance.closers;
+        reasons.push("unclosed JSON delimiter");
+      }
+      if (suffix) {
+        repairs.push({
+          entryId: entry.id,
+          uncertain: true,
+          reason: reasons.join(" and "),
+          original: entry.raw,
+          proposed: entry.raw + suffix
+        });
+      }
+    });
+    return repairs;
+  }
+
+  function repairFor(entryId) {
+    return state.repairs.find(repair => repair.entryId === entryId) || null;
+  }
+
+  function createDatum(parent, label, value, code) {
+    const datum = document.createElement("div");
+    datum.className = "datum";
+    appendTextElement(datum, "b", "", label);
+    appendTextElement(datum, code ? "code" : "span", "", value);
+    parent.appendChild(datum);
+  }
+
+  function createEntry(entry) {
+    const details = document.createElement("details");
+    details.className = "entry " + entry.severity;
+    details.dataset.entryId = entry.id;
+    details.open = state.expanded.has(entry.id);
+    details.addEventListener("toggle", () => {
+      if (details.open && !state.expanded.has(entry.id) && state.expanded.size >= MAX_EXPANDED) {
+        details.open = false;
+        notify("Expansion limit reached. Collapse an entry before opening another.", true);
+      } else if (details.open) {
+        state.expanded.add(entry.id);
+      } else {
+        state.expanded.delete(entry.id);
+      }
+      updateExpandButton();
+    });
+
+    const summary = document.createElement("summary");
+    appendTextElement(summary, "span", "entry-id", entry.id);
+    if (!state.hideTimestamps && entry.timestamp) appendTextElement(summary, "time", "time", entry.timestamp);
+    const line = document.createElement("span");
+    line.className = "line";
+    const displayLine = state.hideTimestamps && entry.timestamp
+      ? entry.raw.replace(entry.timestamp, "").trimStart()
+      : entry.raw;
+    appendHighlighted(line, displayLine, state.query);
+    summary.appendChild(line);
+    const chips = document.createElement("span");
+    chips.className = "chips";
+    entry.tags.forEach(tag => appendTextElement(chips, "span", "chip " + tag, tag));
+    summary.appendChild(chips);
+    details.appendChild(summary);
+
+    const body = document.createElement("div");
+    body.className = "entry-body";
+    createDatum(body, "Service", entry.service, true);
+    createDatum(body, "Severity", entry.severity, false);
+    createDatum(body, "HTTP status", entry.status === null ? "—" : entry.status, true);
+    const repair = repairFor(entry.id);
+    if (repair) {
+      const notice = document.createElement("div");
+      notice.className = "repair";
+      appendTextElement(notice, "strong", "", "Uncertain repair proposal · source unchanged");
+      appendTextElement(notice, "span", "", repair.reason + ": " + repair.proposed);
+      body.appendChild(notice);
+    }
+    details.appendChild(body);
+    return details;
+  }
+
+  function renderGrouped(entries) {
+    CATEGORY_ORDER.forEach(category => {
+      const groupEntries = entries.filter(entry => entry.severity === category);
+      if (!groupEntries.length) return;
+      const section = document.createElement("section");
+      section.className = "group";
+      section.dataset.group = category;
+      appendTextElement(section, "h3", "group-title", category + " · " + groupEntries.length);
+      groupEntries.forEach(entry => section.appendChild(createEntry(entry)));
+      els.results.appendChild(section);
+    });
+  }
+
+  function updateCounts() {
+    const counts = countEntries(state.entries);
+    Object.keys(els.counts).forEach(key => {
+      els.counts[key].textContent = String(counts[key]);
+    });
+  }
+
+  function updateTabs() {
+    VIEWS.forEach(view => {
+      const tab = document.getElementById("tab-" + view);
+      const active = state.view === view;
+      tab.setAttribute("aria-selected", String(active));
+      tab.setAttribute("tabindex", active ? "0" : "-1");
+      tab.classList.toggle("active", active);
+    });
+    els.results.setAttribute("aria-labelledby", "tab-" + state.view);
+  }
+
+  function updateExpandButton() {
+    const expandable = state.entries.slice(0, MAX_EXPANDED);
+    const allExpanded = expandable.length > 0 && expandable.every(entry => state.expanded.has(entry.id));
+    els.expand.textContent = allExpanded
+      ? "Collapse expanded"
+      : state.entries.length > MAX_EXPANDED ? "Expand first 2,000" : "Expand all";
+    els.expand.setAttribute("aria-pressed", String(allExpanded));
+  }
+
+  function render() {
+    const filtered = filterEntries(state.entries, state.query);
+    const ordered = orderedEntries(state.view, filtered);
+    els.results.replaceChildren();
+    if (!ordered.length) {
+      const message = state.entries.length
+        ? "No evidence matches this search."
+        : "Paste or load logs, then parse them into evidence.";
+      appendTextElement(els.results, "div", "empty", message);
+    } else if (state.view === "grouped") {
+      renderGrouped(ordered);
+    } else {
+      ordered.forEach(entry => els.results.appendChild(createEntry(entry)));
+    }
+    updateCounts();
+    updateTabs();
+    updateExpandButton();
+    els.timestamps.textContent = state.hideTimestamps ? "Timestamps off" : "Timestamps on";
+    els.timestamps.setAttribute("aria-pressed", String(!state.hideTimestamps));
+    els.matchSummary.textContent = filtered.length + " of " + state.entries.length + " entries";
+    els.repairSummary.textContent = state.repairs.length + (state.repairs.length === 1 ? " repair proposal" : " repair proposals");
+    els.viewProof.textContent = state.entries.length + " stable IDs";
+  }
+
+  function parseCurrent(announce) {
+    let normalized;
+    try {
+      normalized = validatedInput(els.source.value);
+    } catch (error) {
+      notify("Parse rejected: " + error.message, true);
+      return inspect();
+    }
+    state.input = normalized;
+    els.source.value = state.input;
+    state.entries = parseLogs(state.input);
+    const validIds = new Set(state.entries.map(entry => entry.id));
+    state.expanded = new Set(
+      Array.from(state.expanded).filter(id => validIds.has(id)).slice(0, MAX_EXPANDED)
+    );
+    state.repairs = [];
+    render();
+    if (announce) notify("Parsed " + state.entries.length + " entries. No content was executed.");
+    return inspect();
+  }
+
+  function notify(message, isError) {
+    window.clearTimeout(statusTimer);
+    els.status.textContent = message;
+    els.status.classList.toggle("error", Boolean(isError));
+    els.status.classList.add("show");
+    statusTimer = window.setTimeout(() => els.status.classList.remove("show"), 2600);
+  }
+
+  function setView(view) {
+    if (!VIEWS.includes(view)) throw new Error("Unknown view");
+    state.view = view;
+    render();
+  }
+
+  function setSearch(query) {
+    state.query = String(query).slice(0, 200);
+    els.search.value = state.query;
+    render();
+  }
+
+  function loadFixture() {
+    state.input = FIXTURE;
+    els.source.value = FIXTURE;
+    state.entries = parseLogs(FIXTURE);
+    state.repairs = [];
+    state.expanded.clear();
+    render();
+    notify("Deterministic 10-entry fixture loaded.");
+    return inspect();
+  }
+
+  function clearAll() {
+    state.input = "";
+    state.entries = [];
+    state.query = "";
+    state.repairs = [];
+    state.expanded.clear();
+    els.source.value = "";
+    els.search.value = "";
+    render();
+    notify("Evidence cleared from this page.");
+    return inspect();
+  }
+
+  function proposeRepairs() {
+    state.repairs = analyzeRepairs(state.entries);
+    state.repairs.forEach(repair => {
+      if (state.expanded.size < MAX_EXPANDED) state.expanded.add(repair.entryId);
+    });
+    render();
+    notify(state.repairs.length
+      ? state.repairs.length + " uncertain repair proposal marked; source unchanged."
+      : "No conservative repair candidates found.");
+    return state.repairs.map(repair => ({...repair}));
+  }
+
+  function exportState() {
+    return {
+      schema: SCHEMA,
+      version: 1,
+      input: state.input,
+      view: state.view,
+      query: state.query,
+      hideTimestamps: state.hideTimestamps,
+      repairsActive: state.repairs.length > 0,
+      expanded: Array.from(state.expanded)
+        .filter(id => state.entries.some(entry => entry.id === id))
+        .slice(0, MAX_EXPANDED)
+    };
+  }
+
+  function validateImport(candidate) {
+    if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) throw new Error("State must be a JSON object");
+    const allowed = ["expanded", "hideTimestamps", "input", "query", "repairsActive", "schema", "version", "view"];
+    const keys = Object.keys(candidate).sort();
+    if (keys.length !== allowed.length || keys.some((key, index) => key !== allowed[index])) throw new Error("State keys do not match the strict schema");
+    if (candidate.schema !== SCHEMA || candidate.version !== 1) throw new Error("Unsupported state schema or version");
+    if (typeof candidate.input !== "string") throw new Error("Input must be a string");
+    if (!VIEWS.includes(candidate.view)) throw new Error("Invalid view");
+    if (typeof candidate.query !== "string" || candidate.query.length > 200) throw new Error("Invalid search query");
+    if (typeof candidate.hideTimestamps !== "boolean") throw new Error("Invalid timestamp setting");
+    if (typeof candidate.repairsActive !== "boolean") throw new Error("Invalid repair setting");
+    if (!Array.isArray(candidate.expanded) || candidate.expanded.length > MAX_EXPANDED) throw new Error("Invalid expanded-entry list");
+    if (candidate.expanded.some(id => typeof id !== "string" || !/^inc-[0-9]{3,}$/.test(id))) throw new Error("Invalid expanded entry ID");
+    return {
+      schema: SCHEMA,
+      version: 1,
+      input: validatedInput(candidate.input),
+      view: candidate.view,
+      query: candidate.query,
+      hideTimestamps: candidate.hideTimestamps,
+      repairsActive: candidate.repairsActive,
+      expanded: unique(candidate.expanded)
+    };
+  }
+
+  function importState(candidate) {
+    const clean = validateImport(candidate);
+    const entries = parseLogs(clean.input);
+    const validIds = new Set(entries.map(entry => entry.id));
+    state.input = clean.input;
+    state.entries = entries;
+    state.view = clean.view;
+    state.query = clean.query;
+    state.hideTimestamps = clean.hideTimestamps;
+    state.expanded = new Set(clean.expanded.filter(id => validIds.has(id)));
+    state.repairs = clean.repairsActive ? analyzeRepairs(entries) : [];
+    els.source.value = state.input;
+    els.search.value = state.query;
+    render();
+    return inspect();
+  }
+
+  function viewIds(entries) {
+    const ids = {};
+    VIEWS.forEach(view => {
+      ids[view] = orderedEntries(view, entries).map(entry => entry.id);
+    });
+    return ids;
+  }
+
+  function inspect() {
+    return {
+      schema: SCHEMA,
+      inputLength: state.input.length,
+      view: state.view,
+      query: state.query,
+      hideTimestamps: state.hideTimestamps,
+      counts: countEntries(state.entries),
+      viewEntryIds: viewIds(state.entries),
+      expanded: Array.from(state.expanded),
+      repairs: state.repairs.map(repair => ({
+        entryId: repair.entryId,
+        uncertain: repair.uncertain,
+        reason: repair.reason,
+        sourceChanged: repair.original !== state.entries.find(entry => entry.id === repair.entryId)?.raw
+      })),
+      selfTest: state.lastSelfTest ? {
+        passed: state.lastSelfTest.passed,
+        total: state.lastSelfTest.total,
+        ok: state.lastSelfTest.ok
+      } : null
+    };
+  }
+
+  function sameMembers(left, right) {
+    return left.length === right.length && left.slice().sort().every((value, index) => value === right.slice().sort()[index]);
+  }
+
+  function runSelfTest() {
+    const entries = parseLogs(FIXTURE);
+    const counts = countEntries(entries);
+    const ids = viewIds(entries);
+    const testNode = document.createElement("div");
+    const payload = "<img src=x onerror=\"window.__incidentLogPayload=true\"> ALERT alert";
+    const highlightCount = appendHighlighted(testNode, payload, "alert");
+    const marks = Array.from(testNode.querySelectorAll("mark"));
+    const unicodeNode = document.createElement("div");
+    const unicodeHighlightCount = appendHighlighted(unicodeNode, "İX", "x");
+    const unicodeMarks = Array.from(unicodeNode.querySelectorAll("mark"));
+    const hostileServices = countEntries(parseLogs(
+      "2026-08-29T10:00:00Z service=__proto__ ok\n" +
+      "2026-08-29T10:00:01Z service=constructor ok"
+    ));
+    const statusContext = statusCode(
+      "2026-08-29T14:03:10.120Z service=gateway HTTP GET /api/orders 200 42ms"
+    );
+    const unrelatedNumber = statusCode("retry in 250ms");
+    const unrelatedCode = statusCode("worker exited code=200");
+    const mixedTimeline = orderedEntries("timeline", parseLogs(
+      "2026-03-01T00:00:00Z late\n" +
+      "untimed\n" +
+      "2026-01-01T00:00:00Z early"
+    )).map(entry => entry.raw);
+    const fixedTimezone = timestampMillis("2026-08-29 14:00:00") ===
+      timestampMillis("2026-08-29T14:00:00Z");
+    const boundedExpansion = Array.from(
+      {length: MAX_EXPANDED + 1},
+      (_, index) => ({id: "inc-" + String(index + 1).padStart(3, "0")})
+    ).slice(0, MAX_EXPANDED).map(entry => entry.id);
+    const repairs = analyzeRepairs(entries);
+    const originalLast = entries[entries.length - 1].raw;
+    const roundTripSource = {
+      schema: SCHEMA,
+      version: 1,
+      input: FIXTURE,
+      view: "timeline",
+      query: "gateway",
+      hideTimestamps: true,
+      repairsActive: false,
+      expanded: ["inc-001", "inc-010"]
+    };
+    const validated = validateImport(JSON.parse(JSON.stringify(roundTripSource)));
+    const maximumExportBytes = new Blob([
+      JSON.stringify({
+        ...roundTripSource,
+        input: String.fromCharCode(0xd800).repeat(MAX_INPUT)
+      }, null, 2)
+    ]).size;
+    const checks = [
+      {
+        name: "fixture counts",
+        ok: counts.entries === FIXTURE_COUNTS.entries &&
+          counts.http === FIXTURE_COUNTS.http &&
+          counts.success === FIXTURE_COUNTS.success &&
+          counts.warning === FIXTURE_COUNTS.warning &&
+          counts.error === FIXTURE_COUNTS.error &&
+          counts.json === FIXTURE_COUNTS.json &&
+          counts.services === FIXTURE_COUNTS.services &&
+          JSON.stringify(counts.byService) === JSON.stringify(FIXTURE_COUNTS.byService)
+      },
+      {
+        name: "view ID equivalence",
+        ok: sameMembers(ids.grouped, ids.timeline) && sameMembers(ids.timeline, ids.raw)
+      },
+      {
+        name: "matching-only highlights",
+        ok: highlightCount === 2 && marks.length === 2 &&
+          marks.every(mark => mark.textContent.toLocaleLowerCase() === "alert") &&
+          testNode.textContent === payload
+      },
+      {
+        name: "Unicode search ranges map to original text",
+        ok: unicodeHighlightCount === 1 && unicodeMarks.length === 1 &&
+          unicodeMarks[0].textContent === "X" && unicodeNode.textContent === "İX"
+      },
+      {
+        name: "prototype-like service names remain countable",
+        ok: hostileServices.services === 2 &&
+          hostileServices.byService.__proto__ === 1 &&
+          hostileServices.byService.constructor === 1
+      },
+      {
+        name: "HTTP status requires an HTTP context",
+        ok: statusContext === 200 && unrelatedNumber === null && unrelatedCode === null
+      },
+      {
+        name: "timeline has a total chronological order",
+        ok: mixedTimeline[0].endsWith("early") &&
+          mixedTimeline[1].endsWith("late") &&
+          mixedTimeline[2] === "untimed"
+      },
+      {
+        name: "timezone-less timestamps use deterministic UTC",
+        ok: fixedTimezone
+      },
+      {
+        name: "expanded state stays within its import boundary",
+        ok: boundedExpansion.length === MAX_EXPANDED
+      },
+      {
+        name: "hostile markup remains inert",
+        ok: testNode.querySelectorAll("img").length === 0 && window.__incidentLogPayload !== true
+      },
+      {
+        name: "uncertain repair preserves source",
+        ok: repairs.length === 1 && repairs[0].uncertain === true &&
+          repairs[0].original === originalLast && entries[entries.length - 1].raw === originalLast &&
+          repairs[0].proposed !== originalLast
+      },
+      {
+        name: "strict state round-trip",
+        ok: JSON.stringify(validated) === JSON.stringify(roundTripSource)
+      },
+      {
+        name: "maximum valid state fits the file importer",
+        ok: maximumExportBytes <= MAX_STATE_FILE_BYTES
+      }
+    ];
+    const passed = checks.filter(check => check.ok).length;
+    state.lastSelfTest = {passed, total: checks.length, ok: passed === checks.length, checks};
+    els.testOutput.textContent = passed + "/" + checks.length + " checks pass · " +
+      checks.map(check => (check.ok ? "✓ " : "✕ ") + check.name).join(" · ");
+    els.testOutput.classList.toggle("fail", passed !== checks.length);
+    return {
+      passed,
+      total: checks.length,
+      ok: passed === checks.length,
+      checks: checks.map(check => ({name: check.name, ok: check.ok}))
+    };
+  }
+
+  function capabilities() {
+    return {
+      name: "IncidentLogObservatory",
+      version: 1,
+      offline: true,
+      inputLimit: MAX_INPUT,
+      entryLimit: MAX_ENTRIES,
+      expandedLimit: MAX_EXPANDED,
+      views: VIEWS.slice(),
+      actions: [
+        "loadFixture", "setInput", "parse", "setView", "setSearch",
+        "toggleTimestamps", "expandAll", "collapseAll", "autoFix", "clear", "selfTest"
+      ],
+      categories: ["http", "success", "warning", "error", "json", "service"],
+      fixtureContract: JSON.parse(JSON.stringify(FIXTURE_COUNTS))
+    };
+  }
+
+  function dispatch(action) {
+    if (!action || typeof action !== "object" || Array.isArray(action) || typeof action.type !== "string") {
+      throw new Error("Action must be a JSON object with a type");
+    }
+    switch (action.type) {
+      case "loadFixture":
+        return loadFixture();
+      case "setInput":
+        if (typeof action.input !== "string") throw new Error("Invalid input");
+        state.input = validatedInput(action.input);
+        state.entries = parseLogs(state.input);
+        state.expanded.clear();
+        state.repairs = [];
+        els.source.value = state.input;
+        render();
+        return inspect();
+      case "parse":
+        return parseCurrent(false);
+      case "setView":
+        setView(action.view);
+        return inspect();
+      case "setSearch":
+        if (typeof action.query !== "string" || action.query.length > 200) throw new Error("Invalid query");
+        setSearch(action.query);
+        return inspect();
+      case "toggleTimestamps":
+        state.hideTimestamps = !state.hideTimestamps;
+        render();
+        return inspect();
+      case "expandAll":
+        state.expanded = new Set(state.entries.slice(0, MAX_EXPANDED).map(entry => entry.id));
+        render();
+        return inspect();
+      case "collapseAll":
+        state.expanded.clear();
+        render();
+        return inspect();
+      case "autoFix":
+        return proposeRepairs();
+      case "clear":
+        return clearAll();
+      case "selfTest":
+        return runSelfTest();
+      default:
+        throw new Error("Unknown action type");
+    }
+  }
+
+  async function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+    const helper = document.createElement("textarea");
+    helper.value = text;
+    helper.setAttribute("readonly", "");
+    helper.className = "sr-only";
+    document.body.appendChild(helper);
+    helper.select();
+    const copied = document.execCommand("copy");
+    helper.remove();
+    return copied;
+  }
+
+  function downloadState() {
+    const data = JSON.stringify(exportState(), null, 2);
+    const blob = new Blob([data], {type: "application/json"});
+    if (blob.size > MAX_STATE_FILE_BYTES) {
+      notify("Export blocked: state exceeds the 1 MB file safety limit.", true);
+      return;
+    }
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "incident-log-observatory.json";
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    notify("Validated state exported.");
+  }
+
+  els.parse.addEventListener("click", () => parseCurrent(true));
+  els.source.addEventListener("paste", event => {
+    const pasted = event.clipboardData && event.clipboardData.getData("text");
+    if (typeof pasted !== "string") return;
+    const start = els.source.selectionStart;
+    const end = els.source.selectionEnd;
+    const proposed = els.source.value.slice(0, start) +
+      normalizeInput(pasted) +
+      els.source.value.slice(end);
+    try {
+      validatedInput(proposed);
+    } catch (error) {
+      event.preventDefault();
+      notify("Paste rejected: " + error.message, true);
+    }
+  });
+  els.fixture.addEventListener("click", loadFixture);
+  els.clear.addEventListener("click", clearAll);
+  els.autofix.addEventListener("click", proposeRepairs);
+  els.copy.addEventListener("click", async () => {
+    const visibleSource = normalizeInput(els.source.value);
+    try {
+      await copyText(visibleSource);
+      notify("Copied " + visibleSource.length + " characters.");
+    } catch (error) {
+      notify("Copy was blocked by this browser. Select the source and copy manually.", true);
+    }
+  });
+  els.paste.addEventListener("click", async () => {
+    try {
+      if (!navigator.clipboard || !navigator.clipboard.readText) throw new Error("Clipboard unavailable");
+      const text = await navigator.clipboard.readText();
+      const normalized = validatedInput(text);
+      els.source.value = normalized;
+      parseCurrent(false);
+      notify("Pasted and parsed " + state.entries.length + " entries.");
+    } catch (error) {
+      els.source.focus();
+      notify(
+        error instanceof Error && error.message.startsWith("Evidence exceeds")
+          ? error.message
+          : "Clipboard access is unavailable here. Use ⌘/Ctrl+V, then Parse logs.",
+        true
+      );
+    }
+  });
+  els.exportButton.addEventListener("click", downloadState);
+  els.importInput.addEventListener("change", () => {
+    const file = els.importInput.files && els.importInput.files[0];
+    if (!file) return;
+    if (file.size > MAX_STATE_FILE_BYTES) {
+      notify("Import rejected: file exceeds 1 MB.", true);
+      els.importInput.value = "";
+      return;
+    }
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      try {
+        importState(JSON.parse(String(reader.result)));
+        notify("Strictly validated state imported.");
+      } catch (error) {
+        notify("Import rejected: " + error.message, true);
+      }
+      els.importInput.value = "";
+    });
+    reader.addEventListener("error", () => {
+      notify("Import could not be read.", true);
+      els.importInput.value = "";
+    });
+    reader.readAsText(file);
+  });
+  els.search.addEventListener("input", () => setSearch(els.search.value));
+  els.timestamps.addEventListener("click", () => {
+    state.hideTimestamps = !state.hideTimestamps;
+    render();
+  });
+  els.expand.addEventListener("click", () => {
+    const expandable = state.entries.slice(0, MAX_EXPANDED);
+    const allExpanded = expandable.length > 0 && expandable.every(entry => state.expanded.has(entry.id));
+    state.expanded = allExpanded ? new Set() : new Set(expandable.map(entry => entry.id));
+    render();
+    if (!allExpanded && state.entries.length > MAX_EXPANDED) {
+      notify("Expanded the first 2,000 entries to keep exported state importable.");
+    }
+  });
+  document.querySelectorAll("[data-view]").forEach(tab => {
+    tab.addEventListener("click", () => setView(tab.dataset.view));
+    tab.addEventListener("keydown", event => {
+      if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
+      event.preventDefault();
+      const direction = event.key === "ArrowRight" ? 1 : -1;
+      const index = VIEWS.indexOf(state.view);
+      const next = VIEWS[(index + direction + VIEWS.length) % VIEWS.length];
+      setView(next);
+      document.getElementById("tab-" + next).focus();
+    });
+  });
+  els.selfTest.addEventListener("click", () => {
+    const result = runSelfTest();
+    notify(result.ok ? "All live safety checks pass." : "A live safety check failed.", !result.ok);
+  });
+  document.addEventListener("keydown", event => {
+    const command = event.metaKey || event.ctrlKey;
+    if (command && event.key === "Enter") {
+      event.preventDefault();
+      parseCurrent(true);
+      return;
+    }
+    if (!command && event.key === "/" && document.activeElement !== els.source && document.activeElement !== els.search) {
+      event.preventDefault();
+      els.search.focus();
+      return;
+    }
+    if (!command && ["1", "2", "3"].includes(event.key) && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
+      setView(VIEWS[Number(event.key) - 1]);
+    }
+  });
+
+  window.IncidentLogObservatory = Object.freeze({
+    capabilities,
+    inspect,
+    dispatch,
+    exportState,
+    importState,
+    selfTest: runSelfTest
+  });
+
+  els.source.value = FIXTURE;
+  state.entries = parseLogs(FIXTURE);
+  render();
+  runSelfTest();
+})();
+</script>
+</body>
+</html>

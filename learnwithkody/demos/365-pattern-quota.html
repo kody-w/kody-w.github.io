@@ -1,0 +1,1498 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src 'none'; script-src 'unsafe-inline'; script-src-attr 'none'; style-src 'unsafe-inline'; img-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="color-scheme" content="dark">
+  <title>Pattern Quota</title>
+  <style>
+    :root {
+      --ink: #06131d;
+      --panel: #0b2230;
+      --panel-2: #0f2c3b;
+      --line: #285066;
+      --paper: #eef8ee;
+      --muted: #9bb8b5;
+      --aqua: #64e6cf;
+      --aqua-deep: #2aa68f;
+      --coral: #ff866f;
+      --amber: #ffd27a;
+      --blue: #78bdf2;
+      --danger: #ff6f76;
+      --shadow: rgba(0, 0, 0, .32);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      min-height: 100%;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background:
+        radial-gradient(circle at 18% 8%, rgba(42, 166, 143, .18), transparent 33rem),
+        radial-gradient(circle at 92% 24%, rgba(255, 134, 111, .11), transparent 28rem),
+        linear-gradient(145deg, #071924 0%, #06131d 56%, #081923 100%);
+    }
+
+    body::before {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      content: "";
+      opacity: .18;
+      background-image:
+        linear-gradient(rgba(100, 230, 207, .08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(100, 230, 207, .06) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: linear-gradient(to bottom, black, transparent 88%);
+    }
+
+    button, textarea { font: inherit; }
+
+    button {
+      color: inherit;
+      touch-action: manipulation;
+    }
+
+    button:focus-visible,
+    textarea:focus-visible,
+    summary:focus-visible {
+      outline: 3px solid var(--amber);
+      outline-offset: 3px;
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 26px 0 40px;
+    }
+
+    .masthead {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: end;
+      margin-bottom: 20px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow,
+    .kicker {
+      margin: 0 0 8px;
+      color: var(--aqua);
+      font-size: .73rem;
+      font-weight: 800;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.5rem, 7vw, 5.8rem);
+      font-weight: 400;
+      letter-spacing: -.055em;
+      line-height: .85;
+    }
+
+    .subtitle {
+      max-width: 650px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: clamp(.82rem, 2vw, .98rem);
+      line-height: 1.65;
+    }
+
+    .seal {
+      display: grid;
+      width: 118px;
+      aspect-ratio: 1;
+      place-items: center;
+      border: 1px solid var(--aqua-deep);
+      border-radius: 50%;
+      color: var(--aqua);
+      background: rgba(8, 32, 42, .72);
+      box-shadow: inset 0 0 0 8px var(--ink), inset 0 0 0 9px var(--line);
+      font-size: .67rem;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-align: center;
+      text-transform: uppercase;
+      transform: rotate(7deg);
+    }
+
+    .status-strip {
+      display: grid;
+      grid-template-columns: minmax(150px, 1.2fr) repeat(3, minmax(100px, .65fr));
+      gap: 1px;
+      overflow: hidden;
+      margin-bottom: 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--line);
+      box-shadow: 0 18px 55px var(--shadow);
+    }
+
+    .status-cell {
+      min-width: 0;
+      padding: 14px 16px;
+      background: rgba(11, 34, 48, .96);
+    }
+
+    .status-label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: .63rem;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .status-value {
+      display: block;
+      overflow: hidden;
+      font-size: 1rem;
+      font-weight: 800;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .quota-track {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 5px;
+      margin-top: 8px;
+    }
+
+    .quota-segment {
+      height: 6px;
+      border: 1px solid #3c6675;
+      border-radius: 999px;
+      background: #102f3d;
+    }
+
+    .quota-segment[data-filled="true"] {
+      border-color: var(--aqua);
+      background: var(--aqua);
+      box-shadow: 0 0 14px rgba(100, 230, 207, .45);
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(290px, .7fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .board,
+    .side-card,
+    .completion {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(160deg, rgba(15, 44, 59, .97), rgba(8, 28, 40, .98));
+      box-shadow: 0 22px 70px var(--shadow);
+    }
+
+    .board { padding: clamp(16px, 3vw, 26px); }
+
+    .board-head {
+      display: flex;
+      gap: 18px;
+      align-items: start;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    h2, h3, p { margin-top: 0; }
+
+    h2 {
+      margin-bottom: 6px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.45rem, 3vw, 2.2rem);
+      font-weight: 400;
+    }
+
+    .board-copy,
+    .small-copy {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: .78rem;
+      line-height: 1.55;
+    }
+
+    .selection-counter {
+      flex: 0 0 auto;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--aqua);
+      background: rgba(6, 19, 29, .72);
+      font-size: .68rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .tile-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(62px, 1fr));
+      gap: 9px;
+    }
+
+    .tile {
+      position: relative;
+      min-height: 66px;
+      padding: 8px 5px;
+      overflow: hidden;
+      border: 1px solid #31576b;
+      border-radius: 10px;
+      color: #c4dcd8;
+      background: linear-gradient(155deg, #123444, #0a2634);
+      box-shadow: inset 0 1px rgba(255, 255, 255, .04);
+      cursor: pointer;
+      font-size: clamp(.8rem, 1.8vw, 1.05rem);
+      font-weight: 800;
+      letter-spacing: .08em;
+      transition: border-color 150ms ease, color 150ms ease, transform 150ms ease, background 150ms ease;
+    }
+
+    .tile::after {
+      position: absolute;
+      right: 8px;
+      bottom: 6px;
+      color: #537889;
+      content: attr(data-index);
+      font-size: .52rem;
+      font-weight: 500;
+    }
+
+    .tile:hover:not([aria-disabled="true"]) {
+      border-color: var(--aqua);
+      color: var(--paper);
+      transform: translateY(-2px);
+    }
+
+    .tile[aria-pressed="true"] {
+      border-color: var(--amber);
+      color: #071923;
+      background: var(--amber);
+      box-shadow: 0 0 0 2px rgba(255, 210, 122, .18), 0 8px 24px rgba(0, 0, 0, .2);
+      transform: translateY(-2px);
+    }
+
+    .tile[data-outcome="correct"] {
+      border-color: var(--aqua);
+      color: #041512;
+      background: var(--aqua);
+    }
+
+    .tile[data-outcome="incorrect"] {
+      border-color: var(--danger);
+      color: #24080a;
+      background: var(--danger);
+    }
+
+    .tile[data-outcome="missed"] {
+      border-color: var(--blue);
+      color: var(--blue);
+      background: repeating-linear-gradient(135deg, #0d2b3a, #0d2b3a 6px, #12384a 6px, #12384a 12px);
+      box-shadow: inset 0 0 0 2px rgba(120, 189, 242, .2);
+    }
+
+    .tile[aria-disabled="true"] { cursor: default; opacity: 1; }
+
+    .tile-outcome {
+      display: block;
+      margin-top: 5px;
+      font-size: .52rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .tile[data-fresh="true"] { animation: tile-in 420ms both; }
+    .tile.d0 { animation-delay: 0ms; }
+    .tile.d1 { animation-delay: 35ms; }
+    .tile.d2 { animation-delay: 70ms; }
+    .tile.d3 { animation-delay: 105ms; }
+    .tile.d4 { animation-delay: 140ms; }
+    .tile.d5 { animation-delay: 175ms; }
+    .tile.d6 { animation-delay: 210ms; }
+    .tile.d7 { animation-delay: 245ms; }
+
+    @keyframes tile-in {
+      from { opacity: 0; transform: translateY(10px) scale(.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 15px;
+      color: var(--muted);
+      font-size: .66rem;
+    }
+
+    .legend span { display: inline-flex; gap: 6px; align-items: center; }
+
+    .swatch {
+      width: 10px;
+      height: 10px;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      background: #123444;
+    }
+
+    .swatch.selected { border-color: var(--amber); background: var(--amber); }
+    .swatch.correct { border-color: var(--aqua); background: var(--aqua); }
+    .swatch.incorrect { border-color: var(--danger); background: var(--danger); }
+    .swatch.missed { border-color: var(--blue); background: var(--blue); }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .action {
+      min-height: 44px;
+      padding: 10px 16px;
+      border: 1px solid var(--aqua);
+      border-radius: 9px;
+      color: #061b1a;
+      background: var(--aqua);
+      font-weight: 900;
+      letter-spacing: .055em;
+      cursor: pointer;
+    }
+
+    .action.secondary {
+      border-color: var(--line);
+      color: var(--paper);
+      background: #102f3d;
+    }
+
+    .action.danger {
+      border-color: #87545b;
+      color: #ffd9d6;
+      background: #38232b;
+    }
+
+    .action:disabled {
+      border-color: #294454;
+      color: #718a91;
+      background: #102732;
+      cursor: not-allowed;
+    }
+
+    .side-stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .side-card { padding: 18px; }
+
+    .side-card h3 {
+      margin-bottom: 10px;
+      color: var(--paper);
+      font-size: .86rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .rule {
+      margin: 0;
+      padding: 14px;
+      border-left: 3px solid var(--coral);
+      color: #f7ded8;
+      background: rgba(255, 134, 111, .08);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.03rem;
+      line-height: 1.45;
+    }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .score {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: rgba(6, 19, 29, .54);
+    }
+
+    .score strong {
+      display: block;
+      margin-top: 5px;
+      font-size: 1.25rem;
+    }
+
+    .score[data-kind="correct"] strong { color: var(--aqua); }
+    .score[data-kind="incorrect"] strong { color: var(--danger); }
+    .score[data-kind="missed"] strong { color: var(--blue); }
+    .score[data-kind="accuracy"] strong { color: var(--amber); }
+
+    .verdict {
+      margin: 12px 0 0;
+      padding: 10px;
+      border-radius: 8px;
+      color: var(--muted);
+      background: rgba(6, 19, 29, .65);
+      font-size: .74rem;
+      line-height: 1.45;
+    }
+
+    .verdict[data-pass="true"] { color: #bff8e9; }
+    .verdict[data-pass="false"] { color: #ffc4bd; }
+
+    .self-test {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 12px;
+      border: 1px solid #31576b;
+      border-radius: 9px;
+      color: var(--muted);
+      background: #081d29;
+      font-size: .67rem;
+      line-height: 1.4;
+    }
+
+    .self-test[data-ok="true"] { border-color: var(--aqua-deep); color: #bff8e9; }
+    .self-test[data-ok="false"] { border-color: var(--danger); color: #ffc4bd; }
+
+    .tiny-button {
+      flex: 0 0 auto;
+      min-height: 36px;
+      padding: 6px 9px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      color: var(--paper);
+      background: #102f3d;
+      cursor: pointer;
+      font-size: .63rem;
+    }
+
+    details { margin-top: 12px; }
+
+    summary {
+      padding: 8px 0;
+      color: var(--aqua);
+      cursor: pointer;
+      font-size: .72rem;
+      font-weight: 800;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 118px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: #cfe4e0;
+      background: #061722;
+      padding: 10px;
+      font-size: .66rem;
+      line-height: 1.45;
+    }
+
+    .port-message {
+      min-height: 2.8em;
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: .66rem;
+      line-height: 1.4;
+    }
+
+    .port-message[data-error="true"] { color: #ffc4bd; }
+
+    .completion {
+      display: none;
+      padding: clamp(28px, 7vw, 70px);
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .completion[data-visible="true"] { display: block; animation: completion-in 500ms both; }
+
+    @keyframes completion-in {
+      from { opacity: 0; transform: scale(.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .completion-mark {
+      display: grid;
+      width: 108px;
+      aspect-ratio: 1;
+      margin: 0 auto 24px;
+      place-items: center;
+      border: 1px solid var(--aqua);
+      border-radius: 50%;
+      color: var(--aqua);
+      box-shadow: 0 0 0 10px rgba(100, 230, 207, .05), 0 0 50px rgba(100, 230, 207, .15);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 2rem;
+    }
+
+    .completion h2 { font-size: clamp(2rem, 7vw, 4.5rem); }
+
+    .completion p {
+      max-width: 580px;
+      margin-right: auto;
+      margin-left: auto;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .completion .actions { justify-content: center; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 800px) {
+      .workspace { grid-template-columns: 1fr; }
+      .side-stack { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .side-card:last-child { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 520px) {
+      .shell { width: min(100% - 20px, 500px); padding-top: 16px; }
+      .masthead { grid-template-columns: 1fr; }
+      .seal { display: none; }
+      h1 { font-size: clamp(2.65rem, 17vw, 4.5rem); }
+      .status-strip { grid-template-columns: repeat(2, 1fr); }
+      .status-cell:first-child { grid-column: 1 / -1; }
+      .tile-grid { grid-template-columns: repeat(4, minmax(56px, 1fr)); gap: 7px; }
+      .tile { min-height: 58px; font-size: .82rem; }
+      .side-stack { grid-template-columns: 1fr; }
+      .side-card:last-child { grid-column: auto; }
+      .board-head { display: block; }
+      .selection-counter { display: inline-block; margin-top: 12px; }
+      .actions .action { flex: 1 1 130px; }
+    }
+
+    @media (max-width: 390px) {
+      .shell { width: calc(100% - 14px); }
+      .board, .side-card { border-radius: 13px; }
+      .board { padding: 12px; }
+      .tile-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .tile { min-height: 55px; }
+      .status-cell { padding: 11px; }
+      .score-grid { gap: 6px; }
+      .score { padding: 8px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <div>
+        <p class="eyebrow">Parallax Registry · Pattern Office</p>
+        <h1>Pattern Quota</h1>
+        <p class="subtitle">Five batches. Twenty-four codes per batch. Find the six echo codes whose digits reflect inward, then submit your read. A score of 75% or higher clears the round.</p>
+      </div>
+      <div class="seal" aria-hidden="true">Observe<br>Compare<br>Resolve</div>
+    </header>
+
+    <section class="status-strip" aria-label="Run status">
+      <div class="status-cell">
+        <span class="status-label">Quota progress</span>
+        <span class="status-value" id="quotaText">0 of 5 cleared</span>
+        <div class="quota-track" id="quotaTrack" aria-hidden="true"></div>
+      </div>
+      <div class="status-cell">
+        <span class="status-label">Active round</span>
+        <span class="status-value" id="roundValue">01 / 05</span>
+      </div>
+      <div class="status-cell">
+        <span class="status-label">Batch</span>
+        <span class="status-value" id="batchValue">PQ-001</span>
+      </div>
+      <div class="status-cell">
+        <span class="status-label">Selected</span>
+        <span class="status-value" id="selectedValue">00 / 24</span>
+      </div>
+    </section>
+
+    <section class="workspace" id="workspace">
+      <section class="board" aria-labelledby="boardTitle">
+        <div class="board-head">
+          <div>
+            <p class="kicker">Classification surface</p>
+            <h2 id="boardTitle">Read the field</h2>
+            <p class="board-copy" id="boardCopy">Select every code that mirrors from the outside toward the center.</p>
+          </div>
+          <span class="selection-counter" id="selectionCounter">0 chosen</span>
+        </div>
+        <div class="tile-grid" id="tileGrid" role="group" aria-label="Selectable code tiles"></div>
+        <div class="legend" aria-label="Tile state legend">
+          <span><i class="swatch"></i>available</span>
+          <span><i class="swatch selected"></i>selected</span>
+          <span id="reviewLegend" hidden><i class="swatch correct"></i>correct</span>
+          <span id="incorrectLegend" hidden><i class="swatch incorrect"></i>incorrect</span>
+          <span id="missedLegend" hidden><i class="swatch missed"></i>missed</span>
+        </div>
+        <div class="actions">
+          <button class="action" id="submitButton" type="button" disabled>Submit selection</button>
+          <button class="action secondary" id="continueButton" type="button" hidden>Continue</button>
+          <button class="action danger" id="restartButton" type="button">Restart run</button>
+        </div>
+      </section>
+
+      <aside class="side-stack">
+        <section class="side-card" aria-labelledby="briefingTitle">
+          <p class="kicker">Briefing</p>
+          <h3 id="briefingTitle">Echo-code rule</h3>
+          <p class="rule">An echo code reads the same from either edge. Example: <strong>4774</strong>.</p>
+          <p class="small-copy">Exactly six targets are present in every batch. Target flags remain concealed until review.</p>
+        </section>
+
+        <section class="side-card" aria-labelledby="scoreTitle">
+          <p class="kicker">Review ledger</p>
+          <h3 id="scoreTitle">Latest score</h3>
+          <div class="score-grid">
+            <div class="score" data-kind="correct"><span class="status-label">Correct</span><strong id="correctScore">—</strong></div>
+            <div class="score" data-kind="incorrect"><span class="status-label">Incorrect</span><strong id="incorrectScore">—</strong></div>
+            <div class="score" data-kind="missed"><span class="status-label">Missed</span><strong id="missedScore">—</strong></div>
+            <div class="score" data-kind="accuracy"><span class="status-label">Accuracy</span><strong id="accuracyScore">—</strong></div>
+          </div>
+          <p class="verdict" id="verdict">Submit a selection to create a scored review.</p>
+        </section>
+
+        <section class="side-card" aria-labelledby="systemsTitle">
+          <p class="kicker">Systems port</p>
+          <h3 id="systemsTitle">Verification &amp; state</h3>
+          <div class="self-test" id="selfTestPanel" data-ok="false">
+            <span id="selfTestResult">Self-test pending</span>
+            <button class="tiny-button" id="selfTestButton" type="button">Run again</button>
+          </div>
+          <details>
+            <summary>Export / import state capsule</summary>
+            <label class="sr-only" for="stateCapsule">State capsule JSON</label>
+            <textarea id="stateCapsule" spellcheck="false" autocomplete="off" placeholder="Exported state appears here. Paste a capsule, then import."></textarea>
+            <div class="actions">
+              <button class="action secondary" id="exportButton" type="button">Export</button>
+              <button class="action secondary" id="importButton" type="button">Import</button>
+            </div>
+            <p class="port-message" id="portMessage">Import is transactional: invalid data leaves the current run unchanged.</p>
+          </details>
+        </section>
+      </aside>
+    </section>
+
+    <section class="completion" id="completion" data-visible="false" aria-labelledby="completionTitle">
+      <div class="completion-mark" aria-hidden="true">5/5</div>
+      <p class="kicker">Quota resolved</p>
+      <h2 id="completionTitle">Pattern field complete</h2>
+      <p id="completionCopy">All five rounds cleared. The ledger remains available for export, or you can begin a fresh deterministic run.</p>
+      <div class="actions">
+        <button class="action" id="completionRestart" type="button">Restart Pattern Quota</button>
+        <button class="action secondary" id="completionExport" type="button">Export completed run</button>
+      </div>
+    </section>
+
+    <p class="sr-only" id="liveRegion" aria-live="polite" aria-atomic="true"></p>
+  </main>
+
+  <script>
+  (() => {
+    "use strict";
+
+    const STATE_SCHEMA = "pattern-quota-state";
+    const STATE_VERSION = 1;
+    const API_SCHEMA = "pattern-quota-api";
+    const TILE_COUNT = 24;
+    const TARGET_COUNT = 6;
+    const QUOTA = 5;
+    const PASS_ACCURACY = 75;
+    const MAX_BATCH_SERIAL = 500;
+    const MAX_STATE_CHARS = 1000000;
+    const DEFAULT_SEED = 0x51a7c3d9;
+
+    const elements = {
+      workspace: document.getElementById("workspace"),
+      completion: document.getElementById("completion"),
+      quotaText: document.getElementById("quotaText"),
+      quotaTrack: document.getElementById("quotaTrack"),
+      roundValue: document.getElementById("roundValue"),
+      batchValue: document.getElementById("batchValue"),
+      selectedValue: document.getElementById("selectedValue"),
+      selectionCounter: document.getElementById("selectionCounter"),
+      boardCopy: document.getElementById("boardCopy"),
+      tileGrid: document.getElementById("tileGrid"),
+      submitButton: document.getElementById("submitButton"),
+      continueButton: document.getElementById("continueButton"),
+      restartButton: document.getElementById("restartButton"),
+      correctScore: document.getElementById("correctScore"),
+      incorrectScore: document.getElementById("incorrectScore"),
+      missedScore: document.getElementById("missedScore"),
+      accuracyScore: document.getElementById("accuracyScore"),
+      verdict: document.getElementById("verdict"),
+      reviewLegend: document.getElementById("reviewLegend"),
+      incorrectLegend: document.getElementById("incorrectLegend"),
+      missedLegend: document.getElementById("missedLegend"),
+      selfTestPanel: document.getElementById("selfTestPanel"),
+      selfTestResult: document.getElementById("selfTestResult"),
+      selfTestButton: document.getElementById("selfTestButton"),
+      stateCapsule: document.getElementById("stateCapsule"),
+      exportButton: document.getElementById("exportButton"),
+      importButton: document.getElementById("importButton"),
+      portMessage: document.getElementById("portMessage"),
+      completionRestart: document.getElementById("completionRestart"),
+      completionExport: document.getElementById("completionExport"),
+      liveRegion: document.getElementById("liveRegion")
+    };
+
+    let state = freshState();
+    let batch = generateBatch(state.seed, state.batchSerial);
+
+    function freshState(seed = DEFAULT_SEED) {
+      return {
+        schema: STATE_SCHEMA,
+        version: STATE_VERSION,
+        seed: seed >>> 0,
+        batchSerial: 0,
+        completed: 0,
+        phase: "playing",
+        selection: [],
+        lastScore: null,
+        history: []
+      };
+    }
+
+    function isPlainObject(value) {
+      if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+      const prototype = Object.getPrototypeOf(value);
+      return prototype === Object.prototype || prototype === null;
+    }
+
+    function exactKeys(value, keys) {
+      if (!isPlainObject(value)) return false;
+      const actual = Object.keys(value).sort();
+      const expected = keys.slice().sort();
+      return actual.length === expected.length && actual.every((key, index) => key === expected[index]);
+    }
+
+    function cloneJson(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function hashString(text) {
+      let hash = 2166136261;
+      for (let index = 0; index < text.length; index += 1) {
+        hash ^= text.charCodeAt(index);
+        hash = Math.imul(hash, 16777619);
+      }
+      return hash >>> 0;
+    }
+
+    function mulberry32(seed) {
+      let value = seed >>> 0;
+      return function next() {
+        value = (value + 0x6d2b79f5) >>> 0;
+        let mixed = value;
+        mixed = Math.imul(mixed ^ mixed >>> 15, mixed | 1);
+        mixed ^= mixed + Math.imul(mixed ^ mixed >>> 7, mixed | 61);
+        return ((mixed ^ mixed >>> 14) >>> 0) / 4294967296;
+      };
+    }
+
+    function shuffled(values, random) {
+      const result = values.slice();
+      for (let index = result.length - 1; index > 0; index -= 1) {
+        const swap = Math.floor(random() * (index + 1));
+        const held = result[index];
+        result[index] = result[swap];
+        result[swap] = held;
+      }
+      return result;
+    }
+
+    function targetCode(random) {
+      const first = 1 + Math.floor(random() * 9);
+      const second = Math.floor(random() * 10);
+      return String(first) + String(second) + String(second) + String(first);
+    }
+
+    function distractorCode(random, used) {
+      let candidate = "";
+      do {
+        candidate = String(1000 + Math.floor(random() * 9000));
+      } while (candidate === candidate.split("").reverse().join("") || used.has(candidate));
+      return candidate;
+    }
+
+    function generateBatch(seed, serial) {
+      const random = mulberry32(hashString(String(seed >>> 0) + ":" + String(serial)));
+      const used = new Set();
+      const records = [];
+      while (records.length < TARGET_COUNT) {
+        const value = targetCode(random);
+        if (!used.has(value)) {
+          used.add(value);
+          records.push({ value, target: true });
+        }
+      }
+      while (records.length < TILE_COUNT) {
+        const value = distractorCode(random, used);
+        used.add(value);
+        records.push({ value, target: false });
+      }
+      return shuffled(records, random).map((record, index) => ({
+        id: "B" + String(serial + 1) + "-T" + String(index + 1),
+        value: record.value,
+        target: record.target
+      }));
+    }
+
+    function scoreSelection(activeBatch, selection) {
+      const selected = new Set(selection);
+      let correct = 0;
+      let incorrect = 0;
+      let missed = 0;
+      activeBatch.forEach((tile) => {
+        if (selected.has(tile.id) && tile.target) correct += 1;
+        if (selected.has(tile.id) && !tile.target) incorrect += 1;
+        if (!selected.has(tile.id) && tile.target) missed += 1;
+      });
+      const denominator = correct + incorrect + missed;
+      const accuracy = denominator === 0 ? 0 : Math.round((correct / denominator) * 1000) / 10;
+      return {
+        correct,
+        incorrect,
+        missed,
+        accuracy,
+        passed: accuracy >= PASS_ACCURACY
+      };
+    }
+
+    function roundBeforeHistory(history, throughIndex) {
+      let cleared = 0;
+      for (let index = 0; index < throughIndex; index += 1) {
+        if (history[index].passed) cleared += 1;
+      }
+      return cleared + 1;
+    }
+
+    function makeHistoryRecord(serial, round, selection, score) {
+      return {
+        batchSerial: serial,
+        round,
+        selection: selection.slice().sort(),
+        correct: score.correct,
+        incorrect: score.incorrect,
+        missed: score.missed,
+        accuracy: score.accuracy,
+        passed: score.passed
+      };
+    }
+
+    function sameNumber(left, right) {
+      return typeof left === "number" && typeof right === "number" && Math.abs(left - right) < 0.00001;
+    }
+
+    function validateSelection(selection, activeBatch, label) {
+      if (!Array.isArray(selection)) throw new Error(label + " must be an array");
+      const ids = new Set(activeBatch.map((tile) => tile.id));
+      const unique = new Set();
+      selection.forEach((id) => {
+        if (typeof id !== "string" || !ids.has(id)) throw new Error(label + " contains an unknown tile");
+        if (unique.has(id)) throw new Error(label + " contains a duplicate tile");
+        unique.add(id);
+      });
+      return selection.slice().sort();
+    }
+
+    function validateHistoryRecord(record, index, seed, clearedBefore) {
+      const keys = ["accuracy", "batchSerial", "correct", "incorrect", "missed", "passed", "round", "selection"];
+      if (!exactKeys(record, keys)) throw new Error("History record " + String(index + 1) + " has an invalid shape");
+      if (record.batchSerial !== index) throw new Error("History batch sequence is not contiguous");
+      if (record.round !== clearedBefore + 1 || record.round < 1 || record.round > QUOTA) {
+        throw new Error("History round progression is invalid");
+      }
+      const historicalBatch = generateBatch(seed, index);
+      const selection = validateSelection(record.selection, historicalBatch, "History selection");
+      const score = scoreSelection(historicalBatch, selection);
+      const scalarFields = ["correct", "incorrect", "missed"];
+      scalarFields.forEach((field) => {
+        if (!Number.isInteger(record[field]) || record[field] !== score[field]) {
+          throw new Error("History " + field + " does not match the batch");
+        }
+      });
+      if (!sameNumber(record.accuracy, score.accuracy) || record.passed !== score.passed) {
+        throw new Error("History score does not match the batch");
+      }
+      return makeHistoryRecord(index, record.round, selection, score);
+    }
+
+    function validateLastScore(lastScore, expected) {
+      if (!exactKeys(lastScore, ["accuracy", "correct", "incorrect", "missed", "passed"])) {
+        throw new Error("Last score has an invalid shape");
+      }
+      ["correct", "incorrect", "missed"].forEach((field) => {
+        if (!Number.isInteger(lastScore[field]) || lastScore[field] !== expected[field]) {
+          throw new Error("Last score " + field + " is invalid");
+        }
+      });
+      if (!sameNumber(lastScore.accuracy, expected.accuracy) || lastScore.passed !== expected.passed) {
+        throw new Error("Last score does not match the active batch");
+      }
+      return cloneJson(expected);
+    }
+
+    function validateState(candidate) {
+      const rootKeys = ["batchSerial", "completed", "history", "lastScore", "phase", "schema", "seed", "selection", "version"];
+      if (!exactKeys(candidate, rootKeys)) throw new Error("State capsule has an invalid root shape");
+      if (candidate.schema !== STATE_SCHEMA || candidate.version !== STATE_VERSION) {
+        throw new Error("State capsule schema or version is unsupported");
+      }
+      if (!Number.isInteger(candidate.seed) || candidate.seed < 1 || candidate.seed > 0xffffffff) {
+        throw new Error("Seed must be an unsigned 32-bit integer");
+      }
+      if (!Number.isInteger(candidate.batchSerial) || candidate.batchSerial < 0 || candidate.batchSerial > MAX_BATCH_SERIAL) {
+        throw new Error("Batch serial is outside the accepted range");
+      }
+      if (!Number.isInteger(candidate.completed) || candidate.completed < 0 || candidate.completed > QUOTA) {
+        throw new Error("Completed quota is outside the accepted range");
+      }
+      if (!["playing", "review", "complete"].includes(candidate.phase)) throw new Error("Phase is invalid");
+      if (!Array.isArray(candidate.history) || candidate.history.length > MAX_BATCH_SERIAL + 1) {
+        throw new Error("History is invalid");
+      }
+
+      const expectedHistoryLength = candidate.phase === "playing" ? candidate.batchSerial : candidate.batchSerial + 1;
+      if (candidate.history.length !== expectedHistoryLength) throw new Error("History length does not match the active phase");
+
+      const history = [];
+      let cleared = 0;
+      candidate.history.forEach((record, index) => {
+        const validated = validateHistoryRecord(record, index, candidate.seed, cleared);
+        history.push(validated);
+        if (validated.passed) cleared += 1;
+      });
+      if (cleared !== candidate.completed) throw new Error("Completed quota does not match successful history");
+
+      const activeBatch = generateBatch(candidate.seed, candidate.batchSerial);
+      const selection = validateSelection(candidate.selection, activeBatch, "Active selection");
+      let lastScore = null;
+
+      if (candidate.phase === "playing") {
+        if (candidate.completed >= QUOTA) throw new Error("A completed quota cannot be in playing phase");
+        if (candidate.lastScore !== null) throw new Error("Playing phase cannot carry a last score");
+      } else {
+        if (history.length === 0) throw new Error("Review phase requires history");
+        const expected = scoreSelection(activeBatch, selection);
+        lastScore = validateLastScore(candidate.lastScore, expected);
+        const latest = history[history.length - 1];
+        if (JSON.stringify(latest.selection) !== JSON.stringify(selection)) {
+          throw new Error("Active selection does not match the latest review");
+        }
+        if (candidate.phase === "review" && candidate.completed >= QUOTA) {
+          throw new Error("Finished quota must use complete phase");
+        }
+        if (candidate.phase === "complete" && (candidate.completed !== QUOTA || !expected.passed)) {
+          throw new Error("Completion state has not earned the quota");
+        }
+      }
+
+      return {
+        schema: STATE_SCHEMA,
+        version: STATE_VERSION,
+        seed: candidate.seed >>> 0,
+        batchSerial: candidate.batchSerial,
+        completed: candidate.completed,
+        phase: candidate.phase,
+        selection,
+        lastScore,
+        history
+      };
+    }
+
+    function announce(message) {
+      elements.liveRegion.textContent = "";
+      window.setTimeout(() => {
+        elements.liveRegion.textContent = message;
+      }, 20);
+    }
+
+    function setPortMessage(message, error = false) {
+      elements.portMessage.textContent = message;
+      elements.portMessage.dataset.error = String(error);
+    }
+
+    function tileOutcome(tile) {
+      if (state.phase === "playing") return "";
+      const selected = state.selection.includes(tile.id);
+      if (tile.target && selected) return "correct";
+      if (!tile.target && selected) return "incorrect";
+      if (tile.target && !selected) return "missed";
+      return "";
+    }
+
+    function createQuotaTrack() {
+      const fragments = [];
+      for (let index = 0; index < QUOTA; index += 1) {
+        const segment = document.createElement("span");
+        segment.className = "quota-segment";
+        segment.dataset.filled = String(index < state.completed);
+        fragments.push(segment);
+      }
+      elements.quotaTrack.replaceChildren(...fragments);
+    }
+
+    function renderTiles(fresh = false) {
+      const buttons = batch.map((tile, index) => {
+        const button = document.createElement("button");
+        const selected = state.selection.includes(tile.id);
+        const outcome = tileOutcome(tile);
+        button.type = "button";
+        button.className = "tile d" + String(index % 8);
+        button.dataset.tileId = tile.id;
+        button.dataset.index = String(index + 1).padStart(2, "0");
+        button.dataset.fresh = String(fresh);
+        if (outcome) button.dataset.outcome = outcome;
+        button.setAttribute("aria-pressed", String(selected));
+        const outcomeLabel = outcome === "correct"
+          ? "correct selection"
+          : outcome === "incorrect"
+            ? "incorrect selection"
+            : outcome === "missed" ? "missed target" : "";
+        button.setAttribute(
+          "aria-label",
+          "Code " + tile.value +
+          (selected ? ", selected" : "") +
+          (outcomeLabel ? ", " + outcomeLabel : "")
+        );
+        button.setAttribute("aria-disabled", String(state.phase !== "playing"));
+        button.appendChild(document.createTextNode(tile.value));
+        if (outcomeLabel) {
+          const status = document.createElement("span");
+          status.className = "tile-outcome";
+          status.textContent = outcomeLabel;
+          button.appendChild(status);
+        }
+        button.addEventListener("click", () => toggleTile(tile.id));
+        return button;
+      });
+      elements.tileGrid.replaceChildren(...buttons);
+    }
+
+    function renderScore() {
+      const score = state.lastScore;
+      elements.correctScore.textContent = score ? String(score.correct) : "—";
+      elements.incorrectScore.textContent = score ? String(score.incorrect) : "—";
+      elements.missedScore.textContent = score ? String(score.missed) : "—";
+      elements.accuracyScore.textContent = score ? score.accuracy.toFixed(1) + "%" : "—";
+      elements.verdict.removeAttribute("data-pass");
+      if (!score) {
+        elements.verdict.textContent = "Submit a selection to create a scored review.";
+      } else if (score.passed) {
+        elements.verdict.dataset.pass = "true";
+        elements.verdict.textContent = "Round cleared. Accuracy met the 75% threshold and the quota advanced.";
+      } else {
+        elements.verdict.dataset.pass = "false";
+        elements.verdict.textContent = "Round held. Review the missed and incorrect codes; quota progress did not change.";
+      }
+    }
+
+    function focusPhaseControl() {
+      if (state.phase === "complete") {
+        elements.completionRestart.focus();
+        return;
+      }
+      if (state.phase === "review") {
+        (elements.continueButton.disabled ? elements.restartButton : elements.continueButton).focus();
+        return;
+      }
+      const first = elements.tileGrid.querySelector("button[data-tile-id]");
+      if (first) first.focus();
+    }
+
+    function render(fresh = false) {
+      batch = generateBatch(state.seed, state.batchSerial);
+      const completed = state.phase === "complete";
+      elements.workspace.hidden = completed;
+      elements.completion.dataset.visible = String(completed);
+      elements.quotaText.textContent = String(state.completed) + " of " + String(QUOTA) + " cleared";
+      elements.roundValue.textContent = String(Math.min(QUOTA, state.completed + 1)).padStart(2, "0") + " / 05";
+      elements.batchValue.textContent = "PQ-" + String(state.batchSerial + 1).padStart(3, "0");
+      elements.selectedValue.textContent = String(state.selection.length).padStart(2, "0") + " / " + String(TILE_COUNT);
+      elements.selectionCounter.textContent = String(state.selection.length) + (state.selection.length === 1 ? " chosen" : " chosen");
+      elements.submitButton.disabled = state.phase !== "playing" || state.selection.length === 0;
+      elements.submitButton.hidden = state.phase !== "playing";
+      elements.continueButton.hidden = state.phase !== "review";
+      const batchLimitReached = state.phase === "review" && state.batchSerial >= MAX_BATCH_SERIAL;
+      elements.continueButton.disabled = batchLimitReached;
+      elements.continueButton.textContent = batchLimitReached
+        ? "Batch limit reached — restart above"
+        : state.lastScore && state.lastScore.passed
+          ? "Begin round " + String(state.completed + 1)
+          : "Retry round " + String(state.completed + 1);
+      elements.reviewLegend.hidden = state.phase === "playing";
+      elements.incorrectLegend.hidden = state.phase === "playing";
+      elements.missedLegend.hidden = state.phase === "playing";
+      elements.boardCopy.textContent = state.phase === "playing"
+        ? "Select every code that mirrors from the outside toward the center."
+        : "Review the revealed classifications, then continue when ready.";
+      createQuotaTrack();
+      renderTiles(fresh);
+      renderScore();
+    }
+
+    function toggleTile(tileId) {
+      if (state.phase !== "playing") return inspect();
+      const tile = batch.find((item) => item.id === tileId);
+      if (!tile) throw new Error("Unknown tile id");
+      const index = state.selection.indexOf(tileId);
+      if (index >= 0) state.selection.splice(index, 1);
+      else state.selection.push(tileId);
+      state.selection.sort();
+      const button = Array.from(elements.tileGrid.querySelectorAll("button[data-tile-id]"))
+        .find((candidate) => candidate.dataset.tileId === tileId);
+      if (button) {
+        const selected = state.selection.includes(tileId);
+        button.setAttribute("aria-pressed", String(selected));
+        button.setAttribute("aria-label", "Code " + tile.value + (selected ? ", selected" : ""));
+      }
+      elements.selectedValue.textContent = String(state.selection.length).padStart(2, "0") + " / " + String(TILE_COUNT);
+      elements.selectionCounter.textContent = String(state.selection.length) + " chosen";
+      elements.submitButton.disabled = state.selection.length === 0;
+      announce("Code " + tile.value + (index >= 0 ? " removed. " : " selected. ") + String(state.selection.length) + " total selected.");
+      return inspect();
+    }
+
+    function submitSelection() {
+      if (state.phase !== "playing") throw new Error("Submission is available only during selection");
+      if (state.selection.length === 0) throw new Error("Select at least one tile before submitting");
+      const score = scoreSelection(batch, state.selection);
+      const round = state.completed + 1;
+      state.lastScore = cloneJson(score);
+      state.history.push(makeHistoryRecord(state.batchSerial, round, state.selection, score));
+      if (score.passed) state.completed += 1;
+      state.phase = state.completed === QUOTA ? "complete" : "review";
+      render(false);
+      focusPhaseControl();
+      announce(
+        (score.passed ? "Round cleared. " : "Round held. ") +
+        String(score.correct) + " correct, " +
+        String(score.incorrect) + " incorrect, " +
+        String(score.missed) + " missed. Accuracy " +
+        score.accuracy.toFixed(1) + " percent."
+      );
+      return inspect();
+    }
+
+    function continueBatch() {
+      if (state.phase !== "review") throw new Error("Continue is available only after review");
+      if (state.batchSerial >= MAX_BATCH_SERIAL) {
+        throw new Error("Batch limit reached. Restart to begin a fresh run.");
+      }
+      state.batchSerial += 1;
+      state.phase = "playing";
+      state.selection = [];
+      state.lastScore = null;
+      render(true);
+      focusPhaseControl();
+      announce("Batch " + String(state.batchSerial + 1) + " ready for round " + String(state.completed + 1) + ".");
+      return inspect();
+    }
+
+    function restart() {
+      state = freshState(DEFAULT_SEED);
+      batch = generateBatch(state.seed, state.batchSerial);
+      render(true);
+      focusPhaseControl();
+      setPortMessage("Fresh run started. Import remains transactional.");
+      elements.stateCapsule.value = "";
+      announce("Pattern Quota restarted at round one.");
+      return inspect();
+    }
+
+    function exportState() {
+      return JSON.stringify(state);
+    }
+
+    function importState(serialized) {
+      if (typeof serialized !== "string") throw new Error("Serialized state must be a JSON string");
+      if (serialized.length === 0 || serialized.length > MAX_STATE_CHARS) throw new Error("Serialized state size is invalid");
+      let parsed;
+      try {
+        parsed = JSON.parse(serialized);
+      } catch (error) {
+        throw new Error("State capsule is not valid JSON");
+      }
+      const candidate = validateState(parsed);
+      state = candidate;
+      batch = generateBatch(state.seed, state.batchSerial);
+      render(true);
+      focusPhaseControl();
+      announce("Validated state capsule imported.");
+      return inspect();
+    }
+
+    function publicTile(tile) {
+      const selected = state.selection.includes(tile.id);
+      const outcome = tileOutcome(tile);
+      return {
+        id: tile.id,
+        value: tile.value,
+        selected,
+        outcome: outcome || null
+      };
+    }
+
+    function inspect() {
+      return cloneJson({
+        schema: API_SCHEMA,
+        version: 1,
+        title: "Pattern Quota",
+        phase: state.phase,
+        round: Math.min(QUOTA, state.completed + 1),
+        quota: {
+          completed: state.completed,
+          total: QUOTA
+        },
+        batch: {
+          serial: state.batchSerial,
+          label: "PQ-" + String(state.batchSerial + 1).padStart(3, "0"),
+          tileCount: TILE_COUNT,
+          targetCount: TARGET_COUNT,
+          selectedCount: state.selection.length,
+          tiles: batch.map(publicTile)
+        },
+        lastScore: state.lastScore,
+        attempts: state.history.length
+      });
+    }
+
+    function capabilities() {
+      return {
+        schema: API_SCHEMA,
+        version: 1,
+        title: "Pattern Quota",
+        deterministic: true,
+        tileCount: TILE_COUNT,
+        targetCount: TARGET_COUNT,
+        quota: QUOTA,
+        passAccuracy: PASS_ACCURACY,
+        limits: {
+          batchSerial: MAX_BATCH_SERIAL,
+          stateCharacters: MAX_STATE_CHARS
+        },
+        actions: [
+          { name: "toggleTile", input: { tileId: "semantic tile id from inspect()" } },
+          { name: "submit", input: {} },
+          { name: "continue", input: {} },
+          { name: "restart", input: {} },
+          { name: "runSelfTest", input: {} },
+          { name: "exportState", input: {} },
+          { name: "importState", input: { serialized: "JSON string from exportState()" } }
+        ]
+      };
+    }
+
+    function validateActionInput(input, keys) {
+      const value = input === undefined ? {} : input;
+      if (!exactKeys(value, keys)) throw new Error("Action input has an invalid shape");
+      return value;
+    }
+
+    function dispatch(action, input) {
+      if (typeof action !== "string") throw new Error("Action must be a string");
+      if (action === "toggleTile") {
+        const value = validateActionInput(input, ["tileId"]);
+        if (typeof value.tileId !== "string") throw new Error("tileId must be a string");
+        return toggleTile(value.tileId);
+      }
+      if (action === "submit") {
+        validateActionInput(input, []);
+        return submitSelection();
+      }
+      if (action === "continue") {
+        validateActionInput(input, []);
+        return continueBatch();
+      }
+      if (action === "restart") {
+        validateActionInput(input, []);
+        return restart();
+      }
+      if (action === "runSelfTest") {
+        validateActionInput(input, []);
+        return selfTest();
+      }
+      if (action === "exportState") {
+        validateActionInput(input, []);
+        return { serialized: exportState() };
+      }
+      if (action === "importState") {
+        const value = validateActionInput(input, ["serialized"]);
+        return importState(value.serialized);
+      }
+      throw new Error("Unknown action");
+    }
+
+    function selfTest() {
+      const checks = [];
+      function check(name, passed) {
+        checks.push({ name, passed: Boolean(passed) });
+      }
+
+      const sampleA = generateBatch(123456789, 4);
+      const sampleB = generateBatch(123456789, 4);
+      const targets = sampleA.filter((tile) => tile.target).map((tile) => tile.id);
+      const distractor = sampleA.find((tile) => !tile.target);
+      const perfect = scoreSelection(sampleA, targets);
+      const poor = scoreSelection(sampleA, distractor ? [distractor.id] : []);
+
+      check("fixed tile count", sampleA.length === TILE_COUNT);
+      check("fixed target count", targets.length === TARGET_COUNT);
+      check("seeded replay", JSON.stringify(sampleA) === JSON.stringify(sampleB));
+      check("perfect score", perfect.correct === TARGET_COUNT && perfect.accuracy === 100 && perfect.passed);
+      check("failure score", poor.incorrect === 1 && poor.missed === TARGET_COUNT && !poor.passed);
+
+      let strictRejected = false;
+      try {
+        const invalid = cloneJson(state);
+        if (invalid.history.length > 0) invalid.history[0].correct += 1;
+        else invalid.completed = 1;
+        validateState(invalid);
+      } catch (error) {
+        strictRejected = true;
+      }
+      check("strict validation", strictRejected);
+
+      let currentValid = false;
+      try {
+        const roundTrip = validateState(JSON.parse(exportState()));
+        currentValid = roundTrip.schema === STATE_SCHEMA && roundTrip.history.length === state.history.length;
+      } catch (error) {
+        currentValid = false;
+      }
+      check("current state round-trip", currentValid);
+
+      const passed = checks.filter((item) => item.passed).length;
+      return {
+        schema: "pattern-quota-self-test",
+        ok: passed === checks.length,
+        passed,
+        total: checks.length,
+        fingerprint: hashString(JSON.stringify(sampleA) + ":" + exportState()).toString(16).padStart(8, "0"),
+        checks
+      };
+    }
+
+    function showSelfTest() {
+      const result = selfTest();
+      elements.selfTestPanel.dataset.ok = String(result.ok);
+      elements.selfTestResult.textContent =
+        String(result.passed) + "/" + String(result.total) +
+        " checks passed · " + result.fingerprint;
+      announce("Self-test " + (result.ok ? "passed." : "failed.") + " " + String(result.passed) + " of " + String(result.total) + " checks.");
+      return result;
+    }
+
+    elements.submitButton.addEventListener("click", submitSelection);
+    elements.continueButton.addEventListener("click", continueBatch);
+    elements.restartButton.addEventListener("click", restart);
+    elements.completionRestart.addEventListener("click", restart);
+    elements.selfTestButton.addEventListener("click", showSelfTest);
+
+    function exportToPort() {
+      elements.stateCapsule.value = exportState();
+      setPortMessage("State capsule exported as deterministic JSON.");
+      announce("State capsule exported.");
+    }
+
+    elements.exportButton.addEventListener("click", exportToPort);
+    elements.completionExport.addEventListener("click", () => {
+      exportToPort();
+      state.phase = "complete";
+      elements.workspace.hidden = false;
+      elements.completion.dataset.visible = "false";
+      const summary = document.querySelector("details");
+      if (summary) summary.open = true;
+      elements.stateCapsule.focus();
+      announce("Completed run exported. State port opened.");
+    });
+
+    elements.importButton.addEventListener("click", () => {
+      const before = exportState();
+      try {
+        importState(elements.stateCapsule.value);
+        setPortMessage("State capsule validated and imported.");
+      } catch (error) {
+        if (exportState() !== before) {
+          state = validateState(JSON.parse(before));
+          batch = generateBatch(state.seed, state.batchSerial);
+          render(false);
+        }
+        setPortMessage(error instanceof Error ? error.message : "State import failed.", true);
+        announce("Import rejected. Current run was not changed.");
+      }
+    });
+
+    elements.tileGrid.addEventListener("keydown", (event) => {
+      const current = event.target.closest("button[data-tile-id]");
+      if (!current || !elements.tileGrid.contains(current)) return;
+      const buttons = Array.from(elements.tileGrid.querySelectorAll("button[data-tile-id]"));
+      const index = buttons.indexOf(current);
+      const columns = window.matchMedia("(max-width: 390px)").matches
+        ? 3
+        : window.matchMedia("(max-width: 520px)").matches ? 4 : 6;
+      let next = index;
+      if (event.key === "ArrowLeft") next = Math.max(0, index - 1);
+      else if (event.key === "ArrowRight") next = Math.min(buttons.length - 1, index + 1);
+      else if (event.key === "ArrowUp") next = Math.max(0, index - columns);
+      else if (event.key === "ArrowDown") next = Math.min(buttons.length - 1, index + columns);
+      else if (event.key === "Home") next = 0;
+      else if (event.key === "End") next = buttons.length - 1;
+      else return;
+      event.preventDefault();
+      buttons[next].focus();
+    });
+
+    window.PatternQuota = Object.freeze({
+      capabilities,
+      inspect,
+      dispatch,
+      exportState,
+      importState,
+      selfTest
+    });
+
+    render(true);
+    showSelfTest();
+  })();
+  </script>
+</body>
+</html>
