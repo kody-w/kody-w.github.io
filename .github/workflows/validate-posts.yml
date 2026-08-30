@@ -9,6 +9,8 @@ on:
       - '_examples/**'
       - '_layouts/**'
       - '_includes/**'
+      - 'Gemfile'
+      - 'Gemfile.lock'
       - 'about.md'
       - 'constitution/**'
       - 'js/**'
@@ -28,9 +30,13 @@ on:
       - 'scripts/benchmark_twin.js'
       - 'scripts/check_twin.py'
       - 'scripts/build_frame_06_evidence_tribunal.js'
+      - 'scripts/local-build.sh'
+      - 'scripts/versioned-build.sh'
       - 'scripts/build_weekly_signal.py'
       - 'scripts/sync_wordpress.py'
       - '.github/workflows/refresh-weekly-signal.yml'
+      - '.github/workflows/refresh-works.yml'
+      - '.github/workflows/staging-canary.yml'
       - '.github/workflows/wordpress-draft-sync.yml'
       - 'wordpress/**'
       - 'tests/**'
@@ -45,6 +51,8 @@ on:
       - '_examples/**'
       - '_layouts/**'
       - '_includes/**'
+      - 'Gemfile'
+      - 'Gemfile.lock'
       - 'about.md'
       - 'constitution/**'
       - 'js/**'
@@ -64,9 +72,13 @@ on:
       - 'scripts/benchmark_twin.js'
       - 'scripts/check_twin.py'
       - 'scripts/build_frame_06_evidence_tribunal.js'
+      - 'scripts/local-build.sh'
+      - 'scripts/versioned-build.sh'
       - 'scripts/build_weekly_signal.py'
       - 'scripts/sync_wordpress.py'
       - '.github/workflows/refresh-weekly-signal.yml'
+      - '.github/workflows/refresh-works.yml'
+      - '.github/workflows/staging-canary.yml'
       - '.github/workflows/wordpress-draft-sync.yml'
       - 'wordpress/**'
       - 'tests/**'
@@ -91,9 +103,8 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
-
-      - name: Install pinned Jekyll
-        run: gem install jekyll -v 4.2.2 --no-document
+          bundler: '2.4.22'
+          bundler-cache: true
 
       - name: Validate front matter
         run: |
@@ -144,4 +155,6 @@ jobs:
 
       - name: Build Jekyll site
         run: |
-          jekyll build --destination _site
+          bundle exec jekyll build --destination _site
+        env:
+          JEKYLL_ENV: production

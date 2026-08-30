@@ -173,6 +173,12 @@ function requestPath(request) {
   return new URL(value, ORIGIN).pathname;
 }
 
+function requestKey(request) {
+  const value = typeof request === 'string' ? request : request.url;
+  const url = new URL(value, ORIGIN);
+  return `${url.pathname}${url.search}`;
+}
+
 function createCacheStorage() {
   const stores = new Map();
   return {
@@ -180,15 +186,28 @@ function createCacheStorage() {
       if (!stores.has(name)) stores.set(name, new Map());
       const store = stores.get(name);
       return {
-        async match(request) {
-          const response = store.get(requestPath(request));
+        async match(request, options = {}) {
+          const key = requestKey(request);
+          let response = store.get(key);
+          if (!response && options.ignoreSearch) {
+            const pathname = requestPath(request);
+            const matchingKey = [...store.keys()].find((stored) =>
+              new URL(stored, ORIGIN).pathname === pathname
+            );
+            response = matchingKey ? store.get(matchingKey) : undefined;
+          }
           return response ? response.clone() : undefined;
         },
         async put(request, response) {
-          store.set(requestPath(request), response.clone());
+          store.set(requestKey(request), response.clone());
+        },
+        async delete(request) {
+          return store.delete(requestKey(request));
         },
         async keys() {
-          return [...store.keys()].map((value) => new Request(`${ORIGIN}${value}`));
+          return [...store.keys()].map(
+            (value) => new Request(`${ORIGIN}${value}`)
+          );
         }
       };
     },
@@ -214,6 +233,9 @@ function loadWorker(corpusResponse, options = {}) {
     location: { origin: ORIGIN },
     KodyTwinEngine: Engine,
     clients: {
+      async matchAll() {
+        return options.clients || [];
+      },
       async claim() {
         state.clientsClaim += 1;
       }
@@ -255,7 +277,8 @@ function loadWorker(corpusResponse, options = {}) {
     Error,
     crypto: webcrypto,
     Uint8Array,
-    TextEncoder
+    TextEncoder,
+    TextDecoder
   };
   vm.runInNewContext(generation.workerSource, context, {
     filename: 'public-twin/sw.js'
@@ -291,16 +314,25 @@ async function runActivate(runtime) {
   return pending;
 }
 
-async function runFetch(runtime, request) {
+async function runFetch(runtime, request, clientId = '') {
   let pending;
+  let lifetime;
   runtime.handlers.fetch({
     request,
+    clientId,
+    waitUntil(value) {
+      lifetime = Promise.resolve(value);
+    },
     respondWith(value) {
       pending = Promise.resolve(value);
     }
   });
   assert.ok(pending, 'fetch handler did not respond');
-  return pending;
+  const response = await pending;
+  if (lifetime) {
+    await lifetime;
+  }
+  return response;
 }
 
 test('valid corpus installs and is cached before skipWaiting', async () => {
@@ -542,6 +574,50 @@ test('document body mutations fail even when every required marker remains', asy
   }
 });
 
+test('document byte verification rejects BOM, invalid UTF-8, duplicate markers, and byte edits', async () => {
+  const url = '/public-twin/';
+  const original = Buffer.from(currentGeneration.documents[url], 'utf8');
+  const marker = shellManifest.documents
+    .find((document) => document.url === url)
+    .requiredText.find((value) =>
+      value.startsWith('data-twin-document-sha256=')
+    );
+  const byteEdit = Buffer.from(original);
+  const editOffset = byteEdit.indexOf(Buffer.from('current'));
+  assert.notEqual(editOffset, -1);
+  byteEdit[editOffset] = 'X'.charCodeAt(0);
+  const mutations = [
+    Buffer.concat([Buffer.from([0xef, 0xbb, 0xbf]), original]),
+    Buffer.concat([original, Buffer.from([0xc3, 0x28])]),
+    Buffer.from(
+      currentGeneration.documents[url].replace(
+        '</main>',
+        `<i ${marker}></i></main>`
+      )
+    ),
+    byteEdit
+  ];
+
+  for (const bytes of mutations) {
+    const runtime = loadWorker(
+      new Response(JSON.stringify(corpus), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      }),
+      {
+        responses: {
+          [url]: new Response(bytes, {
+            status: 200,
+            headers: { 'Content-Type': 'text/html' }
+          })
+        }
+      }
+    );
+    await assert.rejects(runInstall(runtime));
+    assert.equal(runtime.state.skipWaiting, 0);
+  }
+});
+
 test('tribunal navigation uses its verified scoped offline document', async () => {
   const options = {};
   const runtime = loadWorker(
@@ -675,8 +751,19 @@ test('release generations stay isolated until each client transitions', async ()
   const oldRuntime = loadWorker(corpusResponse(), oldOptions);
   await runInstall(oldRuntime);
   await runActivate(oldRuntime);
+  oldOptions.clients = [{ id: 'old-client' }];
+  const leaseResponse = await runFetch(oldRuntime, {
+    method: 'GET',
+    mode: 'same-origin',
+    url: `${ORIGIN}/public-twin/__release-lease__`
+  }, 'old-client');
+  const lease = await leaseResponse.json();
+  assert.equal(lease.shellCache, oldRuntime.shellCache);
   oldOptions.failPaths = ['/public-twin/'];
 
+  await caches.open('kody-twin-shell-aaaaaaaaaaaaaaaa');
+  await caches.open('kody-twin-corpus-bbbbbbbbbbbbbbbb');
+  newOptions.clients = [{ id: 'old-client' }];
   const newRuntime = loadWorker(corpusResponse(), newOptions);
   await runInstall(newRuntime);
   await runActivate(newRuntime);
@@ -684,6 +771,8 @@ test('release generations stay isolated until each client transitions', async ()
   assert.notEqual(oldRuntime.shellCache, newRuntime.shellCache);
   assert.equal(caches.stores.has(oldRuntime.shellCache), true);
   assert.equal(caches.stores.has(newRuntime.shellCache), true);
+  assert.equal(caches.stores.has('kody-twin-shell-aaaaaaaaaaaaaaaa'), false);
+  assert.equal(caches.stores.has('kody-twin-corpus-bbbbbbbbbbbbbbbb'), false);
   assert.equal(newRuntime.state.skipWaiting, 1);
   assert.equal(newRuntime.state.clientsClaim, 0);
 
@@ -700,4 +789,52 @@ test('release generations stay isolated until each client transitions', async ()
     url: `${ORIGIN}/public-twin/`
   });
   assert.match(await newNavigation.text(), /new-release/);
+});
+
+test('browser restart prunes orphan generations to the current release', async () => {
+  const caches = createCacheStorage();
+  for (const name of [
+    'kody-twin-shell-1111111111111111',
+    'kody-twin-corpus-2222222222222222',
+    'kody-twin-shell-3333333333333333',
+    'kody-twin-corpus-4444444444444444'
+  ]) {
+    await caches.open(name);
+  }
+  const runtime = loadWorker(
+    new Response(JSON.stringify(corpus), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    }),
+    { caches, clients: [] }
+  );
+  await runInstall(runtime);
+  await runActivate(runtime);
+  const releaseCaches = (await caches.keys()).filter((name) =>
+    name.startsWith('kody-twin-shell-') ||
+    name.startsWith('kody-twin-corpus-')
+  );
+  assert.deepEqual(
+    releaseCaches.sort(),
+    [runtime.shellCache, runtime.corpusCache].sort()
+  );
+});
+
+test('an unleased live client makes cache pruning fail safe', async () => {
+  const caches = createCacheStorage();
+  const oldShell = 'kody-twin-shell-5555555555555555';
+  const oldCorpus = 'kody-twin-corpus-6666666666666666';
+  await caches.open(oldShell);
+  await caches.open(oldCorpus);
+  const runtime = loadWorker(
+    new Response(JSON.stringify(corpus), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    }),
+    { caches, clients: [{ id: 'unleased-client' }] }
+  );
+  await runInstall(runtime);
+  await runActivate(runtime);
+  assert.equal(caches.stores.has(oldShell), true);
+  assert.equal(caches.stores.has(oldCorpus), true);
 });

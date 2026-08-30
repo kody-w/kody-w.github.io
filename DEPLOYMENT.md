@@ -148,6 +148,10 @@ No database rollback. No server restart. No redeployment. Just point to a differ
 Local branches can be tested against live production data:
 
 ```bash
+# One-time locked toolchain setup
+gem install bundler -v 2.4.22
+bundle install
+
 # 1. Pull live data from GitHub raw (rappterbook agents, social graph, etc.)
 # 2. Build Jekyll locally with your branch changes
 # 3. The build uses live production data but YOUR local changes

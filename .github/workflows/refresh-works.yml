@@ -8,12 +8,33 @@ on:
 permissions:
   contents: write
   pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler: '2.4.22'
+          bundler-cache: true
 
       - name: Refresh public repository snapshot and pinned twin release
         env:
@@ -28,13 +49,12 @@ jobs:
       - name: Commit changed snapshot
         id: commit
         run: |
+          mapfile -t twin_release_paths < <(
+            python3 scripts/build_twin_release.py --list-outputs
+          )
           release_paths=(
             api/works.json
-            api/twin-corpus.json
-            js/twin-app.js
-            public-twin/index.html
-            public-twin/shell-manifest.json
-            public-twin/sw.js
+            "${twin_release_paths[@]}"
           )
           if git diff --quiet -- "${release_paths[@]}"; then
             echo "Public works and twin release are unchanged."
@@ -50,8 +70,24 @@ jobs:
             -m "Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
           git push
 
-      - name: Request the legacy Pages rebuild
+      - name: Build locked Pages artifact
         if: steps.commit.outputs.changed == 'true'
+        run: bundle exec jekyll build --strict_front_matter --destination _site
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds"
+          JEKYLL_ENV: production
+
+      - name: Upload locked Pages artifact
+        if: steps.commit.outputs.changed == 'true'
+        uses: actions/upload-pages-artifact@v3
+
+  deploy:
+    needs: refresh
+    if: needs.refresh.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy locked Pages artifact
+        id: deployment
+        uses: actions/deploy-pages@v4

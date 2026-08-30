@@ -3418,7 +3418,10 @@ class SiteContentTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("pages: write", workflow)
-        self.assertIn('pages/builds"', workflow)
+        self.assertIn("bundle exec jekyll build", workflow)
+        self.assertIn("actions/upload-pages-artifact@v3", workflow)
+        self.assertIn("actions/deploy-pages@v4", workflow)
+        self.assertNotIn('pages/builds"', workflow)
 
     def test_start_here_paths_are_ordered_valid_and_locally_trackable(self):
         paths = yaml.safe_load(START_DATA.read_text(encoding="utf-8"))

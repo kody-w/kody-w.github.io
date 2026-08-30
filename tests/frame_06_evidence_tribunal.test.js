@@ -183,6 +183,7 @@ test('page and browser API use the shared corpus and engine', () => {
   assert.match(app, /KodyEvidenceTribunalCore\.createTribunal/);
   assert.match(app, /serviceWorker\.register/);
   assert.match(app, /updateViaCache: 'none'/);
+  assert.match(app, /\/public-twin\/__release-lease__/);
   assert.match(app, /verifyReceipt/);
   assert.match(page, /id="tribunal-result-status"[^>]*aria-live="polite"/);
   assert.match(page, /id="tribunal-result-status"[^>]*><\/p>/);

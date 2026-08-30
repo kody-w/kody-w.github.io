@@ -1,7 +1,7 @@
 # kody-w.github.io
 
 Personal blog by **Kody Wildfeuer** — AI agents, systems, and things I'm building.  
-Built with Jekyll. Hosted on GitHub Pages. No servers, no dependencies, no build step.
+Built with locked Jekyll 4.2.2 and hosted on GitHub Pages. No application server.
 
 🔗 **Live site:** [kody-w.github.io](https://kody-w.github.io)
 
@@ -73,7 +73,8 @@ graph TD
 - **`verified-frame-worlds/demo.html`** — Newcomer-first guided evidence path explaining what each demo means, what to do, what to observe, and which claim it tests.
 - **`verified-frame-worlds/exercise.html`** — Five small keyboard-accessible concept puzzles embedded through the paper and linked from the guide.
 - **`api/twin-corpus.json`** — Deterministic public corpus generated from posts, field notes, and `api/works.json`.
-- **`scripts/build_twin_release.py`** — Rebuilds the corpus, canonical rendered-document digests, trusted app assets, signed shell manifest, and service-worker release as one atomic unit. Release checks use pinned Jekyll 4.2.2 plus Node.
+- **`Gemfile` / `Gemfile.lock`** — Lock Jekyll 4.2.2 and Bundler 2.4.22 so rendered-document hashes are identical in local, refresh, validation, and staging builds.
+- **`scripts/build_twin_release.py`** — Rebuilds the corpus, canonical rendered-document digests, trusted app assets, signed shell manifest, and service-worker release as one atomic unit. Run it through the locked bundle.
 - **`public-twin/shell-manifest.json`** — Pinned MIME and SHA-256 contract for every offline shell asset.
 - **`idea4blog.md`** — Public changelog and writing ledger page. Doubles as continuity context for the next publishing session.
 - **`_twin_posts/`** — Digital twin-only posts that stay separate from the main homepage feed.
@@ -142,8 +143,9 @@ stable `id` when a page contains more than one prompt.
 ### 4. Preview locally (optional)
 
 ```bash
-gem install jekyll bundler
-jekyll serve
+gem install bundler -v 2.4.22
+bundle install
+bundle exec jekyll serve
 # → http://localhost:4000
 ```
 
@@ -151,7 +153,8 @@ jekyll serve
 
 ```bash
 python3 -m unittest discover -s tests -p 'test_*.py'
-jekyll build --destination _site
+python3 scripts/check_twin.py
+JEKYLL_ENV=production bundle exec jekyll build --destination _site
 ```
 
 ### 6. Publish

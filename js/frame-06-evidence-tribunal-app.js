@@ -24,6 +24,7 @@
   let tribunal = null;
   let receiptVerified = false;
   let hearingCount = 0;
+  let releaseLeaseTimer = null;
 
   function create(tag, className, content) {
     const node = document.createElement(tag);
@@ -96,6 +97,15 @@
         updateViaCache: 'none'
       }
     );
+    if (releaseLeaseTimer === null) {
+      const renewLease = () => fetch('/public-twin/__release-lease__', {
+        cache: 'no-store',
+        credentials: 'same-origin'
+      }).catch(() => null);
+      renewLease();
+      releaseLeaseTimer = window.setInterval(renewLease, 30000);
+      navigator.serviceWorker.addEventListener('controllerchange', renewLease);
+    }
     return registration.scope ? 'offline shell registered' : 'offline shell pending';
   }
 

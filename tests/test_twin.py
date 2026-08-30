@@ -36,12 +36,17 @@ DEFAULT_LAYOUT = ROOT / "_layouts" / "default.html"
 LEGACY_TWIN = ROOT / "digital-twin" / "index.html"
 WORKFLOW = ROOT / ".github" / "workflows" / "validate-posts.yml"
 REFRESH_WORKFLOW = ROOT / ".github" / "workflows" / "refresh-works.yml"
+STAGING_WORKFLOW = ROOT / ".github" / "workflows" / "staging-canary.yml"
+GEMFILE = ROOT / "Gemfile"
+GEMFILE_LOCK = ROOT / "Gemfile.lock"
 BENCHMARK = ROOT / "scripts" / "benchmark_twin.js"
 
 EXPECTED_LEGACY_TWIN_HASH = (
     "943c32d6539fd9486eb4a18b331c05d62849f3723d8a7bca724ea7de4a5f9ae8"
 )
 TWIN_SHELL_SOURCES = (
+    "Gemfile",
+    "Gemfile.lock",
     "_config.yml",
     "_data/design_constitution.yml",
     "_layouts/default.html",
@@ -171,7 +176,14 @@ class TwinAcceptanceTest(unittest.TestCase):
             STATE,
             CONTROLLER,
             APP,
+            TRIBUNAL_PAGE,
+            TRIBUNAL_RECEIPT,
+            TRIBUNAL_STYLE,
+            TRIBUNAL_CORE,
+            TRIBUNAL_APP,
             BENCHMARK,
+            GEMFILE,
+            GEMFILE_LOCK,
         ):
             self.assertTrue(path.is_file(), path)
 
@@ -282,6 +294,107 @@ class TwinAcceptanceTest(unittest.TestCase):
             )
             self.assertRegex(document["sha256"], r"^[0-9a-f]{64}$")
 
+    def test_release_output_inventory_drives_refresh_staging(self):
+        module = load_release_builder()
+        expected = (
+            "api/twin-corpus.json",
+            "js/twin-app.js",
+            "public-twin/index.html",
+            "public-twin/tribunal/index.html",
+            "api/frame-06-evidence-tribunal.json",
+            "public-twin/shell-manifest.json",
+            "public-twin/sw.js",
+        )
+        self.assertEqual(module.release_output_paths(), expected)
+        result = subprocess.run(
+            ["python3", str(RELEASE_BUILDER), "--list-outputs"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(tuple(result.stdout.splitlines()), expected)
+        workflow = REFRESH_WORKFLOW.read_text()
+        self.assertIn(
+            "python3 scripts/build_twin_release.py --list-outputs",
+            workflow,
+        )
+        self.assertIn('"${twin_release_paths[@]}"', workflow)
+        for path in expected:
+            self.assertNotIn(f"\n            {path}\n", workflow)
+
+    def test_workflows_use_locked_jekyll_before_release_checks(self):
+        self.assertIn('gem "jekyll", "= 4.2.2"', GEMFILE.read_text())
+        lock = GEMFILE_LOCK.read_text()
+        self.assertIn("jekyll (4.2.2)", lock)
+        self.assertIn("BUNDLED WITH\n   2.4.22", lock)
+        for workflow_path in (
+            WORKFLOW,
+            STAGING_WORKFLOW,
+            REFRESH_WORKFLOW,
+        ):
+            workflow = workflow_path.read_text().split("jobs:", 1)[1]
+            ruby_setup = workflow.index("uses: ruby/setup-ruby@v1")
+            first_release_use = min(
+                index for index in (
+                    workflow.find("scripts/build_twin_release.py"),
+                    workflow.find("scripts/check_twin.py"),
+                    workflow.find("bundle exec jekyll"),
+                )
+                if index >= 0
+            )
+            self.assertLess(ruby_setup, first_release_use, workflow_path)
+            self.assertIn("bundler: '2.4.22'", workflow)
+            self.assertIn("bundler-cache: true", workflow)
+        self.assertIn(
+            "bundle exec jekyll build --strict_front_matter",
+            STAGING_WORKFLOW.read_text(),
+        )
+        self.assertIn(
+            "bundle exec jekyll build --destination _site",
+            WORKFLOW.read_text(),
+        )
+        refresh = REFRESH_WORKFLOW.read_text()
+        self.assertIn(
+            "bundle exec jekyll build --strict_front_matter --destination _site",
+            refresh,
+        )
+        self.assertIn("actions/upload-pages-artifact@v3", refresh)
+        self.assertIn("actions/deploy-pages@v4", refresh)
+        self.assertNotIn("/pages/builds", refresh)
+        self.assertEqual(
+            load_release_builder().JEKYLL_COMMAND,
+            ("bundle", "exec", "jekyll"),
+        )
+        for script_name in ("local-build.sh", "versioned-build.sh"):
+            script = (ROOT / "scripts" / script_name).read_text()
+            self.assertIn("bundle check", script)
+            self.assertIn("bundle exec jekyll", script)
+            self.assertIn("scripts/build_twin_release.py", script)
+
+    def test_verified_documents_ignore_wall_clock_year(self):
+        module = load_release_builder()
+        first = module.render_twin_documents("2000-01-01T00:00:00Z")
+        second = module.render_twin_documents("2050-01-01T00:00:00Z")
+        self.assertEqual(first, second)
+        for relative, rendered in first.items():
+            digest = hashlib.sha256(
+                module.canonical_document_bytes(rendered)
+            ).hexdigest()
+            manifest = json.loads(SHELL_MANIFEST.read_text())
+            route = (
+                "/public-twin/"
+                if relative == "public-twin/index.html"
+                else "/public-twin/tribunal/"
+            )
+            document = next(
+                item for item in manifest["documents"]
+                if item["url"] == route
+            )
+            self.assertEqual(document["sha256"], digest)
+        self.assertNotIn("site.time", DEFAULT_LAYOUT.read_text())
+        self.assertIn("release_year: 2026", (ROOT / "_config.yml").read_text())
+
     def test_corpus_builder_has_no_network_dependency(self):
         source = BUILDER.read_text()
         for token in ("urllib", "requests", "http.client", "socket.", "urlopen"):
@@ -319,6 +432,7 @@ class TwinAcceptanceTest(unittest.TestCase):
         self.assertIn(corpus["corpusSha256"], app)
         self.assertIn(corpus["sourceManifestSha256"], app)
         self.assertIn('updateViaCache: "none"', app)
+        self.assertIn("/public-twin/__release-lease__", app)
         self.assertIn("function autocompleteAppIdea", app)
         self.assertIn("setSelectionRange", app)
         self.assertIn('inputType.indexOf("delete")', app)
@@ -473,15 +587,9 @@ class TwinAcceptanceTest(unittest.TestCase):
         refresh = REFRESH_WORKFLOW.read_text()
         self.assertIn("python3 scripts/build_twin_release.py", refresh)
         self.assertIn("python3 scripts/check_twin.py", refresh)
-        for release_path in (
-            "api/works.json",
-            "api/twin-corpus.json",
-            "js/twin-app.js",
-            "public-twin/index.html",
-            "public-twin/shell-manifest.json",
-            "public-twin/sw.js",
-        ):
-            self.assertIn(release_path, refresh)
+        self.assertIn("api/works.json", refresh)
+        self.assertIn("--list-outputs", refresh)
+        self.assertIn('"${twin_release_paths[@]}"', refresh)
 
     @staticmethod
     def png_dimensions(path):

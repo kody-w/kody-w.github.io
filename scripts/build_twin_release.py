@@ -27,11 +27,26 @@ TRIBUNAL_BUILDER_PATH = ROOT / "scripts" / "build_frame_06_evidence_tribunal.js"
 WORKER_PATH = ROOT / "public-twin" / "sw.js"
 SHELL_MANIFEST_PATH = ROOT / "public-twin" / "shell-manifest.json"
 RENDER_PATH = ROOT / ".twin-release-render"
+RENDER_CLOCK_PATH = ROOT / ".twin-release-clock.yml"
+JEKYLL_COMMAND = ("bundle", "exec", "jekyll")
 DOCUMENT_MARKER = re.compile(
     r'(data-twin-document-sha256=")[0-9a-f]{64}(")'
 )
+DOCUMENT_MARKER_PREFIX = b'data-twin-document-sha256="'
+HEX_BYTES = frozenset(b"0123456789abcdef")
+RELEASE_OUTPUT_PATHS = (
+    CORPUS_PATH,
+    APP_PATH,
+    PAGE_PATH,
+    TRIBUNAL_PAGE_PATH,
+    TRIBUNAL_RECEIPT_PATH,
+    SHELL_MANIFEST_PATH,
+    WORKER_PATH,
+)
 
 SHELL_SOURCES = (
+    "Gemfile",
+    "Gemfile.lock",
     "_config.yml",
     "_data/design_constitution.yml",
     "_layouts/default.html",
@@ -134,6 +149,13 @@ def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def release_output_paths() -> tuple[str, ...]:
+    return tuple(
+        path.relative_to(ROOT).as_posix()
+        for path in RELEASE_OUTPUT_PATHS
+    )
+
+
 def load_corpus_builder():
     path = ROOT / "scripts" / "build_twin.py"
     spec = importlib.util.spec_from_file_location("build_twin_release_corpus", path)
@@ -172,31 +194,60 @@ def shell_source_hash(overrides: dict[str, bytes]) -> str:
 
 
 def canonical_document_bytes(rendered: bytes) -> bytes:
-    normalized, count = DOCUMENT_MARKER.subn(
-        r"\g<1>" + ("0" * 64) + r"\g<2>",
-        rendered.decode("utf-8"),
-    )
-    if count != 1:
+    rendered.decode("utf-8", errors="strict")
+    normalized = bytearray(rendered)
+    positions = []
+    start = 0
+    while True:
+        marker = rendered.find(DOCUMENT_MARKER_PREFIX, start)
+        if marker < 0:
+            break
+        digest_start = marker + len(DOCUMENT_MARKER_PREFIX)
+        digest_end = digest_start + 64
+        if (
+            digest_end < len(rendered)
+            and rendered[digest_end:digest_end + 1] == b'"'
+            and all(value in HEX_BYTES for value in rendered[digest_start:digest_end])
+        ):
+            positions.append((digest_start, digest_end))
+        start = marker + 1
+    if len(positions) != 1:
         raise RuntimeError(
-            f"expected one rendered document release marker, found {count}"
+            "expected one rendered document release marker, "
+            f"found {len(positions)}"
         )
-    return normalized.encode("utf-8")
+    digest_start, digest_end = positions[0]
+    normalized[digest_start:digest_end] = b"0" * 64
+    return bytes(normalized)
 
 
-def render_twin_documents() -> dict[str, bytes]:
+def render_twin_documents(
+    site_time: str | None = None,
+) -> dict[str, bytes]:
     shutil.rmtree(RENDER_PATH, ignore_errors=True)
     try:
+        command = [
+            *JEKYLL_COMMAND,
+            "build",
+            "--destination",
+            str(RENDER_PATH),
+            "--disable-disk-cache",
+            "--quiet",
+        ]
+        if site_time is not None:
+            RENDER_CLOCK_PATH.write_text(
+                f'time: "{site_time}"\n',
+                encoding="utf-8",
+            )
+            command.extend([
+                "--config",
+                f"_config.yml,{RENDER_CLOCK_PATH.name}",
+            ])
+        environment = {**os.environ, "JEKYLL_ENV": "production"}
         result = subprocess.run(
-            [
-                "jekyll",
-                "build",
-                "--destination",
-                str(RENDER_PATH),
-                "--disable-disk-cache",
-                "--quiet",
-            ],
+            command,
             cwd=ROOT,
-            env={**os.environ, "JEKYLL_ENV": "production"},
+            env=environment,
             text=True,
             capture_output=True,
         )
@@ -214,6 +265,7 @@ def render_twin_documents() -> dict[str, bytes]:
         }
     finally:
         shutil.rmtree(RENDER_PATH, ignore_errors=True)
+        RENDER_CLOCK_PATH.unlink(missing_ok=True)
 
 
 def document_contract(
@@ -423,16 +475,19 @@ def build_outputs() -> tuple[dict[Path, bytes], dict[str, str]]:
     )
     expected_worker = worker.encode("utf-8")
 
+    outputs = {
+        CORPUS_PATH: expected_corpus,
+        APP_PATH: expected_app,
+        PAGE_PATH: expected_page,
+        TRIBUNAL_PAGE_PATH: expected_tribunal_page,
+        TRIBUNAL_RECEIPT_PATH: expected_receipt,
+        SHELL_MANIFEST_PATH: expected_manifest,
+        WORKER_PATH: expected_worker,
+    }
+    if tuple(outputs) != RELEASE_OUTPUT_PATHS:
+        raise RuntimeError("release output inventory does not match build outputs")
     return (
-        {
-            CORPUS_PATH: expected_corpus,
-            APP_PATH: expected_app,
-            PAGE_PATH: expected_page,
-            TRIBUNAL_PAGE_PATH: expected_tribunal_page,
-            TRIBUNAL_RECEIPT_PATH: expected_receipt,
-            SHELL_MANIFEST_PATH: expected_manifest,
-            WORKER_PATH: expected_worker,
-        },
+        outputs,
         {
             "sourceManifestSha256": corpus["sourceManifestSha256"],
             "corpusSha256": corpus["corpusSha256"],
@@ -452,7 +507,16 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="fail unless every committed release artifact is current",
     )
+    parser.add_argument(
+        "--list-outputs",
+        action="store_true",
+        help="print every repository-relative artifact produced by the build",
+    )
     args = parser.parse_args(argv)
+
+    if args.list_outputs:
+        print("\n".join(release_output_paths()))
+        return 0
 
     outputs, hashes = build_outputs()
     stale = [

@@ -75,6 +75,7 @@
   let lastDialogTrigger = null;
   let currentPrompt = "";
   let activeAppIdeaCompletion = null;
+  let releaseLeaseTimer = null;
 
   function text(value, fallback = "") {
     return value == null ? fallback : String(value);
@@ -1097,6 +1098,21 @@
     return runtime.cachedCorpusVerified;
   }
 
+  function renewReleaseLease() {
+    return fetch("/public-twin/__release-lease__", {
+      cache: "no-store",
+      credentials: "same-origin",
+    }).catch(() => null);
+  }
+
+  function startReleaseLeaseHeartbeat() {
+    if (releaseLeaseTimer !== null) {
+      return;
+    }
+    renewReleaseLease();
+    releaseLeaseTimer = window.setInterval(renewReleaseLease, 30000);
+  }
+
   async function serviceWorkerStatus(Engine) {
     if (!("serviceWorker" in navigator)) {
       runtime.serviceWorkerHandled = true;
@@ -1107,6 +1123,7 @@
         scope: "/public-twin/",
         updateViaCache: "none",
       });
+      startReleaseLeaseHeartbeat();
       const readyRegistration = await Promise.race([
         navigator.serviceWorker.ready,
         new Promise((resolve) => window.setTimeout(() => resolve(null), 5000)),
@@ -1136,6 +1153,7 @@
       }
 
       navigator.serviceWorker.addEventListener("controllerchange", async () => {
+        renewReleaseLease();
         runtime.serviceWorkerControlled = Boolean(navigator.serviceWorker.controller);
         runtime.serviceWorkerActivated = runtime.serviceWorkerControlled || runtime.serviceWorkerActivated;
         await verifyCachedCorpus(Engine);

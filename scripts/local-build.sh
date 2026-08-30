@@ -29,6 +29,18 @@ echo "   Branch: $(git branch --show-current)"
 echo "   Mode: near-prod testing"
 echo ""
 
+ensure_locked_jekyll() {
+  command -v bundle >/dev/null || {
+    echo "ERROR: Bundler 2.4.22 is required."
+    exit 1
+  }
+  bundle check >/dev/null 2>&1 || bundle install
+  test "$(bundle exec jekyll --version | awk '{print $2}')" = "4.2.2" || {
+    echo "ERROR: Gemfile.lock must resolve Jekyll 4.2.2."
+    exit 1
+  }
+}
+
 # ── Pull production data from GitHub raw ──
 pull_production_data() {
   echo "📥 Pulling production data from GitHub..."
@@ -58,15 +70,12 @@ pull_production_data() {
 build_site() {
   echo "🔨 Building Jekyll site..."
 
-  # Set environment to distinguish local builds
-  export JEKYLL_ENV=local-neartest
+  export JEKYLL_ENV=production
+  ensure_locked_jekyll
+  python3 "$PROJECT_DIR/scripts/build_twin_release.py" --check
 
   # Build with strict front matter to catch errors early
-  if command -v bundle &>/dev/null; then
-    bundle exec jekyll build --strict_front_matter 2>&1
-  else
-    jekyll build 2>&1
-  fi
+  bundle exec jekyll build --strict_front_matter 2>&1
 
   # Count output
   HTML_COUNT=$(find "$BUILD_DIR" -name '*.html' | wc -l | tr -d ' ')
@@ -92,11 +101,8 @@ serve_site() {
   echo "   Press Ctrl+C to stop"
   echo ""
 
-  if command -v bundle &>/dev/null; then
-    bundle exec jekyll serve --livereload 2>&1
-  else
-    jekyll serve --livereload 2>&1
-  fi
+  ensure_locked_jekyll
+  bundle exec jekyll serve --livereload 2>&1
 }
 
 # ── Main ──

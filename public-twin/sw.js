@@ -8,36 +8,88 @@ var BASELINE_SOURCE_MANIFEST_SHA256 =
 var BASELINE_CORPUS_SHA256 =
   'cd7445811d231f1741890bdb58535d8d04a8244e9932b3f71948cc5514ef0bab';
 var SHELL_RELEASE_SHA256 =
-  'df82782bebe795e55db18777a14b3186650df3db8bb1cee5913f9dc33a8faec9';
+  '4494d9e46d6f41501d9fdd182677224f7e1f1ed6648d0c5a289bb51a649d962d';
 var SHELL_CACHE = 'kody-twin-shell-' + SHELL_RELEASE_SHA256.slice(0, 16);
 var CORPUS_CACHE = 'kody-twin-corpus-' + BASELINE_CORPUS_SHA256.slice(0, 16);
 var SHELL_MANIFEST_PATH = '/public-twin/shell-manifest.json';
+var LEASE_PATH = '/public-twin/__release-lease__';
+var LEASE_CACHE = 'kody-twin-client-leases-v1';
+var LEASE_TTL_MS = 5 * 60 * 1000;
 var SHA256 = /^[0-9a-f]{64}$/;
-var DOCUMENT_MARKER =
-  /(data-twin-document-sha256=")[0-9a-f]{64}(")/g;
-var ZERO_SHA256 = new Array(65).join('0');
+var DOCUMENT_MARKER_PREFIX = new TextEncoder().encode(
+  'data-twin-document-sha256="'
+);
+var ASCII_ZERO = '0'.charCodeAt(0);
 
 function isObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
-function canonicalDocumentSha256(body) {
-  var replacements = 0;
-  var canonical = body.replace(DOCUMENT_MARKER, function (
-    _match,
-    prefix,
-    suffix
-  ) {
-    replacements += 1;
-    return prefix + ZERO_SHA256 + suffix;
-  });
-  if (replacements !== 1) {
-    return Promise.reject(new Error('Invalid Twin document digest marker'));
+function bytesMatch(bytes, offset, expected) {
+  if (offset + expected.length > bytes.length) {
+    return false;
   }
-  return crypto.subtle.digest(
-    'SHA-256',
-    new TextEncoder().encode(canonical)
-  ).then(bytesHex);
+  for (var index = 0; index < expected.length; index += 1) {
+    if (bytes[offset + index] !== expected[index]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function isLowerHexByte(value) {
+  return (value >= 48 && value <= 57) ||
+    (value >= 97 && value <= 102);
+}
+
+function canonicalDocument(buffer) {
+  var bytes = new Uint8Array(buffer);
+  var body;
+  try {
+    body = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+  } catch (_error) {
+    throw new Error('Twin document is not strict UTF-8');
+  }
+  var positions = [];
+  for (var offset = 0;
+       offset <= bytes.length - DOCUMENT_MARKER_PREFIX.length;
+       offset += 1) {
+    if (!bytesMatch(bytes, offset, DOCUMENT_MARKER_PREFIX)) {
+      continue;
+    }
+    var digestStart = offset + DOCUMENT_MARKER_PREFIX.length;
+    var digestEnd = digestStart + 64;
+    if (digestEnd >= bytes.length || bytes[digestEnd] !== 34) {
+      continue;
+    }
+    var validDigest = true;
+    for (var digestIndex = digestStart;
+         digestIndex < digestEnd;
+         digestIndex += 1) {
+      if (!isLowerHexByte(bytes[digestIndex])) {
+        validDigest = false;
+        break;
+      }
+    }
+    if (validDigest) {
+      positions.push({ start: digestStart, end: digestEnd });
+    }
+  }
+  if (positions.length !== 1) {
+    throw new Error('Twin document must contain one exact digest marker');
+  }
+  var canonical = new Uint8Array(bytes);
+  canonical.fill(ASCII_ZERO, positions[0].start, positions[0].end);
+  return { body: body, bytes: canonical };
+}
+
+function canonicalDocumentSha256(buffer) {
+  var canonical = canonicalDocument(buffer);
+  return crypto.subtle.digest('SHA-256', canonical.bytes)
+    .then(bytesHex)
+    .then(function (digest) {
+      return { body: canonical.body, digest: digest };
+    });
 }
 
 function isNonEmptyString(value) {
@@ -270,24 +322,23 @@ function verifyShellResponse(specification, response) {
     ));
   }
   if (specification.normalization === 'twin-html-sha256/1') {
-    return response.clone().text().then(function (body) {
-      var valid = specification.requiredText.every(function (required) {
-        return body.indexOf(required) !== -1;
+    return response.clone().arrayBuffer().then(canonicalDocumentSha256)
+      .then(function (document) {
+        var valid = specification.requiredText.every(function (required) {
+          return document.body.indexOf(required) !== -1;
+        });
+        if (!valid) {
+          throw new Error(
+            'Shell document markers missing for ' + specification.url
+          );
+        }
+        if (document.digest !== specification.sha256) {
+          throw new Error(
+            'Shell document digest mismatch for ' + specification.url
+          );
+        }
+        return response;
       });
-      if (!valid) {
-        throw new Error(
-          'Shell document markers missing for ' + specification.url
-        );
-      }
-      return canonicalDocumentSha256(body);
-    }).then(function (digest) {
-      if (digest !== specification.sha256) {
-        throw new Error(
-          'Shell document digest mismatch for ' + specification.url
-        );
-      }
-      return response;
-    });
   }
   if (specification.sha256) {
     return responseSha256(response).then(function (digest) {
@@ -478,6 +529,149 @@ function requireActivationCaches() {
   });
 }
 
+function releaseLease() {
+  return {
+    schema: 'kody-twin-client-lease/1',
+    releaseSha256: SHELL_RELEASE_SHA256,
+    shellCache: SHELL_CACHE,
+    corpusCache: CORPUS_CACHE,
+    touchedAt: Date.now()
+  };
+}
+
+function validLease(lease) {
+  return isObject(lease) &&
+    lease.schema === 'kody-twin-client-lease/1' &&
+    SHA256.test(lease.releaseSha256) &&
+    /^kody-twin-shell-[0-9a-f]{16}$/.test(lease.shellCache) &&
+    /^kody-twin-corpus-[0-9a-f]{16}$/.test(lease.corpusCache) &&
+    Number.isFinite(lease.touchedAt) &&
+    lease.touchedAt >= 0;
+}
+
+function leaseRequest(clientId) {
+  return new Request(
+    self.location.origin + LEASE_PATH +
+      '?client=' + encodeURIComponent(clientId)
+  );
+}
+
+function recordClientLease(clientId, lease) {
+  if (!isNonEmptyString(clientId) || !validLease(lease)) {
+    return Promise.resolve(false);
+  }
+  return caches.open(LEASE_CACHE).then(function (cache) {
+    return cache.put(
+      leaseRequest(clientId),
+      new Response(JSON.stringify(lease), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json; charset=utf-8' }
+      })
+    );
+  }).then(function () {
+    return true;
+  });
+}
+
+function readClientLeases() {
+  return caches.open(LEASE_CACHE).then(function (cache) {
+    return cache.keys().then(function (requests) {
+      return Promise.all(requests.map(function (request) {
+        return cache.match(request).then(function (response) {
+          if (!response) {
+            return null;
+          }
+          return response.json().then(function (lease) {
+            var url = new URL(request.url);
+            return {
+              request: request,
+              clientId: url.searchParams.get('client'),
+              lease: lease
+            };
+          }).catch(function () {
+            return {
+              request: request,
+              clientId: null,
+              lease: null
+            };
+          });
+        });
+      })).then(function (leases) {
+        return { cache: cache, leases: leases.filter(Boolean) };
+      });
+    });
+  });
+}
+
+function pruneReleaseCaches() {
+  return Promise.all([
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }),
+    readClientLeases(),
+    caches.keys()
+  ]).then(function (values) {
+    var clients = values[0];
+    var leaseBundle = values[1];
+    var names = values[2];
+    var liveIds = Object.create(null);
+    clients.forEach(function (client) {
+      if (client && isNonEmptyString(client.id)) {
+        liveIds[client.id] = true;
+      }
+    });
+    var leasesByClient = Object.create(null);
+    var now = Date.now();
+    var cleanup = [];
+    leaseBundle.leases.forEach(function (entry) {
+      var fresh = validLease(entry.lease) &&
+        now - entry.lease.touchedAt <= LEASE_TTL_MS;
+      if (fresh && liveIds[entry.clientId]) {
+        leasesByClient[entry.clientId] = entry.lease;
+      } else {
+        cleanup.push(leaseBundle.cache.delete(entry.request));
+      }
+    });
+    var liveClientIds = Object.keys(liveIds);
+    var missingLease = liveClientIds.some(function (clientId) {
+      return !leasesByClient[clientId];
+    });
+    if (missingLease) {
+      return Promise.all(cleanup).then(function () {
+        return { pruned: false, reason: 'unleased-live-client' };
+      });
+    }
+    var retain = Object.create(null);
+    retain[SHELL_CACHE] = true;
+    retain[CORPUS_CACHE] = true;
+    liveClientIds.forEach(function (clientId) {
+      retain[leasesByClient[clientId].shellCache] = true;
+      retain[leasesByClient[clientId].corpusCache] = true;
+    });
+    var removals = names.filter(function (name) {
+      var releaseCache = name.indexOf('kody-twin-shell-') === 0 ||
+        name.indexOf('kody-twin-corpus-') === 0;
+      return releaseCache && !retain[name];
+    }).map(function (name) {
+      return caches.delete(name);
+    });
+    return Promise.all(cleanup.concat(removals)).then(function () {
+      return { pruned: true, retained: Object.keys(retain) };
+    });
+  });
+}
+
+function leaseResponse(event) {
+  var lease = releaseLease();
+  return recordClientLease(event.clientId, lease).then(function () {
+    return new Response(JSON.stringify(lease), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Cache-Control': 'no-store'
+      }
+    });
+  });
+}
+
 function precacheShell() {
   return fetchShellManifest().then(function (bundle) {
     var specifications = shellSpecifications(bundle.manifest);
@@ -598,7 +792,7 @@ self.addEventListener('install', function (event) {
 });
 
 self.addEventListener('activate', function (event) {
-  event.waitUntil(requireActivationCaches());
+  event.waitUntil(requireActivationCaches().then(pruneReleaseCaches));
 });
 
 self.addEventListener('fetch', function (event) {
@@ -613,6 +807,10 @@ self.addEventListener('fetch', function (event) {
   }
   if (url.pathname === CORPUS_PATH) {
     event.respondWith(refreshCorpus());
+    return;
+  }
+  if (url.pathname === LEASE_PATH) {
+    event.respondWith(leaseResponse(event));
     return;
   }
   if (request.mode === 'navigate' &&

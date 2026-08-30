@@ -5,3 +5,8 @@
 # Versioned builds (local only — never committed)
 builds/
 _data/production/
+_site/
+.jekyll-cache/
+.twin-release-render/
+.twin-release-clock.yml
+.bundle/

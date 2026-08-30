@@ -7,7 +7,7 @@
   "generator": "scripts/build_frame_06_evidence_tribunal.js",
   "twinRelease": {
     "schema": "kodyw-twin-release-binding/1.0",
-    "releaseSha256": "d41ff4bdc1fe38e4a10049842f24153e2e91524f9962f38b12ce9dc6e8c5f850",
+    "releaseSha256": "925b2c4af595e5426ddddf74d867c28ad67a0123fc769c4658ed9850ba4020ac",
     "sourceManifestSha256": "21f5d074536a7ad5b4db4e3d7445aa3daf97a54e72a091ff543b6fa20cacd5d3",
     "corpusSha256": "cd7445811d231f1741890bdb58535d8d04a8244e9932b3f71948cc5514ef0bab"
   },
@@ -477,5 +477,5 @@
       }
     ]
   },
-  "receiptSha256": "a1da48bfb76bbd8c54e16d8dd46522b3e6834ee541c9d47e9cbba03f6d1a6c2f"
+  "receiptSha256": "a2ce4f7b8d0c821eb38fabd1800d0e1b797e0bc973641c7d6c693a2379d12b47"
 }

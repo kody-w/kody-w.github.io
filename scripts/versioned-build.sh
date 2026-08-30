@@ -44,6 +44,18 @@ get_branch() { git -C "$PROJECT_DIR" branch --show-current 2>/dev/null || echo "
 get_commit() { git -C "$PROJECT_DIR" rev-parse --short HEAD 2>/dev/null || echo "unknown"; }
 get_timestamp() { date -u +"%Y-%m-%dT%H-%M-%S"; }
 
+ensure_locked_jekyll() {
+  command -v bundle >/dev/null || {
+    echo "❌ Bundler 2.4.22 is required."
+    exit 1
+  }
+  bundle check >/dev/null 2>&1 || bundle install
+  test "$(bundle exec jekyll --version | awk '{print $2}')" = "4.2.2" || {
+    echo "❌ Gemfile.lock must resolve Jekyll 4.2.2."
+    exit 1
+  }
+}
+
 auto_version() {
   # Count existing versioned builds to auto-increment
   local count=$(ls -d "$BUILDS_DIR"/v*.*.* 2>/dev/null | wc -l | tr -d ' ')
@@ -67,13 +79,10 @@ build_jekyll() {
   local dest="$1"
   echo "🔨 Building Jekyll → $dest"
   cd "$PROJECT_DIR"
-
-  if command -v bundle &>/dev/null && [ -f Gemfile ]; then
-    JEKYLL_ENV=staging bundle exec jekyll build -d "$dest" --strict_front_matter 2>&1 || \
-    jekyll build -d "$dest" 2>&1
-  else
-    jekyll build -d "$dest" 2>&1
-  fi
+  ensure_locked_jekyll
+  python3 "$PROJECT_DIR/scripts/build_twin_release.py" --check
+  JEKYLL_ENV=production bundle exec jekyll build \
+    -d "$dest" --strict_front_matter 2>&1
 
   local count=$(find "$dest" -name '*.html' 2>/dev/null | wc -l | tr -d ' ')
   echo "   → $count HTML files"
