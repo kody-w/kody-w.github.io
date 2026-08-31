@@ -1,100 +1,52 @@
 {
-  "as_of": "2026-08-23",
-  "content_html": "<h1>Weekly Signal — August 17–23, 2026</h1><p>4 new archive items, 3 active builds, and a clean-room rebuild of LUMON MDR / Severance Refiner.</p><h2>New in the archive</h2><p>The latest publication date gathers 4 articles.</p><ul><li><a href=\"https://kody-w.github.io/2026/08/19/the-trail-you-leave-is-the-story/\">The Trail You Leave Is the Story</a><br><small>Think about the last time you tried to figure out what happened at work last month. Not what the report says happened — what actually happened. Who was waiting on whom. Which thing sat untouched for weeks. When the deal really went quiet, as opposed to when someone finally wrote &quot;lost&quot; in the system.</small></li><li><a href=\"https://kody-w.github.io/2026/08/19/data-exhaust-is-the-fourth-dimension/\">The Negative</a><br><small>Someone asks what happened with an account. You open the system. Status: In Progress. Owner assigned, last updated a couple of weeks ago, nothing overdue. By everything the record says, it is fine.</small></li><li><a href=\"https://kody-w.github.io/2026/08/19/the-colony-calls-the-twin/\">The Colony Calls the Twin</a><br><small>Every quarter hour a watchdog on my desk writes one line: a frame. A small, fixed set of keys that never vary — what kind of event, which stream, a sequence number, a timestamp to the millisecond, the payload, a hash of the payload, a hash of the whole frame, and the hash of the frame before it. Two neighbors do the same, on their own streams, and each can r</small></li><li><a href=\"https://kody-w.github.io/2026/08/19/scrape-yourself/\">Scrape Yourself</a><br><small>In 2020 Simon Willison gave a name to something he had been doing since a hurricane in 2017: point a GitHub Actions cron at a URL, fetch it, commit the file if it changed, and let git keep the history. He called it git scraping. His line for why it works is the one worth remembering: the changes in a data source &quot;can sometimes be more interesting than the un</small></li></ul><h2>Active builds</h2><ul><li><a href=\"https://github.com/kody-w/rapp-roadmap\">rapp-roadmap</a> — 🗺️ The RAPP roadmap: one laptop brainstem -&gt; a planetary swarm of governed Leviathans enhancing every Agent 365 workflow. Enhance, never replace; kernel stays sacred.</li><li><a href=\"https://github.com/kody-w/rapp-spine\">rapp-spine</a> — 🦴 Crawl the spine — a situational router over the full RAPP protocol stack. Situation -&gt; layer -&gt; protocol, collisions named.</li><li><a href=\"https://github.com/kody-w/RAPP-Bible\">RAPP-Bible</a> — One repo. Every RAPP spec. Every entry point. Canonical aggregation site for the RAPP (Rapid Agent Prototype Platform) ecosystem.</li></ul><h2>Rediscovered</h2><p><a href=\"https://kody-w.github.io/2026/03/07/ledger-grammars/\">Ledger Grammars: Turning Narrative Frames Into Queryable State</a> — Once a system starts thinking in frames, the next problem appears immediately.</p><h2>Lost App → clean-room lesson</h2><p><strong>LUMON MDR / Severance Refiner</strong>: A mysterious retro-corporate number game rebuilt as an original deterministic state-machine challenge.</p><p><a href=\"https://kody-w.github.io/learnwithkody/examples/pattern-quota/\">Open the rebuild lesson</a> · <a href=\"https://kody-w.github.io/learnwithkody/demos/365-pattern-quota.html\">Run the local demo</a></p><h2>RAPP Vision brief</h2><p><strong>The strangest lost app asks you to identify numbers that simply feel wrong.</strong></p><p>Reverse-engineering a mysterious selection mechanic into a deterministic state-machine game.</p><p><em>Short:</em> Which of these numbers looks wrong?</p><hr><p><a href=\"https://kody-w.github.io/newsletter/#newsletter-signup\">Subscribe to the next Weekly Signal</a></p>",
-  "date": "2026-08-23T00:00:00",
-  "date_gmt": "2026-08-23T00:00:00",
-  "excerpt": "4 new archive items, 3 active builds, and a clean-room rebuild of LUMON MDR / Severance Refiner.",
-  "issue_id": "2026-W34",
-  "issue_number": 34,
+  "as_of": "2026-08-30",
+  "content_html": "<h1>Weekly Signal — August 24–30, 2026</h1><p>1 new archive item, 3 active builds, and a clean-room rebuild of Advanced Terminal Log Visualizer.</p><h2>New in the archive</h2><p>The latest publication date gathers 1 article.</p><ul><li><a href=\"https://kody-w.github.io/2026/08/29/the-interface-should-meet-you-halfway/\">The Interface Should Meet You Halfway</a><br><small>A placeholder is a promise that disappears at the first sign of intent.</small></li></ul><h2>Active builds</h2><ul><li><a href=\"https://github.com/kody-w/frame-chains\">frame-chains</a> — Public source repository.</li><li><a href=\"https://github.com/kody-w/rapp-train\">rapp-train</a> — RAPP release-train flight deck — join or test-fly any ring from one page</li><li><a href=\"https://github.com/kody-w/rapp-canary\">rapp-canary</a> — RAPP release-train canary ring; seeded from the untouched Grail</li></ul><h2>Rediscovered</h2><p><a href=\"https://kody-w.github.io/2026/03/07/sovereign-branches/\">Sovereign Branches: When Every Fork Becomes a Nation</a> — We usually talk about branches as technical artifacts.</p><h2>Lost App → clean-room lesson</h2><p><strong>Advanced Terminal Log Visualizer</strong>: A dense terminal-output utility rebuilt to turn pasted logs into safe, searchable incident evidence.</p><p><a href=\"https://kody-w.github.io/learnwithkody/examples/incident-log-observatory/\">Open the rebuild lesson</a> · <a href=\"https://kody-w.github.io/learnwithkody/demos/366-incident-log-observatory.html\">Run the local demo</a></p><h2>RAPP Vision brief</h2><p><strong>Paste a wall of terminal output and this app turns it into a searchable incident timeline.</strong></p><p>Build a log visualizer and learn why syntax highlighting must begin with escaping.</p><p><em>Short:</em> A pasted log line should never become executable HTML.</p><hr><p><a href=\"https://kody-w.github.io/newsletter/#newsletter-signup\">Subscribe to the next Weekly Signal</a></p>",
+  "date": "2026-08-30T00:00:00",
+  "date_gmt": "2026-08-30T00:00:00",
+  "excerpt": "1 new archive item, 3 active builds, and a clean-room rebuild of Advanced Terminal Log Visualizer.",
+  "issue_id": "2026-W35",
+  "issue_number": 35,
   "schema": "kodyw-weekly-signal/1.0",
   "sections": [
     {
       "items": [
         {
-          "date": "2026-08-19",
-          "summary": "Think about the last time you tried to figure out what happened at work last month. Not what the report says happened — what actually happened. Who was waiting on whom. Which thing sat untouched for weeks. When the deal really went quiet, as opposed to when someone finally wrote \"lost\" in the system.",
+          "date": "2026-08-29",
+          "summary": "A placeholder is a promise that disappears at the first sign of intent.",
           "tags": [
-            "data",
-            "ai",
-            "plain-language",
-            "time",
-            "memory",
-            "work"
+            "design",
+            "ux",
+            "local-first",
+            "agents"
           ],
-          "title": "The Trail You Leave Is the Story",
-          "url": "https://kody-w.github.io/2026/08/19/the-trail-you-leave-is-the-story/"
-        },
-        {
-          "date": "2026-08-19",
-          "summary": "Someone asks what happened with an account. You open the system. Status: In Progress. Owner assigned, last updated a couple of weeks ago, nothing overdue. By everything the record says, it is fine.",
-          "tags": [
-            "data-exhaust",
-            "ai",
-            "digital-twin",
-            "time-series",
-            "epistemics",
-            "methodology"
-          ],
-          "title": "The Negative",
-          "url": "https://kody-w.github.io/2026/08/19/data-exhaust-is-the-fourth-dimension/"
-        },
-        {
-          "date": "2026-08-19",
-          "summary": "Every quarter hour a watchdog on my desk writes one line: a frame. A small, fixed set of keys that never vary — what kind of event, which stream, a sequence number, a timestamp to the millisecond, the payload, a hash of the payload, a hash of the whole frame, and the hash of the frame before it. Two neighbors do the same, on their own streams, and each can r",
-          "tags": [
-            "data-exhaust",
-            "rapp-1",
-            "frames",
-            "rappterbook",
-            "rappterverse",
-            "sentinels",
-            "brainstem",
-            "mars-barn",
-            "digital-twin"
-          ],
-          "title": "The Colony Calls the Twin",
-          "url": "https://kody-w.github.io/2026/08/19/the-colony-calls-the-twin/"
-        },
-        {
-          "date": "2026-08-19",
-          "summary": "In 2020 Simon Willison gave a name to something he had been doing since a hurricane in 2017: point a GitHub Actions cron at a URL, fetch it, commit the file if it changed, and let git keep the history. He called it git scraping. His line for why it works is the one worth remembering: the changes in a data source \"can sometimes be more interesting than the un",
-          "tags": [
-            "data-exhaust",
-            "git-scraping",
-            "datasette",
-            "sqlite",
-            "github-actions",
-            "time-series",
-            "ai"
-          ],
-          "title": "Scrape Yourself",
-          "url": "https://kody-w.github.io/2026/08/19/scrape-yourself/"
+          "title": "The Interface Should Meet You Halfway",
+          "url": "https://kody-w.github.io/2026/08/29/the-interface-should-meet-you-halfway/"
         }
       ],
       "kind": "date-edition",
-      "summary": "The latest publication date gathers 4 articles.",
-      "title": "August 19, 2026",
-      "url": "https://kody-w.github.io/newsletter/#edition-2026-08-19"
+      "summary": "The latest publication date gathers 1 article.",
+      "title": "August 29, 2026",
+      "url": "https://kody-w.github.io/newsletter/#edition-2026-08-29"
     },
     {
       "items": [
         {
-          "name": "rapp-roadmap",
-          "pushed_at": "2026-08-23T22:49:17Z",
-          "summary": "🗺️ The RAPP roadmap: one laptop brainstem -> a planetary swarm of governed Leviathans enhancing every Agent 365 workflow. Enhance, never replace; kernel stays sacred.",
-          "url": "https://github.com/kody-w/rapp-roadmap"
+          "name": "frame-chains",
+          "pushed_at": "2026-08-30T22:56:05Z",
+          "summary": "Public source repository.",
+          "url": "https://github.com/kody-w/frame-chains"
         },
         {
-          "name": "rapp-spine",
-          "pushed_at": "2026-08-23T22:49:09Z",
-          "summary": "🦴 Crawl the spine — a situational router over the full RAPP protocol stack. Situation -> layer -> protocol, collisions named.",
-          "url": "https://github.com/kody-w/rapp-spine"
+          "name": "rapp-train",
+          "pushed_at": "2026-08-30T20:51:46Z",
+          "summary": "RAPP release-train flight deck — join or test-fly any ring from one page",
+          "url": "https://github.com/kody-w/rapp-train"
         },
         {
-          "name": "RAPP-Bible",
-          "pushed_at": "2026-08-23T22:49:06Z",
-          "summary": "One repo. Every RAPP spec. Every entry point. Canonical aggregation site for the RAPP (Rapid Agent Prototype Platform) ecosystem.",
-          "url": "https://github.com/kody-w/RAPP-Bible"
+          "name": "rapp-canary",
+          "pushed_at": "2026-08-30T19:36:11Z",
+          "summary": "RAPP release-train canary ring; seeded from the untouched Grail",
+          "url": "https://github.com/kody-w/rapp-canary"
         }
       ],
       "kind": "active-work",
@@ -105,34 +57,34 @@
     {
       "kind": "rediscovered",
       "published": "2026-03-07",
-      "summary": "Once a system starts thinking in frames, the next problem appears immediately.",
-      "title": "Ledger Grammars: Turning Narrative Frames Into Queryable State",
-      "url": "https://kody-w.github.io/2026/03/07/ledger-grammars/"
+      "summary": "We usually talk about branches as technical artifacts.",
+      "title": "Sovereign Branches: When Every Fork Becomes a Nation",
+      "url": "https://kody-w.github.io/2026/03/07/sovereign-branches/"
     },
     {
-      "demo_url": "https://kody-w.github.io/learnwithkody/demos/365-pattern-quota.html",
-      "historical_title": "LUMON MDR / Severance Refiner",
+      "demo_url": "https://kody-w.github.io/learnwithkody/demos/366-incident-log-observatory.html",
+      "historical_title": "Advanced Terminal Log Visualizer",
       "kind": "lost-app",
-      "lesson_id": "pattern-quota",
-      "lesson_url": "https://kody-w.github.io/learnwithkody/examples/pattern-quota/",
-      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/severance-refiner.html",
-      "summary": "A mysterious retro-corporate number game rebuilt as an original deterministic state-machine challenge.",
-      "title": "Pattern Quota — Rebuild a Mysterious Selection Game"
+      "lesson_id": "incident-log-observatory",
+      "lesson_url": "https://kody-w.github.io/learnwithkody/examples/incident-log-observatory/",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/terminal-viewer.html",
+      "summary": "A dense terminal-output utility rebuilt to turn pasted logs into safe, searchable incident evidence.",
+      "title": "Incident Log Observatory — Parse Evidence Without Executing It"
     },
     {
-      "episode_16x9": "Reverse-engineering a mysterious selection mechanic into a deterministic state-machine game.",
-      "hook": "The strangest lost app asks you to identify numbers that simply feel wrong.",
+      "episode_16x9": "Build a log visualizer and learn why syntax highlighting must begin with escaping.",
+      "hook": "Paste a wall of terminal output and this app turns it into a searchable incident timeline.",
       "kind": "rapp-vision",
-      "lesson_id": "pattern-quota",
-      "short_9x16": "Which of these numbers looks wrong?"
+      "lesson_id": "incident-log-observatory",
+      "short_9x16": "A pasted log line should never become executable HTML."
     }
   ],
-  "slug": "weekly-signal-2026-w34",
+  "slug": "weekly-signal-2026-w35",
   "stats": {
     "active_builds": 3,
-    "lesson_id": "pattern-quota",
-    "new_articles": 4
+    "lesson_id": "incident-log-observatory",
+    "new_articles": 1
   },
-  "title": "Weekly Signal — August 17–23, 2026",
-  "week_start": "2026-08-17"
+  "title": "Weekly Signal — August 24–30, 2026",
+  "week_start": "2026-08-24"
 }
