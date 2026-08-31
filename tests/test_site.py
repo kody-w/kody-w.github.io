@@ -2899,8 +2899,8 @@ class SiteContentTests(unittest.TestCase):
         self.assertGreaterEqual(len(assets), 2)
         for asset in assets:
             self.assertTrue((ROOT / asset.lstrip("/")).exists(), asset)
-        self.assertEqual(build["sourceCommit"], "b3f623e")
-        self.assertEqual(build["browserChecks"], "42/42")
+        self.assertEqual(build["sourceCommit"], "0490757")
+        self.assertEqual(build["browserChecks"], "43/43")
         self.assertEqual(build["mutationGate"], "16/16")
         self.assertEqual(build["publicUrl"], "https://kody-w.github.io/aaa-fps/")
 
