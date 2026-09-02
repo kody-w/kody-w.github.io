@@ -4,11 +4,11 @@ importScripts('/js/twin-engine.js');
 
 var CORPUS_PATH = '/api/twin-corpus.json';
 var BASELINE_SOURCE_MANIFEST_SHA256 =
-  '03eb3c71614936c94b424e30b07794207cf9473716bb351045d6b73e7324c052';
+  '4c8796d6893dad7f36a1bf0dc1a735bfcad8bcb84ed7a0740eacdcc781753e74';
 var BASELINE_CORPUS_SHA256 =
-  'b9e8069a26213cef8e3f85d962f5c377514b55d549ed3654f2b64f6b899c4ddd';
+  'c06c82e2abe592d428b61a51e9da16cf4f78f4f400e9a507abbc272101649466';
 var SHELL_RELEASE_SHA256 =
-  '2415cc2e8e777a805fda3bc8f31d11c11efb4ca080a92cc11d2abee111f3a2ac';
+  'bc3deaa9f7e73d0bdba519b9520212b8e3dde21e5d26f1be39f1a1db09b7a1aa';
 var SHELL_CACHE = 'kody-twin-shell-' + SHELL_RELEASE_SHA256.slice(0, 16);
 var CORPUS_CACHE = 'kody-twin-corpus-' + BASELINE_CORPUS_SHA256.slice(0, 16);
 var SHELL_MANIFEST_PATH = '/public-twin/shell-manifest.json';
