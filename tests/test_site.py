@@ -3014,28 +3014,57 @@ class SiteContentTests(unittest.TestCase):
         runtime = "\n".join(sources[asset] for asset in sorted(reachable) if asset.endswith(".js"))
         for marker in ("__NOMAD_DOGG__", "nomad-dogg-runtime-4", "nomad:ready",
                        "Watch Autopilot", "Replay Tools", "RUN RECORDED",
-                       "hasGamepad", "input.gamepaderror", "Gamepad access is blocked by this browser"):
+                       "hasGamepad", "input.gamepaderror", "Gamepad access is blocked by this browser",
+                       "Quick Run", "Extraction Operation", "nomad-operation-runtime-1",
+                       "nomad-operation-v1", "EXTRACTION COMPLETE", "TIME EXPIRED", "UNSAVED"):
             self.assertTrue(marker in runtime, f"The active NOMAD entry is missing {marker}")
-        for previous_entry in ("index-BZkHshEG.js", "index-ChozsLc3.js"):
+        for previous_entry in ("index-BZkHshEG.js", "index-ChozsLc3.js", "index-Pm32pX7_.js"):
             self.assertTrue((AAA_FPS_PAGE.parent / "assets" / previous_entry).is_file(),
                             "Retain previous entries and their dependencies for cached HTML")
         self.assertEqual(build["name"], "NOMAD | Operation Blackout")
-        self.assertEqual(build["sourceCommit"], "0cc6a71c05e0fc4cd617ef45a3224410673537f7")
+        self.assertEqual(build["sourceCommit"], "3ee69abd6b5cc988b801ddb64327c7aa4e4c6823")
         self.assertEqual(build["runtime"], "nomad-dogg-runtime-4")
+        self.assertEqual(build["defaultMode"], "quick")
+        self.assertEqual(build["modes"], ["quick", "operation"])
+        self.assertEqual(build["operation"], {
+            "runtime": "nomad-operation-runtime-1",
+            "replayFormat": "nomad-operation-v1",
+            "durationSeconds": 180,
+            "segmentFrameLimit": 3600,
+            "maxSegments": 4,
+            "maxFrames": 14400,
+            "persistence": "IndexedDB",
+        })
         self.assertEqual(build["entry"], inspector.module_entries[0])
         self.assertEqual(build["entrySha256"],
-                         "3adeff8b8adea5ee3f294f3a66f0ff9c337aeb1ec1acc5208e4769342320a4b1")
+                         "df48072d2418a4eff797da3bf7315eda53ec895543e3c09b171a33851fe6e971")
         self.assertEqual(hashlib.sha256((ROOT / build["entry"].lstrip("/")).read_bytes()).hexdigest(),
                          build["entrySha256"], "Publish the exact accepted entry, not a stale bundle")
         self.assertEqual(build["phase"], "integrated-release-verified")
-        self.assertEqual(build["browserChecks"], "469/469")
-        self.assertEqual(build["mutationGate"], "32/32")
+        self.assertEqual(build["browserChecks"], "736/736")
+        self.assertEqual(build["mutationGate"], "63/63")
         self.assertEqual(build["mutationVariantsRejected"], 11)
         self.assertEqual(build["replayReliability"], "passed")
         self.assertEqual(build["staticAcceptance"], {
-            "independentGameplayAndUi": "passed",
-            "nativeMouseInput": "passed-independent",
+            "gameplayAndUi": "passed-production-artifact",
+            "browserChecks": "95/95",
+            "nativeMouseInput": "passed",
+            "nativeBrowser": "Chrome 152.0.7977.83",
+            "nativeOperationChecks": "21/21",
             "nativeReplayRoundtrips": 4,
+            "nativeInteraction": {
+                "key": "KeyE",
+                "keyDowns": 1,
+                "keyUps": 1,
+                "autoRepeatEvents": 0,
+                "consecutivePhysicalTicks": 240,
+                "heldMilliseconds": 4043,
+                "outcome": "victory",
+                "approach": "public-autopilot-and-stepping-then-manual-takeover",
+                "uiReplayByteExact": True,
+            },
+            "nativeQualification": "Other headed attempts lost pointer capture on neutral pages. "
+                                   "This records the successful isolated Chrome run, not universal hardware coverage.",
             "unresolvedBlockers": 0,
         })
         self.assertEqual(build["publicUrl"], "https://kody-w.github.io/aaa-fps/")
