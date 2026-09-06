@@ -7,6 +7,7 @@ import runpy
 import unittest
 from html.parser import HTMLParser
 from pathlib import Path
+from urllib.parse import unquote, urljoin, urlsplit
 
 import yaml
 
@@ -2324,6 +2325,63 @@ def liquid_loops_over_collection(source, collection):
     return False
 
 
+class AAAFPSAssetInspector(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.references = []
+        self.module_entries = []
+
+    def handle_starttag(self, tag, attrs):
+        attributes = dict(attrs)
+        if tag == "base":
+            raise ValueError("The published game must not override its Pages base URL")
+        for attribute in ("src", "href", "poster"):
+            if attributes.get(attribute):
+                self.references.append(attributes[attribute])
+        if tag == "script" and attributes.get("type") == "module":
+            self.module_entries.append(attributes.get("src", ""))
+
+    handle_startendtag = handle_starttag
+
+
+def aaa_fps_asset_url(reference, owner):
+    parts = urlsplit(reference)
+    if parts.scheme == "data":
+        return None
+    decoded_path = unquote(parts.path)
+    if parts.scheme or parts.netloc or "\\" in decoded_path:
+        raise ValueError(f"Nonlocal game asset: {reference}")
+    if not parts.path:
+        return None
+    resolved = urljoin(owner, decoded_path)
+    if not resolved.startswith("/aaa-fps/assets/"):
+        raise ValueError(f"Asset escapes the published game: {reference}")
+    return resolved
+
+
+def aaa_fps_asset_references(source, suffix):
+    references = set()
+    if suffix == ".js":
+        tokens = javascript_tokens(source)
+        for index, (kind, value) in enumerate(tokens):
+            following = tokens[index + 1:index + 3]
+            if kind == "identifier" and value in {"from", "import"} and following:
+                if following[0][0] == "string":
+                    references.add(following[0][1])
+                elif value == "import" and following[0][1] == "(":
+                    if len(following) < 2 or following[1][0] != "string":
+                        raise ValueError("Published dynamic imports must resolve to built assets")
+                    references.add(following[1][1])
+            if kind == "string" and re.match(r"(?:\.\.?/|/aaa-fps/|assets/).+\.\w+$", value):
+                # Vite preload maps use paths relative to the configured build base.
+                references.add("/aaa-fps/" + value if value.startswith("assets/") else value)
+    if suffix in {".html", ".css"}:
+        references.update(re.findall(
+            r"""(?:url\(\s*|@import\s+)["']?([^"'\s;)]+)""", source
+        ))
+    return references
+
+
 class SiteContentTests(unittest.TestCase):
     def test_expected_posts_exist(self):
         for filename in EXPECTED_POSTS:
@@ -2895,14 +2953,92 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn("<title>NOMAD</title>", page)
         self.assertIn('src="/aaa-fps/assets/', page)
         self.assertIn('href="/aaa-fps/assets/', page)
-        assets = re.findall(r'(?:src|href)="(/aaa-fps/assets/[^"]+)"', page)
-        self.assertGreaterEqual(len(assets), 2)
-        for asset in assets:
-            self.assertTrue((ROOT / asset.lstrip("/")).exists(), asset)
+        for element in ("app", "view", "hud", "menu"):
+            self.assertIn(f'id="{element}"', page)
+        inspector = AAAFPSAssetInspector()
+        inspector.feed(page)
+        self.assertEqual(len(inspector.module_entries), 1)
+        self.assertTrue(inspector.module_entries[0].startswith("/aaa-fps/assets/"))
+        self.assertGreaterEqual(len(inspector.references), 2)
+        sources = {}
+        dependencies = {}
+        for artifact in AAA_FPS_PAGE.parent.rglob("*"):
+            relative = artifact.relative_to(AAA_FPS_PAGE.parent)
+            self.assertFalse(artifact.is_symlink(), str(relative))
+            self.assertFalse(
+                any(part.startswith(".") or part in {"src", "node_modules", "tests", "tools", "critique"}
+                    for part in relative.parts),
+                str(relative),
+            )
+            self.assertTrue(relative.parts[0] == "assets" or str(relative) in {"index.html", "build.json"},
+                            str(relative))
+            if not artifact.is_file():
+                continue
+            self.assertNotIn(artifact.suffix.lower(), {".map", ".ts", ".tsx", ".jsx", ".cjs", ".py"},
+                             str(relative))
+            self.assertNotIn(artifact.name, {"package.json", "package-lock.json", "vite.config.js"},
+                             str(relative))
+            if artifact.suffix in {".js", ".css"}:
+                self.assertRegex(artifact.name, r"-[A-Za-z0-9_-]{8}\.(?:js|css)$")
+            if artifact.suffix not in {".html", ".js", ".css", ".json"}:
+                continue
+            url = "/aaa-fps/" + relative.as_posix()
+            source = artifact.read_text(encoding="utf-8")
+            sources[url] = source
+            self.assertIsNone(
+                re.search(r"@vite/client|/node_modules/|/src/|sourceMappingURL=", source),
+                f"{url} contains an unbundled source, dependency, or sourcemap reference",
+            )
+            references = aaa_fps_asset_references(source, artifact.suffix)
+            if artifact == AAA_FPS_PAGE:
+                references.update(inspector.references)
+            dependencies[url] = set()
+            for reference in references:
+                dependency = aaa_fps_asset_url(reference, url)
+                if dependency is not None:
+                    self.assertTrue((ROOT / dependency.lstrip("/")).is_file(),
+                                    f"{url} references missing asset {dependency}")
+                    dependencies[url].add(dependency)
+
+        # Only reachable code can satisfy feature claims; cached older bundles cannot.
+        reachable = set()
+        pending = [aaa_fps_asset_url(inspector.module_entries[0], "/aaa-fps/index.html")]
+        while pending:
+            asset = pending.pop()
+            if asset in reachable:
+                continue
+            reachable.add(asset)
+            pending.extend(dependencies.get(asset, ()))
+        runtime = "\n".join(sources[asset] for asset in sorted(reachable) if asset.endswith(".js"))
+        for marker in ("__NOMAD_DOGG__", "nomad-dogg-runtime-3"):
+            self.assertTrue(marker in runtime, f"The active NOMAD entry is missing {marker}")
         self.assertEqual(build["sourceCommit"], "0490757")
         self.assertEqual(build["browserChecks"], "43/43")
         self.assertEqual(build["mutationGate"], "16/16")
         self.assertEqual(build["publicUrl"], "https://kody-w.github.io/aaa-fps/")
+
+    def test_aaa_fps_asset_validator_handles_built_imports_and_rejects_escapes(self):
+        owner = "/aaa-fps/assets/index-release.js"
+        for reference in ("./lazy.js?cache=1", "/aaa-fps/assets/lazy.js#module"):
+            self.assertEqual(aaa_fps_asset_url(reference, owner), "/aaa-fps/assets/lazy.js")
+        self.assertIsNone(aaa_fps_asset_url("data:image/svg+xml;base64,AA==", owner))
+        for reference in ("../../../src/main.js", "/src/main.js", "../%2e%2e/private.js",
+                          "//example.com/code.js", "https://example.com/code.js", "https:",
+                          ".\\source.js", ".%5csource.js"):
+            with self.subTest(reference=reference), self.assertRaises(ValueError):
+                aaa_fps_asset_url(reference, owner)
+        source = '''
+            import { engine } from "./engine.js";
+            const lazy = () => import("./viewmodel.js");
+            const preload = ["assets/viewmodel.css"];
+            const label = 'Import from "not-a-real-module"';
+        '''
+        self.assertEqual(aaa_fps_asset_references(source, ".js"),
+                         {"./engine.js", "./viewmodel.js", "/aaa-fps/assets/viewmodel.css"})
+        with self.assertRaises(ValueError):
+            aaa_fps_asset_references("import(unbuiltSourcePath)", ".js")
+        self.assertEqual(aaa_fps_asset_references('a { background: url("./atlas.webp"); }', ".css"),
+                         {"./atlas.webp"})
 
     def test_full_catalog_is_the_only_examples_loop(self):
         hub = LEARN_HUB_PAGE.read_text(encoding="utf-8")
