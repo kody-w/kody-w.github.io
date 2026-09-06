@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>NOMAD</title>
+<title>NOMAD | Operation Blackout</title>
+<meta name="description" content="Hold the plaza in NOMAD, a free tactical survival shooter. Play in your browser, watch the autopilot, and replay every move." />
+<meta name="theme-color" content="#0b121a" />
 <style>
   html,body{margin:0;padding:0;height:100%;background:#000;overflow:hidden;
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;
@@ -13,15 +15,52 @@
   #hud,#menu{position:absolute;inset:0;pointer-events:none;}
   #menu{pointer-events:auto;}
   .hidden{display:none !important;}
+  #boot-screen{position:fixed;inset:0;z-index:2000;display:grid;place-items:center;
+    background:radial-gradient(ellipse at 50% 40%,#1b2937,#080d13 72%);text-align:center;padding:24px}
+  #boot-screen h1{margin:0 0 20px;font-size:clamp(40px,8vw,76px);letter-spacing:.25em;text-indent:.25em}
+  #boot-screen p{max-width:420px;color:#b7c5cf;font-size:13px;line-height:1.8}
+  #boot-screen small{display:block;color:#ffc46b;letter-spacing:.2em;font-size:10px;margin-bottom:28px}
+  #boot-retry{margin-top:18px;padding:12px 24px;background:#ffc46b;border:0;color:#121a21;font:inherit;cursor:pointer}
+  #boot-retry:focus-visible{outline:2px solid #fff;outline-offset:4px}
 </style>
-  <script type="module" crossorigin src="/aaa-fps/assets/index-BZkHshEG.js"></script>
+  <script type="module" crossorigin src="/aaa-fps/assets/index-ChozsLc3.js"></script>
   <link rel="modulepreload" crossorigin href="/aaa-fps/assets/definitions-27uHr-rD.js">
 </head>
 <body>
+<div id="boot-screen" role="status" aria-live="polite">
+  <div>
+    <small>OPERATION BLACKOUT</small>
+    <h1>NOMAD</h1>
+    <p id="boot-message">Preparing your deployment.<br>Generating the city and warming up the renderer.</p>
+    <button id="boot-retry" type="button" hidden>Reload game</button>
+    <noscript><p>Enable JavaScript to play. NOMAD also needs a browser with WebGL2 support.</p></noscript>
+  </div>
+</div>
 <div id="app">
-  <canvas id="view"></canvas>
+  <canvas id="view" aria-label="NOMAD first-person game view"></canvas>
   <div id="hud"></div>
   <div id="menu"></div>
 </div>
+<script>
+  (() => {
+    const screen = document.getElementById('boot-screen');
+    const message = document.getElementById('boot-message');
+    const retry = document.getElementById('boot-retry');
+    function failed(event) {
+      if (event.type === 'error' && event.target !== window &&
+          !(event.target instanceof HTMLScriptElement)) return;
+      message.textContent = 'The game could not finish loading. Reload, or try a browser with WebGL2 and hardware acceleration enabled.';
+      retry.hidden = false;
+    }
+    retry.addEventListener('click', () => location.reload());
+    window.addEventListener('error', failed, true);
+    window.addEventListener('unhandledrejection', failed);
+    document.addEventListener('nomad:ready', () => {
+      window.removeEventListener('error', failed, true);
+      window.removeEventListener('unhandledrejection', failed);
+      screen.remove();
+    }, { once: true });
+  })();
+</script>
 </body>
 </html>

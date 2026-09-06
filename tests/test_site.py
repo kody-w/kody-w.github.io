@@ -2950,11 +2950,13 @@ class SiteContentTests(unittest.TestCase):
     def test_aaa_fps_playable_build_is_published(self):
         page = AAA_FPS_PAGE.read_text(encoding="utf-8")
         build = json.loads(AAA_FPS_BUILD.read_text(encoding="utf-8"))
-        self.assertIn("<title>NOMAD</title>", page)
+        self.assertIn("<title>NOMAD | Operation Blackout</title>", page)
         self.assertIn('src="/aaa-fps/assets/', page)
         self.assertIn('href="/aaa-fps/assets/', page)
-        for element in ("app", "view", "hud", "menu"):
+        for element in ("app", "view", "hud", "menu", "boot-screen", "boot-message", "boot-retry"):
             self.assertIn(f'id="{element}"', page)
+        self.assertIn('role="status"', page)
+        self.assertIn("nomad:ready", page)
         inspector = AAAFPSAssetInspector()
         inspector.feed(page)
         self.assertEqual(len(inspector.module_entries), 1)
@@ -3010,11 +3012,25 @@ class SiteContentTests(unittest.TestCase):
             reachable.add(asset)
             pending.extend(dependencies.get(asset, ()))
         runtime = "\n".join(sources[asset] for asset in sorted(reachable) if asset.endswith(".js"))
-        for marker in ("__NOMAD_DOGG__", "nomad-dogg-runtime-3"):
+        for marker in ("__NOMAD_DOGG__", "nomad-dogg-runtime-4", "nomad:ready",
+                       "Watch Autopilot", "Replay Tools", "RUN RECORDED"):
             self.assertTrue(marker in runtime, f"The active NOMAD entry is missing {marker}")
-        self.assertEqual(build["sourceCommit"], "0490757")
-        self.assertEqual(build["browserChecks"], "43/43")
-        self.assertEqual(build["mutationGate"], "16/16")
+        self.assertTrue((AAA_FPS_PAGE.parent / "assets" / "index-BZkHshEG.js").is_file(),
+                        "Retain the previous entry and its dependencies for cached HTML")
+        self.assertEqual(build["name"], "NOMAD | Operation Blackout")
+        self.assertEqual(build["sourceCommit"], "b91a42c9bf1151181483107821b9578d86907f6f")
+        self.assertEqual(build["runtime"], "nomad-dogg-runtime-4")
+        self.assertEqual(build["entry"], inspector.module_entries[0])
+        self.assertEqual(build["phase"], "integrated-release-verified")
+        self.assertEqual(build["browserChecks"], "469/469")
+        self.assertEqual(build["mutationGate"], "27/27")
+        self.assertEqual(build["mutationVariantsRejected"], 11)
+        self.assertEqual(build["replayReliability"], "passed")
+        self.assertEqual(build["staticAcceptance"], {
+            "independentGameplayAndUi": "passed",
+            "nativeMouseInput": "passed-owner-supplement",
+            "unresolvedBlockers": 0,
+        })
         self.assertEqual(build["publicUrl"], "https://kody-w.github.io/aaa-fps/")
 
     def test_aaa_fps_asset_validator_handles_built_imports_and_rejects_escapes(self):

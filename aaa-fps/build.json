@@ -1,9 +1,18 @@
 {
-  "name": "PROJECT NOMAD DOGG",
-  "sourceCommit": "0490757",
-  "phase": "third-blind-corrections-green",
-  "browserChecks": "43/43",
-  "mutationGate": "16/16",
+  "name": "NOMAD | Operation Blackout",
+  "sourceCommit": "b91a42c9bf1151181483107821b9578d86907f6f",
+  "runtime": "nomad-dogg-runtime-4",
+  "entry": "/aaa-fps/assets/index-ChozsLc3.js",
+  "phase": "integrated-release-verified",
+  "browserChecks": "469/469",
+  "mutationGate": "27/27",
+  "mutationVariantsRejected": 11,
+  "replayReliability": "passed",
+  "staticAcceptance": {
+    "independentGameplayAndUi": "passed",
+    "nativeMouseInput": "passed-owner-supplement",
+    "unresolvedBlockers": 0
+  },
   "publicUrl": "https://kody-w.github.io/aaa-fps/",
-  "updatedAt": "2026-08-31T10:05:25-04:00"
+  "updatedAt": "2026-09-06T03:58:46Z"
 }
