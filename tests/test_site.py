@@ -3013,22 +3013,29 @@ class SiteContentTests(unittest.TestCase):
             pending.extend(dependencies.get(asset, ()))
         runtime = "\n".join(sources[asset] for asset in sorted(reachable) if asset.endswith(".js"))
         for marker in ("__NOMAD_DOGG__", "nomad-dogg-runtime-4", "nomad:ready",
-                       "Watch Autopilot", "Replay Tools", "RUN RECORDED"):
+                       "Watch Autopilot", "Replay Tools", "RUN RECORDED",
+                       "hasGamepad", "input.gamepaderror", "Gamepad access is blocked by this browser"):
             self.assertTrue(marker in runtime, f"The active NOMAD entry is missing {marker}")
-        self.assertTrue((AAA_FPS_PAGE.parent / "assets" / "index-BZkHshEG.js").is_file(),
-                        "Retain the previous entry and its dependencies for cached HTML")
+        for previous_entry in ("index-BZkHshEG.js", "index-ChozsLc3.js"):
+            self.assertTrue((AAA_FPS_PAGE.parent / "assets" / previous_entry).is_file(),
+                            "Retain previous entries and their dependencies for cached HTML")
         self.assertEqual(build["name"], "NOMAD | Operation Blackout")
-        self.assertEqual(build["sourceCommit"], "b91a42c9bf1151181483107821b9578d86907f6f")
+        self.assertEqual(build["sourceCommit"], "0cc6a71c05e0fc4cd617ef45a3224410673537f7")
         self.assertEqual(build["runtime"], "nomad-dogg-runtime-4")
         self.assertEqual(build["entry"], inspector.module_entries[0])
+        self.assertEqual(build["entrySha256"],
+                         "3adeff8b8adea5ee3f294f3a66f0ff9c337aeb1ec1acc5208e4769342320a4b1")
+        self.assertEqual(hashlib.sha256((ROOT / build["entry"].lstrip("/")).read_bytes()).hexdigest(),
+                         build["entrySha256"], "Publish the exact accepted entry, not a stale bundle")
         self.assertEqual(build["phase"], "integrated-release-verified")
         self.assertEqual(build["browserChecks"], "469/469")
-        self.assertEqual(build["mutationGate"], "27/27")
+        self.assertEqual(build["mutationGate"], "32/32")
         self.assertEqual(build["mutationVariantsRejected"], 11)
         self.assertEqual(build["replayReliability"], "passed")
         self.assertEqual(build["staticAcceptance"], {
             "independentGameplayAndUi": "passed",
-            "nativeMouseInput": "passed-owner-supplement",
+            "nativeMouseInput": "passed-independent",
+            "nativeReplayRoundtrips": 4,
             "unresolvedBlockers": 0,
         })
         self.assertEqual(build["publicUrl"], "https://kody-w.github.io/aaa-fps/")
