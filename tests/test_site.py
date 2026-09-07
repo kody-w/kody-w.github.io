@@ -898,6 +898,11 @@ EXPECTED_POSTS = {
         "date": "2026-08-19",
         "tags": "[data-exhaust, rapp-1, frames, rappterbook, rappterverse, sentinels, brainstem, mars-barn, digital-twin]",
     },
+    "2026-09-07-text-me-once.md": {
+        "title": '"Text Me Once: Notification-Agent Design Rules I Learned from a Nine-Day Spam Storm"',
+        "date": "2026-09-07",
+        "tags": "[agents, engineering, reliability]",
+    },
 }
 
 EXPECTED_TWIN_POSTS = {

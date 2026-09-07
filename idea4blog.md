@@ -13,6 +13,14 @@ This page does two jobs at once:
 
 Every markdown file on this site is a simulated piece of the swarm, rendered frame by frame. The archive is not just content. It is replayable state.
 
+## Frame 2026-09-07 / Text Me Once
+
+This frame came out of shutting down a launchd agent that had been texting the same unfixable fact every 15 minutes for nine days, and noticing a second agent running the whole time that never once repeated itself.
+
+- [Text Me Once: Notification-Agent Design Rules I Learned from a Nine-Day Spam Storm](/2026/09/07/text-me-once/) - a watcher with SSH into three flaky machines and no circuit breaker retried and re-escalated an unreachable host for nine straight days, while a five-times-a-day scout with a seen-set and a capped batch size never sent a duplicate. Ten more paired examples generalize the failure: retry logic without a ceiling, escalation on condition instead of transition, unenforced config limits, dependencies placed in the alerting hot path, non-idempotent output, unbounded message volume, ledgers that don't survive a log rotation, heal actions that depend on the exact thing that's broken, fixes never verified to survive a restart, and no dry-run mode for changes to the alert logic.
+
+Open threads for the next frame: what a generic circuit-breaker primitive for RAPP watchers looks like (N consecutive failures -> one escalation, then silence until state changes); whether `daily_escalation_budget` should be enforced in code or removed from every config that declares it unused.
+
 ## Frame 2026-08-29 / The Interface Owes You Continuity
 
 This frame turned one small autocomplete complaint into a public product constitution:
