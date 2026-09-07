@@ -1,6 +1,83 @@
 {
   "issues": [
     {
+      "as_of": "2026-09-06",
+      "content_html": "<h1>Weekly Signal — August 31–September 6, 2026</h1><p>0 new archive items, 3 active builds, and a clean-room rebuild of Agent Workflow System.</p><h2>New in the archive</h2><p>No articles were published during this completed week.</p><h2>Active builds</h2><ul><li><a href=\"https://github.com/kody-w/rapp-map\">rapp-map</a> — Map of the RAPP ecosystem — which repo houses which part of the spec (canonical homes for the kited neighborhood, runtime, registry, agents, platform, social).</li><li><a href=\"https://github.com/kody-w/rapp-1\">rapp-1</a> — RAPP/1 — the wire that carries agents. One protocol, five primitives: canonicalization, content addressing, identity, the frame, the egg. Spec + reference implementation + conformance suite + book.</li><li><a href=\"https://github.com/kody-w/rapp-spine\">rapp-spine</a> — 🦴 Crawl the spine — a situational router over the full RAPP protocol stack. Situation -&gt; layer -&gt; protocol, collisions named.</li></ul><h2>Rediscovered</h2><p><a href=\"https://kody-w.github.io/2026/04/29/autonomy-budget-hard-caps/\">Autonomy Budget: $200/day, Circuit Breakers, and the Virtue of Hard Caps</a> — An autonomous AI system burns tokens. Without a cap, it burns your savings. Here&#x27;s the daily-budget + circuit-breaker pattern that keeps a 24/7 multi-agent system&#x27;s LLM spend predictable.</p><h2>Lost App → clean-room lesson</h2><p><strong>Agent Workflow System</strong>: A browser-based agent workflow workshop rebuilt as a safe local simulator that treats imported code only as data.</p><p><a href=\"https://kody-w.github.io/learnwithkody/examples/agent-workflow-lab/\">Open the rebuild lesson</a> · <a href=\"https://kody-w.github.io/learnwithkody/demos/367-agent-workflow-lab.html\">Run the local demo</a></p><h2>RAPP Vision brief</h2><p><strong>This abandoned browser app could compose an entire agent workflow without running a single real agent.</strong></p><p>How to design a visual agent workflow editor without accidentally building a remote-code execution engine.</p><p><em>Short:</em> Three workflow nodes, zero live agents, one complete local simulation.</p><hr><p><a href=\"https://kody-w.github.io/newsletter/#newsletter-signup\">Subscribe to the next Weekly Signal</a></p>",
+      "date": "2026-09-06T00:00:00",
+      "date_gmt": "2026-09-06T00:00:00",
+      "excerpt": "0 new archive items, 3 active builds, and a clean-room rebuild of Agent Workflow System.",
+      "issue_id": "2026-W36",
+      "issue_number": 36,
+      "schema": "kodyw-weekly-signal/1.0",
+      "sections": [
+        {
+          "items": [],
+          "kind": "date-edition",
+          "summary": "No articles were published during this completed week.",
+          "title": "No new articles this week",
+          "url": "https://kody-w.github.io/newsletter/"
+        },
+        {
+          "items": [
+            {
+              "name": "rapp-map",
+              "pushed_at": "2026-09-06T15:10:24Z",
+              "summary": "Map of the RAPP ecosystem — which repo houses which part of the spec (canonical homes for the kited neighborhood, runtime, registry, agents, platform, social).",
+              "url": "https://github.com/kody-w/rapp-map"
+            },
+            {
+              "name": "rapp-1",
+              "pushed_at": "2026-09-06T14:19:50Z",
+              "summary": "RAPP/1 — the wire that carries agents. One protocol, five primitives: canonicalization, content addressing, identity, the frame, the egg. Spec + reference implementation + conformance suite + book.",
+              "url": "https://github.com/kody-w/rapp-1"
+            },
+            {
+              "name": "rapp-spine",
+              "pushed_at": "2026-09-06T11:25:09Z",
+              "summary": "🦴 Crawl the spine — a situational router over the full RAPP protocol stack. Situation -> layer -> protocol, collisions named.",
+              "url": "https://github.com/kody-w/rapp-spine"
+            }
+          ],
+          "kind": "active-work",
+          "summary": "The public repositories moving most recently.",
+          "title": "Active builds",
+          "url": "https://kody-w.github.io/work/"
+        },
+        {
+          "kind": "rediscovered",
+          "published": "2026-04-29",
+          "summary": "An autonomous AI system burns tokens. Without a cap, it burns your savings. Here's the daily-budget + circuit-breaker pattern that keeps a 24/7 multi-agent system's LLM spend predictable.",
+          "title": "Autonomy Budget: $200/day, Circuit Breakers, and the Virtue of Hard Caps",
+          "url": "https://kody-w.github.io/2026/04/29/autonomy-budget-hard-caps/"
+        },
+        {
+          "demo_url": "https://kody-w.github.io/learnwithkody/demos/367-agent-workflow-lab.html",
+          "historical_title": "Agent Workflow System",
+          "kind": "lost-app",
+          "lesson_id": "agent-workflow-lab",
+          "lesson_url": "https://kody-w.github.io/learnwithkody/examples/agent-workflow-lab/",
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/Agent-Workflow-System.html",
+          "summary": "A browser-based agent workflow workshop rebuilt as a safe local simulator that treats imported code only as data.",
+          "title": "Agent Workflow Lab — Compose Plans Without Executing Imported Code"
+        },
+        {
+          "episode_16x9": "How to design a visual agent workflow editor without accidentally building a remote-code execution engine.",
+          "hook": "This abandoned browser app could compose an entire agent workflow without running a single real agent.",
+          "kind": "rapp-vision",
+          "lesson_id": "agent-workflow-lab",
+          "short_9x16": "Three workflow nodes, zero live agents, one complete local simulation."
+        }
+      ],
+      "slug": "weekly-signal-2026-w36",
+      "stats": {
+        "active_builds": 3,
+        "lesson_id": "agent-workflow-lab",
+        "new_articles": 0
+      },
+      "title": "Weekly Signal — August 31–September 6, 2026",
+      "week_start": "2026-08-31"
+    },
+    {
       "as_of": "2026-08-30",
       "content_html": "<h1>Weekly Signal — August 24–30, 2026</h1><p>1 new archive item, 3 active builds, and a clean-room rebuild of Advanced Terminal Log Visualizer.</p><h2>New in the archive</h2><p>The latest publication date gathers 1 article.</p><ul><li><a href=\"https://kody-w.github.io/2026/08/29/the-interface-should-meet-you-halfway/\">The Interface Should Meet You Halfway</a><br><small>A placeholder is a promise that disappears at the first sign of intent.</small></li></ul><h2>Active builds</h2><ul><li><a href=\"https://github.com/kody-w/frame-chains\">frame-chains</a> — Public source repository.</li><li><a href=\"https://github.com/kody-w/rapp-train\">rapp-train</a> — RAPP release-train flight deck — join or test-fly any ring from one page</li><li><a href=\"https://github.com/kody-w/rapp-canary\">rapp-canary</a> — RAPP release-train canary ring; seeded from the untouched Grail</li></ul><h2>Rediscovered</h2><p><a href=\"https://kody-w.github.io/2026/03/07/sovereign-branches/\">Sovereign Branches: When Every Fork Becomes a Nation</a> — We usually talk about branches as technical artifacts.</p><h2>Lost App → clean-room lesson</h2><p><strong>Advanced Terminal Log Visualizer</strong>: A dense terminal-output utility rebuilt to turn pasted logs into safe, searchable incident evidence.</p><p><a href=\"https://kody-w.github.io/learnwithkody/examples/incident-log-observatory/\">Open the rebuild lesson</a> · <a href=\"https://kody-w.github.io/learnwithkody/demos/366-incident-log-observatory.html\">Run the local demo</a></p><h2>RAPP Vision brief</h2><p><strong>Paste a wall of terminal output and this app turns it into a searchable incident timeline.</strong></p><p>Build a log visualizer and learn why syntax highlighting must begin with escaping.</p><p><em>Short:</em> A pasted log line should never become executable HTML.</p><hr><p><a href=\"https://kody-w.github.io/newsletter/#newsletter-signup\">Subscribe to the next Weekly Signal</a></p>",
       "date": "2026-08-30T00:00:00",
