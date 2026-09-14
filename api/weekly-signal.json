@@ -1,39 +1,51 @@
 {
-  "as_of": "2026-09-06",
-  "content_html": "<h1>Weekly Signal — August 31–September 6, 2026</h1><p>0 new archive items, 3 active builds, and a clean-room rebuild of Agent Workflow System.</p><h2>New in the archive</h2><p>No articles were published during this completed week.</p><h2>Active builds</h2><ul><li><a href=\"https://github.com/kody-w/rapp-map\">rapp-map</a> — Map of the RAPP ecosystem — which repo houses which part of the spec (canonical homes for the kited neighborhood, runtime, registry, agents, platform, social).</li><li><a href=\"https://github.com/kody-w/rapp-1\">rapp-1</a> — RAPP/1 — the wire that carries agents. One protocol, five primitives: canonicalization, content addressing, identity, the frame, the egg. Spec + reference implementation + conformance suite + book.</li><li><a href=\"https://github.com/kody-w/rapp-spine\">rapp-spine</a> — 🦴 Crawl the spine — a situational router over the full RAPP protocol stack. Situation -&gt; layer -&gt; protocol, collisions named.</li></ul><h2>Rediscovered</h2><p><a href=\"https://kody-w.github.io/2026/04/29/autonomy-budget-hard-caps/\">Autonomy Budget: $200/day, Circuit Breakers, and the Virtue of Hard Caps</a> — An autonomous AI system burns tokens. Without a cap, it burns your savings. Here&#x27;s the daily-budget + circuit-breaker pattern that keeps a 24/7 multi-agent system&#x27;s LLM spend predictable.</p><h2>Lost App → clean-room lesson</h2><p><strong>Agent Workflow System</strong>: A browser-based agent workflow workshop rebuilt as a safe local simulator that treats imported code only as data.</p><p><a href=\"https://kody-w.github.io/learnwithkody/examples/agent-workflow-lab/\">Open the rebuild lesson</a> · <a href=\"https://kody-w.github.io/learnwithkody/demos/367-agent-workflow-lab.html\">Run the local demo</a></p><h2>RAPP Vision brief</h2><p><strong>This abandoned browser app could compose an entire agent workflow without running a single real agent.</strong></p><p>How to design a visual agent workflow editor without accidentally building a remote-code execution engine.</p><p><em>Short:</em> Three workflow nodes, zero live agents, one complete local simulation.</p><hr><p><a href=\"https://kody-w.github.io/newsletter/#newsletter-signup\">Subscribe to the next Weekly Signal</a></p>",
-  "date": "2026-09-06T00:00:00",
-  "date_gmt": "2026-09-06T00:00:00",
-  "excerpt": "0 new archive items, 3 active builds, and a clean-room rebuild of Agent Workflow System.",
-  "issue_id": "2026-W36",
-  "issue_number": 36,
+  "as_of": "2026-09-13",
+  "content_html": "<h1>Weekly Signal — September 7–13, 2026</h1><p>1 new archive item, 3 active builds, and a clean-room rebuild of LUMON MDR / Severance Refiner.</p><h2>New in the archive</h2><p>The latest publication date gathers 1 article.</p><ul><li><a href=\"https://kody-w.github.io/2026/09/07/text-me-once/\">Text Me Once: Notification-Agent Design Rules I Learned from a Nine-Day Spam Storm</a><br><small>A watcher agent that texted my phone every 15 minutes for nine days about three hosts that were, it turns out, back online the whole time. A five-times-a-day Hacker News scout that has never once repeated itself. The difference between them is the whole lesson.</small></li></ul><h2>Active builds</h2><ul><li><a href=\"https://github.com/kody-w/rapp-train\">rapp-train</a> — RAPP release-train flight deck — join or test-fly any ring from one page</li><li><a href=\"https://github.com/kody-w/rapp-workspace-manager\">rapp-workspace-manager</a> — Private, local-first pointer manager for Git and RAPP workspaces</li><li><a href=\"https://github.com/kody-w/rapp-beta\">rapp-beta</a> — RAPP release-train beta ring; seeded from the untouched Grail</li></ul><h2>Rediscovered</h2><p><a href=\"https://kody-w.github.io/2026/03/08/the-frame-that-writes-itself/\">The Frame That Writes Itself</a> — By the time the model actually starts predicting the next token, 90% of the authorship has already happened.</p><h2>Lost App → clean-room lesson</h2><p><strong>LUMON MDR / Severance Refiner</strong>: A mysterious retro-corporate number game rebuilt as an original deterministic state-machine challenge.</p><p><a href=\"https://kody-w.github.io/learnwithkody/examples/pattern-quota/\">Open the rebuild lesson</a> · <a href=\"https://kody-w.github.io/learnwithkody/demos/365-pattern-quota.html\">Run the local demo</a></p><h2>RAPP Vision brief</h2><p><strong>The strangest lost app asks you to identify numbers that simply feel wrong.</strong></p><p>Reverse-engineering a mysterious selection mechanic into a deterministic state-machine game.</p><p><em>Short:</em> Which of these numbers looks wrong?</p><hr><p><a href=\"https://kody-w.github.io/newsletter/#newsletter-signup\">Subscribe to the next Weekly Signal</a></p>",
+  "date": "2026-09-13T00:00:00",
+  "date_gmt": "2026-09-13T00:00:00",
+  "excerpt": "1 new archive item, 3 active builds, and a clean-room rebuild of LUMON MDR / Severance Refiner.",
+  "issue_id": "2026-W37",
+  "issue_number": 37,
   "schema": "kodyw-weekly-signal/1.0",
   "sections": [
     {
-      "items": [],
+      "items": [
+        {
+          "date": "2026-09-07",
+          "summary": "A watcher agent that texted my phone every 15 minutes for nine days about three hosts that were, it turns out, back online the whole time. A five-times-a-day Hacker News scout that has never once repeated itself. The difference between them is the whole lesson.",
+          "tags": [
+            "agents",
+            "engineering",
+            "reliability"
+          ],
+          "title": "Text Me Once: Notification-Agent Design Rules I Learned from a Nine-Day Spam Storm",
+          "url": "https://kody-w.github.io/2026/09/07/text-me-once/"
+        }
+      ],
       "kind": "date-edition",
-      "summary": "No articles were published during this completed week.",
-      "title": "No new articles this week",
-      "url": "https://kody-w.github.io/newsletter/"
+      "summary": "The latest publication date gathers 1 article.",
+      "title": "September 7, 2026",
+      "url": "https://kody-w.github.io/newsletter/#edition-2026-09-07"
     },
     {
       "items": [
         {
-          "name": "rapp-map",
-          "pushed_at": "2026-09-06T15:10:24Z",
-          "summary": "Map of the RAPP ecosystem — which repo houses which part of the spec (canonical homes for the kited neighborhood, runtime, registry, agents, platform, social).",
-          "url": "https://github.com/kody-w/rapp-map"
+          "name": "rapp-train",
+          "pushed_at": "2026-09-13T23:23:42Z",
+          "summary": "RAPP release-train flight deck — join or test-fly any ring from one page",
+          "url": "https://github.com/kody-w/rapp-train"
         },
         {
-          "name": "rapp-1",
-          "pushed_at": "2026-09-06T14:19:50Z",
-          "summary": "RAPP/1 — the wire that carries agents. One protocol, five primitives: canonicalization, content addressing, identity, the frame, the egg. Spec + reference implementation + conformance suite + book.",
-          "url": "https://github.com/kody-w/rapp-1"
+          "name": "rapp-workspace-manager",
+          "pushed_at": "2026-09-13T22:50:39Z",
+          "summary": "Private, local-first pointer manager for Git and RAPP workspaces",
+          "url": "https://github.com/kody-w/rapp-workspace-manager"
         },
         {
-          "name": "rapp-spine",
-          "pushed_at": "2026-09-06T11:25:09Z",
-          "summary": "🦴 Crawl the spine — a situational router over the full RAPP protocol stack. Situation -> layer -> protocol, collisions named.",
-          "url": "https://github.com/kody-w/rapp-spine"
+          "name": "rapp-beta",
+          "pushed_at": "2026-09-13T22:27:16Z",
+          "summary": "RAPP release-train beta ring; seeded from the untouched Grail",
+          "url": "https://github.com/kody-w/rapp-beta"
         }
       ],
       "kind": "active-work",
@@ -43,35 +55,35 @@
     },
     {
       "kind": "rediscovered",
-      "published": "2026-04-29",
-      "summary": "An autonomous AI system burns tokens. Without a cap, it burns your savings. Here's the daily-budget + circuit-breaker pattern that keeps a 24/7 multi-agent system's LLM spend predictable.",
-      "title": "Autonomy Budget: $200/day, Circuit Breakers, and the Virtue of Hard Caps",
-      "url": "https://kody-w.github.io/2026/04/29/autonomy-budget-hard-caps/"
+      "published": "2026-03-08",
+      "summary": "By the time the model actually starts predicting the next token, 90% of the authorship has already happened.",
+      "title": "The Frame That Writes Itself",
+      "url": "https://kody-w.github.io/2026/03/08/the-frame-that-writes-itself/"
     },
     {
-      "demo_url": "https://kody-w.github.io/learnwithkody/demos/367-agent-workflow-lab.html",
-      "historical_title": "Agent Workflow System",
+      "demo_url": "https://kody-w.github.io/learnwithkody/demos/365-pattern-quota.html",
+      "historical_title": "LUMON MDR / Severance Refiner",
       "kind": "lost-app",
-      "lesson_id": "agent-workflow-lab",
-      "lesson_url": "https://kody-w.github.io/learnwithkody/examples/agent-workflow-lab/",
-      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/Agent-Workflow-System.html",
-      "summary": "A browser-based agent workflow workshop rebuilt as a safe local simulator that treats imported code only as data.",
-      "title": "Agent Workflow Lab — Compose Plans Without Executing Imported Code"
+      "lesson_id": "pattern-quota",
+      "lesson_url": "https://kody-w.github.io/learnwithkody/examples/pattern-quota/",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/severance-refiner.html",
+      "summary": "A mysterious retro-corporate number game rebuilt as an original deterministic state-machine challenge.",
+      "title": "Pattern Quota — Rebuild a Mysterious Selection Game"
     },
     {
-      "episode_16x9": "How to design a visual agent workflow editor without accidentally building a remote-code execution engine.",
-      "hook": "This abandoned browser app could compose an entire agent workflow without running a single real agent.",
+      "episode_16x9": "Reverse-engineering a mysterious selection mechanic into a deterministic state-machine game.",
+      "hook": "The strangest lost app asks you to identify numbers that simply feel wrong.",
       "kind": "rapp-vision",
-      "lesson_id": "agent-workflow-lab",
-      "short_9x16": "Three workflow nodes, zero live agents, one complete local simulation."
+      "lesson_id": "pattern-quota",
+      "short_9x16": "Which of these numbers looks wrong?"
     }
   ],
-  "slug": "weekly-signal-2026-w36",
+  "slug": "weekly-signal-2026-w37",
   "stats": {
     "active_builds": 3,
-    "lesson_id": "agent-workflow-lab",
-    "new_articles": 0
+    "lesson_id": "pattern-quota",
+    "new_articles": 1
   },
-  "title": "Weekly Signal — August 31–September 6, 2026",
-  "week_start": "2026-08-31"
+  "title": "Weekly Signal — September 7–13, 2026",
+  "week_start": "2026-09-07"
 }
