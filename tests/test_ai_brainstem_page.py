@@ -38,6 +38,11 @@ class AIBrainstemPageTests(unittest.TestCase):
         self.assertNotIn('href="rapp-brainstem.html"', self.html)
 
     def test_all_prompt_first_checkpoints_are_present(self):
+        tagline = (
+            "The AI for democratizing exploration at the ever-changing edge "
+            "of the frontier."
+        )
+        self.assertGreaterEqual(self.html.count(tagline), 2)
         self.assertEqual(self.quest["version"], "1.0.0")
         self.assertEqual(len(self.quest["phases"]), 6)
         self.assertEqual(len(self.quest["checkpoints"]), 24)
@@ -61,11 +66,11 @@ class AIBrainstemPageTests(unittest.TestCase):
 
     def test_source_claims_are_pinned_to_reviewed_commits(self):
         self.assertIn(
-            "8b40f77715150e804c0d77903ea4a51bb1b05481",
+            "04f4c9033f62ab8b49126d83129dc02cf205fb4d",
             self.html,
         )
         self.assertIn(
-            "74c540d99bfba83ab42508aac3fa183161da4ad0",
+            "4a7c19c7cf87a88feba55653c15afad3174536d0",
             self.html,
         )
         self.assertNotRegex(
