@@ -66,16 +66,24 @@ class AIBrainstemPageTests(unittest.TestCase):
 
     def test_source_claims_are_pinned_to_reviewed_commits(self):
         self.assertIn(
-            "04f4c9033f62ab8b49126d83129dc02cf205fb4d",
+            "6b3f16cb9079b64478ed15e546c87ca41b40e0ea",
             self.html,
         )
         self.assertIn(
-            "4a7c19c7cf87a88feba55653c15afad3174536d0",
+            "2314aa53811c447cc79d186e228d490505093738",
             self.html,
         )
         self.assertNotRegex(
             self.html,
             r"unreleased working changes|linked base revision",
+        )
+        self.assertIn(
+            "Pending-work continuation is unavailable and always false in SDK 1.0.13",
+            self.html,
+        )
+        self.assertIn(
+            "an explicit cap of at least 30 AI credits per SDK 1.0.13 session",
+            self.html,
         )
 
     def test_user_path_contains_no_command_line_or_secret_setup(self):
