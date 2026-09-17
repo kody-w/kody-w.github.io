@@ -27,6 +27,10 @@ layout: null
     <loc>{{ site.url }}/verified-frame-worlds/exercise.html</loc>
     <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
   </url>
+  <url>
+    <loc>{{ site.url }}/ai-brainstem.html</loc>
+    <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
+  </url>
   {% for post in site.posts %}
   <url>
     <loc>{{ site.url }}{{ post.url }}</loc>
