@@ -67,11 +67,11 @@ class AIBrainstemPageTests(unittest.TestCase):
 
     def test_source_claims_are_pinned_to_reviewed_commits(self):
         self.assertIn(
-            "30b568537c7b37910c5c968b2437c238fa481394",
+            "b2d857e36583944bc479cf5abe4f27d4ce245efa",
             self.html,
         )
         self.assertIn(
-            "7d7d52938766d09f213de927fcfdf455a92c4cc4",
+            "f8f2b77ab469e7ed2c142db8b0b51a5fed8278cc",
             self.html,
         )
         self.assertIn(
