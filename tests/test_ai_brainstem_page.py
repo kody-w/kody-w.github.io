@@ -71,7 +71,7 @@ class AIBrainstemPageTests(unittest.TestCase):
             self.html,
         )
         self.assertIn(
-            "f8f2b77ab469e7ed2c142db8b0b51a5fed8278cc",
+            "f93369d1e5973dcb6862c40a9a2eab87a9f347a8",
             self.html,
         )
         self.assertIn(
