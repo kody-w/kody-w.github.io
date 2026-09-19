@@ -43,7 +43,7 @@ class AIBrainstemPageTests(unittest.TestCase):
             "of the frontier."
         )
         self.assertGreaterEqual(self.html.count(tagline), 2)
-        self.assertEqual(self.quest["version"], "1.1.0")
+        self.assertEqual(self.quest["version"], "1.2.0")
         self.assertEqual(self.quest["reviewed"], "2026-09-18")
         self.assertEqual(len(self.quest["phases"]), 6)
         self.assertEqual(len(self.quest["checkpoints"]), 24)
@@ -67,11 +67,11 @@ class AIBrainstemPageTests(unittest.TestCase):
 
     def test_source_claims_are_pinned_to_reviewed_commits(self):
         self.assertIn(
-            "b2d857e36583944bc479cf5abe4f27d4ce245efa",
+            "76c18437d67c0fe75e674fc6d6738fcf2f1f2972",
             self.html,
         )
         self.assertIn(
-            "f93369d1e5973dcb6862c40a9a2eab87a9f347a8",
+            "2db60875537d37ede5a26d70edb8f2cada2127c8",
             self.html,
         )
         self.assertIn(
@@ -119,7 +119,7 @@ class AIBrainstemPageTests(unittest.TestCase):
             self.html,
         )
 
-    def test_sdk_cards_teach_supported_state_and_exact_limits(self):
+    def test_conversational_sdk_reports_teach_supported_state_and_exact_limits(self):
         for text in (
             "<strong>Supported</strong>",
             "<strong>On or Off</strong>",
@@ -151,6 +151,32 @@ class AIBrainstemPageTests(unittest.TestCase):
             "SDK session-store indexing and memory are off",
         ):
             self.assertNotIn(stale_claim, self.html)
+
+    def test_capabilities_remain_headless_and_conversation_complete(self):
+        for text in (
+            "Conversation is the complete interface; capabilities are headless by default.",
+            "Adding a capability must not add a button, panel, dashboard",
+            "Rendered results belong in their owning assistant message",
+            "the interface is a passive projection, never authority",
+            "no work-management screen or internal identifier is required",
+            "Resolve the relevant organization for me",
+            "exact conversational approval",
+            "UIUX_CONSTITUTION.md",
+        ):
+            self.assertIn(text, self.html)
+        for forbidden in (
+            r"\bopen work\b",
+            r"\bopen results\b",
+            r"\bwork panel\b",
+            r"\bresults drawer\b",
+            r"\bcapability cards\b",
+            r"\bwork cards\b",
+            r"\bin work choose\b",
+            r"work[’']s backup button",
+            r"review tasks / approvals",
+            r"work\s*→\s*sdk availability",
+        ):
+            self.assertNotRegex(self.html, re.compile(forbidden, re.IGNORECASE))
 
     def test_accessible_progress_contract_is_preserved(self):
         for text in (

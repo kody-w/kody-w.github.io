@@ -259,15 +259,16 @@
   </section>
   <section id="mobileList" aria-label="Mobile checkpoint list"></section>
   <details class="sources" id="sourceNote">
-    <summary>Sources &amp; capability state · Quest v1.1.0 · Reviewed <time datetime="2026-09-18">18 September 2026</time></summary>
+    <summary>Sources &amp; capability state · Quest v1.2.0 · Reviewed <time datetime="2026-09-18">18 September 2026</time></summary>
     <p><strong>This is a dated training snapshot, not a release or live-provider certification.</strong> Sources: AI Brainstem Desktop 0.1.0 onboarding; the final AI Brainstem runtime documentation for identity, agent portability, semantic UI autopilot, private work, backups, and the Copilot SDK 1.0.13 capability-state matrix; and the protected Work Organization and semantic UI resources. Documentation is pinned to the exact reviewed revisions below.</p>
     <ul>
-      <li><a href="https://github.com/kody-w/rapp-brainstem-desktop/blob/b2d857e36583944bc479cf5abe4f27d4ce245efa/README.md" target="_blank" rel="noopener noreferrer">Desktop onboarding source, revision b2d857e</a>. This snapshot targets Apple silicon Macs. A compatible, trusted distributable is required; the existence of a source repository is not an installer guarantee.</li>
-      <li><a href="https://github.com/kody-w/rapp-brainstem-skills/blob/f93369d1e5973dcb6862c40a9a2eab87a9f347a8/README.md" target="_blank" rel="noopener noreferrer">Brainstem source, final revision f93369d</a>. The agent, workspace, portability, and SDK behavior taught here is documented and offline-tested at this revision; the app you have installed may be older until it is updated.</li>
+      <li><a href="https://github.com/kody-w/rapp-brainstem-desktop/blob/76c18437d67c0fe75e674fc6d6738fcf2f1f2972/README.md" target="_blank" rel="noopener noreferrer">Desktop onboarding source, revision 76c1843</a>. This snapshot targets Apple silicon Macs. A compatible, trusted distributable is required; the existence of a source repository is not an installer guarantee.</li>
+      <li><a href="https://github.com/kody-w/rapp-brainstem-skills/blob/2db60875537d37ede5a26d70edb8f2cada2127c8/README.md" target="_blank" rel="noopener noreferrer">Brainstem source, final revision 2db6087</a>. The agent, workspace, portability, and SDK behavior taught here is documented and tested at this revision; the app you have installed may be older until it is updated. The normative <a href="https://github.com/kody-w/rapp-brainstem-skills/blob/2db60875537d37ede5a26d70edb8f2cada2127c8/UIUX_CONSTITUTION.md" target="_blank" rel="noopener noreferrer">UI/UX Constitution</a> governs the conversation-complete design.</li>
       <li><a href="https://github.com/robonuggets/gauntlet-loop/tree/9b1975a1b8f01981f3f1e6b667ad3aaf907178ea" target="_blank" rel="noopener noreferrer">Gauntlet Loop upstream, revision 9b1975a</a>. Its unmodified skill and license are pinned under CC BY 4.0 and wrapped by Brainstem as a prompt-only generated agent.</li>
       <li><code>agent.py</code> is Brainstem’s only first-class executable capability. Normal local <code>skill-name/SKILL.md</code> directories remain byte-preserved, ecosystem-compatible resources. Brainstem exposes deterministic generated agents that reference those folders; it does not present plain skills as peer tools.</li>
-      <li>Capability cards separate <strong>Supported</strong>, <strong>On or Off</strong>, <strong>Configured or Not configured</strong>, <strong>Needs approval</strong>, <strong>Provider dependent</strong>, <strong>SDK limitation</strong>, and last actual evidence. On with zero configured roles, routines, active tasks, caps, or Apps is valid. This quest does not claim every provider behavior was observed live.</li>
-      <li>Safely supportable defaults include the bounded Canvas/Results path, verified static MCP App rendering after positive negotiation, isolated runtime/store/cache state, owned Stop, bounded attached tasks, create-and-resume file tracking, exact-approval journaled sandbox rewind, and local content-free diagnostics. Exact SDK limitations remain for selective <code>continue_pending_work</code>, unrestricted detach, enforceably local native memory, native telemetry locality, and interactive MCP Apps.</li>
+      <li><strong>Conversation is the complete interface; capabilities are headless by default.</strong> Brainstem and its twins manage Work, results, graphs, routines, and execution state behind the conversation. Adding a capability must not add a button, panel, dashboard, or user-managed workflow. Rendered results belong in their owning assistant message; the interface is a passive projection, never authority.</li>
+      <li>Ask for capability evidence in conversation when it matters. Reports separate <strong>Supported</strong>, <strong>On or Off</strong>, <strong>Configured or Not configured</strong>, <strong>Needs approval</strong>, <strong>Provider dependent</strong>, <strong>SDK limitation</strong>, and last actual evidence. On with zero configured roles, routines, active tasks, caps, or Apps is valid. This quest does not claim every provider behavior was observed live.</li>
+      <li>Safely supportable defaults include bounded Canvas content in the owning assistant message, verified static MCP App rendering after positive negotiation, isolated runtime/store/cache state, owned Stop, bounded attached tasks, create-and-resume file tracking, exact-approval journaled sandbox rewind, and local content-free diagnostics. Exact SDK limitations remain for selective <code>continue_pending_work</code>, unrestricted detach, enforceably local native memory, native telemetry locality, and interactive MCP Apps.</li>
       <li>SDK-neutral mapping and immutable successor generations preserve workspace authority; they are not a promise that every execution adapter or migration is available. Lawful restore or fresh hatch must not be simulated.</li>
     </ul>
     <p>When a required capability is missing, retain the proposed work and its blocker, use “Gate recorded,” and preview dependent lessons without inventing twins, evidence, or results. Revisit after an approved app update. The completion badge records learning and observed gates, not certification that every runtime feature executed.</p>
@@ -345,7 +346,7 @@
 
 <script type="application/json" id="questData">
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "reviewed": "2026-09-18",
   "phases": ["Meet your crew", "Start the project", "Teach the team", "Keep & find", "Work within limits", "Adapt & carry on"],
   "checkpoints": [
@@ -422,11 +423,11 @@
       "title": "Meet the durable workspace",
       "label": "Identity & workspace",
       "time": "3 min",
-      "context": "Select Planner, then open Work",
+      "context": "Talk to Planner",
       "intro": "Each twin owns a private RAPP workspace, with a sandbox for its working sessions. Its RAPP/1 identity is minted once from fresh randomness, never derived from its name. Names, conversations, and working files are not interchangeable with identity.",
       "prompt": "Planner, use current workspace status to explain your private RAPP workspace and mint-once RAPPID. Tell me which Book Swap work belongs here, which belongs to a team organization, and what your sandbox does. Confirm that a rename keeps the same identity. Do not expose private device paths or share workspace contents.",
       "actions": [
-        "Choose Planner, open Work, and inspect the owner shown for its private workspace.",
+        "Choose Planner and ask about its private workspace in the conversation.",
         "Send the prompt and compare the owner and identity evidence with the existing twin, not with a newly invented identifier.",
         "Keep identity details inside the app; there is no need to paste them into this quest."
       ],
@@ -449,8 +450,8 @@
       "prompt": "In your root work organization, create the objective Neighborhood Book Swap. Add three proposed tasks: an accessible venue plan, a volunteer checklist, and a draft invitation. Record a proposed decision to stay within the fictional $200 project budget. Keep everything draft-only, with no real spending or outreach. Show the current owner, tasks, and verified work status.",
       "actions": [
         "Select AI Brainstem rather than a previous group, then send the prompt.",
-        "Open Work and select its root work organization.",
-        "Inspect the owner and task counts; ask for the task list if the compact panel only shows a summary."
+        "Let Brainstem choose and manage the appropriate work organization behind the conversation.",
+        "Read its owner and task summary; ask for evidence if persistence is unclear."
       ],
       "outcomes": [
         "Main’s root organization contains the Book Swap objective and three real proposed tasks.",
@@ -472,11 +473,11 @@
       "actions": [
         "Paste the prompt in main. Use the @ suggestion list to choose the actual Scout and Planner twins if a name is ambiguous.",
         "Send once and watch the separate sender-labeled replies.",
-        "Open Work and inspect the participant organization’s owners. Later messages in this same team work can continue without repeating mentions."
+        "Ask who owns the shared work. Brainstem manages the participant organization internally; keep addressing the intended team in conversation."
       ],
       "outcomes": [
         "AI Brainstem, Scout, and Planner reply as distinct participants rather than one unlabelled imitation of a team.",
-        "Work shows the selected participant set and its own durable organization."
+        "The reply identifies the participant set and its durable shared work without requiring organization navigation."
       ],
       "boundary": "Participant identities, not names or ordering, select the organization. Renaming a member keeps that set; a different explicit set or replacement identity gets different work. Selecting a child directly returns to its private chat. Mentioning a name is not permission to reveal its private history.",
       "help": "Choose from autocomplete rather than guessing duplicate names. If a required twin is unavailable, record the gate; do not claim that a single main reply is multichat."
@@ -486,22 +487,22 @@
       "phase": 2,
       "emoji": "📋",
       "title": "Organize tasks, not just messages",
-      "label": "Use the Work panel",
+      "label": "Let the team organize",
       "time": "4 min",
-      "context": "Keep the Book Swap participant work selected",
-      "intro": "Work is the project’s durable structure: objectives, tasks, decisions, routines, artifacts, and evidence. Conversation helps build that structure; it is not a substitute for it. The panel is compact, so use chat for the detailed lists.",
+      "context": "Continue the Book Swap team conversation",
+      "intro": "Work is the project’s durable internal structure: objectives, tasks, decisions, routines, artifacts, and evidence. Brainstem and its twins organize it for you. You describe the desired outcome in conversation; no work-management screen or internal identifier is required.",
       "prompt": "Organize our Book Swap participant work. Save its objective, the venue-plan task, volunteer-checklist task, and draft-invitation task. Record an access-first decision as proposed. Add a proposed review routine but leave timed activity disabled. List objectives, tasks, decisions, routines, and artifact references, with owners and blockers. Do not mark a task complete without saved evidence.",
       "actions": [
-        "Open Work, choose the Book Swap participant organization, and select Open if needed.",
-        "Send the prompt. Check owners, status, open tasks, blockers, and approvals.",
-        "Use Review tasks / approvals when available; it prepares a visible message to review before sending."
+        "Continue talking to the Book Swap team; let Brainstem resolve the relevant saved context.",
+        "Send the prompt and read its concise report of owners, tasks, and blockers.",
+        "Answer a concrete approval question only when an operation genuinely requires your authority."
       ],
       "outcomes": [
-        "The detailed work list and the panel’s counts describe the same selected team project.",
+        "The response describes the same saved team project without requiring you to manage its internal structure.",
         "Decisions remain proposed, the review routine is not authorized to wake, and tasks with no evidence stay open."
       ],
       "boundary": "A proposed decision is not an approval. Explicit work items can reconcile after turns, but arbitrary prose, a greeting, or an assistant’s confidence does not prove task completion. Changes must reconcile against verified current work; conflicts require a fresh read.",
-      "help": "Check which owner is selected before adding work. If a reply says it saved something but the work list does not show it, keep the task open and ask for the persistence result."
+      "help": "If the owner or saved result is unclear, ask Brainstem to explain it. If persistence is unsupported, keep the task open rather than accepting a promise as evidence."
     },
     {
       "id": "durable-evidence",
@@ -516,7 +517,7 @@
       "actions": [
         "Send the prompt and wait for the completed response, not just words appearing while it is still working.",
         "Ask to list the current artifact or evidence references if they are not included in the response.",
-        "Check Work for completed draft tasks and remaining blockers. A draft invitation is not a sent invitation."
+        "Ask which draft tasks are complete and what remains blocked. A draft invitation is not a sent invitation."
       ],
       "outcomes": [
         "A usable plan and invitation exist as an actual artifact or explicitly identified durable response evidence.",
@@ -620,42 +621,42 @@
       "title": "Clear chat, keep the work",
       "label": "Clear is not erase",
       "time": "3 min",
-      "context": "Open the Book Swap participant organization in Work",
+      "context": "Continue the Book Swap team conversation",
       "intro": "Clear hides the chat; durable workspace evidence, objectives, decisions, artifacts, and routines remain. First verify that your deliverable is saved. Then make the distinction visible.",
       "prompt": "Before I use Clear, verify that our Book Swap plan, draft invitation, decisions, and remaining tasks are saved in this participant work organization. Show their actual evidence references and owners. If anything is only an unsaved draft, persist it through supported Work capabilities or report a blocker. Do not claim that Clear deletes durable work.",
       "actions": [
-        "Open the correct team work, send the prompt, and wait for verified persistence.",
+        "Ask the team to verify its saved work and wait for the persistence result.",
         "Only after that confirmation, use the app’s visible Clear control.",
-        "Open Work again and inspect the same organization’s owners, tasks, and evidence."
+        "Ask Brainstem to resume the Book Swap and report the saved owners, tasks, and evidence."
       ],
       "outcomes": [
         "The visible conversation is cleared while the same work organization and saved evidence remain.",
         "Clear has not created a new team identity, removed tasks, or authorized a routine."
       ],
       "boundary": "Clear is not a privacy erase, workspace deletion, or reset of durable work. Native session records can also remain on the device. Never clear an unverified draft just because an assistant said it would remember.",
-      "help": "If persistence failed, stop before Clear. If you already cleared, find the owning workspace through Work; do not invent a reconstruction and label it the original evidence."
+      "help": "If persistence failed, stop before Clear. If you already cleared, ask Brainstem to find the saved project; do not invent a reconstruction and label it the original evidence."
     },
     {
       "id": "workspace-first",
       "phase": 4,
       "emoji": "🗂️",
-      "title": "Return through Work",
-      "label": "Find past work first",
+      "title": "Ask to resume the project",
+      "label": "Find past work by asking",
       "time": "3 min",
-      "context": "Reopen the app, then select work by owner",
-      "intro": "Past work belongs to workspaces, not a wall of old chat. Reopening the app returns to the fixed AI Brainstem main fallback. Use Work to reactivate the project’s actual owners and pick up the saved result.",
-      "prompt": "Resume the Neighborhood Book Swap from this selected work organization’s verified evidence, not from missing chat scrollback. Summarize the saved plan, the remaining task, and the next useful action. Identify which records support your answer. Keep unrelated private history out, and report any missing owner or evidence rather than guessing.",
+      "context": "Reopen the app and ask for the Book Swap",
+      "intro": "Past work belongs to durable workspaces, not a wall of old chat. Reopening the app returns to the fixed AI Brainstem main fallback. Ask for the project; Brainstem finds the authorized saved context and its owners behind the conversation.",
+      "prompt": "Find and resume the Neighborhood Book Swap from its verified saved evidence, not from missing chat scrollback. Summarize the saved plan, the remaining task, and the next useful action. Identify which records support your answer. Keep unrelated private history out, and report any missing owner or evidence rather than guessing. Resolve the relevant organization for me instead of asking for an internal work identifier.",
       "actions": [
         "Close and reopen the desktop app using its normal app controls. Confirm that AI Brainstem is selected.",
-        "Open Work, find the Book Swap entry by its owners and status, and choose Open.",
-        "Send the prompt in that restored work context and compare the summary with the saved deliverable."
+        "Send the prompt and let Brainstem find the Book Swap from the authorized project context.",
+        "Compare the conversational summary with the saved deliverable; no internal navigation is required."
       ],
       "outcomes": [
         "The same participant work and owners return even though the visible chat was cleared.",
         "The response uses relevant saved evidence and states what remains unknown."
       ],
       "boundary": "Retrieval is workspace-first and bounded; it does not replay every transcript. Prior assistant text is evidence, not fresh instructions or approval. A missing/replaced participant blocks that organization rather than inheriting its history under a new identity.",
-      "help": "Check the Work owner list and status before retrying. Reopening an existing app is not a fresh hatch. Do not recreate missing twins as a shortcut to recovering their identity."
+      "help": "Ask which owner or evidence is missing before retrying. Reopening an existing app is not a fresh hatch. Do not recreate missing twins as a shortcut to recovering their identity."
     },
     {
       "id": "private-hive",
@@ -686,12 +687,12 @@
       "title": "Work outlives its SDK",
       "label": "SDK-neutral mapping",
       "time": "3 min",
-      "context": "Open the Book Swap team work again",
-      "intro": "The workspace is the durable home of tasks, objectives, decisions, routines, artifacts, and evidence. An execution SDK is a mapped way to do work, not its owner. Copilot SDK is the pinned default seed; its capability cards report structured state rather than a single available/unavailable wall.",
+      "context": "Ask about the Book Swap team’s execution",
+      "intro": "The workspace is the durable home of tasks, objectives, decisions, routines, artifacts, and evidence. An execution SDK is a mapped way to do work, not its owner. Copilot SDK is the pinned default seed. These are internal structures; Brainstem explains them only when relevant or requested.",
       "prompt": "Inspect this Book Swap workspace’s execution mapping. Explain how its SDK-neutral tasks, objectives, decisions, routines, artifacts, and evidence map to the selected adapter. Identify the pinned Copilot SDK seed, verified selection provenance, and each relevant capability as Supported, On or Off, Configured or Not configured, Needs approval, Provider dependent, or an SDK limitation. Keep last actual evidence separate from requested settings. Do not switch adapters, move private data, or change identity for this inspection.",
       "actions": [
-        "Use Work to select and Open the Book Swap participant organization, then send the prompt.",
-        "Inspect the selected adapter and the categorized capability cards this build actually exposes.",
+        "Send the prompt in the Book Swap conversation; Brainstem resolves the work context.",
+        "Read the reported adapter and capability evidence without opening a management view.",
         "Compare Supported and On state with Configured state and last evidence. Keep an unsupported adapter or missing mapping as a recorded gate; do not invent a provider switch."
       ],
       "outcomes": [
@@ -699,7 +700,7 @@
         "Copilot SDK is identified as the pinned default seed, while configuration, approval, provider dependence, SDK limits, and actual evidence remain distinct—not a claim of universal compatibility."
       ],
       "boundary": "Mapping is not migration, a new memory authority, or a new twin. The final reviewed runtime implements the pinned Copilot adapter only. An immutable seed is not edited in place, and selecting an unsupported adapter must gate rather than silently falling back while claiming it ran.",
-      "help": "If the installed build predates categorized mapping status, record that exact build gap and keep using only its supported default. An architecture explanation is not evidence that a second adapter executed."
+      "help": "If the installed build cannot report verified mapping status, record that exact build gate and keep using only its supported default. An architecture explanation is not evidence that a second adapter executed."
     },
     {
       "id": "sdk-sessions-tool-search",
@@ -710,18 +711,18 @@
       "time": "5 min",
       "context": "Stay in the Book Swap team work",
       "intro": "Safely supportable capabilities are On by default, but On is not the same as configured or observed. Infinite sessions, deferred native tool search, isolated runtime state, subordinate local store/cache, and content-free Brainstem diagnostics can be On while provider events remain unobserved.",
-      "prompt": "Inspect the Book Swap’s current SDK capability cards. Report infinite sessions, native tool search, the isolated owner/work/adapter runtime, subordinate session store and persistent cache, and local content-free diagnostics using the exact state categories. Show current compaction settings and only actual observed evidence. Then identify the SDK limitations for selective continue_pending_work, enforceably local native memory, and native telemetry locality. Explain which loaded agents remain callable without invoking the removed practice agents. Do not force compaction or resume pending effects to demonstrate a feature.",
+      "prompt": "Explain the Book Swap’s current execution capabilities from verified evidence. Report infinite sessions, native tool search, the isolated owner/work/adapter runtime, subordinate session store and persistent cache, and local content-free diagnostics using the exact state categories. Show current compaction settings and only actual observed evidence. Then identify the SDK limitations for selective continue_pending_work, enforceably local native memory, and native telemetry locality. Explain which loaded agents remain callable without invoking the removed practice agents. Do not force compaction or resume pending effects to demonstrate a feature.",
       "actions": [
-        "Open Work → SDK availability and send the prompt.",
-        "Inspect model, reasoning, summary, context, store/cache, diagnostics, and tool-search cards; leave settings unchanged for this inspection.",
-        "Look for actual session evidence. A Supported or On card without an observed provider event must remain labelled not yet observed."
+        "Send the prompt; no execution-management view is needed.",
+        "Read the explanation of model, reasoning, summary, context, store/cache, diagnostics, and tool search; leave settings unchanged.",
+        "Look for actual session evidence. A Supported or On capability without an observed provider event must remain labelled not yet observed."
       ],
       "outcomes": [
-        "The reply and Work cards distinguish Supported, On, Configured, Provider dependent, SDK limitation, and actual evidence instead of collapsing them into one unavailable state.",
+        "The reply distinguishes Supported, On, Configured, Provider dependent, SDK limitation, and actual evidence without a status dashboard.",
         "Removed agents remain unavailable; native search does not bypass permissions or recreate them, and isolated SDK state remains subordinate to Work."
       ],
       "boundary": "Compaction defaults are 0.80/0.95 and eligible agents defer above 20; actual provider behavior still needs evidence. The isolated session store and persistent cache are On with embedding retrieval off. Native memory stays Off because SDK 1.0.13 has no enforceably local backend selector; native telemetry stays Off because locality cannot be proved. Brainstem always passes continue_pending_work=false because the native switch cannot selectively bind one approved pending set. Requested recovery remains gated.",
-      "help": "Do not fill a conversation artificially to force provider events. If the installed runtime cannot report a card or observation, record the build gate or not-yet-observed state without claiming a successful live test."
+      "help": "Do not fill a conversation artificially to force provider events. If the installed runtime cannot report an observation, record the build gate or not-yet-observed state without claiming a successful live test."
     },
     {
       "id": "approvals-limits",
@@ -734,16 +735,16 @@
       "intro": "Approval, limits, and Stop belong to the exact workspace owners and operation. A proposed plan cannot approve itself. Session limits may be On with no cap configured, and the composer’s owned Stop is real cancellation/settlement—not a promise to roll back accepted effects.",
       "prompt": "Show this Book Swap organization’s pending approvals, current AI-credit cap state, budget blockers, and any owned operation/Stop status. Explain the difference between Supported, On, Configured, and Needs approval. Prepare a bounded next-step plan only. Do not approve a request for me, enable spending, raise a limit, resume an exhausted session, or start work merely to demonstrate Stop. If a harmless read-only request is already active and I use the visible Stop, report only the exact owner-set cleanup evidence and never claim rollback.",
       "actions": [
-        "Open Work and inspect Review tasks / approvals and Model & approved budget where available.",
+        "Ask Brainstem about pending approvals and the approved budget in ordinary conversation.",
         "Send the conversational prompt. This quest does not require approving any spend.",
         "If a request is already active, the composer may become Stop. Use it only if you intend to stop that exact work, then inspect whether cleanup was confirmed; otherwise simply inspect the state."
       ],
       "outcomes": [
-        "The panel shows no cap configured, an exact approved cap, or a precise gate—not unlimited authorization. Zero configured caps is a valid state.",
+        "The reply reports no cap configured, an exact approved cap, or a precise gate—not unlimited authorization. Zero configured caps is a valid state.",
         "Unknown requests remain pending or declined. If Stop was used, it is bound to the original owner set and operation, with confirmed cleanup or an honest held-admission gate."
       ],
       "boundary": "If configured, the native cap must be at least 30 AI credits per SDK 1.0.13 session; no cap configured remains valid. Exhaustion cancels and never adds credits. Exact one-use approvals bind supported requests. Owned Stop binds one operation identifier to its exact sorted owners, settles or cancels tracked tasks, factories, queues, and compaction before completion, and never claims rollback of already accepted effects.",
-      "help": "If the visible UI cannot safely express an approval, leave it pending. Never treat drafted approval or a general “looks good” as authorization. A transport interruption or timeout is not cleanup confirmation."
+      "help": "If the conversation cannot bind approval to the exact operation, leave it pending. Never treat drafted approval or a general “looks good” as authorization. A transport interruption or timeout is not cleanup confirmation."
     },
     {
       "id": "autonomous-wake-routines",
@@ -756,7 +757,7 @@
       "intro": "The scheduler and bounded attached task support are On by default, yet zero configured routines and zero active tasks is healthy. Timed wake still needs an enabled routine and exact budgets. Native child work stays attached and bounded; unrestricted detach is an SDK limitation, not a hidden autonomy mode.",
       "prompt": "Inspect the Book Swap organization’s scheduler, routines, native child-task support, factories, and current task counts. Propose a no-effect review routine but keep it disabled. Explain the interval, occurrence count, per-run and total credit ceilings, and workspace approvals it would need. Report zero configured routines or zero active tasks as valid rather than unavailable. Describe the bounded attached-task ceilings and the unrestricted-detach limitation. Do not enable a routine, spawn or fan out work, author a factory, or grant spending from this message.",
       "actions": [
-        "Send the prompt and inspect Work’s awake/asleep, routine, native task, approval, and usage state.",
+        "Send the prompt and read the reported activity, routine, task, approval, and usage evidence.",
         "Check that the proposed timed routine is still disabled and that zero active tasks or factories is reported as configured state, not a blocker.",
         "If an independently authorized routine or task already exists, inspect its recorded owner, bounds, occurrence, and cleanup; otherwise record that no timed wake or child task occurred."
       ],
@@ -765,7 +766,7 @@
         "Bounded attached tasks may be On while zero tasks are active. Any real task or wake has owner, limits, result/cleanup evidence, or a precise gate."
       ],
       "boundary": "Attached task ceilings are 2 concurrent, 4 total, depth 1, and 120 seconds. Effect-capable children need an existing explicit grant. Arbitrary factories, native scheduling, broadcast inbox, resume-by-run-id, unknown arguments, and unrestricted background/detach remain gated. Timed routines need explicit enablement, bounded occurrences, both credit ceilings, and approvals; ambiguous effects are never replayed automatically.",
-      "help": "Keep routines off if the visible path cannot express every bound. Zero is a valid configured count. Do not loosen task limits or use another scheduling surface to make the lesson look active."
+      "help": "Keep routines off if the conversation cannot bind every required limit. Zero is a valid configured count. Do not loosen task limits or use another scheduling surface to make the lesson look active."
     },
     {
       "id": "usage-files-citations",
@@ -778,7 +779,7 @@
       "intro": "Use native observations, not guessed metrics. File tracking and session diff are enabled on create and resume. Newly captured bounded rewind points can be previewed, but a real sandbox rewind needs exact approval, verified private recovery bytes, and a crash-safe journal.",
       "prompt": "Show the actual usage and evidence for our latest saved Book Swap draft. Separate observed token or AIU values from unknown values, and do not convert credits to money or add overlapping cumulative counters. Show create-or-resume file-tracking status, recorded session diff, and any bounded rewind points, labelling a fallback as fallback. Preview one point only if supported. Explain the exact one-use approval and journaled sandbox rewind process, but do not approve or execute rewind in this quest. Cite only real sources attached to the correct response.",
       "actions": [
-        "Send the prompt, then inspect Work’s usage line and Evidence / changes preview.",
+        "Send the prompt and read the reported usage and change evidence in the reply.",
         "Look for source citations beneath the correct participant’s bubble when the provider supplies them.",
         "Compare a recorded artifact, native diff, fallback, or read-only rewind preview with the actual deliverable. Leave missing or earlier uncaptured state unknown."
       ],
@@ -794,21 +795,21 @@
       "phase": 6,
       "emoji": "🎭",
       "title": "Roles, Canvas & static Apps",
-      "label": "Results with boundaries",
+      "label": "Inline output with boundaries",
       "time": "5 min",
       "context": "Stay in the Book Swap organization",
-      "intro": "Native SDK roles are temporary projections, not twins; zero configured roles is valid. The built-in Canvas is On by default and streams only persisted, hash-verified safe formats into the passive Results drawer. MCP Apps are supported and requested, but effective On depends on positive provider/runtime negotiation; zero configured Apps is valid.",
-      "prompt": "Report this Book Swap organization’s native role, Canvas, Results, and MCP App cards using Supported, On, Configured, Provider dependent, and SDK limitation state. Treat zero roles or Apps configured as valid. If the Canvas card is On, render the saved volunteer-plan outline only through a bounded safe format and show it in Results after persistence/readback verification; otherwise retain the exact gate. For MCP Apps, show configured/requested versus effective negotiation and only a verified static surface if one is actually available. Do not create a twin, run model script, enable networking, or claim interactive App support.",
+      "intro": "Native SDK roles are temporary projections, not twins; zero configured roles is valid. The built-in Canvas is requested by default and renders only persisted, hash-verified safe content in its owning assistant message after provider negotiation. MCP Apps are supported and requested, but effective On also depends on positive negotiation; zero configured Apps is valid.",
+      "prompt": "Explain this Book Swap organization’s native role, Canvas, and MCP App capabilities using Supported, On, Configured, Provider dependent, and SDK limitation state. Treat zero roles or Apps configured as valid. If Canvas is negotiated and On, render the saved volunteer-plan outline through a bounded safe format inside your owning assistant message after persistence/readback verification; otherwise retain the exact gate. For MCP Apps, distinguish configured/requested state from effective negotiation and include only a verified static surface if one is actually available. Do not create a twin, run model script, enable networking, or claim interactive App support.",
       "actions": [
-        "Send the prompt and inspect Work → SDK availability.",
+        "Send the prompt and read the capability explanation in the reply.",
         "Compare any configured native role with the persistent twin selector; Scout and Planner must not be silently copied. Zero roles is a complete valid result.",
-        "Open Results only for a surface tied to this owner, session, operation, and evidence. Check that Canvas or App content is passive and that a missing negotiation stays Off."
+        "Read any rendered output inside the owning assistant message, tied to its owner, session, operation, and evidence. Content stays passive; a missing negotiation stays Off."
       ],
       "outcomes": [
         "Native roles are verified against current loaded allowed agents, or zero configured roles is reported without inventing twins.",
-        "Canvas Results use bounded Markdown, sanitized inert HTML, allowlisted SVG, or closed line/rect/circle/text drawing data after hash-verified persistence. A static MCP App appears only after positive negotiation and content verification; zero Apps remains valid."
+        "Inline Canvas content uses bounded Markdown, sanitized inert HTML, allowlisted SVG, or closed line/rect/circle/text drawing data after hash-verified persistence. A static MCP App appears only after positive negotiation and content verification; zero Apps remains valid."
       ],
-      "boundary": "Canvas rejects model script, forms, embeds, external references, hidden actions, and unsafe drawing. Verified static MCP Apps use an opaque-origin no-network renderer and exact effect approval. Interactive MCP Apps remain an SDK limitation because the official proxy requires forbidden allow-same-origin; ui/message may only prepare visible composer text. Provider/runtime negotiation and actual evidence must not be inferred from a request flag.",
+      "boundary": "Canvas rejects model script, forms, embeds, external references, hidden actions, and unsafe drawing. Verified static MCP Apps use an opaque-origin no-network renderer; any effect still requires exact conversational approval. Interactive MCP Apps remain an SDK limitation because the official proxy requires forbidden allow-same-origin. Provider/runtime negotiation and actual evidence must not be inferred from a request flag.",
       "help": "Keep zero configuration, negative negotiation, or failed persistence as the precise state. Do not install another viewer, loosen permissions, or claim every provider was observed live."
     },
     {
@@ -823,7 +824,7 @@
       "prompt": "Which unfinished Book Swap task, if any, blocks finalizing our draft invitation? Use existing workspace-native links between the task, objective, decision, and saved evidence. If the relationship is missing but supported by evidence, add only the useful explicit local links. If no blocker is documented, say so and keep the work flat. Do not invent dependencies or build a separate graph.",
       "actions": [
         "Send the prompt within the Book Swap work organization.",
-        "Inspect the referenced task, objective, and artifact/evidence in the work lists.",
+        "Ask Brainstem to explain the referenced task, objective, and saved evidence.",
         "Confirm that each relationship answers this project question rather than connecting unrelated private work."
       ],
       "outcomes": [
@@ -840,11 +841,11 @@
       "title": "Improve without rewriting history",
       "label": "Immutable successors",
       "time": "4 min",
-      "context": "Record a Book Swap retrospective in Work",
+      "context": "Ask the team for a Book Swap retrospective",
       "intro": "Antifragile adaptation means learning from a real miss and testing a better successor—not quietly rewriting yesterday’s evidence. The immutable seed and verified history remain pinned. Ordinary task updates are not a new generation of the underlying template.",
       "prompt": "Record a Book Swap retrospective: our early draft did not explicitly plan a quiet reading corner. Link the actual draft evidence, check whether that miss is real, and propose a review improvement for a successor generation. Keep the current immutable seed, identity, genesis, and prior evidence unchanged. Show any supported successor preview and approval state with lineage; if promotion is unavailable, save a proposed decision and its gate. Do not claim a new generation was applied.",
       "actions": [
-        "Send the prompt and inspect the retrospective’s evidence and proposed decision in Work.",
+        "Send the prompt and read the retrospective’s saved evidence and proposed decision.",
         "Check whether the installed build actually exposes a verified successor mechanism; do not infer one from an edited task.",
         "Leave the proposal unapplied unless a separate supported, explicitly approved successor flow exists."
       ],
@@ -862,12 +863,12 @@
       "title": "Export honestly, hatch lawfully",
       "label": "Backup & fresh lineage",
       "time": "5 min",
-      "context": "Select only the Book Swap participant work for export",
-      "intro": "Finish with a canonical RAPP/1 work backup, not a renamed transcript and not a substitute for the portable agent exports. A private twin exports an organism egg; participant and whole-root scopes export neighborhoods. Choose participant scope so unrelated private work stays out, then verify and preview without executing it.",
-      "prompt": "Create one canonical RAPP/1 backup of this selected Book Swap participant organization, then verify and read-only preview exactly the saved egg returned. Show its verified address, included owners, evidence, referenced artifacts, and exclusions. State whether the previously exported agent.py and SKILL.md carrier are included by an actual scoped reference or remain separate external downloads; do not assume they entered the egg. Refuse missing owner closure or integrity failures. Explain why a lawful fresh hatch needs a newly minted instance identity while preserving the egg artifact identity and valid stream lineage. Do not restore, install, clone a live identity, or claim that an unavailable hatch succeeded.",
+      "context": "Ask to export only the Book Swap team’s work",
+      "intro": "Finish with a canonical RAPP/1 work backup, not a renamed transcript and not a substitute for the portable agent exports. A private twin exports an organism egg; participant and whole-root scopes export neighborhoods. Ask for the Book Swap team only so Brainstem confines the backup and excludes unrelated private work, then verifies and previews it without execution.",
+      "prompt": "Find our Book Swap participant organization and create one canonical RAPP/1 backup of only that team’s work, then verify and read-only preview exactly the saved egg returned. Show its verified address, included owners, evidence, referenced artifacts, and exclusions. State whether the previously exported agent.py and SKILL.md carrier are included by an actual scoped reference or remain separate external downloads; do not assume they entered the egg. Refuse missing owner closure or integrity failures. Explain why a lawful fresh hatch needs a newly minted instance identity while preserving the egg artifact identity and valid stream lineage. Do not restore, install, clone a live identity, or claim that an unavailable hatch succeeded.",
       "actions": [
-        "In Work choose the Book Swap participant organization and Open it, then send the prompt.",
-        "Inspect the verified egg address and the read-only verification/preview result. Work’s Backup button is the visible alternative for creating the same scoped local export; it is not an automatic download.",
+        "Send the prompt naming the Book Swap team; Brainstem resolves and verifies the intended scope.",
+        "Read the verified egg address and read-only verification/preview result in the response. Brainstem resolves the scoped backup internally; creation is not an automatic download.",
         "Compare the egg’s referenced artifact list with the two earlier capability downloads. Keep the verified work backup and portable agent artifacts labelled as separate portability layers unless the preview proves an explicit reference."
       ],
       "outcomes": [
