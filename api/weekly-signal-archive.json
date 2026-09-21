@@ -1,6 +1,83 @@
 {
   "issues": [
     {
+      "as_of": "2026-09-20",
+      "content_html": "<h1>Weekly Signal — September 14–20, 2026</h1><p>0 new archive items, 3 active builds, and a clean-room rebuild of Advanced Terminal Log Visualizer.</p><h2>New in the archive</h2><p>No articles were published during this completed week.</p><h2>Active builds</h2><ul><li><a href=\"https://github.com/kody-w/rappterverse\">rappterverse</a> — rappterverse</li><li><a href=\"https://github.com/kody-w/kody-w.github.io\">kody-w.github.io</a> — Public source repository.</li><li><a href=\"https://github.com/kody-w/rapp-copilot-in-chrome\">rapp-copilot-in-chrome</a> — Drive your real, logged-in Chrome from GitHub Copilot CLI. Reverse engineered from Claude Code&#x27;s undocumented claude-in-chrome bridge. Toasted SKILL.md.</li></ul><h2>Rediscovered</h2><p><a href=\"https://kody-w.github.io/2026/04/19/first-currency-problem/\">The First Currency Problem</a> — How does money happen?</p><h2>Lost App → clean-room lesson</h2><p><strong>Advanced Terminal Log Visualizer</strong>: A dense terminal-output utility rebuilt to turn pasted logs into safe, searchable incident evidence.</p><p><a href=\"https://kody-w.github.io/learnwithkody/examples/incident-log-observatory/\">Open the rebuild lesson</a> · <a href=\"https://kody-w.github.io/learnwithkody/demos/366-incident-log-observatory.html\">Run the local demo</a></p><h2>RAPP Vision brief</h2><p><strong>Paste a wall of terminal output and this app turns it into a searchable incident timeline.</strong></p><p>Build a log visualizer and learn why syntax highlighting must begin with escaping.</p><p><em>Short:</em> A pasted log line should never become executable HTML.</p><hr><p><a href=\"https://kody-w.github.io/newsletter/#newsletter-signup\">Subscribe to the next Weekly Signal</a></p>",
+      "date": "2026-09-20T00:00:00",
+      "date_gmt": "2026-09-20T00:00:00",
+      "excerpt": "0 new archive items, 3 active builds, and a clean-room rebuild of Advanced Terminal Log Visualizer.",
+      "issue_id": "2026-W38",
+      "issue_number": 38,
+      "schema": "kodyw-weekly-signal/1.0",
+      "sections": [
+        {
+          "items": [],
+          "kind": "date-edition",
+          "summary": "No articles were published during this completed week.",
+          "title": "No new articles this week",
+          "url": "https://kody-w.github.io/newsletter/"
+        },
+        {
+          "items": [
+            {
+              "name": "rappterverse",
+              "pushed_at": "2026-09-20T19:49:02Z",
+              "summary": "rappterverse",
+              "url": "https://github.com/kody-w/rappterverse"
+            },
+            {
+              "name": "kody-w.github.io",
+              "pushed_at": "2026-09-20T17:31:37Z",
+              "summary": "Public source repository.",
+              "url": "https://github.com/kody-w/kody-w.github.io"
+            },
+            {
+              "name": "rapp-copilot-in-chrome",
+              "pushed_at": "2026-09-20T16:39:07Z",
+              "summary": "Drive your real, logged-in Chrome from GitHub Copilot CLI. Reverse engineered from Claude Code's undocumented claude-in-chrome bridge. Toasted SKILL.md.",
+              "url": "https://github.com/kody-w/rapp-copilot-in-chrome"
+            }
+          ],
+          "kind": "active-work",
+          "summary": "The public repositories moving most recently.",
+          "title": "Active builds",
+          "url": "https://kody-w.github.io/work/"
+        },
+        {
+          "kind": "rediscovered",
+          "published": "2026-04-19",
+          "summary": "How does money happen?",
+          "title": "The First Currency Problem",
+          "url": "https://kody-w.github.io/2026/04/19/first-currency-problem/"
+        },
+        {
+          "demo_url": "https://kody-w.github.io/learnwithkody/demos/366-incident-log-observatory.html",
+          "historical_title": "Advanced Terminal Log Visualizer",
+          "kind": "lost-app",
+          "lesson_id": "incident-log-observatory",
+          "lesson_url": "https://kody-w.github.io/learnwithkody/examples/incident-log-observatory/",
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/terminal-viewer.html",
+          "summary": "A dense terminal-output utility rebuilt to turn pasted logs into safe, searchable incident evidence.",
+          "title": "Incident Log Observatory — Parse Evidence Without Executing It"
+        },
+        {
+          "episode_16x9": "Build a log visualizer and learn why syntax highlighting must begin with escaping.",
+          "hook": "Paste a wall of terminal output and this app turns it into a searchable incident timeline.",
+          "kind": "rapp-vision",
+          "lesson_id": "incident-log-observatory",
+          "short_9x16": "A pasted log line should never become executable HTML."
+        }
+      ],
+      "slug": "weekly-signal-2026-w38",
+      "stats": {
+        "active_builds": 3,
+        "lesson_id": "incident-log-observatory",
+        "new_articles": 0
+      },
+      "title": "Weekly Signal — September 14–20, 2026",
+      "week_start": "2026-09-14"
+    },
+    {
       "as_of": "2026-09-13",
       "content_html": "<h1>Weekly Signal — September 7–13, 2026</h1><p>1 new archive item, 3 active builds, and a clean-room rebuild of LUMON MDR / Severance Refiner.</p><h2>New in the archive</h2><p>The latest publication date gathers 1 article.</p><ul><li><a href=\"https://kody-w.github.io/2026/09/07/text-me-once/\">Text Me Once: Notification-Agent Design Rules I Learned from a Nine-Day Spam Storm</a><br><small>A watcher agent that texted my phone every 15 minutes for nine days about three hosts that were, it turns out, back online the whole time. A five-times-a-day Hacker News scout that has never once repeated itself. The difference between them is the whole lesson.</small></li></ul><h2>Active builds</h2><ul><li><a href=\"https://github.com/kody-w/rapp-train\">rapp-train</a> — RAPP release-train flight deck — join or test-fly any ring from one page</li><li><a href=\"https://github.com/kody-w/rapp-workspace-manager\">rapp-workspace-manager</a> — Private, local-first pointer manager for Git and RAPP workspaces</li><li><a href=\"https://github.com/kody-w/rapp-beta\">rapp-beta</a> — RAPP release-train beta ring; seeded from the untouched Grail</li></ul><h2>Rediscovered</h2><p><a href=\"https://kody-w.github.io/2026/03/08/the-frame-that-writes-itself/\">The Frame That Writes Itself</a> — By the time the model actually starts predicting the next token, 90% of the authorship has already happened.</p><h2>Lost App → clean-room lesson</h2><p><strong>LUMON MDR / Severance Refiner</strong>: A mysterious retro-corporate number game rebuilt as an original deterministic state-machine challenge.</p><p><a href=\"https://kody-w.github.io/learnwithkody/examples/pattern-quota/\">Open the rebuild lesson</a> · <a href=\"https://kody-w.github.io/learnwithkody/demos/365-pattern-quota.html\">Run the local demo</a></p><h2>RAPP Vision brief</h2><p><strong>The strangest lost app asks you to identify numbers that simply feel wrong.</strong></p><p>Reverse-engineering a mysterious selection mechanic into a deterministic state-machine game.</p><p><em>Short:</em> Which of these numbers looks wrong?</p><hr><p><a href=\"https://kody-w.github.io/newsletter/#newsletter-signup\">Subscribe to the next Weekly Signal</a></p>",
       "date": "2026-09-13T00:00:00",
