@@ -3728,6 +3728,7 @@ class SiteContentTests(unittest.TestCase):
         self.assertIn('href="/start/">Start Here</a>', default)
         home = HOME_PAGE.read_text(encoding="utf-8")
         self.assertIn('class="home-stream home-stream-start"', home)
+        self.assertIn('class="home-stream home-stream-brainstem" href="/brainstem/"', home)
 
     def test_prompt_include_is_accessible_inert_and_vendor_neutral(self):
         prompt = PROMPT_INCLUDE.read_text(encoding="utf-8")

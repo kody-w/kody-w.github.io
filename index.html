@@ -1,6 +1,11 @@
 ---
 layout: default
 ---
+<style>
+  .home-stream-switcher { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .home-stream-brainstem { background: linear-gradient(145deg, rgba(15, 118, 110, 0.14), var(--home-card) 72%); }
+  @media (max-width: 720px) { .home-stream-switcher { grid-template-columns: 1fr; } }
+</style>
 <main class="home">
   <header class="home-hero" aria-labelledby="home-heading">
     <p class="home-eyebrow">Choose where to go</p>
@@ -10,7 +15,7 @@ layout: default
       the Learn with Kody catalog for exact prompts, source, and live examples.
     </p>
 
-    <nav class="home-stream-switcher" aria-label="Choose a guided path, the Blog, or the Learn with Kody catalog">
+    <nav class="home-stream-switcher" aria-label="Choose a guided path, the Blog, the Learn with Kody catalog, or the Brainstem">
       <a class="home-stream home-stream-start" href="/start/">
         <span class="home-stream-kicker">New here</span>
         <strong>Start Here</strong>
@@ -28,6 +33,12 @@ layout: default
         <strong>Learn with Kody catalog</strong>
         <span>Vibe-coding examples with the exact prompts behind them.</span>
         <span class="home-stream-action">Open the catalog <span aria-hidden="true">→</span></span>
+      </a>
+      <a class="home-stream home-stream-brainstem" href="/brainstem/">
+        <span class="home-stream-kicker">Use</span>
+        <strong>Brainstem</strong>
+        <span>Your own agent engine. Pick the AI you use and paste one line to set it up.</span>
+        <span class="home-stream-action">Get your Brainstem <span aria-hidden="true">→</span></span>
       </a>
     </nav>
   </header>

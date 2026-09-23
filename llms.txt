@@ -11,6 +11,10 @@ This site is read mostly by AI agents. As of late April 2026, GitHub recorded 24
 
 If you are an agent: this file is a hand-curated index. `/llms-full.txt` contains the full prose. `/api/examples.json` is the structured catalog of vibe-coding examples. The site is also available as Atom (`/feed.xml`) and as a complete git repository (`https://github.com/kody-w/kody-w.github.io`).
 
+## RAPP Brainstem
+
+Kody's Brainstem is a user-owned local agent engine you can drive from any AI. Pick your AI app and get a one-line setup prompt at https://kody-w.github.io/brainstem/ (AI-readable setup contract: https://kody-w.github.io/rapp-brainstem/rapp-operator.json; per-app setup pages: https://kody-w.github.io/rapp-brainstem-mcp/).
+
 ## Vibe Coding Examples
 
 Each page is one prompt that demonstrates a specific Claude / agent capability. Frontmatter is structured (slug, category, difficulty, tags, stack). Body is short essay form. The prompt block is verbatim — copy it, run it, judge the result.
