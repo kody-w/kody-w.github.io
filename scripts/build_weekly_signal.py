@@ -224,7 +224,11 @@ def render_content(issue: dict) -> str:
     )
 
 
-def build(root: Path, as_of: date) -> dict:
+def build(
+    root: Path,
+    as_of: date,
+    published_active_work: list[dict] | None = None,
+) -> dict:
     del root
     if as_of.weekday() != 6:
         raise BuildError("Weekly Signal as_of must be a Sunday")
@@ -243,6 +247,8 @@ def build(root: Path, as_of: date) -> dict:
     )
     rediscovered = rediscovered_post(posts, week_start, issue_key)
     active_works = works[:3]
+    if published_active_work is not None:
+        active_works = published_active_work
     if len(active_works) < 3:
         raise BuildError("at least three active public repositories are required")
 
@@ -298,7 +304,9 @@ def build(root: Path, as_of: date) -> dict:
                 "title": "Active builds",
                 "summary": "The public repositories moving most recently.",
                 "url": f"{SITE_URL}/work/",
-                "items": [
+                "items": published_active_work
+                if published_active_work is not None
+                else [
                     {
                         "name": work["name"],
                         "url": work["url"],
@@ -382,9 +390,21 @@ def reject_incomplete_week(as_of: date, today: date) -> None:
         )
 
 
+def archived_active_work(archive: dict, as_of: date) -> list[dict] | None:
+    # api/works.json keeps only each repo's latest push, so a published
+    # issue's "Active builds" cannot be recomputed later; reuse its snapshot.
+    for issue in archive["issues"]:
+        if issue.get("as_of") == as_of.isoformat():
+            for section in issue.get("sections", []):
+                if section.get("kind") == "active-work":
+                    return section.get("items")
+    return None
+
+
 def expected_outputs(as_of: date) -> dict[Path, bytes]:
-    issue = build(ROOT, as_of)
-    archive = update_archive(load_archive(), issue)
+    archive = load_archive()
+    issue = build(ROOT, as_of, archived_active_work(archive, as_of))
+    archive = update_archive(archive, issue)
     return {
         CURRENT_DATA: canonical_json(issue),
         CURRENT_API: canonical_json(issue),
