@@ -155,6 +155,41 @@ class WeeklySignalTests(unittest.TestCase):
         )
         self.assertEqual(archive["issues"][0]["slug"], current["slug"])
 
+    def test_published_issue_keeps_its_active_work_snapshot(self):
+        snapshot = [
+            {
+                "name": f"pinned-{index}",
+                "pushed_at": "2026-08-29T00:00:00Z",
+                "summary": "Pinned when the issue was published.",
+                "url": f"https://github.com/kody-w/pinned-{index}",
+            }
+            for index in range(3)
+        ]
+        archive = {
+            "schema": self.module.ARCHIVE_SCHEMA,
+            "issues": [
+                {
+                    "as_of": "2026-08-30",
+                    "sections": [{"kind": "active-work", "items": snapshot}],
+                }
+            ],
+        }
+        self.assertEqual(
+            self.module.archived_active_work(archive, date(2026, 8, 30)),
+            snapshot,
+        )
+        self.assertIsNone(
+            self.module.archived_active_work(archive, date(2026, 9, 6))
+        )
+        issue = self.module.build(ROOT, date(2026, 8, 30), snapshot)
+        active = next(
+            section for section in issue["sections"]
+            if section["kind"] == "active-work"
+        )
+        self.assertEqual(active["items"], snapshot)
+        self.assertEqual(issue["stats"]["active_builds"], 3)
+        self.assertIn("pinned-0", issue["content_html"])
+
     def test_weekly_page_and_refresh_workflow_exist(self):
         page = PAGE.read_text(encoding="utf-8")
         self.assertIn("permalink: /weekly-signal/", page)
