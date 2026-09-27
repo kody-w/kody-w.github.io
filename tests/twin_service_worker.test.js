@@ -326,13 +326,17 @@ function startActivate(runtime) {
   return pending;
 }
 
-async function waitForActivationTimer(runtime, pending) {
+async function waitForActivationTimer(runtime, pending, timeoutMs = 10000) {
   let settled = false;
   pending.then(
     () => { settled = true; },
     () => { settled = true; }
   );
-  for (let attempt = 0; attempt < 100; attempt += 1) {
+  // The worker hashes with crypto.subtle.digest, which completes on the libuv
+  // threadpool rather than after a fixed number of event-loop turns, so a busy
+  // runner can need far more than 100 turns. Bound the wait by time instead.
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
     if (runtime.state.timers.length > 0 || settled) {
       return settled;
     }
