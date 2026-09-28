@@ -1,6 +1,83 @@
 {
   "issues": [
     {
+      "as_of": "2026-09-27",
+      "content_html": "<h1>Weekly Signal — September 21–27, 2026</h1><p>0 new archive items, 3 active builds, and a clean-room rebuild of Agent Workflow System.</p><h2>New in the archive</h2><p>No articles were published during this completed week.</p><h2>Active builds</h2><ul><li><a href=\"https://github.com/kody-w/rapp-train\">rapp-train</a> — RAPP release-train flight deck — join or test-fly any ring from one page</li><li><a href=\"https://github.com/kody-w/rapp-canary\">rapp-canary</a> — RAPP release-train canary ring; seeded from the untouched Grail</li><li><a href=\"https://github.com/kody-w/rapterbot.com\">rapterbot.com</a> — RapterBot.com public site and privacy-safe autonomous company DOGG</li></ul><h2>Rediscovered</h2><p><a href=\"https://kody-w.github.io/2025/10/29/content-addressed-file-sharing/\">Content-addressed file sharing in 200 lines, no servers</a> — Drop a file in the browser. Hash it with SHA-256. Push it via a public-CDN-backed git host. The hash is the URL. Verification is mathematical. No servers, no IPFS, no blockchain.</p><h2>Lost App → clean-room lesson</h2><p><strong>Agent Workflow System</strong>: A browser-based agent workflow workshop rebuilt as a safe local simulator that treats imported code only as data.</p><p><a href=\"https://kody-w.github.io/learnwithkody/examples/agent-workflow-lab/\">Open the rebuild lesson</a> · <a href=\"https://kody-w.github.io/learnwithkody/demos/367-agent-workflow-lab.html\">Run the local demo</a></p><h2>RAPP Vision brief</h2><p><strong>This abandoned browser app could compose an entire agent workflow without running a single real agent.</strong></p><p>How to design a visual agent workflow editor without accidentally building a remote-code execution engine.</p><p><em>Short:</em> Three workflow nodes, zero live agents, one complete local simulation.</p><hr><p><a href=\"https://kody-w.github.io/newsletter/#newsletter-signup\">Subscribe to the next Weekly Signal</a></p>",
+      "date": "2026-09-27T00:00:00",
+      "date_gmt": "2026-09-27T00:00:00",
+      "excerpt": "0 new archive items, 3 active builds, and a clean-room rebuild of Agent Workflow System.",
+      "issue_id": "2026-W39",
+      "issue_number": 39,
+      "schema": "kodyw-weekly-signal/1.0",
+      "sections": [
+        {
+          "items": [],
+          "kind": "date-edition",
+          "summary": "No articles were published during this completed week.",
+          "title": "No new articles this week",
+          "url": "https://kody-w.github.io/newsletter/"
+        },
+        {
+          "items": [
+            {
+              "name": "rapp-train",
+              "pushed_at": "2026-09-27T22:30:44Z",
+              "summary": "RAPP release-train flight deck — join or test-fly any ring from one page",
+              "url": "https://github.com/kody-w/rapp-train"
+            },
+            {
+              "name": "rapp-canary",
+              "pushed_at": "2026-09-27T20:56:51Z",
+              "summary": "RAPP release-train canary ring; seeded from the untouched Grail",
+              "url": "https://github.com/kody-w/rapp-canary"
+            },
+            {
+              "name": "rapterbot.com",
+              "pushed_at": "2026-09-27T20:56:06Z",
+              "summary": "RapterBot.com public site and privacy-safe autonomous company DOGG",
+              "url": "https://github.com/kody-w/rapterbot.com"
+            }
+          ],
+          "kind": "active-work",
+          "summary": "The public repositories moving most recently.",
+          "title": "Active builds",
+          "url": "https://kody-w.github.io/work/"
+        },
+        {
+          "kind": "rediscovered",
+          "published": "2025-10-29",
+          "summary": "Drop a file in the browser. Hash it with SHA-256. Push it via a public-CDN-backed git host. The hash is the URL. Verification is mathematical. No servers, no IPFS, no blockchain.",
+          "title": "Content-addressed file sharing in 200 lines, no servers",
+          "url": "https://kody-w.github.io/2025/10/29/content-addressed-file-sharing/"
+        },
+        {
+          "demo_url": "https://kody-w.github.io/learnwithkody/demos/367-agent-workflow-lab.html",
+          "historical_title": "Agent Workflow System",
+          "kind": "lost-app",
+          "lesson_id": "agent-workflow-lab",
+          "lesson_url": "https://kody-w.github.io/learnwithkody/examples/agent-workflow-lab/",
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/Agent-Workflow-System.html",
+          "summary": "A browser-based agent workflow workshop rebuilt as a safe local simulator that treats imported code only as data.",
+          "title": "Agent Workflow Lab — Compose Plans Without Executing Imported Code"
+        },
+        {
+          "episode_16x9": "How to design a visual agent workflow editor without accidentally building a remote-code execution engine.",
+          "hook": "This abandoned browser app could compose an entire agent workflow without running a single real agent.",
+          "kind": "rapp-vision",
+          "lesson_id": "agent-workflow-lab",
+          "short_9x16": "Three workflow nodes, zero live agents, one complete local simulation."
+        }
+      ],
+      "slug": "weekly-signal-2026-w39",
+      "stats": {
+        "active_builds": 3,
+        "lesson_id": "agent-workflow-lab",
+        "new_articles": 0
+      },
+      "title": "Weekly Signal — September 21–27, 2026",
+      "week_start": "2026-09-21"
+    },
+    {
       "as_of": "2026-09-20",
       "content_html": "<h1>Weekly Signal — September 14–20, 2026</h1><p>0 new archive items, 3 active builds, and a clean-room rebuild of Advanced Terminal Log Visualizer.</p><h2>New in the archive</h2><p>No articles were published during this completed week.</p><h2>Active builds</h2><ul><li><a href=\"https://github.com/kody-w/rappterverse\">rappterverse</a> — rappterverse</li><li><a href=\"https://github.com/kody-w/kody-w.github.io\">kody-w.github.io</a> — Public source repository.</li><li><a href=\"https://github.com/kody-w/rapp-copilot-in-chrome\">rapp-copilot-in-chrome</a> — Drive your real, logged-in Chrome from GitHub Copilot CLI. Reverse engineered from Claude Code&#x27;s undocumented claude-in-chrome bridge. Toasted SKILL.md.</li></ul><h2>Rediscovered</h2><p><a href=\"https://kody-w.github.io/2026/04/19/first-currency-problem/\">The First Currency Problem</a> — How does money happen?</p><h2>Lost App → clean-room lesson</h2><p><strong>Advanced Terminal Log Visualizer</strong>: A dense terminal-output utility rebuilt to turn pasted logs into safe, searchable incident evidence.</p><p><a href=\"https://kody-w.github.io/learnwithkody/examples/incident-log-observatory/\">Open the rebuild lesson</a> · <a href=\"https://kody-w.github.io/learnwithkody/demos/366-incident-log-observatory.html\">Run the local demo</a></p><h2>RAPP Vision brief</h2><p><strong>Paste a wall of terminal output and this app turns it into a searchable incident timeline.</strong></p><p>Build a log visualizer and learn why syntax highlighting must begin with escaping.</p><p><em>Short:</em> A pasted log line should never become executable HTML.</p><hr><p><a href=\"https://kody-w.github.io/newsletter/#newsletter-signup\">Subscribe to the next Weekly Signal</a></p>",
       "date": "2026-09-20T00:00:00",
