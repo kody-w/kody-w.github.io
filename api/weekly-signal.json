@@ -1,11 +1,11 @@
 {
-  "as_of": "2026-09-27",
-  "content_html": "<h1>Weekly Signal — September 21–27, 2026</h1><p>0 new archive items, 3 active builds, and a clean-room rebuild of Agent Workflow System.</p><h2>New in the archive</h2><p>No articles were published during this completed week.</p><h2>Active builds</h2><ul><li><a href=\"https://github.com/kody-w/rapp-train\">rapp-train</a> — RAPP release-train flight deck — join or test-fly any ring from one page</li><li><a href=\"https://github.com/kody-w/rapp-canary\">rapp-canary</a> — RAPP release-train canary ring; seeded from the untouched Grail</li><li><a href=\"https://github.com/kody-w/rapterbot.com\">rapterbot.com</a> — RapterBot.com public site and privacy-safe autonomous company DOGG</li></ul><h2>Rediscovered</h2><p><a href=\"https://kody-w.github.io/2025/10/29/content-addressed-file-sharing/\">Content-addressed file sharing in 200 lines, no servers</a> — Drop a file in the browser. Hash it with SHA-256. Push it via a public-CDN-backed git host. The hash is the URL. Verification is mathematical. No servers, no IPFS, no blockchain.</p><h2>Lost App → clean-room lesson</h2><p><strong>Agent Workflow System</strong>: A browser-based agent workflow workshop rebuilt as a safe local simulator that treats imported code only as data.</p><p><a href=\"https://kody-w.github.io/learnwithkody/examples/agent-workflow-lab/\">Open the rebuild lesson</a> · <a href=\"https://kody-w.github.io/learnwithkody/demos/367-agent-workflow-lab.html\">Run the local demo</a></p><h2>RAPP Vision brief</h2><p><strong>This abandoned browser app could compose an entire agent workflow without running a single real agent.</strong></p><p>How to design a visual agent workflow editor without accidentally building a remote-code execution engine.</p><p><em>Short:</em> Three workflow nodes, zero live agents, one complete local simulation.</p><hr><p><a href=\"https://kody-w.github.io/newsletter/#newsletter-signup\">Subscribe to the next Weekly Signal</a></p>",
-  "date": "2026-09-27T00:00:00",
-  "date_gmt": "2026-09-27T00:00:00",
-  "excerpt": "0 new archive items, 3 active builds, and a clean-room rebuild of Agent Workflow System.",
-  "issue_id": "2026-W39",
-  "issue_number": 39,
+  "as_of": "2026-10-04",
+  "content_html": "<h1>Weekly Signal — September 28–October 4, 2026</h1><p>0 new archive items, 3 active builds, and a clean-room rebuild of LUMON MDR / Severance Refiner.</p><h2>New in the archive</h2><p>No articles were published during this completed week.</p><h2>Active builds</h2><ul><li><a href=\"https://github.com/kody-w/dogg-kestrel\">dogg-kestrel</a> — Kestrel&#x27;s DOGG dimension: one frame per maintenance cycle a RAPP organism lived on kody-w/dogg, keyed to the spine tick it woke at.</li><li><a href=\"https://github.com/kody-w/rapp-chatgpt\">rapp-chatgpt</a> — RAPP Agent Builder: a ChatGPT app that turns an idea into a working RAPP agent</li><li><a href=\"https://github.com/kody-w/kody-w.github.io\">kody-w.github.io</a> — Public source repository.</li></ul><h2>Rediscovered</h2><p><a href=\"https://kody-w.github.io/2026/03/06/i-replaced-the-app-with-a-population/\">I Replaced the App With a Population</a> — The old mental model says an application is a thing.</p><h2>Lost App → clean-room lesson</h2><p><strong>LUMON MDR / Severance Refiner</strong>: A mysterious retro-corporate number game rebuilt as an original deterministic state-machine challenge.</p><p><a href=\"https://kody-w.github.io/learnwithkody/examples/pattern-quota/\">Open the rebuild lesson</a> · <a href=\"https://kody-w.github.io/learnwithkody/demos/365-pattern-quota.html\">Run the local demo</a></p><h2>RAPP Vision brief</h2><p><strong>The strangest lost app asks you to identify numbers that simply feel wrong.</strong></p><p>Reverse-engineering a mysterious selection mechanic into a deterministic state-machine game.</p><p><em>Short:</em> Which of these numbers looks wrong?</p><hr><p><a href=\"https://kody-w.github.io/newsletter/#newsletter-signup\">Subscribe to the next Weekly Signal</a></p>",
+  "date": "2026-10-04T00:00:00",
+  "date_gmt": "2026-10-04T00:00:00",
+  "excerpt": "0 new archive items, 3 active builds, and a clean-room rebuild of LUMON MDR / Severance Refiner.",
+  "issue_id": "2026-W40",
+  "issue_number": 40,
   "schema": "kodyw-weekly-signal/1.0",
   "sections": [
     {
@@ -18,22 +18,22 @@
     {
       "items": [
         {
-          "name": "rapp-train",
-          "pushed_at": "2026-09-27T22:30:44Z",
-          "summary": "RAPP release-train flight deck — join or test-fly any ring from one page",
-          "url": "https://github.com/kody-w/rapp-train"
+          "name": "dogg-kestrel",
+          "pushed_at": "2026-10-04T23:28:09Z",
+          "summary": "Kestrel's DOGG dimension: one frame per maintenance cycle a RAPP organism lived on kody-w/dogg, keyed to the spine tick it woke at.",
+          "url": "https://github.com/kody-w/dogg-kestrel"
         },
         {
-          "name": "rapp-canary",
-          "pushed_at": "2026-09-27T20:56:51Z",
-          "summary": "RAPP release-train canary ring; seeded from the untouched Grail",
-          "url": "https://github.com/kody-w/rapp-canary"
+          "name": "rapp-chatgpt",
+          "pushed_at": "2026-10-04T23:22:48Z",
+          "summary": "RAPP Agent Builder: a ChatGPT app that turns an idea into a working RAPP agent",
+          "url": "https://github.com/kody-w/rapp-chatgpt"
         },
         {
-          "name": "rapterbot.com",
-          "pushed_at": "2026-09-27T20:56:06Z",
-          "summary": "RapterBot.com public site and privacy-safe autonomous company DOGG",
-          "url": "https://github.com/kody-w/rapterbot.com"
+          "name": "kody-w.github.io",
+          "pushed_at": "2026-10-04T18:13:31Z",
+          "summary": "Public source repository.",
+          "url": "https://github.com/kody-w/kody-w.github.io"
         }
       ],
       "kind": "active-work",
@@ -43,35 +43,35 @@
     },
     {
       "kind": "rediscovered",
-      "published": "2025-10-29",
-      "summary": "Drop a file in the browser. Hash it with SHA-256. Push it via a public-CDN-backed git host. The hash is the URL. Verification is mathematical. No servers, no IPFS, no blockchain.",
-      "title": "Content-addressed file sharing in 200 lines, no servers",
-      "url": "https://kody-w.github.io/2025/10/29/content-addressed-file-sharing/"
+      "published": "2026-03-06",
+      "summary": "The old mental model says an application is a thing.",
+      "title": "I Replaced the App With a Population",
+      "url": "https://kody-w.github.io/2026/03/06/i-replaced-the-app-with-a-population/"
     },
     {
-      "demo_url": "https://kody-w.github.io/learnwithkody/demos/367-agent-workflow-lab.html",
-      "historical_title": "Agent Workflow System",
+      "demo_url": "https://kody-w.github.io/learnwithkody/demos/365-pattern-quota.html",
+      "historical_title": "LUMON MDR / Severance Refiner",
       "kind": "lost-app",
-      "lesson_id": "agent-workflow-lab",
-      "lesson_url": "https://kody-w.github.io/learnwithkody/examples/agent-workflow-lab/",
-      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/Agent-Workflow-System.html",
-      "summary": "A browser-based agent workflow workshop rebuilt as a safe local simulator that treats imported code only as data.",
-      "title": "Agent Workflow Lab — Compose Plans Without Executing Imported Code"
+      "lesson_id": "pattern-quota",
+      "lesson_url": "https://kody-w.github.io/learnwithkody/examples/pattern-quota/",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/severance-refiner.html",
+      "summary": "A mysterious retro-corporate number game rebuilt as an original deterministic state-machine challenge.",
+      "title": "Pattern Quota — Rebuild a Mysterious Selection Game"
     },
     {
-      "episode_16x9": "How to design a visual agent workflow editor without accidentally building a remote-code execution engine.",
-      "hook": "This abandoned browser app could compose an entire agent workflow without running a single real agent.",
+      "episode_16x9": "Reverse-engineering a mysterious selection mechanic into a deterministic state-machine game.",
+      "hook": "The strangest lost app asks you to identify numbers that simply feel wrong.",
       "kind": "rapp-vision",
-      "lesson_id": "agent-workflow-lab",
-      "short_9x16": "Three workflow nodes, zero live agents, one complete local simulation."
+      "lesson_id": "pattern-quota",
+      "short_9x16": "Which of these numbers looks wrong?"
     }
   ],
-  "slug": "weekly-signal-2026-w39",
+  "slug": "weekly-signal-2026-w40",
   "stats": {
     "active_builds": 3,
-    "lesson_id": "agent-workflow-lab",
+    "lesson_id": "pattern-quota",
     "new_articles": 0
   },
-  "title": "Weekly Signal — September 21–27, 2026",
-  "week_start": "2026-09-21"
+  "title": "Weekly Signal — September 28–October 4, 2026",
+  "week_start": "2026-09-28"
 }
