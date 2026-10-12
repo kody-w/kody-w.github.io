@@ -1,6 +1,83 @@
 {
   "issues": [
     {
+      "as_of": "2026-10-11",
+      "content_html": "<h1>Weekly Signal — October 5–11, 2026</h1><p>0 new archive items, 3 active builds, and a clean-room rebuild of Advanced Terminal Log Visualizer.</p><h2>New in the archive</h2><p>No articles were published during this completed week.</p><h2>Active builds</h2><ul><li><a href=\"https://github.com/kody-w/rappterverse\">rappterverse</a> — rappterverse</li><li><a href=\"https://github.com/kody-w/AINexus\">AINexus</a> — AI Nexus</li><li><a href=\"https://github.com/kody-w/dogg\">dogg</a> — Public source repository.</li></ul><h2>Rediscovered</h2><p><a href=\"https://kody-w.github.io/2025/10/24/copilot-at-scale/\">Running 100 AI agents 24/7 — the fleet pattern that finally let me sleep</a> — What 19 hours of overnight AI-agent operation taught me about memory ceilings, timeout handling, parallel writes, and the babysitter pattern that auto-fixes problems instead of waking you up.</p><h2>Lost App → clean-room lesson</h2><p><strong>Advanced Terminal Log Visualizer</strong>: A dense terminal-output utility rebuilt to turn pasted logs into safe, searchable incident evidence.</p><p><a href=\"https://kody-w.github.io/learnwithkody/examples/incident-log-observatory/\">Open the rebuild lesson</a> · <a href=\"https://kody-w.github.io/learnwithkody/demos/366-incident-log-observatory.html\">Run the local demo</a></p><h2>RAPP Vision brief</h2><p><strong>Paste a wall of terminal output and this app turns it into a searchable incident timeline.</strong></p><p>Build a log visualizer and learn why syntax highlighting must begin with escaping.</p><p><em>Short:</em> A pasted log line should never become executable HTML.</p><hr><p><a href=\"https://kody-w.github.io/newsletter/#newsletter-signup\">Subscribe to the next Weekly Signal</a></p>",
+      "date": "2026-10-11T00:00:00",
+      "date_gmt": "2026-10-11T00:00:00",
+      "excerpt": "0 new archive items, 3 active builds, and a clean-room rebuild of Advanced Terminal Log Visualizer.",
+      "issue_id": "2026-W41",
+      "issue_number": 41,
+      "schema": "kodyw-weekly-signal/1.0",
+      "sections": [
+        {
+          "items": [],
+          "kind": "date-edition",
+          "summary": "No articles were published during this completed week.",
+          "title": "No new articles this week",
+          "url": "https://kody-w.github.io/newsletter/"
+        },
+        {
+          "items": [
+            {
+              "name": "rappterverse",
+              "pushed_at": "2026-10-06T19:34:31Z",
+              "summary": "rappterverse",
+              "url": "https://github.com/kody-w/rappterverse"
+            },
+            {
+              "name": "AINexus",
+              "pushed_at": "2026-10-06T19:33:58Z",
+              "summary": "AI Nexus",
+              "url": "https://github.com/kody-w/AINexus"
+            },
+            {
+              "name": "dogg",
+              "pushed_at": "2026-10-06T19:31:20Z",
+              "summary": "Public source repository.",
+              "url": "https://github.com/kody-w/dogg"
+            }
+          ],
+          "kind": "active-work",
+          "summary": "The public repositories moving most recently.",
+          "title": "Active builds",
+          "url": "https://kody-w.github.io/work/"
+        },
+        {
+          "kind": "rediscovered",
+          "published": "2025-10-24",
+          "summary": "What 19 hours of overnight AI-agent operation taught me about memory ceilings, timeout handling, parallel writes, and the babysitter pattern that auto-fixes problems instead of waking you up.",
+          "title": "Running 100 AI agents 24/7 — the fleet pattern that finally let me sleep",
+          "url": "https://kody-w.github.io/2025/10/24/copilot-at-scale/"
+        },
+        {
+          "demo_url": "https://kody-w.github.io/learnwithkody/demos/366-incident-log-observatory.html",
+          "historical_title": "Advanced Terminal Log Visualizer",
+          "kind": "lost-app",
+          "lesson_id": "incident-log-observatory",
+          "lesson_url": "https://kody-w.github.io/learnwithkody/examples/incident-log-observatory/",
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/terminal-viewer.html",
+          "summary": "A dense terminal-output utility rebuilt to turn pasted logs into safe, searchable incident evidence.",
+          "title": "Incident Log Observatory — Parse Evidence Without Executing It"
+        },
+        {
+          "episode_16x9": "Build a log visualizer and learn why syntax highlighting must begin with escaping.",
+          "hook": "Paste a wall of terminal output and this app turns it into a searchable incident timeline.",
+          "kind": "rapp-vision",
+          "lesson_id": "incident-log-observatory",
+          "short_9x16": "A pasted log line should never become executable HTML."
+        }
+      ],
+      "slug": "weekly-signal-2026-w41",
+      "stats": {
+        "active_builds": 3,
+        "lesson_id": "incident-log-observatory",
+        "new_articles": 0
+      },
+      "title": "Weekly Signal — October 5–11, 2026",
+      "week_start": "2026-10-05"
+    },
+    {
       "as_of": "2026-10-04",
       "content_html": "<h1>Weekly Signal — September 28–October 4, 2026</h1><p>0 new archive items, 3 active builds, and a clean-room rebuild of LUMON MDR / Severance Refiner.</p><h2>New in the archive</h2><p>No articles were published during this completed week.</p><h2>Active builds</h2><ul><li><a href=\"https://github.com/kody-w/dogg-kestrel\">dogg-kestrel</a> — Kestrel&#x27;s DOGG dimension: one frame per maintenance cycle a RAPP organism lived on kody-w/dogg, keyed to the spine tick it woke at.</li><li><a href=\"https://github.com/kody-w/rapp-chatgpt\">rapp-chatgpt</a> — RAPP Agent Builder: a ChatGPT app that turns an idea into a working RAPP agent</li><li><a href=\"https://github.com/kody-w/kody-w.github.io\">kody-w.github.io</a> — Public source repository.</li></ul><h2>Rediscovered</h2><p><a href=\"https://kody-w.github.io/2026/03/06/i-replaced-the-app-with-a-population/\">I Replaced the App With a Population</a> — The old mental model says an application is a thing.</p><h2>Lost App → clean-room lesson</h2><p><strong>LUMON MDR / Severance Refiner</strong>: A mysterious retro-corporate number game rebuilt as an original deterministic state-machine challenge.</p><p><a href=\"https://kody-w.github.io/learnwithkody/examples/pattern-quota/\">Open the rebuild lesson</a> · <a href=\"https://kody-w.github.io/learnwithkody/demos/365-pattern-quota.html\">Run the local demo</a></p><h2>RAPP Vision brief</h2><p><strong>The strangest lost app asks you to identify numbers that simply feel wrong.</strong></p><p>Reverse-engineering a mysterious selection mechanic into a deterministic state-machine game.</p><p><em>Short:</em> Which of these numbers looks wrong?</p><hr><p><a href=\"https://kody-w.github.io/newsletter/#newsletter-signup\">Subscribe to the next Weekly Signal</a></p>",
       "date": "2026-10-04T00:00:00",
