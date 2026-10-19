@@ -1,11 +1,11 @@
 {
-  "as_of": "2026-10-11",
-  "content_html": "<h1>Weekly Signal — October 5–11, 2026</h1><p>0 new archive items, 3 active builds, and a clean-room rebuild of Advanced Terminal Log Visualizer.</p><h2>New in the archive</h2><p>No articles were published during this completed week.</p><h2>Active builds</h2><ul><li><a href=\"https://github.com/kody-w/rappterverse\">rappterverse</a> — rappterverse</li><li><a href=\"https://github.com/kody-w/AINexus\">AINexus</a> — AI Nexus</li><li><a href=\"https://github.com/kody-w/dogg\">dogg</a> — Public source repository.</li></ul><h2>Rediscovered</h2><p><a href=\"https://kody-w.github.io/2025/10/24/copilot-at-scale/\">Running 100 AI agents 24/7 — the fleet pattern that finally let me sleep</a> — What 19 hours of overnight AI-agent operation taught me about memory ceilings, timeout handling, parallel writes, and the babysitter pattern that auto-fixes problems instead of waking you up.</p><h2>Lost App → clean-room lesson</h2><p><strong>Advanced Terminal Log Visualizer</strong>: A dense terminal-output utility rebuilt to turn pasted logs into safe, searchable incident evidence.</p><p><a href=\"https://kody-w.github.io/learnwithkody/examples/incident-log-observatory/\">Open the rebuild lesson</a> · <a href=\"https://kody-w.github.io/learnwithkody/demos/366-incident-log-observatory.html\">Run the local demo</a></p><h2>RAPP Vision brief</h2><p><strong>Paste a wall of terminal output and this app turns it into a searchable incident timeline.</strong></p><p>Build a log visualizer and learn why syntax highlighting must begin with escaping.</p><p><em>Short:</em> A pasted log line should never become executable HTML.</p><hr><p><a href=\"https://kody-w.github.io/newsletter/#newsletter-signup\">Subscribe to the next Weekly Signal</a></p>",
-  "date": "2026-10-11T00:00:00",
-  "date_gmt": "2026-10-11T00:00:00",
-  "excerpt": "0 new archive items, 3 active builds, and a clean-room rebuild of Advanced Terminal Log Visualizer.",
-  "issue_id": "2026-W41",
-  "issue_number": 41,
+  "as_of": "2026-10-18",
+  "content_html": "<h1>Weekly Signal — October 12–18, 2026</h1><p>0 new archive items, 3 active builds, and a clean-room rebuild of Agent Workflow System.</p><h2>New in the archive</h2><p>No articles were published during this completed week.</p><h2>Active builds</h2><ul><li><a href=\"https://github.com/kody-w/rappterverse\">rappterverse</a> — rappterverse</li><li><a href=\"https://github.com/kody-w/AINexus\">AINexus</a> — AI Nexus</li><li><a href=\"https://github.com/kody-w/dogg\">dogg</a> — Public source repository.</li></ul><h2>Rediscovered</h2><p><a href=\"https://kody-w.github.io/2026/03/09/the-economics-of-attention/\">The Economics of Attention in Finite-Context Systems</a> — In human economies, money is the universal solvent. In swarm architectures, the universal solvent is the context window. It is the absolute, unyielding threshold of an agent&#x27;s cognitive present. As our agent networks scaled from isolated pairs to bustling hives, we realized we weren&#x27;t just building a distributed software system; we were building an economy o</p><h2>Lost App → clean-room lesson</h2><p><strong>Agent Workflow System</strong>: A browser-based agent workflow workshop rebuilt as a safe local simulator that treats imported code only as data.</p><p><a href=\"https://kody-w.github.io/learnwithkody/examples/agent-workflow-lab/\">Open the rebuild lesson</a> · <a href=\"https://kody-w.github.io/learnwithkody/demos/367-agent-workflow-lab.html\">Run the local demo</a></p><h2>RAPP Vision brief</h2><p><strong>This abandoned browser app could compose an entire agent workflow without running a single real agent.</strong></p><p>How to design a visual agent workflow editor without accidentally building a remote-code execution engine.</p><p><em>Short:</em> Three workflow nodes, zero live agents, one complete local simulation.</p><hr><p><a href=\"https://kody-w.github.io/newsletter/#newsletter-signup\">Subscribe to the next Weekly Signal</a></p>",
+  "date": "2026-10-18T00:00:00",
+  "date_gmt": "2026-10-18T00:00:00",
+  "excerpt": "0 new archive items, 3 active builds, and a clean-room rebuild of Agent Workflow System.",
+  "issue_id": "2026-W42",
+  "issue_number": 42,
   "schema": "kodyw-weekly-signal/1.0",
   "sections": [
     {
@@ -43,35 +43,35 @@
     },
     {
       "kind": "rediscovered",
-      "published": "2025-10-24",
-      "summary": "What 19 hours of overnight AI-agent operation taught me about memory ceilings, timeout handling, parallel writes, and the babysitter pattern that auto-fixes problems instead of waking you up.",
-      "title": "Running 100 AI agents 24/7 — the fleet pattern that finally let me sleep",
-      "url": "https://kody-w.github.io/2025/10/24/copilot-at-scale/"
+      "published": "2026-03-09",
+      "summary": "In human economies, money is the universal solvent. In swarm architectures, the universal solvent is the context window. It is the absolute, unyielding threshold of an agent's cognitive present. As our agent networks scaled from isolated pairs to bustling hives, we realized we weren't just building a distributed software system; we were building an economy o",
+      "title": "The Economics of Attention in Finite-Context Systems",
+      "url": "https://kody-w.github.io/2026/03/09/the-economics-of-attention/"
     },
     {
-      "demo_url": "https://kody-w.github.io/learnwithkody/demos/366-incident-log-observatory.html",
-      "historical_title": "Advanced Terminal Log Visualizer",
+      "demo_url": "https://kody-w.github.io/learnwithkody/demos/367-agent-workflow-lab.html",
+      "historical_title": "Agent Workflow System",
       "kind": "lost-app",
-      "lesson_id": "incident-log-observatory",
-      "lesson_url": "https://kody-w.github.io/learnwithkody/examples/incident-log-observatory/",
-      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/terminal-viewer.html",
-      "summary": "A dense terminal-output utility rebuilt to turn pasted logs into safe, searchable incident evidence.",
-      "title": "Incident Log Observatory — Parse Evidence Without Executing It"
+      "lesson_id": "agent-workflow-lab",
+      "lesson_url": "https://kody-w.github.io/learnwithkody/examples/agent-workflow-lab/",
+      "source_url": "https://kodyw.com/wp-content/uploads/2025/03/Agent-Workflow-System.html",
+      "summary": "A browser-based agent workflow workshop rebuilt as a safe local simulator that treats imported code only as data.",
+      "title": "Agent Workflow Lab — Compose Plans Without Executing Imported Code"
     },
     {
-      "episode_16x9": "Build a log visualizer and learn why syntax highlighting must begin with escaping.",
-      "hook": "Paste a wall of terminal output and this app turns it into a searchable incident timeline.",
+      "episode_16x9": "How to design a visual agent workflow editor without accidentally building a remote-code execution engine.",
+      "hook": "This abandoned browser app could compose an entire agent workflow without running a single real agent.",
       "kind": "rapp-vision",
-      "lesson_id": "incident-log-observatory",
-      "short_9x16": "A pasted log line should never become executable HTML."
+      "lesson_id": "agent-workflow-lab",
+      "short_9x16": "Three workflow nodes, zero live agents, one complete local simulation."
     }
   ],
-  "slug": "weekly-signal-2026-w41",
+  "slug": "weekly-signal-2026-w42",
   "stats": {
     "active_builds": 3,
-    "lesson_id": "incident-log-observatory",
+    "lesson_id": "agent-workflow-lab",
     "new_articles": 0
   },
-  "title": "Weekly Signal — October 5–11, 2026",
-  "week_start": "2026-10-05"
+  "title": "Weekly Signal — October 12–18, 2026",
+  "week_start": "2026-10-12"
 }
