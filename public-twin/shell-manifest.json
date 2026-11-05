@@ -1,7 +1,7 @@
 {
   "schema": "kodyw-twin-shell/1.0",
-  "releaseSha256": "a2553f736eef1b62f1261222279a21fac084b3e5702c87ea6ec4c82aa5015c93",
-  "sourceSha256": "3a697565d6693f16156c1a9634733687c079a4612f4967d4c276edeb4e710ef3",
+  "releaseSha256": "4dde6a8d7751583caf785b95cf123a03320ee522b104d1c9d683f72a6f54d9fc",
+  "sourceSha256": "7b64079b6881cf6dbc08a36da2edafa25239a0bbe397c5152a28aa261f49647c",
   "documents": [
     {
       "url": "/public-twin/",
@@ -104,7 +104,7 @@
     },
     {
       "url": "/api/frame-06-evidence-tribunal.json",
-      "sha256": "e77362f7a4421c2ea21389e063c3b511724ca3b18213a7b6940ba5e6cf720635",
+      "sha256": "5c631634df14740c1da367981be4107716a2663442e56ba5d37a09ab04986f85",
       "contentTypes": [
         "application/json"
       ]
@@ -157,7 +157,7 @@
     },
     {
       "url": "/js/twin-app.js",
-      "sha256": "8d91d112de07aae433f370673400153a05be9a2e3758f26d4a23338e2a3d5182",
+      "sha256": "ac6f11c559e28f44fbfc9432acc680f580216d9beca251ff184775050cc904ec",
       "contentTypes": [
         "text/javascript",
         "application/javascript"
