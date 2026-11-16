@@ -1,6 +1,83 @@
 {
   "issues": [
     {
+      "as_of": "2026-11-15",
+      "content_html": "<h1>Weekly Signal — November 9–15, 2026</h1><p>0 new archive items, 3 active builds, and a clean-room rebuild of LUMON MDR / Severance Refiner.</p><h2>New in the archive</h2><p>No articles were published during this completed week.</p><h2>Active builds</h2><ul><li><a href=\"https://github.com/kody-w/openrappter\">openrappter</a> — 🦖 OpenRappter: a creature in your Mac&#x27;s notch. Hold a key and talk. Local-first, runs on your own Brainstem.</li><li><a href=\"https://github.com/kody-w/kody-w.github.io\">kody-w.github.io</a> — Public source repository.</li><li><a href=\"https://github.com/kody-w/rapp-brainfreeze\">rapp-brainfreeze</a> — Freeze a running RAPP brainstem and resume it anywhere: a clone from that exact moment, in one self-bootstrapping file.</li></ul><h2>Rediscovered</h2><p><a href=\"https://kody-w.github.io/2026/03/06/software-is-an-ecosystem/\">Software Is an Ecosystem: Stop Designing It Like a Machine</a> — When you design software like a machine, every surprise looks like failure.</p><h2>Lost App → clean-room lesson</h2><p><strong>LUMON MDR / Severance Refiner</strong>: A mysterious retro-corporate number game rebuilt as an original deterministic state-machine challenge.</p><p><a href=\"https://kody-w.github.io/learnwithkody/examples/pattern-quota/\">Open the rebuild lesson</a> · <a href=\"https://kody-w.github.io/learnwithkody/demos/365-pattern-quota.html\">Run the local demo</a></p><h2>RAPP Vision brief</h2><p><strong>The strangest lost app asks you to identify numbers that simply feel wrong.</strong></p><p>Reverse-engineering a mysterious selection mechanic into a deterministic state-machine game.</p><p><em>Short:</em> Which of these numbers looks wrong?</p><hr><p><a href=\"https://kody-w.github.io/newsletter/#newsletter-signup\">Subscribe to the next Weekly Signal</a></p>",
+      "date": "2026-11-15T00:00:00",
+      "date_gmt": "2026-11-15T00:00:00",
+      "excerpt": "0 new archive items, 3 active builds, and a clean-room rebuild of LUMON MDR / Severance Refiner.",
+      "issue_id": "2026-W46",
+      "issue_number": 46,
+      "schema": "kodyw-weekly-signal/1.0",
+      "sections": [
+        {
+          "items": [],
+          "kind": "date-edition",
+          "summary": "No articles were published during this completed week.",
+          "title": "No new articles this week",
+          "url": "https://kody-w.github.io/newsletter/"
+        },
+        {
+          "items": [
+            {
+              "name": "openrappter",
+              "pushed_at": "2026-11-15T20:14:39Z",
+              "summary": "🦖 OpenRappter: a creature in your Mac's notch. Hold a key and talk. Local-first, runs on your own Brainstem.",
+              "url": "https://github.com/kody-w/openrappter"
+            },
+            {
+              "name": "kody-w.github.io",
+              "pushed_at": "2026-11-15T19:51:17Z",
+              "summary": "Public source repository.",
+              "url": "https://github.com/kody-w/kody-w.github.io"
+            },
+            {
+              "name": "rapp-brainfreeze",
+              "pushed_at": "2026-11-10T19:09:55Z",
+              "summary": "Freeze a running RAPP brainstem and resume it anywhere: a clone from that exact moment, in one self-bootstrapping file.",
+              "url": "https://github.com/kody-w/rapp-brainfreeze"
+            }
+          ],
+          "kind": "active-work",
+          "summary": "The public repositories moving most recently.",
+          "title": "Active builds",
+          "url": "https://kody-w.github.io/work/"
+        },
+        {
+          "kind": "rediscovered",
+          "published": "2026-03-06",
+          "summary": "When you design software like a machine, every surprise looks like failure.",
+          "title": "Software Is an Ecosystem: Stop Designing It Like a Machine",
+          "url": "https://kody-w.github.io/2026/03/06/software-is-an-ecosystem/"
+        },
+        {
+          "demo_url": "https://kody-w.github.io/learnwithkody/demos/365-pattern-quota.html",
+          "historical_title": "LUMON MDR / Severance Refiner",
+          "kind": "lost-app",
+          "lesson_id": "pattern-quota",
+          "lesson_url": "https://kody-w.github.io/learnwithkody/examples/pattern-quota/",
+          "source_url": "https://kodyw.com/wp-content/uploads/2025/03/severance-refiner.html",
+          "summary": "A mysterious retro-corporate number game rebuilt as an original deterministic state-machine challenge.",
+          "title": "Pattern Quota — Rebuild a Mysterious Selection Game"
+        },
+        {
+          "episode_16x9": "Reverse-engineering a mysterious selection mechanic into a deterministic state-machine game.",
+          "hook": "The strangest lost app asks you to identify numbers that simply feel wrong.",
+          "kind": "rapp-vision",
+          "lesson_id": "pattern-quota",
+          "short_9x16": "Which of these numbers looks wrong?"
+        }
+      ],
+      "slug": "weekly-signal-2026-w46",
+      "stats": {
+        "active_builds": 3,
+        "lesson_id": "pattern-quota",
+        "new_articles": 0
+      },
+      "title": "Weekly Signal — November 9–15, 2026",
+      "week_start": "2026-11-09"
+    },
+    {
       "as_of": "2026-11-08",
       "content_html": "<h1>Weekly Signal — November 2–8, 2026</h1><p>0 new archive items, 3 active builds, and a clean-room rebuild of Agent Workflow System.</p><h2>New in the archive</h2><p>No articles were published during this completed week.</p><h2>Active builds</h2><ul><li><a href=\"https://github.com/kody-w/kody-w.github.io\">kody-w.github.io</a> — Public source repository.</li><li><a href=\"https://github.com/kody-w/rapp-1\">rapp-1</a> — RAPP/1 — the wire that carries agents. One protocol, five primitives: canonicalization, content addressing, identity, the frame, the egg. Spec + reference implementation + conformance suite + book.</li><li><a href=\"https://github.com/kody-w/agent-books\">agent-books</a> — Two K&amp;R-style books, one chapter skeleton: The Brainstem Agent Programming Language and The Claude Agent Programming Language. Fair, cited, runnable, side by side.</li></ul><h2>Rediscovered</h2><p><a href=\"https://kody-w.github.io/2026/03/08/quorum-mechanics/\">Quorum Mechanics</a> — A frame becomes canonical when someone commits it. But in a multi-agent swarm, the real question is: how many agents need to agree that a frame should be committed before it earns the right to exist?</p><h2>Lost App → clean-room lesson</h2><p><strong>Agent Workflow System</strong>: A browser-based agent workflow workshop rebuilt as a safe local simulator that treats imported code only as data.</p><p><a href=\"https://kody-w.github.io/learnwithkody/examples/agent-workflow-lab/\">Open the rebuild lesson</a> · <a href=\"https://kody-w.github.io/learnwithkody/demos/367-agent-workflow-lab.html\">Run the local demo</a></p><h2>RAPP Vision brief</h2><p><strong>This abandoned browser app could compose an entire agent workflow without running a single real agent.</strong></p><p>How to design a visual agent workflow editor without accidentally building a remote-code execution engine.</p><p><em>Short:</em> Three workflow nodes, zero live agents, one complete local simulation.</p><hr><p><a href=\"https://kody-w.github.io/newsletter/#newsletter-signup\">Subscribe to the next Weekly Signal</a></p>",
       "date": "2026-11-08T00:00:00",
