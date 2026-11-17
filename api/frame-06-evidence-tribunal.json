@@ -7,9 +7,9 @@
   "generator": "scripts/build_frame_06_evidence_tribunal.js",
   "twinRelease": {
     "schema": "kodyw-twin-release-binding/1.0",
-    "releaseSha256": "31d80c5a12ccc6bf981459af73c077bea10599bf5b48e66221281026f4596ebb",
-    "sourceManifestSha256": "20cf39d4dde745c84717341149485c9fe6850329d2c457f696f136598f659c61",
-    "corpusSha256": "05cc92d69f831ca3e6f4f9e04c4c9249830eef1b8efbdc77b1f273d016b96250"
+    "releaseSha256": "b0df8dd3bfb82d7676817d44e8ca2ecdc101c72a1e71a2f0336ecd765db9f242",
+    "sourceManifestSha256": "b8b777e7fac24bad7ac9772ba2945650d57e28bbf55667acc6e5dd1e91770aaf",
+    "corpusSha256": "da8d6de42203301027659f7457e78f632b8d1d0d14e7d2925268fadadffcc6cf"
   },
   "result": {
     "schema": "kodyw-public-evidence-tribunal/1.0",
@@ -20,7 +20,7 @@
     "corpus": {
       "schema": "kodyw-public-twin/1.0",
       "normalizationVersion": "plain-text/1",
-      "corpusSha256": "05cc92d69f831ca3e6f4f9e04c4c9249830eef1b8efbdc77b1f273d016b96250",
+      "corpusSha256": "da8d6de42203301027659f7457e78f632b8d1d0d14e7d2925268fadadffcc6cf",
       "records": 943,
       "relations": 1,
       "post": 314,
@@ -477,5 +477,5 @@
       }
     ]
   },
-  "receiptSha256": "d7e723451602a8b11691c37d3c864b09afb5eaae8d09227d69f306bc43aef2e7"
+  "receiptSha256": "e082965e26b859dc0684bbd31ef679e64634a787a9eb32406b1be78307933b42"
 }
