@@ -2,14 +2,14 @@
 
 Generated from the public repo list. Newest work first. Read a repo's own AGENTS.md or CLAUDE.md before changing it.
 
-- rapp-chatgpt (RAPP Agent Builder: a ChatGPT app that turns an idea into a working RAPP agent): clone https://github.com/kody-w/rapp-chatgpt. Live: https://kody-w.github.io/rapp-chatgpt/.
 - static-library (Self-updating catalog of the kody-w static-* family — deterministic integration simulators on GitHub Pages; browse endpoints, MCP manifests,): clone https://github.com/kody-w/static-library. Live: https://kody-w.github.io/static-library/.
+- rapp-skills (Portable Agent Skills that convert losslessly to and from single-file agents. One SKILL.md is all a user needs; works in Claude Code and Git): clone https://github.com/kody-w/rapp-skills.
+- rapp-chatgpt (RAPP Agent Builder: a ChatGPT app that turns an idea into a working RAPP agent): clone https://github.com/kody-w/rapp-chatgpt. Live: https://kody-w.github.io/rapp-chatgpt/.
 - rapp-copilot-in-chrome (Drive your real, logged-in Chrome from GitHub Copilot CLI. Reverse engineered from Claude Code's undocumented claude-in-chrome bridge. Toast): clone https://github.com/kody-w/rapp-copilot-in-chrome.
 - living-holograms (Living Holograms: steerable, verifiable data objects driven by an open assembly line of AI agents. Sequel to Frame Chains.): clone https://github.com/kody-w/living-holograms. Live: https://kody-w.github.io/living-holograms/.
 - lisppy (LisPy — A Lisp interpreter for AI agent orchestration. Code is data. Data is code. The REPL is the heartbeat.): clone https://github.com/kody-w/lisppy.
 - ai-setup-pages (One 'paste one line into <AI app>' setup page per AI app, for any local MCP server. Add a host file when a new AI ships.): clone https://github.com/kody-w/ai-setup-pages.
 - blitz-mac (Native macOS App Store Connect tool with MCP. Submit iOS apps to App Store with AI agents): clone https://github.com/kody-w/blitz-mac. Live: https://blitz-mac.com. Quiet for over a month; pull before trusting it.
-- rapp-skills (Portable Agent Skills that convert losslessly to and from single-file agents. One SKILL.md is all a user needs; works in Claude Code and Git): clone https://github.com/kody-w/rapp-skills. Quiet for over a month; pull before trusting it.
 - CommunityRAPP (RAPP Hippocampus — persistent memory for AI agents. Local-first, deploy to Azure when ready.): clone https://github.com/kody-w/CommunityRAPP. Live: https://kody-w.github.io/CommunityRAPP/. Quiet for over a month; pull before trusting it.
 - copilot-harness-sdk (Deploy and drive Copilot Studio GitHub Copilot harness agents from code. One client for every route, plus a deploy script that provisions co): clone https://github.com/kody-w/copilot-harness-sdk. Live: https://github.com/kody-w/copilot-harness-sdk#readme. Quiet for over a month; pull before trusting it.
 - dogg-land (Federated node of the DOGG global tick network: a TEMPLATE deed record (document hash, registry pointer, corner polygon) over a public landm): clone https://github.com/kody-w/dogg-land. Quiet for over a month; pull before trusting it.

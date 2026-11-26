@@ -2,8 +2,8 @@
 
 Generated from the public repo list. Newest work first. Read a repo's own AGENTS.md or CLAUDE.md before changing it.
 
-- kody-twin (Kody Wildfeuer — RAPP front door): clone https://github.com/kody-w/kody-twin. Live: https://kody-w.github.io/kody-twin/.
 - dogg (no description): clone https://github.com/kody-w/dogg. Live: https://kody-w.github.io/dogg/.
+- kody-twin (Kody Wildfeuer — RAPP front door): clone https://github.com/kody-w/kody-twin. Live: https://kody-w.github.io/kody-twin/.
 - rapterbot.com (RapterBot.com public site and privacy-safe autonomous company DOGG): clone https://github.com/kody-w/rapterbot.com. Live: https://kody-w.github.io/rapterbot.com/.
 - frame-chains (no description): clone https://github.com/kody-w/frame-chains. Live: https://kody-w.github.io/frame-chains/.
 - thought-contracts (Thought Contracts: part 3 of the Frame Chains / Living Holograms series): clone https://github.com/kody-w/thought-contracts. Live: https://kody-w.github.io/thought-contracts/. Quiet for over a month; pull before trusting it.

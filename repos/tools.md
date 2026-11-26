@@ -2,8 +2,8 @@
 
 Generated from the public repo list. Newest work first. Read a repo's own AGENTS.md or CLAUDE.md before changing it.
 
-- localFirstTools (localFirstTools): clone https://github.com/kody-w/localFirstTools. Live: https://kody-w.github.io/localFirstTools/.
 - localFirstTools-main (Local-first HTML tools gallery - 450+ self-contained applications): clone https://github.com/kody-w/localFirstTools-main. Live: https://kody-w.github.io/localFirstTools-main/.
+- localFirstTools (localFirstTools): clone https://github.com/kody-w/localFirstTools. Live: https://kody-w.github.io/localFirstTools/.
 - localtoolsdev (v): clone https://github.com/kody-w/localtoolsdev.
 - shared-presents (RAPP paper, part 4: a conversation that names its abilities): clone https://github.com/kody-w/shared-presents.
 - rapp-monorepo (Every public RAPP repository, captured in one pass, refreshed daily. One clone = the whole estate with no drift.): clone https://github.com/kody-w/rapp-monorepo.

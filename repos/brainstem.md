@@ -3,12 +3,12 @@
 Generated from the public repo list. Newest work first. Read a repo's own AGENTS.md or CLAUDE.md before changing it.
 
 - brainstem-in-an-hour (Build your own AI agent in one hour. The Brainstem lesson.): clone https://github.com/kody-w/brainstem-in-an-hour. Live: https://kody-w.github.io/brainstem-in-an-hour/.
+- openrappter (🦖 OpenRappter: a creature in your Mac's notch. Hold a key and talk. Local-first, runs on your own Brainstem.): clone https://github.com/kody-w/openrappter. Live: https://kody-w.github.io/openrappter/.
 - rapp-brainfreeze (Freeze a running RAPP brainstem and resume it anywhere: a clone from that exact moment, in one self-bootstrapping file.): clone https://github.com/kody-w/rapp-brainfreeze.
 - rapp-canary (RAPP release-train canary ring; seeded from the untouched Grail): clone https://github.com/kody-w/rapp-canary. Live: https://kody-w.github.io/rapp-canary/.
 - rapp-beta (RAPP release-train beta ring; seeded from the untouched Grail): clone https://github.com/kody-w/rapp-beta. Live: https://kody-w.github.io/rapp-beta/.
 - rapp-alpha (RAPP release-train alpha ring; seeded from the untouched Grail): clone https://github.com/kody-w/rapp-alpha. Live: https://kody-w.github.io/rapp-alpha/.
 - rapp-nightly (RAPP release-train nightly ring; seeded from the untouched Grail): clone https://github.com/kody-w/rapp-nightly. Live: https://kody-w.github.io/rapp-nightly/.
-- openrappter (🦖 OpenRappter: a creature in your Mac's notch. Hold a key and talk. Local-first, runs on your own Brainstem.): clone https://github.com/kody-w/openrappter. Live: https://kody-w.github.io/openrappter/.
 - agent-books (Two K&R-style books, one chapter skeleton: The Brainstem Agent Programming Language and The Claude Agent Programming Language. Fair, cited, ): clone https://github.com/kody-w/agent-books.
 - grail-layers (Every Brainstem grail update ships as a layer over the unchanged grail; if a layer fails, plain grail runs.): clone https://github.com/kody-w/grail-layers. Live: https://kody-w.github.io/grail-layers/.
 - RAPP_Store (Public catalog of RAPP rapplications — single-file Python agents that drop into a local brainstem and run. Browse the hosted viewer at kody-): clone https://github.com/kody-w/RAPP_Store. Live: https://kody-w.github.io/RAPP_Store/.
