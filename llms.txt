@@ -15,6 +15,10 @@ If you are an agent: this file is a hand-curated index. `/llms-full.txt` contain
 
 Kody's Brainstem is a user-owned local agent engine you can drive from any AI. Pick your AI app and get a one-line setup prompt at https://kody-w.github.io/brainstem/ (AI-readable setup contract: https://kody-w.github.io/rapp-brainstem/rapp-operator.json; per-app setup pages: https://kody-w.github.io/rapp-brainstem-mcp/).
 
+## Home repo: where everything is
+
+This repository is also the home repo for every public project under github.com/kody-w. Start at [AGENTS.md]({{ '/AGENTS.md' | absolute_url }}): it points at one file per area (`repos/<area>.md`), and each area file has one pointer per repo. The same list as data: [api/home.json]({{ '/api/home.json' | absolute_url }}). For people: [the map]({{ '/map/' | absolute_url }}).
+
 ## Vibe Coding Examples
 
 Each page is one prompt that demonstrates a specific Claude / agent capability. Frontmatter is structured (slug, category, difficulty, tags, stack). Body is short essay form. The prompt block is verbatim — copy it, run it, judge the result.

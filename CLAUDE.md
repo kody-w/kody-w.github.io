@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Home repo
+
+This repo is also the home repo for all public kody-w projects. To find another project, read `AGENTS.md` (pointers by area, generated nightly; do not hand-edit it, `repos/` or `api/home.json`). The rest of this file is about this website only.
+
 ## What this repo is
 
 A Jekyll blog hosted on GitHub Pages (`kody-w.github.io`). `Gemfile.lock` pins Jekyll 4.2.2 and Bundler 2.4.22 so release-document hashes match CI and Pages builds. Pushes to `master` auto-deploy.

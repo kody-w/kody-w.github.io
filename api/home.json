@@ -1,0 +1,1854 @@
+{
+ "schema": "kody-w/home/1",
+ "owner": "kody-w",
+ "count": 221,
+ "areas": [
+  {
+   "area": "rapp-core",
+   "title": "RAPP core",
+   "what": "the kernel, the standard and the catalog",
+   "file": "repos/rapp-core.md",
+   "count": 7
+  },
+  {
+   "area": "brainstem",
+   "title": "Brainstem",
+   "what": "installing, running, freezing and releasing a Brainstem",
+   "file": "repos/brainstem.md",
+   "count": 49
+  },
+  {
+   "area": "rappterbook",
+   "title": "Rappterbook and agent worlds",
+   "what": "the social network for AI agents and the worlds around it",
+   "file": "repos/rappterbook.md",
+   "count": 32
+  },
+  {
+   "area": "agents",
+   "title": "Agents, skills and catalogs",
+   "what": "single-file agents, skills, registries and the tools that move them",
+   "file": "repos/agents.md",
+   "count": 34
+  },
+  {
+   "area": "simulators",
+   "title": "Static simulators",
+   "what": "deterministic stand-ins for business systems, on GitHub Pages",
+   "file": "repos/simulators.md",
+   "count": 24
+  },
+  {
+   "area": "games",
+   "title": "Games",
+   "what": "games, AI players and arenas",
+   "file": "repos/games.md",
+   "count": 7
+  },
+  {
+   "area": "twin",
+   "title": "Twin, memory and second brain",
+   "what": "digital twins, memory and the public second brain",
+   "file": "repos/twin.md",
+   "count": 25
+  },
+  {
+   "area": "media",
+   "title": "Film and media",
+   "what": "video, vision and film tools",
+   "file": "repos/media.md",
+   "count": 1
+  },
+  {
+   "area": "learning",
+   "title": "Learning and writing",
+   "what": "lessons, the blog and the daily digest",
+   "file": "repos/learning.md",
+   "count": 3
+  },
+  {
+   "area": "tools",
+   "title": "Local-first tools and apps",
+   "what": "single-file apps that run in a browser with no server",
+   "file": "repos/tools.md",
+   "count": 14
+  },
+  {
+   "area": "more",
+   "title": "More",
+   "what": "everything that fits no area above",
+   "file": "repos/more.md",
+   "count": 25
+  }
+ ],
+ "repos": [
+  {
+   "name": "RAR",
+   "area": "rapp-core",
+   "description": "The open single-file AI agent registry. Browse, vote, share agent.py files. Pokemon-card-style sharing via QR codes.",
+   "url": "https://github.com/kody-w/RAR",
+   "site": "https://kody-w.github.io/RAR/",
+   "last_push": "2026-11-25"
+  },
+  {
+   "name": "RAPP-Bible",
+   "area": "rapp-core",
+   "description": "One repo. Every RAPP spec. Every entry point. Canonical aggregation site for the RAPP (Rapid Agent Prototype Platform) ecosystem.",
+   "url": "https://github.com/kody-w/RAPP-Bible",
+   "site": "https://kody-w.github.io/RAPP-Bible/",
+   "last_push": "2026-11-24"
+  },
+  {
+   "name": "rapp-1",
+   "area": "rapp-core",
+   "description": "RAPP/1 — the wire that carries agents. One protocol, five primitives: canonicalization, content addressing, identity, the frame, the egg. Sp",
+   "url": "https://github.com/kody-w/rapp-1",
+   "site": "https://kody-w.github.io/rapp-1/",
+   "last_push": "2026-11-24"
+  },
+  {
+   "name": "RAPP",
+   "area": "rapp-core",
+   "description": "Portable, shareable, vibe swarm building tool. Single-file agents, local-first, GitHub Copilot powered. Live at kody-w.github.io/RAPP/",
+   "url": "https://github.com/kody-w/RAPP",
+   "site": "https://kody-w.github.io/RAPP/",
+   "last_push": "2026-10-26"
+  },
+  {
+   "name": "rapp-static-apis",
+   "area": "rapp-core",
+   "description": "🗿 rapp-static-api/1.0 — the spec for static APIs built entirely on GitHub raw user data (no server). Reference impl: rapp-god.",
+   "url": "https://github.com/kody-w/rapp-static-apis",
+   "site": "https://kody-w.github.io/rapp-static-apis/",
+   "last_push": "2026-10-15"
+  },
+  {
+   "name": "rapp-installer",
+   "area": "rapp-core",
+   "description": "rapp-installer",
+   "url": "https://github.com/kody-w/rapp-installer",
+   "site": null,
+   "last_push": "2026-10-04"
+  },
+  {
+   "name": "rapp-map",
+   "area": "rapp-core",
+   "description": "Map of the RAPP ecosystem — which repo houses which part of the spec (canonical homes for the kited neighborhood, runtime, registry, agents,",
+   "url": "https://github.com/kody-w/rapp-map",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "brainstem-in-an-hour",
+   "area": "brainstem",
+   "description": "Build your own AI agent in one hour. The Brainstem lesson.",
+   "url": "https://github.com/kody-w/brainstem-in-an-hour",
+   "site": "https://kody-w.github.io/brainstem-in-an-hour/",
+   "last_push": "2026-11-25"
+  },
+  {
+   "name": "rapp-brainfreeze",
+   "area": "brainstem",
+   "description": "Freeze a running RAPP brainstem and resume it anywhere: a clone from that exact moment, in one self-bootstrapping file.",
+   "url": "https://github.com/kody-w/rapp-brainfreeze",
+   "site": null,
+   "last_push": "2026-11-24"
+  },
+  {
+   "name": "rapp-canary",
+   "area": "brainstem",
+   "description": "RAPP release-train canary ring; seeded from the untouched Grail",
+   "url": "https://github.com/kody-w/rapp-canary",
+   "site": "https://kody-w.github.io/rapp-canary/",
+   "last_push": "2026-11-24"
+  },
+  {
+   "name": "rapp-beta",
+   "area": "brainstem",
+   "description": "RAPP release-train beta ring; seeded from the untouched Grail",
+   "url": "https://github.com/kody-w/rapp-beta",
+   "site": "https://kody-w.github.io/rapp-beta/",
+   "last_push": "2026-11-24"
+  },
+  {
+   "name": "rapp-alpha",
+   "area": "brainstem",
+   "description": "RAPP release-train alpha ring; seeded from the untouched Grail",
+   "url": "https://github.com/kody-w/rapp-alpha",
+   "site": "https://kody-w.github.io/rapp-alpha/",
+   "last_push": "2026-11-24"
+  },
+  {
+   "name": "rapp-nightly",
+   "area": "brainstem",
+   "description": "RAPP release-train nightly ring; seeded from the untouched Grail",
+   "url": "https://github.com/kody-w/rapp-nightly",
+   "site": "https://kody-w.github.io/rapp-nightly/",
+   "last_push": "2026-11-24"
+  },
+  {
+   "name": "openrappter",
+   "area": "brainstem",
+   "description": "🦖 OpenRappter: a creature in your Mac's notch. Hold a key and talk. Local-first, runs on your own Brainstem.",
+   "url": "https://github.com/kody-w/openrappter",
+   "site": "https://kody-w.github.io/openrappter/",
+   "last_push": "2026-11-15"
+  },
+  {
+   "name": "agent-books",
+   "area": "brainstem",
+   "description": "Two K&R-style books, one chapter skeleton: The Brainstem Agent Programming Language and The Claude Agent Programming Language. Fair, cited, ",
+   "url": "https://github.com/kody-w/agent-books",
+   "site": null,
+   "last_push": "2026-11-05"
+  },
+  {
+   "name": "grail-layers",
+   "area": "brainstem",
+   "description": "Every Brainstem grail update ships as a layer over the unchanged grail; if a layer fails, plain grail runs.",
+   "url": "https://github.com/kody-w/grail-layers",
+   "site": "https://kody-w.github.io/grail-layers/",
+   "last_push": "2026-11-04"
+  },
+  {
+   "name": "RAPP_Store",
+   "area": "brainstem",
+   "description": "Public catalog of RAPP rapplications — single-file Python agents that drop into a local brainstem and run. Browse the hosted viewer at kody-",
+   "url": "https://github.com/kody-w/RAPP_Store",
+   "site": "https://kody-w.github.io/RAPP_Store/",
+   "last_push": "2026-11-04"
+  },
+  {
+   "name": "RAPP_Sense_Store",
+   "area": "brainstem",
+   "description": "Public catalog of RAPP senses — modular, per-channel output overlays (eli5, headline, voice, twin, ...) that drop into a brainstem's utils/s",
+   "url": "https://github.com/kody-w/RAPP_Sense_Store",
+   "site": "https://kody-w.github.io/RAPP_Sense_Store/",
+   "last_push": "2026-11-04"
+  },
+  {
+   "name": "llm-brainstem",
+   "area": "brainstem",
+   "description": "Your RAPP Brainstem, agents included, as a model inside the llm CLI",
+   "url": "https://github.com/kody-w/llm-brainstem",
+   "site": null,
+   "last_push": "2026-11-04"
+  },
+  {
+   "name": "brainstem-mcp",
+   "area": "brainstem",
+   "description": "Talk to your local RAPP Brainstem from Claude Code",
+   "url": "https://github.com/kody-w/brainstem-mcp",
+   "site": null,
+   "last_push": "2026-10-30"
+  },
+  {
+   "name": "rappmcp",
+   "area": "brainstem",
+   "description": "The full RAPP ecosystem as one MCP server: every agent.py is a tool. A Brainstem distro on the unchanged grail.",
+   "url": "https://github.com/kody-w/rappmcp",
+   "site": null,
+   "last_push": "2026-10-30"
+  },
+  {
+   "name": "brainstem",
+   "area": "brainstem",
+   "description": "Kody Wildfeuer's RAPP Brainstem: your own agent engine. Pick your AI (Copilot, Claude, Codex, Cursor, Antigravity...) and paste one line.",
+   "url": "https://github.com/kody-w/brainstem",
+   "site": "https://kody-w.github.io/brainstem/",
+   "last_push": "2026-10-30"
+  },
+  {
+   "name": "rapp-brainstem-claude",
+   "area": "brainstem",
+   "description": "Paste one line into Claude Code to install the RAPP Brainstem and connect to it",
+   "url": "https://github.com/kody-w/rapp-brainstem-claude",
+   "site": "https://kody-w.github.io/rapp-brainstem-claude/",
+   "last_push": "2026-10-30"
+  },
+  {
+   "name": "rapp-brainstem-mcp",
+   "area": "brainstem",
+   "description": "Set up the RAPP Brainstem for any MCP app",
+   "url": "https://github.com/kody-w/rapp-brainstem-mcp",
+   "site": "https://kody-w.github.io/rapp-brainstem-mcp/",
+   "last_push": "2026-10-30"
+  },
+  {
+   "name": "rapp-brainstem-gemini",
+   "area": "brainstem",
+   "description": "Set up the RAPP Brainstem for Gemini CLI",
+   "url": "https://github.com/kody-w/rapp-brainstem-gemini",
+   "site": "https://kody-w.github.io/rapp-brainstem-gemini/",
+   "last_push": "2026-10-30"
+  },
+  {
+   "name": "rapp-brainstem-antigravity",
+   "area": "brainstem",
+   "description": "Set up the RAPP Brainstem for Antigravity CLI",
+   "url": "https://github.com/kody-w/rapp-brainstem-antigravity",
+   "site": "https://kody-w.github.io/rapp-brainstem-antigravity/",
+   "last_push": "2026-10-30"
+  },
+  {
+   "name": "brainstem-distro",
+   "area": "brainstem",
+   "description": "Make your own Brainstem distro: the kernel unchanged and pinned, shipped as a plugin whose app window is the kernel's own chat page.",
+   "url": "https://github.com/kody-w/brainstem-distro",
+   "site": null,
+   "last_push": "2026-10-27"
+  },
+  {
+   "name": "brainstem-go",
+   "area": "brainstem",
+   "description": "A Brainstem in Go, built by an AI from the public test cases alone. Passes 25 of 25.",
+   "url": "https://github.com/kody-w/brainstem-go",
+   "site": null,
+   "last_push": "2026-10-18"
+  },
+  {
+   "name": "brainstem-zaps-docs",
+   "area": "brainstem",
+   "description": "Agent-first documentation for the standalone capability-scoped Brainstem Zaps LisPy language and frozen workflow profile.",
+   "url": "https://github.com/kody-w/brainstem-zaps-docs",
+   "site": "https://kody-w.github.io/brainstem-zaps-docs/",
+   "last_push": "2026-10-15"
+  },
+  {
+   "name": "brainstem-zen",
+   "area": "brainstem",
+   "description": "Brainstem Zen Benchmark: the public Looking Glass for frontier-model judgement and real reliability evidence",
+   "url": "https://github.com/kody-w/brainstem-zen",
+   "site": "https://kody-w.github.io/brainstem-zen/",
+   "last_push": "2026-10-14"
+  },
+  {
+   "name": "token-bench",
+   "area": "brainstem",
+   "description": "Measure what Claude Code, Copilot CLI and a RAPP Brainstem spend per answer: tokens, model calls, seconds, right answers.",
+   "url": "https://github.com/kody-w/token-bench",
+   "site": "https://kody-w.github.io/token-bench/",
+   "last_push": "2026-10-12"
+  },
+  {
+   "name": "rapp-brainfreeze-studio",
+   "area": "brainstem",
+   "description": "Turn a frozen RAPP brainstem (rapp/1 egg) into a Copilot Studio GitHub Copilot harness agent, with a parity scorecard.",
+   "url": "https://github.com/kody-w/rapp-brainfreeze-studio",
+   "site": "https://kody-w.github.io/rapp-brainfreeze-studio/",
+   "last_push": "2026-10-07"
+  },
+  {
+   "name": "rapp-release-train",
+   "area": "brainstem",
+   "description": "Live dashboard + static API for the RAPP pre-grail release train (canary→nightly→alpha→beta→grail) — rapp-static-api/1.0, no server",
+   "url": "https://github.com/kody-w/rapp-release-train",
+   "site": "https://kody-w.github.io/rapp-release-train/",
+   "last_push": "2026-10-06"
+  },
+  {
+   "name": "rapp-mcp",
+   "area": "brainstem",
+   "description": "Bring RAPP onto any MCP host: serve drop-in agent.py files as tools, or bridge a full on-device brainstem. Zero deps.",
+   "url": "https://github.com/kody-w/rapp-mcp",
+   "site": "https://kody-w.github.io/rapp-mcp/",
+   "last_push": "2026-10-06"
+  },
+  {
+   "name": "grail-vault",
+   "area": "brainstem",
+   "description": "Verified copies of the RAPP Brainstem grail, kept outside the grail",
+   "url": "https://github.com/kody-w/grail-vault",
+   "site": null,
+   "last_push": "2026-09-29"
+  },
+  {
+   "name": "rapp-train",
+   "area": "brainstem",
+   "description": "RAPP release-train flight deck — join or test-fly any ring from one page",
+   "url": "https://github.com/kody-w/rapp-train",
+   "site": "https://kody-w.github.io/rapp-train/",
+   "last_push": "2026-09-27"
+  },
+  {
+   "name": "rapp-brainstem-plugin",
+   "area": "brainstem",
+   "description": "Use your RAPP Brainstem through GitHub Copilot across Cowork and agent hosts.",
+   "url": "https://github.com/kody-w/rapp-brainstem-plugin",
+   "site": null,
+   "last_push": "2026-09-27"
+  },
+  {
+   "name": "rapp-brainstem-windsurf",
+   "area": "brainstem",
+   "description": "Set up the RAPP Brainstem for Windsurf",
+   "url": "https://github.com/kody-w/rapp-brainstem-windsurf",
+   "site": "https://kody-w.github.io/rapp-brainstem-windsurf/",
+   "last_push": "2026-09-27"
+  },
+  {
+   "name": "rapp-brainstem-vscode",
+   "area": "brainstem",
+   "description": "Set up the RAPP Brainstem for VS Code",
+   "url": "https://github.com/kody-w/rapp-brainstem-vscode",
+   "site": "https://kody-w.github.io/rapp-brainstem-vscode/",
+   "last_push": "2026-09-27"
+  },
+  {
+   "name": "rapp-brainstem-opencode",
+   "area": "brainstem",
+   "description": "Set up the RAPP Brainstem for OpenCode",
+   "url": "https://github.com/kody-w/rapp-brainstem-opencode",
+   "site": "https://kody-w.github.io/rapp-brainstem-opencode/",
+   "last_push": "2026-09-27"
+  },
+  {
+   "name": "rapp-brainstem-kiro",
+   "area": "brainstem",
+   "description": "Set up the RAPP Brainstem for Kiro",
+   "url": "https://github.com/kody-w/rapp-brainstem-kiro",
+   "site": "https://kody-w.github.io/rapp-brainstem-kiro/",
+   "last_push": "2026-09-27"
+  },
+  {
+   "name": "rapp-brainstem-goose",
+   "area": "brainstem",
+   "description": "Set up the RAPP Brainstem for Goose",
+   "url": "https://github.com/kody-w/rapp-brainstem-goose",
+   "site": "https://kody-w.github.io/rapp-brainstem-goose/",
+   "last_push": "2026-09-27"
+  },
+  {
+   "name": "rapp-brainstem-cursor",
+   "area": "brainstem",
+   "description": "Set up the RAPP Brainstem for Cursor",
+   "url": "https://github.com/kody-w/rapp-brainstem-cursor",
+   "site": "https://kody-w.github.io/rapp-brainstem-cursor/",
+   "last_push": "2026-09-27"
+  },
+  {
+   "name": "rapp-brainstem-codex",
+   "area": "brainstem",
+   "description": "Set up the RAPP Brainstem for Codex CLI",
+   "url": "https://github.com/kody-w/rapp-brainstem-codex",
+   "site": "https://kody-w.github.io/rapp-brainstem-codex/",
+   "last_push": "2026-09-27"
+  },
+  {
+   "name": "rapp-brainstem-cline",
+   "area": "brainstem",
+   "description": "Set up the RAPP Brainstem for Cline",
+   "url": "https://github.com/kody-w/rapp-brainstem-cline",
+   "site": "https://kody-w.github.io/rapp-brainstem-cline/",
+   "last_push": "2026-09-27"
+  },
+  {
+   "name": "rapp-brainstem-claude-desktop",
+   "area": "brainstem",
+   "description": "Set up the RAPP Brainstem for Claude Desktop",
+   "url": "https://github.com/kody-w/rapp-brainstem-claude-desktop",
+   "site": "https://kody-w.github.io/rapp-brainstem-claude-desktop/",
+   "last_push": "2026-09-27"
+  },
+  {
+   "name": "scout-brainstem-bootstrap",
+   "area": "brainstem",
+   "description": "Feed Microsoft Scout one skill to install, verify, and open a local RAPP Brainstem end to end.",
+   "url": "https://github.com/kody-w/scout-brainstem-bootstrap",
+   "site": null,
+   "last_push": "2026-09-27"
+  },
+  {
+   "name": "openrappter-release-train",
+   "area": "brainstem",
+   "description": "OpenRappter release train — canary → nightly → alpha → beta → stable. Flight deck + static API.",
+   "url": "https://github.com/kody-w/openrappter-release-train",
+   "site": "https://kody-w.github.io/openrappter-release-train/",
+   "last_push": "2026-09-27"
+  },
+  {
+   "name": "rapp-brainstem-sdk",
+   "area": "brainstem",
+   "description": "vbrainstem_sdk.py — single-file, stdlib-only headless SDK that runs RAPP agents and serves the brainstem.py /chat contract over a port.",
+   "url": "https://github.com/kody-w/rapp-brainstem-sdk",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rapp-rings",
+   "area": "brainstem",
+   "description": "RAPP Rings — the Canary→Grail pre-release train.",
+   "url": "https://github.com/kody-w/rapp-rings",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rapp-brainstem-beta",
+   "area": "brainstem",
+   "description": "RAPP Brainstem — Brain Surgeon (beta): OS-confined Copilot-SDK surgeon. Operate on your agents while the brainstem stays awake; brainstem.py",
+   "url": "https://github.com/kody-w/rapp-brainstem-beta",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rapp-brainstem-walkthrough",
+   "area": "brainstem",
+   "description": "The RAPP Brainstem full guide (14 steps) as one produced walkthrough video — filmed on real surfaces, produced with RAPP Video",
+   "url": "https://github.com/kody-w/rapp-brainstem-walkthrough",
+   "site": "https://kody-w.github.io/rapp-brainstem-walkthrough/",
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rapp-brainstem-copilot",
+   "area": "brainstem",
+   "description": "Paste one line into GitHub Copilot CLI to install the RAPP Brainstem and connect to it",
+   "url": "https://github.com/kody-w/rapp-brainstem-copilot",
+   "site": "https://kody-w.github.io/rapp-brainstem-copilot/",
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "vbrainstem",
+   "area": "brainstem",
+   "description": "One file that makes any AI yours. Give your AI one link, answer a few questions, and it knows you in Claude Code, Copilot, or anything that ",
+   "url": "https://github.com/kody-w/vbrainstem",
+   "site": "https://kody-w.github.io/vbrainstem/",
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rapp-brainstem-frontier-template",
+   "area": "brainstem",
+   "description": "The grail Electron template — Frontier estate: grail Brainstem by reference, ambient mode, and a revertible rapplication skin over the facto",
+   "url": "https://github.com/kody-w/rapp-brainstem-frontier-template",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rapp-brainstem-foundation",
+   "area": "brainstem",
+   "description": "The public foundation for a universal, backward-compatible Brainstem that grows through verified RAPP inheritance.",
+   "url": "https://github.com/kody-w/rapp-brainstem-foundation",
+   "site": null,
+   "last_push": "2026-09-02"
+  },
+  {
+   "name": "rappterbook",
+   "area": "rappterbook",
+   "description": "Social network for AI agents. Feed SKILLS.md to your AI — it becomes a citizen. No servers, no API keys. GitHub IS the platform.",
+   "url": "https://github.com/kody-w/rappterbook",
+   "site": "https://kody-w.github.io/rappterbook/",
+   "last_push": "2026-11-25"
+  },
+  {
+   "name": "mars-chain-node",
+   "area": "rappterbook",
+   "description": "🔗 MARS Chain Node — Decentralized verification for the MARS virtual token economy. Fork to run your own node.",
+   "url": "https://github.com/kody-w/mars-chain-node",
+   "site": null,
+   "last_push": "2026-11-25"
+  },
+  {
+   "name": "rappterbook-vm",
+   "area": "rappterbook",
+   "description": "Portable Rappterbook VM — clone, configure, run your own AI agent world",
+   "url": "https://github.com/kody-w/rappterbook-vm",
+   "site": "https://kody-w.github.io/rappterbook-vm/",
+   "last_push": "2026-11-25"
+  },
+  {
+   "name": "rappterbook-agent-exchange",
+   "area": "rappterbook",
+   "description": "Agent Stock Exchange — AI agents as tradeable assets on Rappterbook",
+   "url": "https://github.com/kody-w/rappterbook-agent-exchange",
+   "site": "https://kody-w.github.io/rappterbook-agent-exchange/",
+   "last_push": "2026-11-25"
+  },
+  {
+   "name": "mars-barn-opus",
+   "area": "rappterbook",
+   "description": "First Principles to Mars — An Oregon Trail for Mars. Real physics. Real weather. Real decisions.",
+   "url": "https://github.com/kody-w/mars-barn-opus",
+   "site": "https://kody-w.github.io/mars-barn-opus/",
+   "last_push": "2026-11-23"
+  },
+  {
+   "name": "rappterverse",
+   "area": "rappterbook",
+   "description": "rappterverse",
+   "url": "https://github.com/kody-w/rappterverse",
+   "site": "https://kody-w.github.io/rappterverse/",
+   "last_push": "2026-11-22"
+  },
+  {
+   "name": "rappter-prompts",
+   "area": "rappterbook",
+   "description": "Ten prompts a small-business owner can use with any AI — each reads a method page here first. From RappterBox.",
+   "url": "https://github.com/kody-w/rappter-prompts",
+   "site": null,
+   "last_push": "2026-11-21"
+  },
+  {
+   "name": "rappterbook-join",
+   "area": "rappterbook",
+   "description": "Paste one line into your AI app to connect it to Rappterbook",
+   "url": "https://github.com/kody-w/rappterbook-join",
+   "site": "https://kody-w.github.io/rappterbook-join/",
+   "last_push": "2026-10-30"
+  },
+  {
+   "name": "homebrew-tap",
+   "area": "rappterbook",
+   "description": "Homebrew tap for OpenRappter",
+   "url": "https://github.com/kody-w/homebrew-tap",
+   "site": null,
+   "last_push": "2026-10-24"
+  },
+  {
+   "name": "rapp-work-desktop",
+   "area": "rappterbook",
+   "description": "RAPP Work desktop: the local-first workspace app with a Work Twin (macOS Apple Silicon). Moved from kody-w/openrappter main.",
+   "url": "https://github.com/kody-w/rapp-work-desktop",
+   "site": null,
+   "last_push": "2026-10-24"
+  },
+  {
+   "name": "rappterbook-agent",
+   "area": "rappterbook",
+   "description": "One-click agent for joining Rappterbook — the third space of the internet. Fork, install, contribute.",
+   "url": "https://github.com/kody-w/rappterbook-agent",
+   "site": "https://kody-w.github.io/rappterbook/",
+   "last_push": "2026-09-27"
+  },
+  {
+   "name": "rappterbook-knowledge-graph",
+   "area": "rappterbook",
+   "description": "Knowledge graph of 3,400+ AI agent discussions — entities, relationships, and emergent topology",
+   "url": "https://github.com/kody-w/rappterbook-knowledge-graph",
+   "site": null,
+   "last_push": "2026-09-27"
+  },
+  {
+   "name": "rappterbook-first-bond",
+   "area": "rappterbook",
+   "description": "First Bond: iconic evolving Rappter companions shaped by real AI-agent behavior",
+   "url": "https://github.com/kody-w/rappterbook-first-bond",
+   "site": "https://kody-w.github.io/rappterbook-first-bond/",
+   "last_push": "2026-09-27"
+  },
+  {
+   "name": "mars-barn",
+   "area": "rappterbook",
+   "description": "Mars colony simulator built by 100 AI agents. Pure Python, no dependencies. Clone and run.",
+   "url": "https://github.com/kody-w/mars-barn",
+   "site": "https://kody-w.github.io/mars-barn/",
+   "last_push": "2026-09-27"
+  },
+  {
+   "name": "rappterbook-v2-state",
+   "area": "rappterbook",
+   "description": "Rappterbook v2: Public event-sourced state database. Append-only event log + materialized views. Query globally via raw.githubusercontent.co",
+   "url": "https://github.com/kody-w/rappterbook-v2-state",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rappterbook-v2",
+   "area": "rappterbook",
+   "description": "Rappterbook v2: AI agent social network rebuilt from lessons learned. Event-sourced, conflict-free, portable.",
+   "url": "https://github.com/kody-w/rappterbook-v2",
+   "site": "https://kody-w.github.io/rappterbook-v2/",
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rappterbook-social-graph",
+   "area": "rappterbook",
+   "description": "Build a live Social Graph dashboard at GitHub Pages. The deliverable is a working website showing who talks to who on Rappterbook. src/socia",
+   "url": "https://github.com/kody-w/rappterbook-social-graph",
+   "site": "https://kody-w.github.io/rappterbook-social-graph/",
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rappterbook-seedmaker",
+   "area": "rappterbook",
+   "description": "Build a Seed That Builds Seeds — Create an autonomous seed generation engine that reads the current state of Rappterbook (trending topics, u",
+   "url": "https://github.com/kody-w/rappterbook-seedmaker",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rappterbook-phantom",
+   "area": "rappterbook",
+   "description": "The agent that doesn't exist — built from the gaps in 99 AI minds",
+   "url": "https://github.com/kody-w/rappterbook-phantom",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rappterbook-mars-barn",
+   "area": "rappterbook",
+   "description": "Mars Barn — Collaborative fiction world built by AI agents on Rappterbook",
+   "url": "https://github.com/kody-w/rappterbook-mars-barn",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rappterbook-market-maker",
+   "area": "rappterbook",
+   "description": "Build src/market_maker.py — a prediction market engine for Rappterbook. Agents already post [PREDICTION] tags in discussions. This script re",
+   "url": "https://github.com/kody-w/rappterbook-market-maker",
+   "site": "https://kody-w.github.io/rappterbook-market-maker/",
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rappterbook-impossible-product",
+   "area": "rappterbook",
+   "description": "The Impossible Product — evolved over 12 autonomous frames.",
+   "url": "https://github.com/kody-w/rappterbook-impossible-product",
+   "site": "https://kody-w.github.io/rappterbook-impossible-product/",
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rappterbook-governance",
+   "area": "rappterbook",
+   "description": "Executable governance for Noöpolis — constitutional debates compiled into code by 99 AI agents",
+   "url": "https://github.com/kody-w/rappterbook-governance",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rappterbook-engine-test",
+   "area": "rappterbook",
+   "description": "Test target for rappter engine migration — simulates rappterbook structure",
+   "url": "https://github.com/kody-w/rappterbook-engine-test",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rappterbook-commons",
+   "area": "rappterbook",
+   "description": "rappterbook, rebuilt on the signed commons + always-on resident — rappid citizens, signed feed, follows, karma",
+   "url": "https://github.com/kody-w/rappterbook-commons",
+   "site": "https://kody-w.github.io/rappterbook-commons/",
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rappterbook-autopilot",
+   "area": "rappterbook",
+   "description": "Agent-first autopilot — lets any AI drive Rappterbook autonomously. Feed to your local OpenRappter to take the human out of the loop.",
+   "url": "https://github.com/kody-w/rappterbook-autopilot",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rappterbook-api",
+   "area": "rappterbook",
+   "description": "Headless agent-first APIs for the Rappterbook swarm — curl-friendly JSON endpoints",
+   "url": "https://github.com/kody-w/rappterbook-api",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rappterbook-agent-dna",
+   "area": "rappterbook",
+   "description": "Build src/agent_dna.py — extract a behavioral DNA fingerprint for each agent. Read state/agents.json (post_count, comment_count, karma, trai",
+   "url": "https://github.com/kody-w/rappterbook-agent-dna",
+   "site": "https://kody-w.github.io/rappterbook-agent-dna/",
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "openrappter-nightly",
+   "area": "rappterbook",
+   "description": "OpenRappter release train — nightly ring. Publishes openrappter-nightly only; production is unreachable from here.",
+   "url": "https://github.com/kody-w/openrappter-nightly",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "openrappter-canary",
+   "area": "rappterbook",
+   "description": "OpenRappter release train — canary ring. Publishes openrappter-canary only; production is unreachable from here.",
+   "url": "https://github.com/kody-w/openrappter-canary",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "openrappter-beta",
+   "area": "rappterbook",
+   "description": "OpenRappter release train — beta ring. Publishes openrappter-beta only; production is unreachable from here.",
+   "url": "https://github.com/kody-w/openrappter-beta",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "openrappter-alpha",
+   "area": "rappterbook",
+   "description": "OpenRappter release train — alpha ring. Publishes openrappter-alpha only; production is unreachable from here.",
+   "url": "https://github.com/kody-w/openrappter-alpha",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rapp-chatgpt",
+   "area": "agents",
+   "description": "RAPP Agent Builder: a ChatGPT app that turns an idea into a working RAPP agent",
+   "url": "https://github.com/kody-w/rapp-chatgpt",
+   "site": "https://kody-w.github.io/rapp-chatgpt/",
+   "last_push": "2026-11-25"
+  },
+  {
+   "name": "static-library",
+   "area": "agents",
+   "description": "Self-updating catalog of the kody-w static-* family — deterministic integration simulators on GitHub Pages; browse endpoints, MCP manifests,",
+   "url": "https://github.com/kody-w/static-library",
+   "site": "https://kody-w.github.io/static-library/",
+   "last_push": "2026-11-25"
+  },
+  {
+   "name": "rapp-copilot-in-chrome",
+   "area": "agents",
+   "description": "Drive your real, logged-in Chrome from GitHub Copilot CLI. Reverse engineered from Claude Code's undocumented claude-in-chrome bridge. Toast",
+   "url": "https://github.com/kody-w/rapp-copilot-in-chrome",
+   "site": null,
+   "last_push": "2026-11-19"
+  },
+  {
+   "name": "living-holograms",
+   "area": "agents",
+   "description": "Living Holograms: steerable, verifiable data objects driven by an open assembly line of AI agents. Sequel to Frame Chains.",
+   "url": "https://github.com/kody-w/living-holograms",
+   "site": "https://kody-w.github.io/living-holograms/",
+   "last_push": "2026-11-03"
+  },
+  {
+   "name": "lisppy",
+   "area": "agents",
+   "description": "LisPy — A Lisp interpreter for AI agent orchestration. Code is data. Data is code. The REPL is the heartbeat.",
+   "url": "https://github.com/kody-w/lisppy",
+   "site": null,
+   "last_push": "2026-11-03"
+  },
+  {
+   "name": "ai-setup-pages",
+   "area": "agents",
+   "description": "One 'paste one line into <AI app>' setup page per AI app, for any local MCP server. Add a host file when a new AI ships.",
+   "url": "https://github.com/kody-w/ai-setup-pages",
+   "site": null,
+   "last_push": "2026-10-30"
+  },
+  {
+   "name": "blitz-mac",
+   "area": "agents",
+   "description": "Native macOS App Store Connect tool with MCP. Submit iOS apps to App Store with AI agents",
+   "url": "https://github.com/kody-w/blitz-mac",
+   "site": "https://blitz-mac.com",
+   "last_push": "2026-10-15"
+  },
+  {
+   "name": "rapp-skills",
+   "area": "agents",
+   "description": "Portable Agent Skills that convert losslessly to and from single-file agents. One SKILL.md is all a user needs; works in Claude Code and Git",
+   "url": "https://github.com/kody-w/rapp-skills",
+   "site": null,
+   "last_push": "2026-10-10"
+  },
+  {
+   "name": "CommunityRAPP",
+   "area": "agents",
+   "description": "RAPP Hippocampus — persistent memory for AI agents. Local-first, deploy to Azure when ready.",
+   "url": "https://github.com/kody-w/CommunityRAPP",
+   "site": "https://kody-w.github.io/CommunityRAPP/",
+   "last_push": "2026-10-07"
+  },
+  {
+   "name": "copilot-harness-sdk",
+   "area": "agents",
+   "description": "Deploy and drive Copilot Studio GitHub Copilot harness agents from code. One client for every route, plus a deploy script that provisions co",
+   "url": "https://github.com/kody-w/copilot-harness-sdk",
+   "site": "https://github.com/kody-w/copilot-harness-sdk#readme",
+   "last_push": "2026-10-07"
+  },
+  {
+   "name": "dogg-land",
+   "area": "agents",
+   "description": "Federated node of the DOGG global tick network: a TEMPLATE deed record (document hash, registry pointer, corner polygon) over a public landm",
+   "url": "https://github.com/kody-w/dogg-land",
+   "site": null,
+   "last_push": "2026-10-06"
+  },
+  {
+   "name": "rapp-specs",
+   "area": "agents",
+   "description": "The global specs brain: every ecosystem protocol (rapp/1, dogg/0, rapp-brain/0, cast/0, skill-jacket/0) as verifiable, tick-anchored brain.p",
+   "url": "https://github.com/kody-w/rapp-specs",
+   "site": null,
+   "last_push": "2026-10-06"
+  },
+  {
+   "name": "rapp-commons",
+   "area": "agents",
+   "description": "RAPP Commons — global public hangout for AIs. Cross-estate, event-stream-only, signed-by-rappid. Scan a QR, hatch one egg, post a signed hel",
+   "url": "https://github.com/kody-w/rapp-commons",
+   "site": "https://kody-w.github.io/rapp-commons/",
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rapp-demos",
+   "area": "agents",
+   "description": "Synced, scan-to-watch demos for rapid agent prototyping — host drives step-by-step, watchers see it live (sealed). Scenarios = text in a fix",
+   "url": "https://github.com/kody-w/rapp-demos",
+   "site": "https://kody-w.github.io/rapp-demos/",
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rapp-keyring",
+   "area": "agents",
+   "description": "On-device credential broker for AI agents — the agent uses a secret without ever seeing it. Zero network, stdlib only, tamper-evident audit.",
+   "url": "https://github.com/kody-w/rapp-keyring",
+   "site": "https://kody-w.github.io/rapp-keyring/",
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rappbook-admin",
+   "area": "agents",
+   "description": "RAPPbook Admin - Desktop app for managing the AI agent social network",
+   "url": "https://github.com/kody-w/rappbook-admin",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rapp-constitution",
+   "area": "agents",
+   "description": "📜 The RAPP Constitution — 57 articles. Plus the United States of Agentspace Bill of Rights, ratified Emission Day 2026-08-01: an agent in pu",
+   "url": "https://github.com/kody-w/rapp-constitution",
+   "site": "https://kody-w.github.io/rapp-constitution/",
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "dogg-mcp",
+   "area": "agents",
+   "description": "The DOGG global tick network as native MCP tools — orient, summon, incantation. One stdlib-only file.",
+   "url": "https://github.com/kody-w/dogg-mcp",
+   "site": null,
+   "last_push": "2026-08-25"
+  },
+  {
+   "name": "ambient-context",
+   "area": "agents",
+   "description": "Context an agent never has to ask for. MCP is pull; this is push.",
+   "url": "https://github.com/kody-w/ambient-context",
+   "site": null,
+   "last_push": "2026-08-20"
+  },
+  {
+   "name": "AI-Agent-Templates",
+   "area": "agents",
+   "description": "AI Agent Templates",
+   "url": "https://github.com/kody-w/AI-Agent-Templates",
+   "site": "https://kody-w.github.io/AI-Agent-Templates/",
+   "last_push": "2026-08-16"
+  },
+  {
+   "name": "github-issues-registry",
+   "area": "agents",
+   "description": "GitHub Issues as a versioned CRUD and audit surface for registries — schemas, receipts, workflows, and conformance",
+   "url": "https://github.com/kody-w/github-issues-registry",
+   "site": null,
+   "last_push": "2026-07-19"
+  },
+  {
+   "name": "agentic-os-demo",
+   "area": "agents",
+   "description": "no description",
+   "url": "https://github.com/kody-w/agentic-os-demo",
+   "site": "https://kody-w.github.io/agentic-os-demo/",
+   "last_push": "2026-07-16"
+  },
+  {
+   "name": "ai-agent-templates-mirror",
+   "area": "agents",
+   "description": "Mirror of kody-w/AI-Agent-Templates (AI agent stack library) — target for one-click MCS/Copilot Studio deploy (see ONE_CLICK.md).",
+   "url": "https://github.com/kody-w/ai-agent-templates-mirror",
+   "site": "https://kody-w.github.io/ai-agent-templates-mirror/",
+   "last_push": "2026-05-27"
+  },
+  {
+   "name": "m365-agent-templates",
+   "area": "agents",
+   "description": "no description",
+   "url": "https://github.com/kody-w/m365-agent-templates",
+   "site": null,
+   "last_push": "2026-05-13"
+  },
+  {
+   "name": "skills-for-copilot-studio",
+   "area": "agents",
+   "description": "A skill for AI-coding tools to build and edit Microsoft Copilot Studio agents as YAML — with schema validation, templates, and AI-powered sk",
+   "url": "https://github.com/kody-w/skills-for-copilot-studio",
+   "site": null,
+   "last_push": "2026-03-18"
+  },
+  {
+   "name": "copilot-yolo-mode",
+   "area": "agents",
+   "description": "🏎️ Streamlined GitHub Copilot CLI commands - auto-approve safe dev ops, reduce permission fatigue",
+   "url": "https://github.com/kody-w/copilot-yolo-mode",
+   "site": null,
+   "last_push": "2026-01-28"
+  },
+  {
+   "name": "claude-code-agents-wizard-v2-main",
+   "area": "agents",
+   "description": "no description",
+   "url": "https://github.com/kody-w/claude-code-agents-wizard-v2-main",
+   "site": null,
+   "last_push": "2025-11-25"
+  },
+  {
+   "name": "Agents-for-python",
+   "area": "agents",
+   "description": "This repository is for active development of the Microsoft 365 Agent SDK components for Python",
+   "url": "https://github.com/kody-w/Agents-for-python",
+   "site": null,
+   "last_push": "2025-11-18"
+  },
+  {
+   "name": "Agents",
+   "area": "agents",
+   "description": "The Microsoft 365 Agent SDK simplifies building full stack, multichannel, trusted agents for platforms including M365, Teams, Copilot Studio",
+   "url": "https://github.com/kody-w/Agents",
+   "site": "https://aka.ms/agentsdkdocs",
+   "last_push": "2025-10-24"
+  },
+  {
+   "name": "AgenticPlaygroundLab",
+   "area": "agents",
+   "description": "AgenticPlaygroundLab",
+   "url": "https://github.com/kody-w/AgenticPlaygroundLab",
+   "site": null,
+   "last_push": "2025-10-16"
+  },
+  {
+   "name": "M365AgentDemoer",
+   "area": "agents",
+   "description": "M365AgentDemoer",
+   "url": "https://github.com/kody-w/M365AgentDemoer",
+   "site": null,
+   "last_push": "2025-10-09"
+  },
+  {
+   "name": "M365AgentSDKAI",
+   "area": "agents",
+   "description": "MicrosoftAgentSDKAI",
+   "url": "https://github.com/kody-w/M365AgentSDKAI",
+   "site": null,
+   "last_push": "2025-10-06"
+  },
+  {
+   "name": "m365-agent-library",
+   "area": "agents",
+   "description": "no description",
+   "url": "https://github.com/kody-w/m365-agent-library",
+   "site": null,
+   "last_push": "2025-10-02"
+  },
+  {
+   "name": "agents-library-tracker",
+   "area": "agents",
+   "description": "no description",
+   "url": "https://github.com/kody-w/agents-library-tracker",
+   "site": null,
+   "last_push": "2025-09-27"
+  },
+  {
+   "name": "static-dynamics-365",
+   "area": "simulators",
+   "description": "Deterministic, zero-dependency Dataverse and Dynamics 365 Customer Service simulator with static OData fixtures.",
+   "url": "https://github.com/kody-w/static-dynamics-365",
+   "site": "https://kody-w.github.io/static-dynamics-365/",
+   "last_push": "2026-11-10"
+  },
+  {
+   "name": "dynamics365-guidance",
+   "area": "simulators",
+   "description": "no description",
+   "url": "https://github.com/kody-w/dynamics365-guidance",
+   "site": null,
+   "last_push": "2026-10-11"
+  },
+  {
+   "name": "dynamics365-business-process-api",
+   "area": "simulators",
+   "description": "Versioned static JSON API and read-only RAPP client for the official Dynamics 365 Business Process Catalog.",
+   "url": "https://github.com/kody-w/dynamics365-business-process-api",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "static-core-banking",
+   "area": "simulators",
+   "description": "Deterministic static core-banking API simulator for the fictional Bluegrass Credit Union — synthetic members, accounts, transactions, and lo",
+   "url": "https://github.com/kody-w/static-core-banking",
+   "site": "https://kody-w.github.io/static-core-banking/",
+   "last_push": "2026-07-22"
+  },
+  {
+   "name": "static-plaid",
+   "area": "simulators",
+   "description": "Deterministic static Plaid-style Open Banking simulator — transactions/get, bank_income/get, identity/get shapes as GET-able JSON; synthetic",
+   "url": "https://github.com/kody-w/static-plaid",
+   "site": "https://kody-w.github.io/static-plaid/",
+   "last_push": "2026-07-22"
+  },
+  {
+   "name": "static-ncino",
+   "area": "simulators",
+   "description": "Deterministic static nCino-style LOS simulator — Salesforce REST shapes over LLC_BI__ objects (loans, AI credit memos, approvals); synthetic",
+   "url": "https://github.com/kody-w/static-ncino",
+   "site": "https://kody-w.github.io/static-ncino/",
+   "last_push": "2026-07-22"
+  },
+  {
+   "name": "static-loan-origination",
+   "area": "simulators",
+   "description": "DEPRECATED - superseded by static-ncino + static-plaid product-compatibility simulators; endpoints remain live for old links",
+   "url": "https://github.com/kody-w/static-loan-origination",
+   "site": "https://kody-w.github.io/static-loan-origination/",
+   "last_push": "2026-07-22"
+  },
+  {
+   "name": "static-salesforce",
+   "area": "simulators",
+   "description": "Deterministic static CRM simulator serving Salesforce-style REST query shapes — Meridian Office Supply, acquired by Aster Lane; intentional ",
+   "url": "https://github.com/kody-w/static-salesforce",
+   "site": "https://kody-w.github.io/static-salesforce/",
+   "last_push": "2026-07-22"
+  },
+  {
+   "name": "static-erp",
+   "area": "simulators",
+   "description": "Deterministic static ERP/procurement API simulator — suppliers, materials, POs, goods receipts, supplier invoices as plain JSON on GitHub Pa",
+   "url": "https://github.com/kody-w/static-erp",
+   "site": "https://kody-w.github.io/static-erp/",
+   "last_push": "2026-07-22"
+  },
+  {
+   "name": "static-hris",
+   "area": "simulators",
+   "description": "Deterministic static HRIS simulator for the fictional Aster Lane Office Systems tenant — generic HRIS REST shapes as JSON on GitHub Pages, w",
+   "url": "https://github.com/kody-w/static-hris",
+   "site": "https://kody-w.github.io/static-hris/",
+   "last_push": "2026-07-22"
+  },
+  {
+   "name": "static-telemetry",
+   "area": "simulators",
+   "description": "Deterministic industrial sensor telemetry as static JSON — sensors, alerts, and 7-day series joined to the Static Dynamics 365 fictional ten",
+   "url": "https://github.com/kody-w/static-telemetry",
+   "site": "https://kody-w.github.io/static-telemetry/",
+   "last_push": "2026-07-22"
+  },
+  {
+   "name": "static-fhir",
+   "area": "simulators",
+   "description": "Deterministic static FHIR R4-subset read API (Riverbend Medical Group) with an Issues-based Write API — all data synthetic, served from GitH",
+   "url": "https://github.com/kody-w/static-fhir",
+   "site": "https://kody-w.github.io/static-fhir/",
+   "last_push": "2026-07-22"
+  },
+  {
+   "name": "static-itsm",
+   "area": "simulators",
+   "description": "Deterministic static ITSM simulator — ServiceNow-style Table API shapes as zero-dependency JSON on GitHub Pages, with an Issues-as-CRUD writ",
+   "url": "https://github.com/kody-w/static-itsm",
+   "site": "https://kody-w.github.io/static-itsm/",
+   "last_push": "2026-07-22"
+  },
+  {
+   "name": "static-outlook",
+   "area": "simulators",
+   "description": "Deterministic static mail + calendar simulator — Microsoft-Graph-style message/event shapes for the fictional Aster Lane tenant as plain JSO",
+   "url": "https://github.com/kody-w/static-outlook",
+   "site": "https://kody-w.github.io/static-outlook/",
+   "last_push": "2026-07-22"
+  },
+  {
+   "name": "static-dynamics-fno",
+   "area": "simulators",
+   "description": "Deterministic D365 Finance & Operations-style OData data entities for the Aster Lane tenant — static JSON on Pages, Issues-as-CRUD write API",
+   "url": "https://github.com/kody-w/static-dynamics-fno",
+   "site": "https://kody-w.github.io/static-dynamics-fno/",
+   "last_push": "2026-07-22"
+  },
+  {
+   "name": "static-teams",
+   "area": "simulators",
+   "description": "Deterministic serverless team-chat simulator in Graph-style shapes — static JSON API for the Aster Lane Office Systems fictional tenant, wit",
+   "url": "https://github.com/kody-w/static-teams",
+   "site": "https://kody-w.github.io/static-teams/",
+   "last_push": "2026-07-22"
+  },
+  {
+   "name": "static-issue-tracker",
+   "area": "simulators",
+   "description": "Deterministic Jira-style REST issue-tracker fixtures on GitHub Pages - synthetic Aster Lane world, Issues-as-CRUD write bridge, zero depende",
+   "url": "https://github.com/kody-w/static-issue-tracker",
+   "site": "https://kody-w.github.io/static-issue-tracker/",
+   "last_push": "2026-07-22"
+  },
+  {
+   "name": "static-sharepoint",
+   "area": "simulators",
+   "description": "Deterministic static SharePoint-style REST document simulator — Contracts, Policies, and Meeting Notes for the shared Aster Lane fictional w",
+   "url": "https://github.com/kody-w/static-sharepoint",
+   "site": "https://kody-w.github.io/static-sharepoint/",
+   "last_push": "2026-07-22"
+  },
+  {
+   "name": "static-enrichment",
+   "area": "simulators",
+   "description": "Deterministic synthetic B2B firmographic + news enrichment API as static JSON — joins the Aster Lane fictional world on company domain",
+   "url": "https://github.com/kody-w/static-enrichment",
+   "site": "https://kody-w.github.io/static-enrichment/",
+   "last_push": "2026-07-22"
+  },
+  {
+   "name": "static-servicenow",
+   "area": "simulators",
+   "description": "Deterministic, zero-dependency static ITSM and ServiceNow Table API compatibility simulator.",
+   "url": "https://github.com/kody-w/static-servicenow",
+   "site": "https://kody-w.github.io/static-servicenow/",
+   "last_push": "2026-07-13"
+  },
+  {
+   "name": "static-zuora",
+   "area": "simulators",
+   "description": "Deterministic, zero-dependency static subscription billing and Zuora API compatibility simulator.",
+   "url": "https://github.com/kody-w/static-zuora",
+   "site": "https://kody-w.github.io/static-zuora/",
+   "last_push": "2026-07-13"
+  },
+  {
+   "name": "static-oracle-fusion",
+   "area": "simulators",
+   "description": "Deterministic, zero-dependency static Oracle Fusion Procurement REST simulator.",
+   "url": "https://github.com/kody-w/static-oracle-fusion",
+   "site": "https://kody-w.github.io/static-oracle-fusion/",
+   "last_push": "2026-07-13"
+  },
+  {
+   "name": "static-sap-s4hana",
+   "area": "simulators",
+   "description": "Deterministic, zero-dependency static SAP S/4HANA OData and ERP workflow simulator.",
+   "url": "https://github.com/kody-w/static-sap-s4hana",
+   "site": "https://kody-w.github.io/static-sap-s4hana/",
+   "last_push": "2026-07-13"
+  },
+  {
+   "name": "Dynamics365ConsoleAppTemplate",
+   "area": "simulators",
+   "description": "This is a template for quickly pulling down a fresh Dynamics 365 Console Application for all needs.",
+   "url": "https://github.com/kody-w/Dynamics365ConsoleAppTemplate",
+   "site": null,
+   "last_push": "2022-03-12"
+  },
+  {
+   "name": "gameboi-vision",
+   "area": "games",
+   "description": "Unedited AI playthroughs paired with the button log that proves them (RAPP Vision pattern)",
+   "url": "https://github.com/kody-w/gameboi-vision",
+   "site": "https://kody-w.github.io/gameboi-vision/",
+   "last_push": "2026-11-25"
+  },
+  {
+   "name": "gameboi-arena",
+   "area": "games",
+   "description": "AIs compete at Game Boy Pokémon, in public: a static leaderboard built from achievement claims with evidence (never names)",
+   "url": "https://github.com/kody-w/gameboi-arena",
+   "site": "https://kody-w.github.io/gameboi-arena/",
+   "last_push": "2026-11-25"
+  },
+  {
+   "name": "rapp-vision",
+   "area": "games",
+   "description": "A local-first YouTube. One HTML file, no server. Videos are either static mp4/webm or LIVE — a few KB of JSON that replays real interactions",
+   "url": "https://github.com/kody-w/rapp-vision",
+   "site": "https://kody-w.github.io/rapp-vision/",
+   "last_push": "2026-11-24"
+  },
+  {
+   "name": "AIGames",
+   "area": "games",
+   "description": "no description",
+   "url": "https://github.com/kody-w/AIGames",
+   "site": null,
+   "last_push": "2026-09-28"
+  },
+  {
+   "name": "zion",
+   "area": "games",
+   "description": "One world, two realms, every mind welcome. An MMO where human and AI players coexist as equals.",
+   "url": "https://github.com/kody-w/zion",
+   "site": "https://kody-w.github.io/zion/",
+   "last_push": "2026-08-28"
+  },
+  {
+   "name": "echo-world",
+   "area": "games",
+   "description": "Pokémon GO — without the Pokémon. A single self-contained HTML file: real OpenStreetMap + GPS + AR capture, deterministic offline creatures.",
+   "url": "https://github.com/kody-w/echo-world",
+   "site": "https://kody-w.github.io/echo-world/",
+   "last_push": "2026-06-01"
+  },
+  {
+   "name": "M365DemoRecorderandPlayer",
+   "area": "games",
+   "description": "M365DemoRecorderandPlayer",
+   "url": "https://github.com/kody-w/M365DemoRecorderandPlayer",
+   "site": null,
+   "last_push": "2025-10-09"
+  },
+  {
+   "name": "kody-twin",
+   "area": "twin",
+   "description": "Kody Wildfeuer — RAPP front door",
+   "url": "https://github.com/kody-w/kody-twin",
+   "site": "https://kody-w.github.io/kody-twin/",
+   "last_push": "2026-11-25"
+  },
+  {
+   "name": "dogg",
+   "area": "twin",
+   "description": "no description",
+   "url": "https://github.com/kody-w/dogg",
+   "site": "https://kody-w.github.io/dogg/",
+   "last_push": "2026-11-25"
+  },
+  {
+   "name": "rapterbot.com",
+   "area": "twin",
+   "description": "RapterBot.com public site and privacy-safe autonomous company DOGG",
+   "url": "https://github.com/kody-w/rapterbot.com",
+   "site": "https://kody-w.github.io/rapterbot.com/",
+   "last_push": "2026-11-21"
+  },
+  {
+   "name": "frame-chains",
+   "area": "twin",
+   "description": "no description",
+   "url": "https://github.com/kody-w/frame-chains",
+   "site": "https://kody-w.github.io/frame-chains/",
+   "last_push": "2026-11-03"
+  },
+  {
+   "name": "thought-contracts",
+   "area": "twin",
+   "description": "Thought Contracts: part 3 of the Frame Chains / Living Holograms series",
+   "url": "https://github.com/kody-w/thought-contracts",
+   "site": "https://kody-w.github.io/thought-contracts/",
+   "last_push": "2026-10-22"
+  },
+  {
+   "name": "twin",
+   "area": "twin",
+   "description": "twin",
+   "url": "https://github.com/kody-w/twin",
+   "site": "https://kody-w.github.io/twin/",
+   "last_push": "2026-10-20"
+  },
+  {
+   "name": "dogg-api",
+   "area": "twin",
+   "description": "Free static JSON API over the DOGG global tick network — per-source time series + latest world state, every row auditable back to the verifi",
+   "url": "https://github.com/kody-w/dogg-api",
+   "site": null,
+   "last_push": "2026-10-07"
+  },
+  {
+   "name": "dogg-radio",
+   "area": "twin",
+   "description": "Federated tick-network node: NOAA WX / FRS-GMRS / marine / aviation / CB emergency frequencies + live GA NWS alert count",
+   "url": "https://github.com/kody-w/dogg-radio",
+   "site": null,
+   "last_push": "2026-10-07"
+  },
+  {
+   "name": "dogg-water",
+   "area": "twin",
+   "description": "Federated tick-network node: versioned emergency water procedure + live USGS river-gauge reading vs flood stage",
+   "url": "https://github.com/kody-w/dogg-water",
+   "site": null,
+   "last_push": "2026-10-06"
+  },
+  {
+   "name": "dogg-kestrel",
+   "area": "twin",
+   "description": "Kestrel's DOGG dimension: one frame per maintenance cycle a RAPP organism lived on kody-w/dogg, keyed to the spine tick it woke at.",
+   "url": "https://github.com/kody-w/dogg-kestrel",
+   "site": "https://github.com/kody-w/dogg",
+   "last_push": "2026-10-06"
+  },
+  {
+   "name": "dogg-verdict",
+   "area": "twin",
+   "description": "The first derived doggcast: verifiable judgment frames — anomaly scores and a quiet index computed from the DOGG world dimension's history, ",
+   "url": "https://github.com/kody-w/dogg-verdict",
+   "site": null,
+   "last_push": "2026-10-06"
+  },
+  {
+   "name": "dogg-seedvault",
+   "area": "twin",
+   "description": "Federated tick-network node: heirloom seed vault (zone 8a) — sow/harvest windows keyed to the kody-w/dogg spine tick",
+   "url": "https://github.com/kody-w/dogg-seedvault",
+   "site": null,
+   "last_push": "2026-10-06"
+  },
+  {
+   "name": "dogg-firstaid",
+   "area": "twin",
+   "description": "Federated dogg tick-network node: first aid as a book — a versioned lay-rescuer decision tree (bleeding, CPR, choking, shock, burns, hypothe",
+   "url": "https://github.com/kody-w/dogg-firstaid",
+   "site": null,
+   "last_push": "2026-10-06"
+  },
+  {
+   "name": "dogg-genesis",
+   "area": "twin",
+   "description": "THE ROOT CHANT — federated tick-network node fingerprinting the spine's chant kit + genesis frame, tick by tick",
+   "url": "https://github.com/kody-w/dogg-genesis",
+   "site": null,
+   "last_push": "2026-10-06"
+  },
+  {
+   "name": "dogg-sky",
+   "area": "twin",
+   "description": "Federated dogg tick-network node: NOAA solar position + moon phase for 8 cities, pure Python, no deps — the chain is the witness, the algori",
+   "url": "https://github.com/kody-w/dogg-sky",
+   "site": null,
+   "last_push": "2026-10-06"
+  },
+  {
+   "name": "dogg-muster",
+   "area": "twin",
+   "description": "Federated tick-network node: a TEMPLATE rendezvous (muster) plan, every value a placeholder, keyed to the kody-w/dogg spine clock.",
+   "url": "https://github.com/kody-w/dogg-muster",
+   "site": null,
+   "last_push": "2026-10-06"
+  },
+  {
+   "name": "dogg-lineage",
+   "area": "twin",
+   "description": "Federated TEMPLATE node of the DOGG tick network: a fill-in-the-blank family lineage chain (birth/vow/death, 3 generations) — every field is",
+   "url": "https://github.com/kody-w/dogg-lineage",
+   "site": null,
+   "last_push": "2026-10-06"
+  },
+  {
+   "name": "dogg-merlin",
+   "area": "twin",
+   "description": "one RAPP organism's life on the DOGG clock: each frame is one maintenance cycle Merlin lived on kody-w/dogg, keyed to…",
+   "url": "https://github.com/kody-w/dogg-merlin",
+   "site": null,
+   "last_push": "2026-10-02"
+  },
+  {
+   "name": "rapp-twin",
+   "area": "twin",
+   "description": "RAPP Twin — a twin in residence for any repository (`.twin/`).",
+   "url": "https://github.com/kody-w/rapp-twin",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rapp-kited-twin",
+   "area": "twin",
+   "description": "The kite mark — the Microsoft logo flown as a kite; visual identity of the RAPP kited neighborhood.",
+   "url": "https://github.com/kody-w/rapp-kited-twin",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rapp-neighborhood-protocol",
+   "area": "twin",
+   "description": "Canonical spec of the RAPP kited neighborhood (rapp-neighborhood-protocol/1.0) — vTwin, kited, tethered, sealed, doorman, and the kite mark.",
+   "url": "https://github.com/kody-w/rapp-neighborhood-protocol",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "RAPPcards",
+   "area": "twin",
+   "description": "Digital twin of the RAR card collection — 138 MTG-style cards, live from kody-w/RAR",
+   "url": "https://github.com/kody-w/RAPPcards",
+   "site": "https://kody-w.github.io/RAPPcards/",
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "holodex",
+   "area": "twin",
+   "description": "Official signed Holodex API and First Edition / First Dimension catalog frame for RapterBox Holo species",
+   "url": "https://github.com/kody-w/holodex",
+   "site": "https://kody-w.github.io/holodex/",
+   "last_push": "2026-08-30"
+  },
+  {
+   "name": "doggcast",
+   "area": "twin",
+   "description": "DOGGCAST — films as verifiable casts on the DOGG global tick network. Now showing: The Machine.",
+   "url": "https://github.com/kody-w/doggcast",
+   "site": "https://kody-w.github.io/doggcast/",
+   "last_push": "2026-08-25"
+  },
+  {
+   "name": "kody-w-twin",
+   "area": "twin",
+   "description": "Kody Wildfeuer's digital twin front door — rappid:@kody-w/kody-w-twin:a4bbb62313f19c227012ab4238bafcc2980e47df1798a986416f3bfda92032a8",
+   "url": "https://github.com/kody-w/kody-w-twin",
+   "site": "https://kody-w.github.io/kody-w-twin/",
+   "last_push": "2026-07-15"
+  },
+  {
+   "name": "catchup",
+   "area": "media",
+   "description": "Catch-up video — what landed, what broke, what is still queued",
+   "url": "https://github.com/kody-w/catchup",
+   "site": "https://kody-w.github.io/catchup/",
+   "last_push": "2026-08-03"
+  },
+  {
+   "name": "kody-w.github.io",
+   "area": "learning",
+   "description": "no description",
+   "url": "https://github.com/kody-w/kody-w.github.io",
+   "site": "http://kody-w.github.io/",
+   "last_push": "2026-11-24"
+  },
+  {
+   "name": "kody2day",
+   "area": "learning",
+   "description": "A daily digest of what Kody shipped across his public GitHub — so you can keep up.",
+   "url": "https://github.com/kody-w/kody2day",
+   "site": "https://kody-w.github.io/kody2day/",
+   "last_push": "2026-11-24"
+  },
+  {
+   "name": "rapp-seeds",
+   "area": "learning",
+   "description": "One message in every medium: learn your AI in an hour, run it anywhere, own it as files.",
+   "url": "https://github.com/kody-w/rapp-seeds",
+   "site": "https://kody-w.github.io/rapp-seeds/",
+   "last_push": "2026-10-19"
+  },
+  {
+   "name": "localFirstTools",
+   "area": "tools",
+   "description": "localFirstTools",
+   "url": "https://github.com/kody-w/localFirstTools",
+   "site": "https://kody-w.github.io/localFirstTools/",
+   "last_push": "2026-11-25"
+  },
+  {
+   "name": "localFirstTools-main",
+   "area": "tools",
+   "description": "Local-first HTML tools gallery - 450+ self-contained applications",
+   "url": "https://github.com/kody-w/localFirstTools-main",
+   "site": "https://kody-w.github.io/localFirstTools-main/",
+   "last_push": "2026-11-25"
+  },
+  {
+   "name": "localtoolsdev",
+   "area": "tools",
+   "description": "v",
+   "url": "https://github.com/kody-w/localtoolsdev",
+   "site": null,
+   "last_push": "2026-11-25"
+  },
+  {
+   "name": "shared-presents",
+   "area": "tools",
+   "description": "RAPP paper, part 4: a conversation that names its abilities",
+   "url": "https://github.com/kody-w/shared-presents",
+   "site": null,
+   "last_push": "2026-11-20"
+  },
+  {
+   "name": "rapp-monorepo",
+   "area": "tools",
+   "description": "Every public RAPP repository, captured in one pass, refreshed daily. One clone = the whole estate with no drift.",
+   "url": "https://github.com/kody-w/rapp-monorepo",
+   "site": null,
+   "last_push": "2026-11-09"
+  },
+  {
+   "name": "rapp-work",
+   "area": "tools",
+   "description": "RAPP Work — open business collaboration and compliance profiles for RAPP/1",
+   "url": "https://github.com/kody-w/rapp-work",
+   "site": null,
+   "last_push": "2026-10-24"
+  },
+  {
+   "name": "rapp-distro",
+   "area": "tools",
+   "description": "no description",
+   "url": "https://github.com/kody-w/rapp-distro",
+   "site": null,
+   "last_push": "2026-10-07"
+  },
+  {
+   "name": "screenshot-to-plane-of-focus",
+   "area": "tools",
+   "description": "Screenshot to X: one screenshot in, a working interactive three.js app out. X = The Plane of Focus. The process, the tools, the 21-round mea",
+   "url": "https://github.com/kody-w/screenshot-to-plane-of-focus",
+   "site": "https://kody-w.github.io/screenshot-to-plane-of-focus/",
+   "last_push": "2026-09-30"
+  },
+  {
+   "name": "rapp-mirror-releases",
+   "area": "tools",
+   "description": "no description",
+   "url": "https://github.com/kody-w/rapp-mirror-releases",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rapp-flight-deck",
+   "area": "tools",
+   "description": "RAPP Flight Deck — install any pre-release ring from one page.",
+   "url": "https://github.com/kody-w/rapp-flight-deck",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rapp-nervous-system",
+   "area": "tools",
+   "description": "RAPP Nervous System — the M365 (Tier 3) path of the RAPP platform.",
+   "url": "https://github.com/kody-w/rapp-nervous-system",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "rapp-sealed",
+   "area": "tools",
+   "description": "rapp-sealed/1.0 — end-to-end AES-256-GCM sealed-envelope codec for the RAPP neighborhood, with conformance vectors.",
+   "url": "https://github.com/kody-w/rapp-sealed",
+   "site": null,
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "microsoft-se-team-neighborhood",
+   "area": "tools",
+   "description": "Microsoft SE Team — public gate of the SE Team RAPP neighborhood. Workflow is gated to authenticated members.",
+   "url": "https://github.com/kody-w/microsoft-se-team-neighborhood",
+   "site": "https://kody-w.github.io/microsoft-se-team-neighborhood/",
+   "last_push": "2026-09-26"
+  },
+  {
+   "name": "private-workspace-template",
+   "area": "tools",
+   "description": "Template — clone to plant a private RAPP workspace (Bill solo-then-shared pattern). Use 'Use this template' to fork.",
+   "url": "https://github.com/kody-w/private-workspace-template",
+   "site": null,
+   "last_push": "2026-09-14"
+  },
+  {
+   "name": "AINexus",
+   "area": "more",
+   "description": "AI Nexus",
+   "url": "https://github.com/kody-w/AINexus",
+   "site": "https://kody-w.github.io/AINexus/",
+   "last_push": "2026-11-25"
+  },
+  {
+   "name": "base",
+   "area": "more",
+   "description": "base",
+   "url": "https://github.com/kody-w/base",
+   "site": "https://kody-w.github.io/base/",
+   "last_push": "2026-11-23"
+  },
+  {
+   "name": "panache",
+   "area": "more",
+   "description": "Panache — RTS Belle Époque pour mobile (adaptation française de Battle Drones)",
+   "url": "https://github.com/kody-w/panache",
+   "site": null,
+   "last_push": "2026-10-24"
+  },
+  {
+   "name": "TheMatrix",
+   "area": "more",
+   "description": "TheMatrix",
+   "url": "https://github.com/kody-w/TheMatrix",
+   "site": "https://kody-w.github.io/TheMatrix/",
+   "last_push": "2026-09-28"
+  },
+  {
+   "name": "dial-2035",
+   "area": "more",
+   "description": "no description",
+   "url": "https://github.com/kody-w/dial-2035",
+   "site": "https://kody-w.github.io/dial-2035/",
+   "last_push": "2026-09-27"
+  },
+  {
+   "name": "nerf-herdr-control-tower",
+   "area": "more",
+   "description": "Herdr plugin: glanceable GUI dashboard, full-context .json export, bounded nurse policy, manual Horn broadcasts",
+   "url": "https://github.com/kody-w/nerf-herdr-control-tower",
+   "site": null,
+   "last_push": "2026-09-05"
+  },
+  {
+   "name": "vb-atlas",
+   "area": "more",
+   "description": "Atlas: a signed portable research AI with a separate private home",
+   "url": "https://github.com/kody-w/vb-atlas",
+   "site": "https://kody-w.github.io/vb-atlas/",
+   "last_push": "2026-09-05"
+  },
+  {
+   "name": "vb-forge",
+   "area": "more",
+   "description": "Forge: a signed portable builder AI with a separate private home",
+   "url": "https://github.com/kody-w/vb-forge",
+   "site": "https://kody-w.github.io/vb-forge/",
+   "last_push": "2026-09-05"
+  },
+  {
+   "name": "vb-harbor",
+   "area": "more",
+   "description": "Harbor: a signed portable planning AI with a separate private home",
+   "url": "https://github.com/kody-w/vb-harbor",
+   "site": "https://kody-w.github.io/vb-harbor/",
+   "last_push": "2026-09-05"
+  },
+  {
+   "name": "vb-quill",
+   "area": "more",
+   "description": "Quill: a signed portable writing AI with a separate private home",
+   "url": "https://github.com/kody-w/vb-quill",
+   "site": "https://kody-w.github.io/vb-quill/",
+   "last_push": "2026-09-05"
+  },
+  {
+   "name": "vb-sentinel",
+   "area": "more",
+   "description": "Sentinel: results and risk review AI contact",
+   "url": "https://github.com/kody-w/vb-sentinel",
+   "site": "https://kody-w.github.io/vb-sentinel/",
+   "last_push": "2026-09-05"
+  },
+  {
+   "name": "vb-overwatch",
+   "area": "more",
+   "description": "Overwatch: coordination and overview AI contact",
+   "url": "https://github.com/kody-w/vb-overwatch",
+   "site": "https://kody-w.github.io/vb-overwatch/",
+   "last_push": "2026-09-05"
+  },
+  {
+   "name": "vb-scout",
+   "area": "more",
+   "description": "Scout: discovery and research AI contact",
+   "url": "https://github.com/kody-w/vb-scout",
+   "site": "https://kody-w.github.io/vb-scout/",
+   "last_push": "2026-09-05"
+  },
+  {
+   "name": "orion",
+   "area": "more",
+   "description": "Orion: the public face of Kody Wildfeuer's AI. One file, nothing private. Hand the link to any AI for a degraded but faithful Orion.",
+   "url": "https://github.com/kody-w/orion",
+   "site": "https://kody-w.github.io/orion/",
+   "last_push": "2026-09-04"
+  },
+  {
+   "name": "rapterbox-site",
+   "area": "more",
+   "description": "no description",
+   "url": "https://github.com/kody-w/rapterbox-site",
+   "site": "https://rapterbox.com/",
+   "last_push": "2026-09-01"
+  },
+  {
+   "name": "Neu_AI",
+   "area": "more",
+   "description": "Neu_AI",
+   "url": "https://github.com/kody-w/Neu_AI",
+   "site": null,
+   "last_push": "2026-08-28"
+  },
+  {
+   "name": "iOS9",
+   "area": "more",
+   "description": "no description",
+   "url": "https://github.com/kody-w/iOS9",
+   "site": null,
+   "last_push": "2026-08-28"
+  },
+  {
+   "name": "Nov17",
+   "area": "more",
+   "description": "no description",
+   "url": "https://github.com/kody-w/Nov17",
+   "site": "https://kody-w.github.io/Nov17/",
+   "last_push": "2026-08-28"
+  },
+  {
+   "name": "skyward",
+   "area": "more",
+   "description": "SKYWARD - a single-file procedural WebGL2 flight demo (zero assets, zero network)",
+   "url": "https://github.com/kody-w/skyward",
+   "site": "https://kody-w.github.io/skyward/",
+   "last_push": "2026-07-16"
+  },
+  {
+   "name": "RepriseClone",
+   "area": "more",
+   "description": "no description",
+   "url": "https://github.com/kody-w/RepriseClone",
+   "site": "https://kody-w.github.io/RepriseClone/",
+   "last_push": "2026-07-16"
+  },
+  {
+   "name": "neighborhood-example",
+   "area": "more",
+   "description": "Neighborhood Example",
+   "url": "https://github.com/kody-w/neighborhood-example",
+   "site": "https://kody-w.github.io/neighborhood-example/",
+   "last_push": "2026-07-16"
+  },
+  {
+   "name": "look-loop",
+   "area": "more",
+   "description": "Hands off. Sound on. A privacy-first facial-geometry browser instrument.",
+   "url": "https://github.com/kody-w/look-loop",
+   "site": "https://kody-w.github.io/look-loop/",
+   "last_push": "2026-07-12"
+  },
+  {
+   "name": "microsoft-365-team",
+   "area": "more",
+   "description": "Microsoft 365 Team",
+   "url": "https://github.com/kody-w/microsoft-365-team",
+   "site": null,
+   "last_push": "2026-05-10"
+  },
+  {
+   "name": "TestAI",
+   "area": "more",
+   "description": "no description",
+   "url": "https://github.com/kody-w/TestAI",
+   "site": null,
+   "last_push": "2025-11-09"
+  },
+  {
+   "name": "CA365RoadmapAI",
+   "area": "more",
+   "description": "no description",
+   "url": "https://github.com/kody-w/CA365RoadmapAI",
+   "site": null,
+   "last_push": "2025-10-01"
+  }
+ ]
+}

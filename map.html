@@ -1,0 +1,33 @@
+---
+layout: default
+title: Map
+permalink: /map/
+---
+<section aria-labelledby="map-title">
+  <h1 id="map-title">Where everything is</h1>
+  <p>Every public project, sorted into a few areas. Pick an area, then a project. If you are an AI, start at <a href="{{ '/AGENTS.md' | relative_url }}">AGENTS.md</a>; the same list as data is <a href="{{ '/api/home.json' | relative_url }}">api/home.json</a>.</p>
+  <p><input id="map-find" type="search" placeholder="Find a project" aria-label="Find a project" style="width:100%;max-width:28rem;font:inherit;padding:.6rem .8rem;border-radius:.6rem;border:1px solid currentColor;background:transparent;color:inherit"></p>
+  <div id="map-areas"><p>Loading the list.</p></div>
+  <noscript><p>The list needs JavaScript. The plain files are under <a href="{{ '/AGENTS.md' | relative_url }}">AGENTS.md</a>.</p></noscript>
+</section>
+<script>
+(function () {
+  var box = document.getElementById('map-areas'), find = document.getElementById('map-find'), data;
+  function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
+  function draw() {
+    var q = find.value.trim().toLowerCase(), out = '';
+    data.areas.forEach(function (a) {
+      var rs = data.repos.filter(function (r) { return r.area === a.area && (!q || (r.name + ' ' + r.description).toLowerCase().indexOf(q) >= 0); });
+      if (!rs.length) return;
+      out += '<details' + (q ? ' open' : '') + ' style="margin:1rem 0"><summary style="cursor:pointer;font-size:1.15rem"><strong>' + esc(a.title) + '</strong> <span style="opacity:.7">' + esc(a.what) + ' (' + rs.length + ')</span></summary><ul>';
+      rs.forEach(function (r) {
+        out += '<li style="margin:.45rem 0"><a href="' + esc(r.url) + '">' + esc(r.name) + '</a>' + (r.site && r.site.indexOf('https://') === 0 ? ' <a href="' + esc(r.site) + '">(open it)</a>' : '') + '<br><span style="opacity:.8">' + esc(r.description) + '</span></li>';
+      });
+      out += '</ul></details>';
+    });
+    box.innerHTML = out || '<p>Nothing matches.</p>';
+  }
+  fetch('{{ "/api/home.json" | relative_url }}').then(function (r) { return r.json(); }).then(function (d) { data = d; draw(); find.addEventListener('input', draw); })
+    .catch(function () { box.innerHTML = '<p>The list did not load. Open <a href="{{ "/AGENTS.md" | relative_url }}">AGENTS.md</a> instead.</p>'; });
+})();
+</script>
