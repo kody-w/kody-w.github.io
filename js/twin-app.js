@@ -4,8 +4,8 @@
   const VERSION = "1.0.0";
   const CORPUS_URL = "/api/twin-corpus.json";
   const PROMPT_URL = "/public-twin/one-sentence-prompt.txt";
-  const EXPECTED_CORPUS_SHA256 = "f803bef1501459c103637e66bdb26a7c49b4eacfa1f18d5f950dcc7abe1a61a4";
-  const EXPECTED_SOURCE_MANIFEST_SHA256 = "ba14e28af3d82c3f32d9169a1ebb45a7c59e9e1b468848ddec3e8828d06ffbf6";
+  const EXPECTED_CORPUS_SHA256 = "7b019a35a274e9918d87ba0d52b8aa2bb01362798b21acf23513c6a727587d47";
+  const EXPECTED_SOURCE_MANIFEST_SHA256 = "bcfe331355c2616458bd8e911aa7d12f8f7e9d1292de4452f385016c72872eb9";
   const MODE_ACTIONS = Object.freeze({
     answer: "answer.ask",
     evolution: "evolution.compare",
