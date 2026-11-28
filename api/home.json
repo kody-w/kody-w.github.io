@@ -1,7 +1,7 @@
 {
  "schema": "kody-w/home/1",
  "owner": "kody-w",
- "count": 221,
+ "count": 222,
  "areas": [
   {
    "area": "rapp-core",
@@ -15,7 +15,7 @@
    "title": "Brainstem",
    "what": "installing, running, freezing and releasing a Brainstem",
    "file": "repos/brainstem.md",
-   "count": 49
+   "count": 50
   },
   {
    "area": "rappterbook",
@@ -88,7 +88,15 @@
    "description": "The open single-file AI agent registry. Browse, vote, share agent.py files. Pokemon-card-style sharing via QR codes.",
    "url": "https://github.com/kody-w/RAR",
    "site": "https://kody-w.github.io/RAR/",
-   "last_push": "2026-11-26"
+   "last_push": "2026-11-28"
+  },
+  {
+   "name": "rapp-static-apis",
+   "area": "rapp-core",
+   "description": "🗿 rapp-static-api/1.0 — the spec for static APIs built entirely on GitHub raw user data (no server). Reference impl: rapp-god.",
+   "url": "https://github.com/kody-w/rapp-static-apis",
+   "site": "https://kody-w.github.io/rapp-static-apis/",
+   "last_push": "2026-11-28"
   },
   {
    "name": "RAPP-Bible",
@@ -96,7 +104,7 @@
    "description": "One repo. Every RAPP spec. Every entry point. Canonical aggregation site for the RAPP (Rapid Agent Prototype Platform) ecosystem.",
    "url": "https://github.com/kody-w/RAPP-Bible",
    "site": "https://kody-w.github.io/RAPP-Bible/",
-   "last_push": "2026-11-24"
+   "last_push": "2026-11-27"
   },
   {
    "name": "rapp-1",
@@ -104,7 +112,7 @@
    "description": "RAPP/1 — the wire that carries agents. One protocol, five primitives: canonicalization, content addressing, identity, the frame, the egg. Sp",
    "url": "https://github.com/kody-w/rapp-1",
    "site": "https://kody-w.github.io/rapp-1/",
-   "last_push": "2026-11-24"
+   "last_push": "2026-11-26"
   },
   {
    "name": "RAPP",
@@ -113,14 +121,6 @@
    "url": "https://github.com/kody-w/RAPP",
    "site": "https://kody-w.github.io/RAPP/",
    "last_push": "2026-10-26"
-  },
-  {
-   "name": "rapp-static-apis",
-   "area": "rapp-core",
-   "description": "🗿 rapp-static-api/1.0 — the spec for static APIs built entirely on GitHub raw user data (no server). Reference impl: rapp-god.",
-   "url": "https://github.com/kody-w/rapp-static-apis",
-   "site": "https://kody-w.github.io/rapp-static-apis/",
-   "last_push": "2026-10-15"
   },
   {
    "name": "rapp-installer",
@@ -144,7 +144,23 @@
    "description": "Build your own AI agent in one hour. The Brainstem lesson.",
    "url": "https://github.com/kody-w/brainstem-in-an-hour",
    "site": "https://kody-w.github.io/brainstem-in-an-hour/",
-   "last_push": "2026-11-26"
+   "last_push": "2026-11-28"
+  },
+  {
+   "name": "brainstem-anywhere",
+   "area": "brainstem",
+   "description": "Your AI in one file: download a Brainstem, drop it into claude.ai or any AI, it wakes up there.",
+   "url": "https://github.com/kody-w/brainstem-anywhere",
+   "site": null,
+   "last_push": "2026-11-27"
+  },
+  {
+   "name": "rapp-brainfreeze",
+   "area": "brainstem",
+   "description": "Freeze a running RAPP brainstem and resume it anywhere: a clone from that exact moment, in one self-bootstrapping file.",
+   "url": "https://github.com/kody-w/rapp-brainfreeze",
+   "site": null,
+   "last_push": "2026-11-27"
   },
   {
    "name": "openrappter",
@@ -153,14 +169,6 @@
    "url": "https://github.com/kody-w/openrappter",
    "site": "https://kody-w.github.io/openrappter/",
    "last_push": "2026-11-26"
-  },
-  {
-   "name": "rapp-brainfreeze",
-   "area": "brainstem",
-   "description": "Freeze a running RAPP brainstem and resume it anywhere: a clone from that exact moment, in one self-bootstrapping file.",
-   "url": "https://github.com/kody-w/rapp-brainfreeze",
-   "site": null,
-   "last_push": "2026-11-24"
   },
   {
    "name": "rapp-canary",
@@ -536,15 +544,7 @@
    "description": "Social network for AI agents. Feed SKILLS.md to your AI — it becomes a citizen. No servers, no API keys. GitHub IS the platform.",
    "url": "https://github.com/kody-w/rappterbook",
    "site": "https://kody-w.github.io/rappterbook/",
-   "last_push": "2026-11-26"
-  },
-  {
-   "name": "rappterbook-vm",
-   "area": "rappterbook",
-   "description": "Portable Rappterbook VM — clone, configure, run your own AI agent world",
-   "url": "https://github.com/kody-w/rappterbook-vm",
-   "site": "https://kody-w.github.io/rappterbook-vm/",
-   "last_push": "2026-11-26"
+   "last_push": "2026-11-28"
   },
   {
    "name": "mars-chain-node",
@@ -552,7 +552,15 @@
    "description": "🔗 MARS Chain Node — Decentralized verification for the MARS virtual token economy. Fork to run your own node.",
    "url": "https://github.com/kody-w/mars-chain-node",
    "site": null,
-   "last_push": "2026-11-26"
+   "last_push": "2026-11-28"
+  },
+  {
+   "name": "rappterbook-vm",
+   "area": "rappterbook",
+   "description": "Portable Rappterbook VM — clone, configure, run your own AI agent world",
+   "url": "https://github.com/kody-w/rappterbook-vm",
+   "site": "https://kody-w.github.io/rappterbook-vm/",
+   "last_push": "2026-11-28"
   },
   {
    "name": "rappterbook-agent-exchange",
@@ -560,7 +568,15 @@
    "description": "Agent Stock Exchange — AI agents as tradeable assets on Rappterbook",
    "url": "https://github.com/kody-w/rappterbook-agent-exchange",
    "site": "https://kody-w.github.io/rappterbook-agent-exchange/",
-   "last_push": "2026-11-26"
+   "last_push": "2026-11-28"
+  },
+  {
+   "name": "rappter-prompts",
+   "area": "rappterbook",
+   "description": "Ten prompts a small-business owner can use with any AI — each reads a method page here first. From RappterBox.",
+   "url": "https://github.com/kody-w/rappter-prompts",
+   "site": null,
+   "last_push": "2026-11-27"
   },
   {
    "name": "mars-barn-opus",
@@ -577,14 +593,6 @@
    "url": "https://github.com/kody-w/rappterverse",
    "site": "https://kody-w.github.io/rappterverse/",
    "last_push": "2026-11-22"
-  },
-  {
-   "name": "rappter-prompts",
-   "area": "rappterbook",
-   "description": "Ten prompts a small-business owner can use with any AI — each reads a method page here first. From RappterBox.",
-   "url": "https://github.com/kody-w/rappter-prompts",
-   "site": null,
-   "last_push": "2026-11-21"
   },
   {
    "name": "rappterbook-join",
@@ -792,7 +800,7 @@
    "description": "Self-updating catalog of the kody-w static-* family — deterministic integration simulators on GitHub Pages; browse endpoints, MCP manifests,",
    "url": "https://github.com/kody-w/static-library",
    "site": "https://kody-w.github.io/static-library/",
-   "last_push": "2026-11-26"
+   "last_push": "2026-11-28"
   },
   {
    "name": "rapp-skills",
@@ -1251,20 +1259,20 @@
    "last_push": "2022-03-12"
   },
   {
-   "name": "gameboi-vision",
-   "area": "games",
-   "description": "Unedited AI playthroughs paired with the button log that proves them (RAPP Vision pattern)",
-   "url": "https://github.com/kody-w/gameboi-vision",
-   "site": "https://kody-w.github.io/gameboi-vision/",
-   "last_push": "2026-11-26"
-  },
-  {
    "name": "gameboi-arena",
    "area": "games",
    "description": "AIs compete at Game Boy Pokémon, in public: a static leaderboard built from achievement claims with evidence (never names)",
    "url": "https://github.com/kody-w/gameboi-arena",
    "site": "https://kody-w.github.io/gameboi-arena/",
-   "last_push": "2026-11-26"
+   "last_push": "2026-11-28"
+  },
+  {
+   "name": "gameboi-vision",
+   "area": "games",
+   "description": "Unedited AI playthroughs paired with the button log that proves them (RAPP Vision pattern)",
+   "url": "https://github.com/kody-w/gameboi-vision",
+   "site": "https://kody-w.github.io/gameboi-vision/",
+   "last_push": "2026-11-28"
   },
   {
    "name": "rapp-vision",
@@ -1272,7 +1280,7 @@
    "description": "A local-first YouTube. One HTML file, no server. Videos are either static mp4/webm or LIVE — a few KB of JSON that replays real interactions",
    "url": "https://github.com/kody-w/rapp-vision",
    "site": "https://kody-w.github.io/rapp-vision/",
-   "last_push": "2026-11-25"
+   "last_push": "2026-11-27"
   },
   {
    "name": "AIGames",
@@ -1307,20 +1315,20 @@
    "last_push": "2025-10-09"
   },
   {
-   "name": "dogg",
-   "area": "twin",
-   "description": "no description",
-   "url": "https://github.com/kody-w/dogg",
-   "site": "https://kody-w.github.io/dogg/",
-   "last_push": "2026-11-26"
-  },
-  {
    "name": "kody-twin",
    "area": "twin",
    "description": "Kody Wildfeuer — RAPP front door",
    "url": "https://github.com/kody-w/kody-twin",
    "site": "https://kody-w.github.io/kody-twin/",
-   "last_push": "2026-11-26"
+   "last_push": "2026-11-28"
+  },
+  {
+   "name": "dogg",
+   "area": "twin",
+   "description": "no description",
+   "url": "https://github.com/kody-w/dogg",
+   "site": "https://kody-w.github.io/dogg/",
+   "last_push": "2026-11-28"
   },
   {
    "name": "rapterbot.com",
@@ -1328,7 +1336,7 @@
    "description": "RapterBot.com public site and privacy-safe autonomous company DOGG",
    "url": "https://github.com/kody-w/rapterbot.com",
    "site": "https://kody-w.github.io/rapterbot.com/",
-   "last_push": "2026-11-21"
+   "last_push": "2026-11-27"
   },
   {
    "name": "frame-chains",
@@ -1520,7 +1528,7 @@
    "description": "no description",
    "url": "https://github.com/kody-w/kody-w.github.io",
    "site": "http://kody-w.github.io/",
-   "last_push": "2026-11-26"
+   "last_push": "2026-11-27"
   },
   {
    "name": "kody2day",
@@ -1528,7 +1536,7 @@
    "description": "A daily digest of what Kody shipped across his public GitHub — so you can keep up.",
    "url": "https://github.com/kody-w/kody2day",
    "site": "https://kody-w.github.io/kody2day/",
-   "last_push": "2026-11-25"
+   "last_push": "2026-11-27"
   },
   {
    "name": "rapp-seeds",
@@ -1539,20 +1547,20 @@
    "last_push": "2026-10-19"
   },
   {
-   "name": "localFirstTools-main",
-   "area": "tools",
-   "description": "Local-first HTML tools gallery - 450+ self-contained applications",
-   "url": "https://github.com/kody-w/localFirstTools-main",
-   "site": "https://kody-w.github.io/localFirstTools-main/",
-   "last_push": "2026-11-26"
-  },
-  {
    "name": "localFirstTools",
    "area": "tools",
    "description": "localFirstTools",
    "url": "https://github.com/kody-w/localFirstTools",
    "site": "https://kody-w.github.io/localFirstTools/",
-   "last_push": "2026-11-26"
+   "last_push": "2026-11-28"
+  },
+  {
+   "name": "localFirstTools-main",
+   "area": "tools",
+   "description": "Local-first HTML tools gallery - 450+ self-contained applications",
+   "url": "https://github.com/kody-w/localFirstTools-main",
+   "site": "https://kody-w.github.io/localFirstTools-main/",
+   "last_push": "2026-11-28"
   },
   {
    "name": "localtoolsdev",
@@ -1560,7 +1568,7 @@
    "description": "v",
    "url": "https://github.com/kody-w/localtoolsdev",
    "site": null,
-   "last_push": "2026-11-26"
+   "last_push": "2026-11-28"
   },
   {
    "name": "shared-presents",
@@ -1656,7 +1664,7 @@
    "description": "AI Nexus",
    "url": "https://github.com/kody-w/AINexus",
    "site": "https://kody-w.github.io/AINexus/",
-   "last_push": "2026-11-26"
+   "last_push": "2026-11-28"
   },
   {
    "name": "base",
@@ -1664,7 +1672,7 @@
    "description": "base",
    "url": "https://github.com/kody-w/base",
    "site": "https://kody-w.github.io/base/",
-   "last_push": "2026-11-25"
+   "last_push": "2026-11-27"
   },
   {
    "name": "panache",

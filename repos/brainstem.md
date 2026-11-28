@@ -1,10 +1,11 @@
-# Brainstem: installing, running, freezing and releasing a Brainstem (49 repos)
+# Brainstem: installing, running, freezing and releasing a Brainstem (50 repos)
 
 Generated from the public repo list. Newest work first. Read a repo's own AGENTS.md or CLAUDE.md before changing it.
 
 - brainstem-in-an-hour (Build your own AI agent in one hour. The Brainstem lesson.): clone https://github.com/kody-w/brainstem-in-an-hour. Live: https://kody-w.github.io/brainstem-in-an-hour/.
-- openrappter (🦖 OpenRappter: a creature in your Mac's notch. Hold a key and talk. Local-first, runs on your own Brainstem.): clone https://github.com/kody-w/openrappter. Live: https://kody-w.github.io/openrappter/.
+- brainstem-anywhere (Your AI in one file: download a Brainstem, drop it into claude.ai or any AI, it wakes up there.): clone https://github.com/kody-w/brainstem-anywhere.
 - rapp-brainfreeze (Freeze a running RAPP brainstem and resume it anywhere: a clone from that exact moment, in one self-bootstrapping file.): clone https://github.com/kody-w/rapp-brainfreeze.
+- openrappter (🦖 OpenRappter: a creature in your Mac's notch. Hold a key and talk. Local-first, runs on your own Brainstem.): clone https://github.com/kody-w/openrappter. Live: https://kody-w.github.io/openrappter/.
 - rapp-canary (RAPP release-train canary ring; seeded from the untouched Grail): clone https://github.com/kody-w/rapp-canary. Live: https://kody-w.github.io/rapp-canary/.
 - rapp-beta (RAPP release-train beta ring; seeded from the untouched Grail): clone https://github.com/kody-w/rapp-beta. Live: https://kody-w.github.io/rapp-beta/.
 - rapp-alpha (RAPP release-train alpha ring; seeded from the untouched Grail): clone https://github.com/kody-w/rapp-alpha. Live: https://kody-w.github.io/rapp-alpha/.
@@ -21,7 +22,7 @@ Generated from the public repo list. Newest work first. Read a repo's own AGENTS
 - rapp-brainstem-mcp (Set up the RAPP Brainstem for any MCP app): clone https://github.com/kody-w/rapp-brainstem-mcp. Live: https://kody-w.github.io/rapp-brainstem-mcp/.
 - rapp-brainstem-gemini (Set up the RAPP Brainstem for Gemini CLI): clone https://github.com/kody-w/rapp-brainstem-gemini. Live: https://kody-w.github.io/rapp-brainstem-gemini/.
 - rapp-brainstem-antigravity (Set up the RAPP Brainstem for Antigravity CLI): clone https://github.com/kody-w/rapp-brainstem-antigravity. Live: https://kody-w.github.io/rapp-brainstem-antigravity/.
-- brainstem-distro (Make your own Brainstem distro: the kernel unchanged and pinned, shipped as a plugin whose app window is the kernel's own chat page.): clone https://github.com/kody-w/brainstem-distro.
+- brainstem-distro (Make your own Brainstem distro: the kernel unchanged and pinned, shipped as a plugin whose app window is the kernel's own chat page.): clone https://github.com/kody-w/brainstem-distro. Quiet for over a month; pull before trusting it.
 - brainstem-go (A Brainstem in Go, built by an AI from the public test cases alone. Passes 25 of 25.): clone https://github.com/kody-w/brainstem-go. Quiet for over a month; pull before trusting it.
 - brainstem-zaps-docs (Agent-first documentation for the standalone capability-scoped Brainstem Zaps LisPy language and frozen workflow profile.): clone https://github.com/kody-w/brainstem-zaps-docs. Live: https://kody-w.github.io/brainstem-zaps-docs/. Quiet for over a month; pull before trusting it.
 - brainstem-zen (Brainstem Zen Benchmark: the public Looking Glass for frontier-model judgement and real reliability evidence): clone https://github.com/kody-w/brainstem-zen. Live: https://kody-w.github.io/brainstem-zen/. Quiet for over a month; pull before trusting it.

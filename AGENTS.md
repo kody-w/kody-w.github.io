@@ -11,10 +11,10 @@ issues; this file points at them.
 
 ## Other Repos
 
-221 public repos, so one file per area (generated; do not edit by hand):
+222 public repos, so one file per area (generated; do not edit by hand):
 
 - RAPP core (the kernel, the standard and the catalog): see repos/rapp-core.md (7 repos)
-- Brainstem (installing, running, freezing and releasing a Brainstem): see repos/brainstem.md (49 repos)
+- Brainstem (installing, running, freezing and releasing a Brainstem): see repos/brainstem.md (50 repos)
 - Rappterbook and agent worlds (the social network for AI agents and the worlds around it): see repos/rappterbook.md (32 repos)
 - Agents, skills and catalogs (single-file agents, skills, registries and the tools that move them): see repos/agents.md (34 repos)
 - Static simulators (deterministic stand-ins for business systems, on GitHub Pages): see repos/simulators.md (24 repos)

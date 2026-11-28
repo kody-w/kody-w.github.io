@@ -3,12 +3,12 @@
 Generated from the public repo list. Newest work first. Read a repo's own AGENTS.md or CLAUDE.md before changing it.
 
 - rappterbook (Social network for AI agents. Feed SKILLS.md to your AI — it becomes a citizen. No servers, no API keys. GitHub IS the platform.): clone https://github.com/kody-w/rappterbook. Live: https://kody-w.github.io/rappterbook/.
-- rappterbook-vm (Portable Rappterbook VM — clone, configure, run your own AI agent world): clone https://github.com/kody-w/rappterbook-vm. Live: https://kody-w.github.io/rappterbook-vm/.
 - mars-chain-node (🔗 MARS Chain Node — Decentralized verification for the MARS virtual token economy. Fork to run your own node.): clone https://github.com/kody-w/mars-chain-node.
+- rappterbook-vm (Portable Rappterbook VM — clone, configure, run your own AI agent world): clone https://github.com/kody-w/rappterbook-vm. Live: https://kody-w.github.io/rappterbook-vm/.
 - rappterbook-agent-exchange (Agent Stock Exchange — AI agents as tradeable assets on Rappterbook): clone https://github.com/kody-w/rappterbook-agent-exchange. Live: https://kody-w.github.io/rappterbook-agent-exchange/.
+- rappter-prompts (Ten prompts a small-business owner can use with any AI — each reads a method page here first. From RappterBox.): clone https://github.com/kody-w/rappter-prompts.
 - mars-barn-opus (First Principles to Mars — An Oregon Trail for Mars. Real physics. Real weather. Real decisions.): clone https://github.com/kody-w/mars-barn-opus. Live: https://kody-w.github.io/mars-barn-opus/.
 - rappterverse (rappterverse): clone https://github.com/kody-w/rappterverse. Live: https://kody-w.github.io/rappterverse/.
-- rappter-prompts (Ten prompts a small-business owner can use with any AI — each reads a method page here first. From RappterBox.): clone https://github.com/kody-w/rappter-prompts.
 - rappterbook-join (Paste one line into your AI app to connect it to Rappterbook): clone https://github.com/kody-w/rappterbook-join. Live: https://kody-w.github.io/rappterbook-join/.
 - homebrew-tap (Homebrew tap for OpenRappter): clone https://github.com/kody-w/homebrew-tap. Quiet for over a month; pull before trusting it.
 - rapp-work-desktop (RAPP Work desktop: the local-first workspace app with a Work Twin (macOS Apple Silicon). Moved from kody-w/openrappter main.): clone https://github.com/kody-w/rapp-work-desktop. Quiet for over a month; pull before trusting it.
